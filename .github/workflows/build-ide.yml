@@ -1,0 +1,141 @@
+name: SecureIDE Multi-OS Hardened Build Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Subscription Tier (COMMUNITY, PRO, ENTERPRISE, ULTIMATE)'
+        required: true
+        default: 'PRO'
+        type: choice
+        options:
+          - COMMUNITY
+          - PRO
+          - ENTERPRISE
+          - ULTIMATE
+      target_os:
+        description: 'Target Operating System'
+        required: true
+        default: 'windows'
+        type: choice
+        options:
+          - windows
+          - linux
+          - macos
+          - all
+      engine:
+        description: 'Target IDE Engine'
+        required: true
+        default: 'vscode'
+        type: choice
+        options:
+          - vscode
+          - theia
+          - zed
+          - neovim
+          - jupyterlab
+      brand_name:
+        description: 'White-Label Product Name'
+        required: false
+        default: 'SecureIDE Studio'
+        type: string
+      registry_url:
+        description: 'Custom Proxy Extension Gallery URL'
+        required: false
+        default: ''
+        type: string
+      extensions:
+        description: 'Whitelisted Extensions (Comma-separated ID list or URLs)'
+        required: false
+        default: ''
+        type: string
+      telemetry_url:
+        description: 'Enterprise SIEM / Telemetry URL (Ultimate Only)'
+        required: false
+        default: ''
+        type: string
+      build_id:
+        description: 'Unique Build ID for Tracking'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  build:
+    name: Assemble Hardened IDE (${{ matrix.os }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+            runner: windows-latest
+            artifact_ext: zip
+            enable: ${{ inputs.target_os == 'windows' || inputs.target_os == 'all' }}
+          - os: linux
+            runner: ubuntu-latest
+            artifact_ext: tar.gz
+            enable: ${{ inputs.target_os == 'linux' || inputs.target_os == 'all' }}
+          - os: macos
+            runner: macos-latest
+            artifact_ext: dmg
+            enable: ${{ inputs.target_os == 'macos' || inputs.target_os == 'all' }}
+
+    steps:
+      - name: Check Matrix Condition
+        if: ${{ !matrix.enable }}
+        run: echo "Skipping ${{ matrix.os }} build as requested."
+
+      - name: Checkout SecureIDE Repository
+        if: ${{ matrix.enable }}
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (for SBOM Generation)
+        if: ${{ matrix.enable }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Execute Deterministic Hardening & Binary Assembly
+        if: ${{ matrix.enable }}
+        shell: pwsh
+        run: |
+          ./scripts/assemble-ide.ps1 `
+            -Tier "${{ inputs.tier }}" `
+            -TargetOS "${{ matrix.os }}" `
+            -Engine "${{ inputs.engine }}" `
+            -BrandName "${{ inputs.brand_name }}" `
+            -RegistryUrl "${{ inputs.registry_url }}" `
+            -Extensions "${{ inputs.extensions }}" `
+            -TelemetryUrl "${{ inputs.telemetry_url }}" `
+            -BuildId "${{ inputs.build_id }}" `
+            -OutputDir "./dist"
+
+      - name: Generate Cryptographic CycloneDX 1.5 SBOM
+        if: ${{ matrix.enable }}
+        run: |
+          node ./scripts/generate-sbom.js \
+            --dist "./dist" \
+            --brand "${{ inputs.brand_name }}" \
+            --tier "${{ inputs.tier }}" \
+            --engine "${{ inputs.engine }}" \
+            --os "${{ matrix.os }}" \
+            --output "./dist/cyclonedx-sbom.json"
+
+      - name: Compute SHA-256 Checksums
+        if: ${{ matrix.enable }}
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "./dist" -File | ForEach-Object {
+            $hash = Get-FileHash -Path $_.FullName -Algorithm SHA256
+            Write-Host ">>> [CHECKSUM] $($_.Name) : $($hash.Hash)"
+            "$($hash.Hash)  $($_.Name)" | Out-File -Append -FilePath "./dist/SHA256SUMS.txt" -Encoding utf8
+          }
+
+      - name: Upload Release Artifacts
+        if: ${{ matrix.enable }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.brand_name }}-${{ matrix.os }}-${{ inputs.tier }}-${{ inputs.build_id }}
+          path: ./dist/*
+          retention-days: 7
