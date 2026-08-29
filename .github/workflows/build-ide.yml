@@ -113,13 +113,14 @@ jobs:
 
       - name: Generate Cryptographic CycloneDX 1.5 SBOM
         if: ${{ matrix.enable }}
+        shell: pwsh
         run: |
-          node ./scripts/generate-sbom.js \
-            --dist "./dist" \
-            --brand "${{ inputs.brand_name }}" \
-            --tier "${{ inputs.tier }}" \
-            --engine "${{ inputs.engine }}" \
-            --os "${{ matrix.os }}" \
+          node ./scripts/generate-sbom.js `
+            --dist "./dist" `
+            --brand "${{ inputs.brand_name }}" `
+            --tier "${{ inputs.tier }}" `
+            --engine "${{ inputs.engine }}" `
+            --os "${{ matrix.os }}" `
             --output "./dist/cyclonedx-sbom.json"
 
       - name: Compute SHA-256 Checksums
