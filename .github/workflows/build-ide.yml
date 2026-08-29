@@ -88,11 +88,11 @@ jobs:
 
       - name: Checkout SecureIDE Repository
         if: ${{ matrix.enable }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js (for SBOM Generation)
         if: ${{ matrix.enable }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
@@ -135,7 +135,7 @@ jobs:
 
       - name: Upload Release Artifacts
         if: ${{ matrix.enable }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.brand_name }}-${{ matrix.os }}-${{ inputs.tier }}-${{ inputs.build_id }}
           path: ./dist/*
