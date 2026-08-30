@@ -146,7 +146,7 @@ curl -X POST https://api.secureide.dev/api/build \\
     "component": {
       "type": "application",
       "name": "SecureIDE Studio",
-      "version": "1.93.1"
+      "version": "1.135.0"
     }
   },
   "components": [

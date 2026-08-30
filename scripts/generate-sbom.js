@@ -57,9 +57,9 @@ function generateCycloneDX(params) {
         const hash = getFileHash(fullPath);
         components.push({
           type: 'application',
-          'bom-ref': `pkg:generic/${cleanSlug}/${file}@1.92.2?os=${params.os}&tier=${params.tier}`,
+          'bom-ref': `pkg:generic/${cleanSlug}/${file}@1.135.0?os=${params.os}&tier=${params.tier}`,
           name: file,
-          version: '1.92.2',
+          version: '1.135.0',
           description: `Secure Hardened IDE Binary Bundle (${params.brand})`,
           hashes: [
             {
@@ -78,7 +78,7 @@ function generateCycloneDX(params) {
               }
             }
           ],
-          purl: `pkg:generic/${cleanSlug}/${encodeURIComponent(file)}@1.92.2`,
+          purl: `pkg:generic/${cleanSlug}/${encodeURIComponent(file)}@1.135.0`,
           properties: [
             { name: 'secureide:tier', value: params.tier },
             { name: 'secureide:engine', value: params.engine },
@@ -94,9 +94,9 @@ function generateCycloneDX(params) {
   // Core base engine component
   components.unshift({
     type: 'framework',
-    'bom-ref': `pkg:generic/engine/${params.engine}@1.92.2`,
+    'bom-ref': `pkg:generic/engine/${params.engine}@1.135.0`,
     name: `${params.engine}-hardened-core`,
-    version: '1.92.2',
+    version: '1.135.0',
     description: `Hardened Core Engine for ${params.brand}`,
     licenses: [{ license: { id: 'MIT' } }],
     properties: [
@@ -127,9 +127,9 @@ function generateCycloneDX(params) {
       ],
       component: {
         type: 'application',
-        'bom-ref': `pkg:generic/${cleanSlug}@1.92.2`,
+        'bom-ref': `pkg:generic/${cleanSlug}@1.135.0`,
         name: params.brand,
-        version: '1.92.2',
+        version: '1.135.0',
         description: `${params.brand} - Enterprise Zero-Trust Hardened Developer Workstation`,
         licenses: [{ license: { id: 'MIT' } }]
       }

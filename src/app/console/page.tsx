@@ -210,9 +210,9 @@ export interface VersionChannel {
 
 export const ENGINE_CHANNELS: Record<IdeEngine, VersionChannel[]> = {
   vscode: [
-    { id: "latest", name: "Latest Stable", tag: "1.93.1", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official latest stable release. Electron & Chromium patched." },
+    { id: "latest", name: "Latest Stable", tag: "1.135.0", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official latest stable release (v1.135.0). Electron & Chromium patched." },
     { id: "preview", name: "Insiders / Preview", tag: "insiders", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Pre-release preview build with upcoming upstream features." },
-    { id: "previous", name: "Previous Stable (Last Stable)", tag: "1.92.2", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Proven previous stable milestone for enterprise stability." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "1.134.2", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Proven previous stable milestone (v1.134.2) for enterprise stability." },
     { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify a custom Git release tag or commit SHA." }
   ],
   theia: [

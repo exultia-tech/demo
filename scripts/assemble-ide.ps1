@@ -351,7 +351,7 @@ if ($TargetOS -eq "windows") {
         $IssLines = @(
             "[Setup]",
             "AppName=$BrandName",
-            "AppVersion=1.93.1",
+            "AppVersion=1.135.0",
             "AppPublisher=$BrandName Enterprise Security",
             "DefaultDirName={autopf}\$BrandName",
             "DefaultGroupName=$BrandName",
