@@ -1,8 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-
 const PUBLIC_FEEDS = [
   {
     id: "nvd_cve",
@@ -115,152 +110,23 @@ const PUBLIC_FEEDS = [
 ];
 
 export default function ThreatFeedPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [apiData, setApiData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchThreatData = async (queryStr = "") => {
-    setLoading(true);
-    try {
-      const url = queryStr 
-        ? `/api/threat-feed?query=${encodeURIComponent(queryStr)}` 
-        : `/api/threat-feed`;
-      const res = await fetch(url);
-      const data = await res.json();
-      setApiData(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchThreatData();
-  }, []);
-
   return (
     <div className="fade-in" style={{ padding: '3rem 2rem', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* HEADER HERO */}
-      <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
           📡 Unified Vulnerability Intelligence (UVI)
         </span>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
           The Unified Vulnerability Intelligence (UVI) Multi-Feed
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '840px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '840px', margin: '0 auto', lineHeight: '1.6' }}>
           A real-time threat stream unifying global CVE registries, vendor security bulletins, and specialized supply-chain research into one query-driven intelligence platform.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <a href="/api/threat-feed" target="_blank" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
-            Query UVI REST API (JSON) →
-          </a>
-          <Link href="/console" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem', background: 'rgba(255,255,255,0.06)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '10px', fontWeight: 600 }}>
-            Open Builder Console
-          </Link>
-        </div>
       </div>
 
-      {/* STATS OVERVIEW */}
-      <div className="stats-grid" style={{ marginBottom: '4rem' }}>
-        <div className="stat-card">
-          <span className="stat-label">UVI Feed Sources</span>
-          <div className="stat-number" style={{ color: '#34D399' }}>12+ Synced</div>
-          <p style={{ fontSize: '0.75rem' }}>Synthesized across public security databases</p>
-        </div>
-        <div className="stat-card">
-          <span className="stat-label">Resolution Model</span>
-          <div className="stat-number" style={{ color: '#60A5FA' }}>UVI Engine</div>
-          <p style={{ fontSize: '0.75rem' }}>Instant package and purl evaluation</p>
-        </div>
-        <div className="stat-card">
-          <span className="stat-label">Coverage Scope</span>
-          <div className="stat-number" style={{ color: '#FBBF24' }}>Full Stack UVI</div>
-          <p style={{ fontSize: '0.75rem' }}>Extensions, LSPs, toolchains & dependencies</p>
-        </div>
-        <div className="stat-card">
-          <span className="stat-label">Open Standard</span>
-          <div className="stat-number" style={{ color: '#A78BFA' }}>Open CC-BY-4.0</div>
-          <p style={{ fontSize: '0.75rem' }}>Free public open access for all developers & CI/CD</p>
-        </div>
-      </div>
-
-      {/* LIVE QUERY EXPLORER */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '4.5rem', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.4rem', margin: 0 }}>🔍 Live UVI Multi-Feed Query Engine</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0.25rem 0 0 0' }}>
-              Search the Unified Vulnerability Intelligence (UVI) stream across extensions, language servers, toolchains, or CVEs.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {["eslint", "gopls", "ruff", "rust-analyzer", "semgrep"].map(example => (
-              <button
-                key={example}
-                onClick={() => {
-                  setSearchQuery(example);
-                  fetchThreatData(example);
-                }}
-                style={{
-                  padding: '0.3rem 0.6rem',
-                  fontSize: '0.75rem',
-                  borderRadius: '6px',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid var(--border-color)',
-                  color: '#93C5FD',
-                  cursor: 'pointer'
-                }}
-              >
-                {example}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && fetchThreatData(searchQuery)}
-            placeholder="Search UVI by package name, extension ID, LSP binary, purl, or CVE ID..."
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid var(--border-color)',
-              color: 'white',
-              fontSize: '0.9rem',
-              outline: 'none'
-            }}
-          />
-          <button
-            onClick={() => fetchThreatData(searchQuery)}
-            className="btn-primary"
-            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}
-          >
-            {loading ? "Querying UVI..." : "Query UVI"}
-          </button>
-        </div>
-
-        {apiData && (
-          <div style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              <span>Matched UVI Records: <strong>{apiData.matchedPackagesCount}</strong></span>
-              <span>UVI Sources Evaluated: <strong>{apiData.publicFeedSources?.length || 12} Feeds</strong></span>
-            </div>
-            <pre style={{ margin: 0, maxHeight: '280px', overflowY: 'auto', color: '#38BDF8', fontSize: '0.8rem', lineHeight: '1.5', fontFamily: 'monospace' }}>
-              {JSON.stringify(apiData.records, null, 2)}
-            </pre>
-          </div>
-        )}
-      </div>
-
-      {/* PUBLIC FEED SOURCES DIRECTORY */}
+      {/* UVI FEED SOURCES DIRECTORY */}
       <div style={{ marginBottom: '5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>The Unified Vulnerability Intelligence (UVI) Source Matrix</h2>
