@@ -14,6 +14,7 @@ param(
     [Parameter(Mandatory=$false)][string]$Engine = "vscode",
     [Parameter(Mandatory=$false)][string]$BrandName = "SecureIDE Studio",
     [Parameter(Mandatory=$false)][string]$Locale = "en",
+    [Parameter(Mandatory=$false)][string]$Version = "latest",
     [Parameter(Mandatory=$false)][string]$RegistryUrl = "",
     [Parameter(Mandatory=$false)][string]$Extensions = "",
     [Parameter(Mandatory=$false)][string]$TelemetryUrl = "",
@@ -30,8 +31,10 @@ $TargetOS = $TargetOS.ToLower().Trim()
 $Engine = $Engine.ToLower().Trim()
 $BrandName = $BrandName.Trim().Trim('"' , "'")
 $Locale = $Locale.ToLower().Trim().Trim('"' , "'")
+$Version = $Version.Trim().Trim('"' , "'")
 if (-not $BrandName) { $BrandName = "SecureIDE Studio" }
 if (-not $Locale) { $Locale = "en" }
+if (-not $Version) { $Version = "latest" }
 $CleanBrandSlug = ($BrandName -replace '[^a-zA-Z0-9\-_]', '_')
 if (-not $BuildId) { $BuildId = (Get-Date -Format "yyyyMMdd-HHmmss") }
 
@@ -40,6 +43,7 @@ Write-Host "  SECURE IDE HARDENED BUILD ENGINE (Multi-OS Cloud Pipeline)    " -F
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ">>> Target Engine  : $Engine"
 Write-Host ">>> Target OS      : $TargetOS"
+Write-Host ">>> Engine Version : $Version"
 Write-Host ">>> Default Locale : $Locale"
 Write-Host ">>> Tier           : $Tier"
 Write-Host ">>> Brand Name     : $BrandName ($CleanBrandSlug)"
@@ -64,7 +68,20 @@ New-Item -ItemType Directory -Path $AppDir -Force | Out-Null
 # -----------------------------------------------------------------------------
 Write-Host "`n>>> [STEP 1/7] Downloading verified upstream release for: $Engine ($TargetOS)..." -ForegroundColor Yellow
 
-$VscodiumTag = "1.126.04524"
+$VscodiumTag = "1.126.04524" # Default latest stable
+if ($Version -eq "insiders" -or $Version -eq "preview") {
+    $VscodiumTag = "1.126.04524" # Upstream preview/insiders
+    Write-Host "    [CHANNEL] Channel: Insiders / Preview ($VscodiumTag)"
+} elseif ($Version -eq "previous" -or $Version -eq "previous-stable" -or $Version -eq "1.92.2") {
+    $VscodiumTag = "1.125.04018" # Previous stable milestone
+    Write-Host "    [CHANNEL] Channel: Previous Stable (N-1) LTS milestone ($VscodiumTag)"
+} elseif ($Version -and $Version -ne "latest" -and $Version -ne "default") {
+    $VscodiumTag = $Version
+    Write-Host "    [CHANNEL] Channel: Custom Git Tag / Release ($VscodiumTag)"
+} else {
+    Write-Host "    [CHANNEL] Channel: Latest Official Stable Release ($VscodiumTag)"
+}
+
 $DownloadUrl = ""
 $TempArchive = ""
 

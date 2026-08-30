@@ -15,12 +15,15 @@ export async function POST(req: NextRequest) {
       extensions = '',
       brandName = 'SecureIDE Studio',
       locale = 'en',
+      version = 'latest',
+      versionChannel = 'latest',
       telemetryUrl = ''
     } = body;
 
     const buildId = `build-${Date.now()}`;
     const safeBrand = (brandName || 'SecureIDE Studio').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim();
     const safeLocale = (locale || 'en').replace(/[^a-zA-Z0-9\-_]/g, '').toLowerCase().trim();
+    const safeVersion = (version || 'latest').replace(/[^a-zA-Z0-9\-._/]/g, '').trim();
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOwner = process.env.GITHUB_OWNER;
     const githubRepo = process.env.GITHUB_REPO;
@@ -48,6 +51,7 @@ export async function POST(req: NextRequest) {
             engine: engine.toLowerCase(),
             brand_name: safeBrand,
             locale: safeLocale,
+            version: safeVersion,
             registry_url: registryUrl,
             extensions: extensions,
             telemetry_url: telemetryUrl,
@@ -65,10 +69,10 @@ export async function POST(req: NextRequest) {
         start(controller) {
           const encoder = new TextEncoder();
           controller.enqueue(encoder.encode(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine} | Locale: ${safeLocale.toUpperCase()}\n`));
+          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine.toUpperCase()} (${safeVersion}) | Locale: ${safeLocale.toUpperCase()}\n`));
           controller.enqueue(encoder.encode(`>>> [CLOUD] Build ID: ${buildId}\n`));
           controller.enqueue(encoder.encode(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`));
-          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine","locale":"${safeLocale}"}\n`));
+          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine","locale":"${safeLocale}","version":"${safeVersion}"}\n`));
           controller.close();
         }
       });
@@ -100,6 +104,7 @@ export async function POST(req: NextRequest) {
       '-Engine', engine.toLowerCase(),
       '-BrandName', safeBrand,
       '-Locale', safeLocale,
+      '-Version', safeVersion,
       '-BuildId', buildId,
       '-OutputDir', distDir
     ];
@@ -123,7 +128,7 @@ export async function POST(req: NextRequest) {
     const stream = new ReadableStream({
       start(controller) {
         const encoder = new TextEncoder();
-        controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()} / ${safeLocale.toUpperCase()})...\n`));
+        controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()} / ${safeVersion} / ${safeLocale.toUpperCase()})...\n`));
         controller.enqueue(encoder.encode(`>>> [NOTICE] Cloud build engine active in standard environment.\n\n`));
 
         child.stdout.on('data', (data) => {

@@ -59,6 +59,11 @@ on:
         required: false
         default: 'en'
         type: string
+      version:
+        description: 'Engine Version / Channel (latest, preview, previous, or custom tag)'
+        required: false
+        default: 'latest'
+        type: string
       build_id:
         description: 'Unique Build ID for Tracking'
         required: false
@@ -118,6 +123,7 @@ jobs:
             -Engine "${{ inputs.engine }}" `
             -BrandName "${{ inputs.brand_name }}" `
             -Locale "${{ inputs.locale }}" `
+            -Version "${{ inputs.version }}" `
             -RegistryUrl "${{ inputs.registry_url }}" `
             -Extensions "${{ inputs.extensions }}" `
             -TelemetryUrl "${{ inputs.telemetry_url }}" `

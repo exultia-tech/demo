@@ -199,6 +199,48 @@ export const LOCALE_MENUS: Record<string, { explorer: string; file: string; edit
   ru: { explorer: "ПРОВОДНИК", file: "Файл", edit: "Правка", selection: "Выделение", view: "Вид", go: "Переход", run: "Запуск", terminal: "Терминал", help: "Справка", ready: "Готово" }
 };
 
+export interface VersionChannel {
+  id: "latest" | "preview" | "previous" | "custom";
+  name: string;
+  tag: string;
+  badge: string;
+  badgeColor: string;
+  description: string;
+}
+
+export const ENGINE_CHANNELS: Record<IdeEngine, VersionChannel[]> = {
+  vscode: [
+    { id: "latest", name: "Latest Stable", tag: "1.93.1", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official latest stable release. Electron & Chromium patched." },
+    { id: "preview", name: "Insiders / Preview", tag: "insiders", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Pre-release preview build with upcoming upstream features." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "1.92.2", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Proven previous stable milestone for enterprise stability." },
+    { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify a custom Git release tag or commit SHA." }
+  ],
+  theia: [
+    { id: "latest", name: "Latest Stable", tag: "1.52.0", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official Eclipse Theia latest release." },
+    { id: "preview", name: "Next / Preview", tag: "next", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Bleeding-edge upstream next-gen branch." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "1.51.0", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Previous LTS enterprise release." },
+    { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify custom release tag." }
+  ],
+  zed: [
+    { id: "latest", name: "Latest Stable", tag: "v0.150.0", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official Zed Rust latest release." },
+    { id: "preview", name: "Zed Preview", tag: "preview", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Zed preview channel with rapid experimental features." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "v0.149.0", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Previous verified stable Zed release." },
+    { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify custom release tag." }
+  ],
+  neovim: [
+    { id: "latest", name: "Latest Stable", tag: "v0.10.1", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official Neovim release." },
+    { id: "preview", name: "Nightly / Preview", tag: "nightly", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Bleeding-edge master nightly build." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "v0.9.5", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Previous stable 0.9.x branch." },
+    { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify custom release tag." }
+  ],
+  jupyter: [
+    { id: "latest", name: "Latest Stable", tag: "v4.2.4", badge: "✓ Recommended", badgeColor: "#34D399", description: "Official JupyterLab stable release." },
+    { id: "preview", name: "JupyterLab Preview", tag: "v4.3.0a1", badge: "⚡ Preview", badgeColor: "#FBBF24", description: "Pre-release alpha channel." },
+    { id: "previous", name: "Previous Stable (Last Stable)", tag: "v4.1.8", badge: "🛡️ Enterprise N-1", badgeColor: "#60A5FA", description: "Previous verified enterprise release." },
+    { id: "custom", name: "Custom Version (Git Tag)", tag: "custom", badge: "Custom", badgeColor: "#A78BFA", description: "Specify custom release tag." }
+  ]
+};
+
 type SubscriptionTier = "COMMUNITY" | "TEAM" | "ENTERPRISE";
 type ActiveTab = "studio" | "blueprints" | "theme" | "policy" | "platforms" | "sbom" | "fleet";
 type MarketplaceFilter = "ALL" | "COMMUNITY_VERIFIED" | "GRADE_A";
@@ -284,8 +326,8 @@ export default function ConsolePage() {
   const [targetLinux, setTargetLinux] = useState(true);
   const [targetWebDocker, setTargetWebDocker] = useState(true);
 
-  // VS Code Engine Version Selection
-  const [vscodeVersion, setVsCodeVersion] = useState("1.93.1");
+  // Engine Version Channel Selection (Latest, Preview, Previous, Custom)
+  const [versionChannel, setVersionChannel] = useState<"latest" | "preview" | "previous" | "custom">("latest");
   const [customTag, setCustomTag] = useState("");
 
   // CI/CD Pipeline Generator
@@ -1794,8 +1836,12 @@ build_hardened_ide:
   // Build via API
   const startBuild = async () => {
     setBuildState("BUILDING");
+    const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
+    const activeVersionObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
+    const resolvedVersionTag = versionChannel === "custom" ? (customTag || "latest") : activeVersionObj.tag;
+
     setBuildLogs([
-      `Targeting Engine: [${selectedEngine.toUpperCase()}]...`,
+      `Targeting Engine: [${selectedEngine.toUpperCase()}] (${activeVersionObj.name}: ${resolvedVersionTag})...`,
       `Verifying ${tier} Enterprise License...`,
       `Applying Custom Branding: [${brandName}] (Accent: ${brandColor})...`,
       `Applying UI Language: [${SUPPORTED_LOCALES.find(l => l.code === selectedLocale)?.name || selectedLocale.toUpperCase()}]...`,
@@ -1816,6 +1862,8 @@ build_hardened_ide:
           tier,
           brandName: brandName || 'SecureIDE Studio',
           locale: selectedLocale,
+          version: resolvedVersionTag,
+          versionChannel: versionChannel,
           registryUrl: canUseRegistryUrl ? registryUrl : "",
           extensions: extList,
           engine: selectedEngine,
@@ -2461,65 +2509,80 @@ build_hardened_ide:
                 </div>
               </div>
 
-              {/* VS Code Engine Version Selector (When VSCode/Theia selected) */}
-              {(selectedEngine === "vscode" || selectedEngine === "theia") && (
-                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    Upstream Engine Tag & Support Tier
+              {/* Upstream Engine Version Channel Selector (Latest, Preview, Previous, Custom) */}
+              <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <label style={{ fontSize: '0.75rem', margin: 0, fontWeight: 600 }}>
+                    Editor Version Channel
                   </label>
-                  <select 
-                    value={vscodeVersion} 
-                    onChange={(e) => setVsCodeVersion(e.target.value)}
-                    style={{ fontSize: '0.85rem', padding: '0.55rem 0.8rem', background: 'rgba(0,0,0,0.4)', color: 'var(--text-main)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                    <option value="1.93.1">v1.93.1 (Latest Microsoft Stable Tag)</option>
-                    <option value="1.92.3">v1.92.3 (Pinned Enterprise LTS Branch)</option>
-                    <option value="1.91.5">v1.91.5 (Pinned Regulated / Defense Tag)</option>
-                    <option value="1.90.2">v1.90.2 (Legacy Pinned Release)</option>
-                    <option value="custom">Custom Git Tag / Branch / Commit SHA</option>
-                  </select>
+                  <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>
+                    {versionChannel === "latest" ? "✓ Upstream Verified" : versionChannel === "preview" ? "⚡ Pre-Release" : versionChannel === "previous" ? "🛡️ LTS Stable" : "Custom Tag"}
+                  </span>
+                </div>
 
-                  {/* Core Engine Vulnerability Status Badge */}
-                  <div style={{ marginTop: '0.4rem', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem',
-                    background: vscodeVersion === '1.90.2' ? 'rgba(239, 68, 68, 0.15)' : vscodeVersion === '1.91.5' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(52, 211, 153, 0.1)',
-                    color: vscodeVersion === '1.90.2' ? '#F87171' : vscodeVersion === '1.91.5' ? '#FBBF24' : '#34D399',
-                    border: `1px solid ${vscodeVersion === '1.90.2' ? 'rgba(239,68,68,0.3)' : vscodeVersion === '1.91.5' ? 'rgba(245,158,11,0.3)' : 'rgba(52,211,153,0.3)'}`
-                  }}>
-                    {vscodeVersion === '1.90.2' ? (
-                      <span>🚨 <strong>2 Engine CVEs:</strong> Chromium V8 CVE-2024-4947 (Upgrade advised)</span>
-                    ) : vscodeVersion === '1.91.5' ? (
-                      <span>⚠️ <strong>1 Low CVE:</strong> Electron v29.4 (Mitigated by Workspace Trust)</span>
-                    ) : (
-                      <span>🛡️ <strong>0 Engine CVEs:</strong> Electron & Chromium Core fully patched</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                  {(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).map((ch) => {
+                    const isSelected = versionChannel === ch.id;
+                    return (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => setVersionChannel(ch.id)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          padding: '0.5rem 0.6rem',
+                          borderRadius: '8px',
+                          border: isSelected ? `2px solid ${brandColor}` : '1px solid rgba(255,255,255,0.08)',
+                          background: isSelected ? 'rgba(59, 130, 246, 0.18)' : 'rgba(0, 0, 0, 0.25)',
+                          color: isSelected ? '#fff' : 'var(--text-muted)',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.15rem' }}>
+                          <strong style={{ fontSize: '0.78rem', color: isSelected ? '#fff' : 'var(--text-main)' }}>{ch.name}</strong>
+                          <span style={{ fontSize: '0.62rem', color: ch.badgeColor, background: 'rgba(255,255,255,0.05)', padding: '0.08rem 0.3rem', borderRadius: '4px' }}>
+                            {ch.badge}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.68rem', color: isSelected ? '#93C5FD' : 'var(--text-muted)', fontFamily: ch.id !== 'custom' ? 'monospace' : 'inherit' }}>
+                          {ch.id === 'custom' ? 'User-defined Git Tag' : `Tag: ${ch.tag}`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom Git Tag Input Field */}
+                {versionChannel === "custom" && (
+                  <div className="fade-in" style={{ marginTop: '0.4rem', marginBottom: '0.4rem' }}>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. release/1.92.0, v1.91.5, or commit SHA..."
+                      value={customTag}
+                      onChange={(e) => setCustomTag(e.target.value)}
+                      style={{ fontSize: '0.8rem', padding: '0.45rem 0.7rem', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-color)', borderRadius: '6px', width: '100%', color: 'white' }}
+                    />
+                    {customTag && (
+                      <div style={{ marginTop: '0.3rem', padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem',
+                        background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.25)' }}>
+                        ✓ Custom upstream tag <code>{customTag}</code> mapped for compilation.
+                      </div>
                     )}
                   </div>
-                </div>
-              )}
+                )}
 
-              {vscodeVersion === "custom" && (
-                <div className="form-group fade-in" style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ fontSize: '0.75rem' }}>Custom Git Tag / Commit SHA</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. release/1.92.0 or 7e89c31..."
-                    value={customTag}
-                    onChange={(e) => setCustomTag(e.target.value)}
-                    style={{ fontSize: '0.85rem', padding: '0.55rem 0.8rem' }}
-                  />
-                  {customTag && (
-                    <div style={{ marginTop: '0.4rem', padding: '0.45rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', lineHeight: '1.4',
-                      background: customTag.includes("1.8") || customTag.includes("7e89") || customTag.includes("vuln") ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.1)',
-                      color: customTag.includes("1.8") || customTag.includes("7e89") || customTag.includes("vuln") ? '#F87171' : '#34D399',
-                      border: `1px solid ${customTag.includes("1.8") || customTag.includes("7e89") || customTag.includes("vuln") ? 'rgba(239,68,68,0.3)' : 'rgba(52,211,153,0.3)'}`
-                    }}>
-                      {customTag.includes("1.8") || customTag.includes("7e89") || customTag.includes("vuln") ? (
-                        <span>🚨 <strong>Hard Block:</strong> Commit contains vulnerable Electron/Node base (CVE-2023-4863 Heap RCE). Compilation blocked by Zero-Trust CC6.1.</span>
-                      ) : (
-                        <span>🛡️ <strong>Commit Inspected:</strong> Upstream tree verified clean against NVD & OSV databases.</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                {/* Channel Description / Status */}
+                {versionChannel !== "custom" && (
+                  <div style={{ padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span>ℹ️</span>
+                    <span>{(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).find(c => c.id === versionChannel)?.description}</span>
+                  </div>
+                )}
+              </div>
 
               <div className="form-group" style={{ marginBottom: '0.75rem' }}>
                 <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
