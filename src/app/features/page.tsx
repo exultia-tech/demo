@@ -249,7 +249,7 @@ export default function FeaturesPage() {
               <span style={{ color: '#A78BFA' }}>3.</span> Stateless Cloud Pipeline & Zero Customer Code Custody
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              SecureIDE operates as a completely stateless build tool powered by isolated cloud runners. We never store customer source code, build logs, or compliance data on our servers.
+              SecureIDE operates as a completely stateless build tool powered by isolated cloud sandboxes. We never store customer source code, build logs, or compliance data on our servers.
             </p>
           </div>
 

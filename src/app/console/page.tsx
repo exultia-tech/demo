@@ -1761,7 +1761,7 @@ build_hardened_ide:
       `Verifying ${tier} Enterprise License...`,
       `Applying Custom Branding: [${brandName}] (Accent: ${brandColor})...`,
       `Enforcing Whitelist Policy: ${tier === "TEAM" ? "GitHub Open-Source Verified + 0 Open CVEs" : "Enterprise Artifactory Whitelist"}...`,
-      "Initiating Multi-OS Cloud Pipeline via GitHub Actions Runners...",
+      "Initiating Multi-OS Cloud Build Engine...",
       "Generating Cryptographic CycloneDX 1.5 Software Bill of Materials (SBOM)..."
     ]);
 

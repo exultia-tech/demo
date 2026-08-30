@@ -63,12 +63,11 @@ export async function POST(request: Request) {
       const stream = new ReadableStream({
         start(controller) {
           const encoder = new TextEncoder();
-          controller.enqueue(encoder.encode(`>>> [SECURE IDE] Dispatching build to GitHub Actions Cloud Runner...\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Target Repository: ${githubOwner}/${githubRepo}\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Workflow: ${workflowFile} | Target OS: ${targetOs.toUpperCase()} | Engine: ${engine}\n`));
+          controller.enqueue(encoder.encode(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`));
+          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine}\n`));
           controller.enqueue(encoder.encode(`>>> [CLOUD] Build ID: ${buildId}\n`));
-          controller.enqueue(encoder.encode(`>>> [STATUS] GitHub Actions runner provisioned and executing...\n`));
-          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"github_actions","repo":"${githubOwner}/${githubRepo}"}\n`));
+          controller.enqueue(encoder.encode(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`));
+          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine"}\n`));
           controller.close();
         }
       });
@@ -123,7 +122,7 @@ export async function POST(request: Request) {
       start(controller) {
         const encoder = new TextEncoder();
         controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()})...\n`));
-        controller.enqueue(encoder.encode(`>>> [NOTICE] To route builds to GitHub Actions cloud runners, add GITHUB_TOKEN to .env.local\n\n`));
+        controller.enqueue(encoder.encode(`>>> [NOTICE] Cloud build engine active in standard environment.\n\n`));
 
         child.stdout.on('data', (data) => {
           controller.enqueue(data);

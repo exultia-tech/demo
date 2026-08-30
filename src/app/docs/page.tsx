@@ -10,7 +10,7 @@ export default function DocsPage() {
           SecureIDE Technical Documentation
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '850px' }}>
-          Architecture reference, GitHub Actions cloud pipeline integration, REST build API specifications, and CycloneDX 1.5 SBOM governance.
+          Architecture reference, cloud build engine specifications, REST API documentation, and CycloneDX 1.5 SBOM governance.
         </p>
       </div>
 
@@ -21,7 +21,7 @@ export default function DocsPage() {
           <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Documentation Index</strong>
           <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <li><a href="#quickstart" style={{ color: '#60A5FA', textDecoration: 'none', fontSize: '0.85rem' }}>1. Quickstart Guide</a></li>
-            <li><a href="#pipeline" style={{ color: '#34D399', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>2. GitHub Actions Cloud Pipeline</a></li>
+            <li><a href="#pipeline" style={{ color: '#34D399', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>2. Multi-OS Cloud Engine</a></li>
             <li><a href="#tamperproof" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>3. Tamper-Proof ASAR Sealing</a></li>
             <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. 5-Source Threat Intelligence API</a></li>
             <li><a href="#rest-api" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>5. Headless Build REST API</a></li>
@@ -51,53 +51,33 @@ export default function DocsPage() {
             </ol>
           </section>
 
-          {/* SECTION 2: GITHUB ACTIONS CLOUD PIPELINE */}
+          {/* SECTION 2: MULTI-OS CLOUD ENGINE */}
           <section id="pipeline" className="glass-card" style={{ padding: '2.25rem', marginBottom: 0, border: '1px solid rgba(52, 211, 153, 0.3)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.6rem', margin: 0 }}>2. GitHub Actions Cloud Build Pipeline</h2>
-                <span style={{ fontSize: '0.8rem', color: '#34D399', fontWeight: 600 }}>Multi-OS Matrix • Ephemeral Virtual Machines</span>
+                <h2 style={{ fontSize: '1.6rem', margin: 0 }}>2. Multi-OS Cloud Build Architecture</h2>
+                <span style={{ fontSize: '0.8rem', color: '#34D399', fontWeight: 600 }}>Multi-OS Matrix • Ephemeral Virtual Sandboxes</span>
               </div>
             </div>
 
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              SecureIDE leverages GitHub Actions runners to provide infinite elastic build scaling across all major operating systems. There is no dedicated build server infrastructure to provision, update, or maintain.
+              SecureIDE executes deterministic packaging inside clean, ephemeral cloud sandboxes. Target operating system payloads are assembled in parallel with zero persistent server footprint:
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#93C5FD', display: 'block', fontSize: '0.85rem' }}>Windows Runner (windows-latest)</strong>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Assembles native PE64 binaries, sealed ASAR archives, and Inno Setup Windows Installers (.exe).</span>
+                <strong style={{ color: '#93C5FD', display: 'block', fontSize: '0.85rem' }}>Windows Distribution Target</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Assembles native PE64 binaries, sealed ASAR archives, portable ZIPs, and Windows Setup Installers (.exe).</span>
               </div>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#34D399', display: 'block', fontSize: '0.85rem' }}>Linux Runner (ubuntu-latest)</strong>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Compiles Linux distributions into portable tar.gz and system packages with zero outbound beacons.</span>
+                <strong style={{ color: '#34D399', display: 'block', fontSize: '0.85rem' }}>Linux Distribution Target</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Compiles hardened Linux distributions into portable tar.gz and system packages with zero outbound beacons.</span>
               </div>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#FBBF24', display: 'block', fontSize: '0.85rem' }}>macOS Runner (macos-latest)</strong>
+                <strong style={{ color: '#FBBF24', display: 'block', fontSize: '0.85rem' }}>macOS Distribution Target</strong>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Builds signed Apple Silicon .app bundles with Gatekeeper integrity support.</span>
               </div>
             </div>
-
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text-main)' }}>Workflow Dispatch Integration</h3>
-            <pre style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '8px', color: '#38BDF8', fontSize: '0.8rem', lineHeight: '1.6', overflowX: 'auto', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.06)' }}>
-{`# Trigger build workflow via GitHub REST API
-curl -X POST \\
-  https://api.github.com/repos/{owner}/{repo}/actions/workflows/build-ide.yml/dispatches \\
-  -H "Authorization: Bearer \${GITHUB_TOKEN}" \\
-  -H "Accept: application/vnd.github+json" \\
-  -d '{
-    "ref": "main",
-    "inputs": {
-      "tier": "PRO",
-      "target_os": "windows",
-      "engine": "vscode",
-      "brand_name": "SecureIDE Studio",
-      "extensions": "golang.go,ms-python.python",
-      "build_id": "release-prod-001"
-    }
-  }'`}
-            </pre>
           </section>
 
           {/* SECTION 3: TAMPER-PROOF ASAR SEALING */}

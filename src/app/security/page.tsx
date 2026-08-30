@@ -13,7 +13,7 @@ export default function SecurityPage() {
           Enterprise Security & Tamper-Proof Governance
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          SecureIDE eliminates the developer workstation as an attack vector through immutable binary packaging, multi-OS cloud assembly, and strict supply chain attestation.
+          SecureIDE eliminates the developer workstation as an attack vector through immutable binary packaging, isolated cloud assembly, and strict supply chain attestation.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
@@ -87,20 +87,20 @@ export default function SecurityPage() {
               Stateless Cloud Orchestration
             </div>
             <h2 style={{ fontSize: '2.2rem', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-              Ephemeral Multi-OS Cloud Pipeline
+              Isolated Multi-OS Cloud Pipeline
             </h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-              Builds are executed inside dedicated, isolated virtual machines powered by GitHub Actions runners. Each build environment is created on-demand, executes deterministic assembly, and is permanently destroyed upon completion.
+              Builds are executed inside dedicated, isolated cloud sandboxes. Each build environment is provisioned on-demand, executes deterministic assembly, and is permanently destroyed upon completion.
             </p>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399' }}>✓</span> <strong>Zero Local Server Overhead</strong>: No dedicated build hardware or maintenance required.
+                <span style={{ color: '#34D399' }}>✓</span> <strong>Zero Local Server Overhead</strong>: No dedicated build hardware or local maintenance required.
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399' }}>✓</span> <strong>Zero Customer Code Custody</strong>: We never store source code, private keys, or build logs.
+                <span style={{ color: '#34D399' }}>✓</span> <strong>Zero Customer Code Custody</strong>: We never store customer source code, private keys, or build logs.
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399' }}>✓</span> <strong>Multi-OS Matrix</strong>: Simultaneous compilation for Windows, macOS, and Linux runners.
+                <span style={{ color: '#34D399' }}>✓</span> <strong>Multi-OS Matrix</strong>: Simultaneous compilation for Windows, macOS, and Linux targets.
               </li>
             </ul>
           </div>

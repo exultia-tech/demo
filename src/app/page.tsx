@@ -8,7 +8,7 @@ export default function LandingPage() {
       <section className="hero-section">
         <div className="hero-badge">
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }}></span>
-          Multi-OS Cloud Pipeline Active • Powered by GitHub Actions
+          Multi-OS Cloud Pipeline Active • Zero-Trust Cloud Engine
         </div>
 
         <h1 className="hero-title">
@@ -17,7 +17,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="hero-desc">
-          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — assembled on-demand via ephemeral multi-OS cloud runners, sealed with tamper-proof ASAR packaging, and verified with CycloneDX 1.5 SBOMs.
+          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — assembled on-demand via isolated multi-OS cloud sandboxes, sealed with tamper-proof ASAR packaging, and verified with CycloneDX 1.5 SBOMs.
         </p>
 
         <div className="hero-cta-group">
@@ -40,7 +40,7 @@ export default function LandingPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto 5rem auto', padding: '0 2rem', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2.5rem', flexWrap: 'wrap', opacity: 0.9 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
-            <span style={{ color: '#34D399' }}>✓</span> Multi-OS Cloud Runners (Win, Mac, Linux)
+            <span style={{ color: '#34D399' }}>✓</span> Multi-OS Cloud Engine (Win, Mac, Linux)
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
             <span style={{ color: '#60A5FA' }}>✓</span> Tamper-Proof ASAR Binary Sealing
@@ -120,7 +120,7 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Multi-OS Cloud Pipeline</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              On-demand packaging across <strong>Windows (.exe / .zip), macOS (.dmg), and Linux (.tar.gz)</strong> executed in clean, isolated cloud virtual machines.
+              On-demand packaging across <strong>Windows (.exe / .zip), macOS (.dmg), and Linux (.tar.gz)</strong> executed in clean, isolated cloud environments.
             </p>
           </div>
         </div>
@@ -145,9 +145,9 @@ export default function LandingPage() {
 
             <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-secondary)', marginBottom: '0.75rem' }}>02</div>
-              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Assemble in Cloud Runners</h3>
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Assemble in Cloud Sandbox</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                Isolated cloud runners assemble real, telemetry-free binaries across Windows, macOS, and Linux, sealing configuration files into immutable ASAR packages.
+                Isolated cloud sandboxes assemble real, telemetry-free binaries across Windows, macOS, and Linux, sealing configuration files into immutable ASAR packages.
               </p>
             </div>
 
