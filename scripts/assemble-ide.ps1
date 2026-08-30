@@ -85,15 +85,73 @@ if ($Version -eq "insiders" -or $Version -eq "preview") {
 $DownloadUrl = ""
 $TempArchive = ""
 
-if ($TargetOS -eq "windows") {
-    $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-win32-x64-$VscodiumTag.zip"
-    $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.zip"
-} elseif ($TargetOS -eq "linux") {
-    $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-linux-x64-$VscodiumTag.tar.gz"
-    $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.tar.gz"
-} elseif ($TargetOS -eq "macos") {
-    $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-darwin-arm64-$VscodiumTag.zip"
-    $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.zip"
+if ($Engine -eq "vscode") {
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-archive"
+        $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.zip"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=linux-x64"
+        $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.tar.gz"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
+        $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.zip"
+    }
+} elseif ($Engine -eq "theia") {
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://download.eclipse.org/theia/ide/latest/windows/TheiaIDE.exe"
+        $TempArchive = Join-Path $OutputDir "theia-base-$TargetOS.exe"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://download.eclipse.org/theia/ide/latest/linux/TheiaIDE.AppImage"
+        $TempArchive = Join-Path $OutputDir "theia-base-$TargetOS.AppImage"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://download.eclipse.org/theia/ide/latest/macos-arm/TheiaIDE.dmg"
+        $TempArchive = Join-Path $OutputDir "theia-base-$TargetOS.dmg"
+    }
+} elseif ($Engine -eq "zed") {
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://zed.dev/api/releases/stable/latest/Zed-x86_64.exe"
+        $TempArchive = Join-Path $OutputDir "zed-base-$TargetOS.exe"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://github.com/zed-industries/zed/releases/latest/download/zed-linux-x86_64.tar.gz"
+        $TempArchive = Join-Path $OutputDir "zed-base-$TargetOS.tar.gz"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://zed.dev/api/releases/stable/latest/Zed-aarch64.dmg"
+        $TempArchive = Join-Path $OutputDir "zed-base-$TargetOS.dmg"
+    }
+} elseif ($Engine -eq "neovim") {
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://github.com/neovim/neovim/releases/latest/download/nvim-win64.zip"
+        $TempArchive = Join-Path $OutputDir "neovim-base-$TargetOS.zip"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
+        $TempArchive = Join-Path $OutputDir "neovim-base-$TargetOS.tar.gz"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://github.com/neovim/neovim/releases/latest/download/nvim-macos-arm64.tar.gz"
+        $TempArchive = Join-Path $OutputDir "neovim-base-$TargetOS.tar.gz"
+    }
+} elseif ($Engine -eq "jupyter" -or $Engine -eq "jupyterlab") {
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://github.com/jupyterlab/jupyterlab-desktop/releases/latest/download/JupyterLab-Setup-Windows-x64.exe"
+        $TempArchive = Join-Path $OutputDir "jupyter-base-$TargetOS.exe"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://github.com/jupyterlab/jupyterlab-desktop/releases/latest/download/JupyterLab-Setup-Debian-x64.deb"
+        $TempArchive = Join-Path $OutputDir "jupyter-base-$TargetOS.deb"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://github.com/jupyterlab/jupyterlab-desktop/releases/latest/download/JupyterLab-macOS-arm64.dmg"
+        $TempArchive = Join-Path $OutputDir "jupyter-base-$TargetOS.dmg"
+    }
+} else {
+    # Default VSCodium Base
+    if ($TargetOS -eq "windows") {
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-win32-x64-$VscodiumTag.zip"
+        $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.zip"
+    } elseif ($TargetOS -eq "linux") {
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-linux-x64-$VscodiumTag.tar.gz"
+        $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.tar.gz"
+    } elseif ($TargetOS -eq "macos") {
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-darwin-arm64-$VscodiumTag.zip"
+        $TempArchive = Join-Path $OutputDir "vscodium-base-$TargetOS.zip"
+    }
 }
 
 try {
@@ -107,10 +165,12 @@ try {
     }
 
     Write-Host "    ✓ Download complete. Unpacking native runtime binaries..."
-    if ($TargetOS -eq "linux") {
+    if ($TempArchive.EndsWith(".tar.gz") -or $TempArchive.EndsWith(".tgz")) {
         tar -xzf $TempArchive -C $AppDir
-    } else {
+    } elseif ($TempArchive.EndsWith(".zip")) {
         Expand-Archive -Path $TempArchive -DestinationPath $AppDir -Force
+    } else {
+        Copy-Item -Path $TempArchive -Destination (Join-Path $AppDir (Split-Path $TempArchive -Leaf)) -Force
     }
     Remove-Item -Force $TempArchive -ErrorAction SilentlyContinue
 } catch {

@@ -78,6 +78,31 @@ export default function DocsPage() {
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Builds signed Apple Silicon .app bundles with Gatekeeper integrity support.</span>
               </div>
             </div>
+
+            {/* UPSTREAM ENDPOINTS REGISTRY */}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem', color: '#93C5FD' }}>Official Upstream Release Endpoints & Direct Permalinks</h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                SecureIDE resolves clean base distributions directly from official vendor release mirrors:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', fontSize: '0.78rem' }}>
+                <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ color: '#60A5FA' }}>VS Code / VSCodium</strong>: <code>code.visualstudio.com/sha/download</code> & <code>github.com/VSCodium/vscodium</code>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ color: '#A78BFA' }}>Eclipse Theia</strong>: <code>download.eclipse.org/theia/ide/latest</code>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ color: '#34D399' }}>Zed (Rust GPU)</strong>: <code>zed.dev/api/releases/stable/latest</code>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ color: '#38BDF8' }}>Neovim</strong>: <code>github.com/neovim/neovim/releases/latest</code>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ color: '#FBBF24' }}>JupyterLab Desktop</strong>: <code>github.com/jupyterlab/jupyterlab-desktop/releases/latest</code>
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* SECTION 3: TAMPER-PROOF BINARY HARDENING */}
