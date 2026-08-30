@@ -34,14 +34,14 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="fade-in" style={{ padding: '3rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="fade-in" style={{ padding: '3rem 1.5rem', maxWidth: '1360px', margin: '0 auto' }}>
       
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <span className="hero-badge">Transparent Enterprise Pricing</span>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1rem' }}>
           Predictable Plans for Engineering Teams of Any Size
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto 2rem auto' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '680px', margin: '0 auto 2rem auto' }}>
           From free air-gapped open-source builds to fully dedicated multi-cluster enterprise deployments.
         </p>
 
@@ -60,20 +60,20 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* PRICING CARDS (3 TIERS) */}
-      <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', alignItems: 'stretch' }}>
+      {/* PRICING CARDS (4 TIERS: COMMUNITY, TEAM, ENTERPRISE, FLEET 100+) */}
+      <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', alignItems: 'stretch', gap: '1.25rem' }}>
         
-        {/* COMMUNITY EDITION TIER (DYNAMIC PAY-WHAT-YOU-WANT PRICE LABEL) */}
-        <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', border: parsedPrice > 0 ? '1px solid rgba(52, 211, 153, 0.4)' : undefined }}>
+        {/* TIER 1: COMMUNITY EDITION */}
+        <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem', border: parsedPrice > 0 ? '1px solid rgba(52, 211, 153, 0.4)' : undefined }}>
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Community</h3>
-              <span style={{ fontSize: '0.7rem', color: '#34D399', background: 'rgba(52,211,153,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
+              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Community</h3>
+              <span style={{ fontSize: '0.68rem', color: '#34D399', background: 'rgba(52,211,153,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                 {parsedPrice === 0 ? "Free & Open" : "Supporter"}
               </span>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
               Free forever. Open-source zero-trust developer workstation for every engineer.
             </p>
           </div>
@@ -95,10 +95,10 @@ export default function PricingPage() {
                 }}
                 title="Enter your voluntary price or donation amount"
                 style={{
-                  fontSize: '2rem',
+                  fontSize: '1.8rem',
                   fontWeight: 800,
-                  width: '95px',
-                  height: '38px',
+                  width: '85px',
+                  height: '36px',
                   background: 'rgba(0, 0, 0, 0.4)',
                   border: '1px solid rgba(52, 211, 153, 0.4)',
                   borderRadius: '8px',
@@ -109,13 +109,13 @@ export default function PricingPage() {
                   boxSizing: 'border-box'
                 }}
               />
-              <span style={{ fontSize: '0.72rem', color: '#34D399', fontWeight: 600, background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.45rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600, background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.4rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                 Pay What You Want
               </span>
             </div>
 
             {/* Quick Price Preset Chips */}
-            <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
               {["0", "5", "15", "30", "50"].map((amt) => {
                 const isSelected = communityPrice === amt;
                 return (
@@ -128,8 +128,8 @@ export default function PricingPage() {
                       setSelectedDonation(num);
                     }}
                     style={{
-                      padding: '0.15rem 0.45rem',
-                      fontSize: '0.68rem',
+                      padding: '0.15rem 0.4rem',
+                      fontSize: '0.65rem',
                       fontWeight: 600,
                       borderRadius: '5px',
                       border: isSelected ? '1px solid #34D399' : '1px solid var(--border-color)',
@@ -139,7 +139,7 @@ export default function PricingPage() {
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {amt === "0" ? "$0 (Free)" : `$${amt}`}
+                    {amt === "0" ? "$0" : `$${amt}`}
                   </button>
                 );
               })}
@@ -148,21 +148,21 @@ export default function PricingPage() {
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <p style={{ fontSize: '0.75rem', color: parsedPrice > 0 ? '#93C5FD' : '#34D399', margin: 0, lineHeight: 1.35 }}>
+            <p style={{ fontSize: '0.72rem', color: parsedPrice > 0 ? '#93C5FD' : '#34D399', margin: 0, lineHeight: 1.35 }}>
               {parsedPrice > 0 
-                ? `Voluntary one-time contribution ($${parsedPrice}) • No paid entitlements`
+                ? `Voluntary contribution ($${parsedPrice}) • No paid entitlements`
                 : "100% Free Forever • Zero payment required to build"
               }
             </p>
           </div>
 
-          <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-            <li className="included">✓ Multi-IDE Air-Gapped Builds (6 Engines)</li>
-            <li className="included">✓ 0-CVE Verified Whitelist & Deprecation Gating</li>
-            <li className="included">✓ 8-Source Threat Intelligence Sync</li>
-            <li className="included">✓ CycloneDX 1.5 JSON SBOMs & SHA-256 Manifests</li>
-            <li className="included">✓ Zero Outbound Telemetry Binary Policy</li>
-            <li className="included">✓ Manual Marketplace Catalog Carting</li>
+          <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
+            <li className="included">✓ Multi-IDE Builds (6 Engines)</li>
+            <li className="included">✓ 0-CVE Verified Whitelist</li>
+            <li className="included">✓ 8-Source Threat Feeds Sync</li>
+            <li className="included">✓ CycloneDX 1.5 JSON SBOMs</li>
+            <li className="included">✓ Zero Outbound Telemetry</li>
+            <li className="included">✓ Marketplace Catalog Carting</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
@@ -174,7 +174,7 @@ export default function PricingPage() {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  fontSize: '0.85rem',
+                  fontSize: '0.82rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -182,13 +182,13 @@ export default function PricingPage() {
                   gap: '0.4rem'
                 }}
               >
-                <span>🎁</span> Contribute ${parsedPrice} & Build Free →
+                <span>🎁</span> Contribute ${parsedPrice} & Build →
               </button>
             ) : (
               <Link 
                 href="/console" 
                 className="btn-primary" 
-                style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid var(--border-color)', fontSize: '0.85rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}
+                style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid var(--border-color)', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}
               >
                 Start Building Free ($0) →
               </Link>
@@ -196,17 +196,17 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* TEAM EDITION TIER */}
-        <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* TIER 2: TEAM EDITION */}
+        <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem' }}>
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Team</h3>
-              <span style={{ fontSize: '0.7rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
+              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Team</h3>
+              <span style={{ fontSize: '0.68rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                 Pro Teams
               </span>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
               For engineering teams wanting shared blueprints & automated CI/CD.
             </p>
           </div>
@@ -214,49 +214,48 @@ export default function PricingPage() {
           {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-              ${billingCycle === "annual" ? "19" : "24"} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+              ${billingCycle === "annual" ? "19" : "24"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
             </div>
           </div>
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.35 }}>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.35 }}>
               {billingCycle === "annual" ? "Billed annually ($19/mo) • Save 20%" : "Billed monthly ($24/mo) • Cancel anytime"}
             </p>
           </div>
 
-          <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+          <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Community, plus:</li>
-            <li className="included">✓ Curated & Community-Contributed Blueprints (20+ Stacks)</li>
-            <li className="included">✓ Publish & Share Custom Org Blueprints</li>
-            <li className="included">✓ Auto-Bundled Remote-SSH Bridges</li>
-            <li className="included">✓ IDE Hardening & Policy as Code</li>
-            <li className="included">✓ Multi-OS CI/CD Pipeline Exporters</li>
-            <li className="included">✓ Enforced Deterministic Governance Rules</li>
+            <li className="included">✓ Curated Blueprints (20+ Stacks)</li>
+            <li className="included">✓ Publish Org Blueprints</li>
+            <li className="included">✓ Remote-SSH Bridges</li>
+            <li className="included">✓ Hardening Policy as Code</li>
+            <li className="included">✓ CI/CD Pipeline Exporters</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
-            <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.85rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
+            <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
               Start Team Trial →
             </Link>
           </div>
         </div>
 
-        {/* ENTERPRISE TIER (MAX TIER) */}
-        <div className="pricing-card popular" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-primary)', color: 'white', padding: '0.2rem 0.75rem', borderRadius: '9999px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>
+        {/* TIER 3: ENTERPRISE (1-100 SEATS) */}
+        <div className="pricing-card popular" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem' }}>
+          <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-primary)', color: 'white', padding: '0.2rem 0.75rem', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em' }}>
             MOST POPULAR
           </div>
 
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Enterprise</h3>
-              <span style={{ fontSize: '0.7rem', color: '#A78BFA', background: 'rgba(167,139,250,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
-                Fleet Security
+              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Enterprise</h3>
+              <span style={{ fontSize: '0.68rem', color: '#A78BFA', background: 'rgba(167,139,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
+                1–100 Seats
               </span>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
               Full White-Labeling, Headless build APIs, private Artifactory proxying, and policy overrides.
             </p>
           </div>
@@ -264,35 +263,82 @@ export default function PricingPage() {
           {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
             </div>
           </div>
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <p style={{ fontSize: '0.75rem', color: '#93C5FD', margin: 0, lineHeight: 1.35 }}>
-              Self-serve for 1–100 seats • <Link href="/console" style={{ color: '#60A5FA', textDecoration: 'underline' }}>100+ seats? Inquire →</Link>
+            <p style={{ fontSize: '0.72rem', color: '#93C5FD', margin: 0, lineHeight: 1.35 }}>
+              Self-serve for engineering teams with 1 to 100 developer seats.
             </p>
           </div>
 
-          <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+          <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Team, plus:</li>
-            <li className="included">✓ Full White-Label Brand Studio (Custom Binary Names & Themes)</li>
-            <li className="included">✓ Headless REST Build API & Webhooks</li>
-            <li className="included">✓ Private JFrog Artifactory / Registry Proxy</li>
-            <li className="included">✓ Policy-Based Extension Override Engine</li>
-            <li className="included">✓ Multi-OS Release Matrix (.exe, .dmg, .deb, .tar.gz)</li>
-            <li className="included">✓ Workspace Trust Mandatory Security Locks</li>
-            <li className="included">✓ Exportable Signed Build Manifest JSON</li>
-            <li className="included">✓ Priority Builder & Pipeline Support</li>
+            <li className="included">✓ White-Label Brand Studio</li>
+            <li className="included">✓ Headless REST Build API</li>
+            <li className="included">✓ Private Artifactory Proxy</li>
+            <li className="included">✓ Policy Extension Overrides</li>
+            <li className="included">✓ Multi-OS Release Matrix</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
-            <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.85rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
-              Launch Enterprise (1–100 Seats) →
+            <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
+              Launch Enterprise (1–100) →
             </Link>
           </div>
         </div>
+
+        {/* TIER 4: ENTERPRISE FLEET (100+ LICENSES / CONTACT US) */}
+        <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem', border: '1px solid rgba(167, 139, 250, 0.4)', background: 'linear-gradient(180deg, rgba(30, 27, 75, 0.4), rgba(15, 23, 42, 0.6))' }}>
+          {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
+          <div style={{ minHeight: '80px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <h3 style={{ fontSize: '1.25rem', margin: 0, color: '#C084FC' }}>Fleet & Site</h3>
+              <span style={{ fontSize: '0.68rem', color: '#C084FC', background: 'rgba(192,132,252,0.15)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
+                100+ Licenses
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
+              For enterprise orders of more than 100 licenses requiring custom MSAs and site licensing.
+            </p>
+          </div>
+
+          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
+          <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="pricing-price" style={{ fontSize: '2rem', margin: 0, lineHeight: 1, color: '#C084FC', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+              Custom <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>Volume Tier</span>
+            </div>
+          </div>
+
+          {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
+          <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.72rem', color: '#C084FC', margin: 0, lineHeight: 1.35 }}>
+              Dedicated MSA • Net-30/60 Invoicing • Tailored Volume Pricing
+            </p>
+          </div>
+
+          <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
+            <li className="included" style={{ fontWeight: 700, color: '#C084FC' }}>✓ Everything in Enterprise, plus:</li>
+            <li className="included">✓ Unlimited Org-Wide Site License</li>
+            <li className="included">✓ Custom Master Service Agreement (MSA)</li>
+            <li className="included">✓ Net-30 / Net-60 PO & Wire Invoicing</li>
+            <li className="included">✓ Dedicated Hardware HSM Key Attestation</li>
+            <li className="included">✓ SOC 2 & Security Questionnaire Support</li>
+          </ul>
+
+          <div style={{ marginTop: 'auto' }}>
+            <a 
+              href="mailto:enterprise@secureide.dev?subject=Enterprise%20Order%20(100%2B%20Licenses)%20Inquiry&body=Hello%20SecureIDE%20Team,%0D%0A%0D%0AWe%20are%20planning%20an%20enterprise%20IDE%20deployment%20for%20more%20than%20100%20licenses%20and%20would%20like%20to%20discuss%20custom%20MSA%20terms,%20volume%20pricing,%20and%20purchase%20order%20invoicing.%0D%0A%0D%0AOrganization:%20%0D%0AEstimated%20Seats:%20%0D%0APrimary%20IDE%20Engines:%20"
+              className="btn-primary" 
+              style={{ textAlign: 'center', textDecoration: 'none', background: 'linear-gradient(135deg, #7C3AED, #4F46E5)', color: 'white', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', border: 'none', fontWeight: 600 }}
+            >
+              Contact Us (100+ Orders) →
+            </a>
+          </div>
+        </div>
+
       </div>
 
       {/* PAY WHAT YOU WANT (ONE-TIME DONATION MODAL) */}
@@ -314,7 +360,7 @@ export default function PricingPage() {
                 </div>
                 
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-                  Thank you for supporting open-source IDE security awareness and continuous threat feed operations. 
+                  Thank you for supporting open-source IDE security awareness and continuous threat feed operations.
                 </p>
 
                 {/* SELECTED DONATION SUMMARY (DIRECTLY FROM MAIN CARD) */}
@@ -413,10 +459,10 @@ export default function PricingPage() {
 
           <div>
             <h3 style={{ fontSize: '1.05rem', color: '#93C5FD', marginBottom: '0.4rem' }}>
-              How does self-serve vs. site licensing (100+ seats) work?
+              How do Enterprise (1–100 seats) vs. Fleet (100+ licenses) orders work?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Teams with 1 to 100 seats can self-serve instantly online via credit card. For engineering fleets with 100+ developers (up to 50,000+ seats), we offer custom organization-wide site licensing, Master Service Agreements (MSAs), Net-30/60 purchase orders, volume tiers, and custom HSM infrastructure.
+              Teams with 1 to 100 developer seats can self-serve instantly online via credit card under the Enterprise tier. For enterprise deployments with more than 100 licenses, our Fleet plan provides customized Master Service Agreements (MSAs), Net-30/60 purchase orders, volume discounts, and dedicated HSM key attestation.
             </p>
           </div>
 
@@ -425,7 +471,7 @@ export default function PricingPage() {
               Can we run SecureIDE completely air-gapped on-premises?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Yes. Enterprise tier supports headless CLI orchestrators and private Artifactory/OpenVSX proxy mirrors with zero external internet dependencies.
+              Yes. Enterprise and Fleet tiers support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated HSM attestation with zero external internet dependencies.
             </p>
           </div>
 
@@ -441,11 +487,15 @@ export default function PricingPage() {
 
         <div style={{ textAlign: 'center', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Planning a 100+ developer rollout or need custom MSA terms?
+            Planning an enterprise-wide rollout with more than 100 licenses?
           </p>
-          <Link href="/console" className="btn-primary" style={{ padding: '0.75rem 1.75rem', textDecoration: 'none', fontSize: '0.9rem' }}>
-            Explore Enterprise Builder Console →
-          </Link>
+          <a 
+            href="mailto:enterprise@secureide.dev?subject=Enterprise%20Order%20(100%2B%20Licenses)%20Inquiry"
+            className="btn-primary" 
+            style={{ padding: '0.75rem 1.75rem', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block' }}
+          >
+            Contact Enterprise Sales (100+ Licenses) →
+          </a>
         </div>
       </div>
 
