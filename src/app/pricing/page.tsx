@@ -459,10 +459,10 @@ export default function PricingPage() {
 
           <div>
             <h3 style={{ fontSize: '1.05rem', color: '#93C5FD', marginBottom: '0.4rem' }}>
-              How do Enterprise orders of more than 100 licenses work?
+              Can we customize branding, extensions, and policies across our organization?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Teams with 1 to 100 developer seats can self-serve instantly online via credit card under the Enterprise tier. For enterprise deployments of more than 100 licenses, please contact our team directly to discuss arrangements tailored to your organization&apos;s technical and operational requirements.
+              Yes. Team and Enterprise tiers allow you to publish organization-wide blueprints, custom themes, strict extension whitelists, and deterministic governance policies across all developer workstations.
             </p>
           </div>
 
@@ -471,7 +471,7 @@ export default function PricingPage() {
               Can we run SecureIDE completely air-gapped on-premises?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Yes. Enterprise and custom tier deployments support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated key attestation with zero external internet dependencies.
+              Yes. Enterprise deployments support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated key attestation with zero external internet dependencies.
             </p>
           </div>
 
@@ -487,15 +487,15 @@ export default function PricingPage() {
 
         <div style={{ textAlign: 'center', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Planning an enterprise-wide rollout with more than 100 licenses?
+            Ready to configure and harden your team&apos;s development environment?
           </p>
-          <a 
-            href="mailto:enterprise@secureide.dev?subject=Enterprise%20Order%20(100%2B%20Licenses)%20Inquiry"
+          <Link 
+            href="/console"
             className="btn-primary" 
             style={{ padding: '0.75rem 1.75rem', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block' }}
           >
-            Contact Enterprise Sales (100+ Licenses) →
-          </a>
+            Launch Builder Console →
+          </Link>
         </div>
       </div>
 
