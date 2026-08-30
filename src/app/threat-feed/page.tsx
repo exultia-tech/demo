@@ -114,27 +114,20 @@ export default function ThreatFeedPage() {
     <div className="fade-in" style={{ padding: '3rem 2rem', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* HEADER HERO */}
-      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
           📡 Unified Vulnerability Intelligence (UVI)
         </span>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          The Unified Vulnerability Intelligence (UVI) Multi-Feed
+          Unified Vulnerability Intelligence (UVI) Feed
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '840px', margin: '0 auto', lineHeight: '1.6' }}>
-          A real-time threat stream unifying global CVE registries, vendor security bulletins, and specialized supply-chain research into one query-driven intelligence platform.
+          Continuous multi-feed stream synthesizing global CVE registries, OpenSSF aggregators, vendor advisories, and specialized supply-chain security telemetry into one unified, query-driven intelligence platform.
         </p>
       </div>
 
       {/* UVI FEED SOURCES DIRECTORY */}
       <div style={{ marginBottom: '5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>The Unified Vulnerability Intelligence (UVI) Source Matrix</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '750px', margin: '0 auto' }}>
-            Continuous multi-feed ingestion synthesized across official CVE repositories, OpenSSF aggregators, vendor advisories, and supply-chain research labs.
-          </p>
-        </div>
-
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
           {PUBLIC_FEEDS.map(source => (
             <div key={source.id} className="glass-card" style={{ padding: '1.5rem', marginBottom: 0, display: 'flex', flexDirection: 'column' }}>
