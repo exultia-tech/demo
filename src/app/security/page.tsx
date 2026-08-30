@@ -13,7 +13,7 @@ export default function SecurityPage() {
           Enterprise Security & Tamper-Proof Governance
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          SecureIDE eliminates the developer workstation as an attack vector through immutable binary packaging, isolated cloud assembly, and strict supply chain attestation.
+          SecureIDE eliminates the developer workstation as an attack vector through immutable binary encapsulation, isolated cloud assembly, and strict supply chain attestation.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
@@ -40,9 +40,9 @@ export default function SecurityPage() {
             <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60A5FA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
               1
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Immutable ASAR Container</h3>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Immutable Binary Encapsulation</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              All configuration files (<code>product.json</code>, <code>policy.json</code>, and core JavaScript runtime) are compiled into a sealed binary ASAR archive. Plaintext configuration files are eliminated from disk.
+              Governance rules, air-gap registry routes, and core security boundaries are sealed directly into the native runtime binary, eliminating editable plaintext configurations on disk.
             </p>
           </div>
 
@@ -52,7 +52,7 @@ export default function SecurityPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>OS-Protected Directory</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Enterprise installers target <code>C:\Program Files\</code> (Windows) and <code>/Applications/</code> (macOS), enforcing standard non-admin read-only permissions so users cannot modify binary payloads.
+              Enterprise installers target system directories (<code>Program Files</code> / <code>Applications</code>), enforcing standard non-admin read-only permissions so users cannot modify binary payloads.
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export default function SecurityPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Code-Signing & EDR Integrity</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Authenticode and Apple Developer ID signatures cryptographically bind binary contents. Any disk modification invalidates the signature, triggering immediate EDR/WDAC execution blocks.
+              Cryptographic signatures bind binary contents. Any disk-level modification invalidates the digital signature, triggering immediate EDR/WDAC execution blocks.
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export default function SecurityPage() {
         </div>
       </div>
 
-      {/* CLOUD RUNNER PIPELINE & ZERO CUSTODY */}
+      {/* CLOUD PIPELINE & ZERO CUSTODY */}
       <div className="glass-card" style={{ padding: '3rem', marginBottom: '5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '3rem', alignItems: 'center' }}>
           <div>
@@ -114,7 +114,7 @@ export default function SecurityPage() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Integrity Verification:</span>
-                <span style={{ fontWeight: 600, color: '#60A5FA' }}>SHA-256 Checksums</span>
+                <span style={{ fontWeight: 600, color: '#60A5FA' }}>Cryptographic SHA-256</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Supply Chain Level:</span>

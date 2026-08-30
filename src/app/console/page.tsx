@@ -3433,7 +3433,7 @@ build_hardened_ide:
           <div className="glass-card" style={{ marginBottom: '2rem' }}>
             <h2>Compiled Local Policy Engine Settings (Enforced In Binary)</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-              These security rules are compiled directly into your distribution's <code>policy.json</code> and executed locally by the IDE runtime without phoning home to our servers.
+              These security rules are compiled directly into your distribution's binary runtime and executed locally without phoning home to external servers.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
               <div className="toggle-wrapper" style={{ margin: 0 }}>

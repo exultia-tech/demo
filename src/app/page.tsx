@@ -17,7 +17,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="hero-desc">
-          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — assembled on-demand via isolated multi-OS cloud sandboxes, sealed with tamper-proof ASAR packaging, and verified with CycloneDX 1.5 SBOMs.
+          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — assembled on-demand via isolated multi-OS cloud sandboxes, protected with tamper-proof binary encapsulation, and verified with CycloneDX 1.5 SBOMs.
         </p>
 
         <div className="hero-cta-group">
@@ -43,7 +43,7 @@ export default function LandingPage() {
             <span style={{ color: '#34D399' }}>✓</span> Multi-OS Cloud Engine (Win, Mac, Linux)
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
-            <span style={{ color: '#60A5FA' }}>✓</span> Tamper-Proof ASAR Binary Sealing
+            <span style={{ color: '#60A5FA' }}>✓</span> Tamper-Proof Binary Encapsulation
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
             <span style={{ color: '#A78BFA' }}>✓</span> 0-CVE & Deprecation Policy Gating
@@ -78,9 +78,9 @@ export default function LandingPage() {
             <div className="feature-icon-wrapper">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Tamper-Proof ASAR Sealing</h3>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Tamper-Proof Encapsulation</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Configuration files and governance policies are compiled directly into a sealed binary ASAR container—inaccessible and un-editable on disk.
+              Governance rules and security boundaries are encapsulated directly into the native binary distribution—inaccessible and un-editable on disk.
             </p>
           </div>
 
@@ -90,7 +90,7 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>CycloneDX 1.5 SBOM</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Every custom compiled release generates a cryptographically signed Software Bill of Materials with individual SHA-256 package hashes and source proofs.
+              Every custom compiled release generates a cryptographically signed Software Bill of Materials with individual package hashes and source proofs.
             </p>
           </div>
 
@@ -120,7 +120,7 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Multi-OS Cloud Pipeline</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              On-demand packaging across <strong>Windows (.exe / .zip), macOS (.dmg), and Linux (.tar.gz)</strong> executed in clean, isolated cloud environments.
+              On-demand packaging across <strong>Windows, macOS, and Linux</strong> executed in clean, isolated cloud environments.
             </p>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function LandingPage() {
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-secondary)', marginBottom: '0.75rem' }}>02</div>
               <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Assemble in Cloud Sandbox</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                Isolated cloud sandboxes assemble real, telemetry-free binaries across Windows, macOS, and Linux, sealing configuration files into immutable ASAR packages.
+                Isolated cloud sandboxes assemble real, telemetry-free binaries across Windows, macOS, and Linux, enforcing immutable security boundaries.
               </p>
             </div>
 
@@ -155,7 +155,7 @@ export default function LandingPage() {
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#34D399', marginBottom: '0.75rem' }}>03</div>
               <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Audit, Sign & Deploy</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.6' }}>
-                Compute cryptographic SHA-256 digests, generate exportable CycloneDX SBOMs, and deploy via MDM (Intune, Jamf) or corporate CI/CD.
+                Verify cryptographic integrity digests, generate exportable CycloneDX SBOMs, and deploy via MDM (Intune, Jamf) or corporate CI/CD.
               </p>
             </div>
           </div>

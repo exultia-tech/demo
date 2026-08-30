@@ -13,7 +13,7 @@ export default function FeaturesPage() {
           Enterprise Security, Threat Intelligence & Multi-IDE Governance
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          Explore the defense-in-depth security architecture, 5-source threat intelligence feeds, tamper-proof ASAR binary sealing, and ephemeral cloud pipeline built into SecureIDE.
+          Explore the defense-in-depth security architecture, 5-source threat intelligence feeds, immutable binary encapsulation, and ephemeral cloud pipeline built into SecureIDE.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
@@ -167,17 +167,17 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* FEATURE 3: TAMPER-PROOF ASAR PACKAGING & POLICY HARDENING */}
+      {/* FEATURE 3: TAMPER-PROOF BINARY HARDENING & POLICY */}
       <div id="hardening" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '3.5rem', alignItems: 'center', marginBottom: '6rem' }}>
         <div>
           <div style={{ color: 'var(--accent-secondary)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
             Tamper-Proof Binary Engineering
           </div>
           <h2 style={{ fontSize: '2.2rem', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-            Immutable ASAR Sealing & Policy as Code
+            Immutable Binary Hardening & Policy Enforcement
           </h2>
           <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-            All product configurations, telemetry eradication flags, and governance policies are compiled directly into a sealed binary ASAR container. Plaintext configuration files are eliminated from disk, preventing users from altering security rules.
+            All product configurations, telemetry eradication flags, and governance policies are compiled directly into the binary distribution. Standalone configuration files are eliminated from disk, preventing users from altering security rules.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', fontSize: '0.9rem' }}>
@@ -206,8 +206,8 @@ export default function FeaturesPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.85rem' }}>
             <div style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
-              <strong style={{ color: '#93C5FD', display: 'block', marginBottom: '0.25rem' }}>Binary Container: app.asar</strong>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>Configuration and policy files are compiled into read-only binary storage on disk.</p>
+              <strong style={{ color: '#93C5FD', display: 'block', marginBottom: '0.25rem' }}>Hardened Binary Packaging</strong>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>Configuration and policy rules are compiled into immutable binary storage.</p>
             </div>
             <div style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
               <strong style={{ color: '#34D399', display: 'block', marginBottom: '0.25rem' }}>System Protected Installation</strong>
@@ -215,7 +215,7 @@ export default function FeaturesPage() {
             </div>
             <div style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
               <strong style={{ color: '#FBBF24', display: 'block', marginBottom: '0.25rem' }}>Digital Authenticity & Checksums</strong>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>Every file is cryptographically hashed with SHA-256 digests for compliance validation.</p>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>Every release is verified with cryptographic digests for compliance validation.</p>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function FeaturesPage() {
               <span style={{ color: '#60A5FA' }}>2.</span> Immutable Cryptographic CycloneDX SBOMs
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Every single distribution is accompanied by a CycloneDX 1.5 JSON Software Bill of Materials with individual SHA-256 integrity hashes for the main binary, runtime, and all bundled plugins.
+              Every single distribution is accompanied by a CycloneDX 1.5 JSON Software Bill of Materials with individual integrity hashes for the main binary, runtime, and all bundled plugins.
             </p>
           </div>
 

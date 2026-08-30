@@ -86,7 +86,7 @@ export default function PricingPage() {
             <li className="included">✓ Auto-Bundled Remote-SSH Bridges</li>
             <li className="included">✓ IDE Hardening & Policy as Code</li>
             <li className="included">✓ Multi-OS CI/CD Pipeline Exporters</li>
-            <li className="included">✓ Enforced Deterministic policy.json Settings</li>
+            <li className="included">✓ Enforced Deterministic Governance Rules</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>

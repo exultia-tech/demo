@@ -22,7 +22,7 @@ export default function DocsPage() {
           <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <li><a href="#quickstart" style={{ color: '#60A5FA', textDecoration: 'none', fontSize: '0.85rem' }}>1. Quickstart Guide</a></li>
             <li><a href="#pipeline" style={{ color: '#34D399', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>2. Multi-OS Cloud Engine</a></li>
-            <li><a href="#tamperproof" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>3. Tamper-Proof ASAR Sealing</a></li>
+            <li><a href="#tamperproof" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>3. Tamper-Proof Binary Hardening</a></li>
             <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. 5-Source Threat Intelligence API</a></li>
             <li><a href="#rest-api" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>5. Headless Build REST API</a></li>
             <li><a href="#sbom" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>6. CycloneDX 1.5 SBOM Attestation</a></li>
@@ -66,30 +66,30 @@ export default function DocsPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#93C5FD', display: 'block', fontSize: '0.85rem' }}>Windows Distribution Target</strong>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Assembles native PE64 binaries, sealed ASAR archives, portable ZIPs, and Windows Setup Installers (.exe).</span>
+                <strong style={{ color: '#93C5FD', display: 'block', fontSize: '0.85rem' }}>Windows Target</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Assembles hardened native binaries, portable archives, and enterprise Windows installers (.exe).</span>
               </div>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#34D399', display: 'block', fontSize: '0.85rem' }}>Linux Distribution Target</strong>
+                <strong style={{ color: '#34D399', display: 'block', fontSize: '0.85rem' }}>Linux Target</strong>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Compiles hardened Linux distributions into portable tar.gz and system packages with zero outbound beacons.</span>
               </div>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <strong style={{ color: '#FBBF24', display: 'block', fontSize: '0.85rem' }}>macOS Distribution Target</strong>
+                <strong style={{ color: '#FBBF24', display: 'block', fontSize: '0.85rem' }}>macOS Target</strong>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Builds signed Apple Silicon .app bundles with Gatekeeper integrity support.</span>
               </div>
             </div>
           </section>
 
-          {/* SECTION 3: TAMPER-PROOF ASAR SEALING */}
+          {/* SECTION 3: TAMPER-PROOF BINARY HARDENING */}
           <section id="tamperproof" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>3. Tamper-Proof ASAR Binary Sealing</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>3. Tamper-Proof Binary Hardening & Governance</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              To ensure that developers cannot manually alter marketplace URLs or telemetry settings on local workstations, SecureIDE compiles the application core directly into an Electron ASAR container:
+              To ensure that developers cannot manually alter marketplace URLs or telemetry settings on local workstations, SecureIDE enforces security policies at the binary level:
             </p>
             <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              <li><strong>Zero Plaintext Config Files</strong>: <code>product.json</code> and <code>package.json</code> are sealed inside <code>resources/app.asar</code> and removed from disk.</li>
-              <li><strong>Immutable Governance Rules</strong>: Telemetry disablement and air-gap gallery locks are baked directly into binary byte code.</li>
-              <li><strong>System Directory Protection</strong>: Delivered via Windows Setup Installer (<code>C:\Program Files\</code>) requiring administrative elevation to modify.</li>
+              <li><strong>Zero Plaintext Config Files</strong>: Configuration settings and policies are sealed inside the native binary distribution and removed from disk.</li>
+              <li><strong>Immutable Governance Rules</strong>: Telemetry disablement and air-gap gallery locks are enforced at application runtime.</li>
+              <li><strong>System Directory Protection</strong>: Delivered via enterprise installers requiring administrative elevation to modify.</li>
             </ul>
           </section>
 
@@ -134,7 +134,7 @@ curl -X POST https://api.secureide.dev/api/build \\
           <section id="sbom" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>6. CycloneDX 1.5 SBOM Attestation</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              Every compiled distribution outputs a standard CycloneDX 1.5 JSON Software Bill of Materials containing individual SHA-256 integrity digests for all packaged components:
+              Every compiled distribution outputs a standard CycloneDX 1.5 JSON Software Bill of Materials containing cryptographic integrity digests for all packaged components:
             </p>
             <pre style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '8px', color: '#38BDF8', fontSize: '0.8rem', lineHeight: '1.6', overflowX: 'auto', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.06)' }}>
 {`{
@@ -155,8 +155,8 @@ curl -X POST https://api.secureide.dev/api/build \\
       "hashes": [{ "alg": "SHA-256", "content": "9b1d..." }]
     },
     {
-      "type": "file",
-      "name": "resources/app.asar",
+      "type": "framework",
+      "name": "runtime-core",
       "hashes": [{ "alg": "SHA-256", "content": "4e7a..." }]
     }
   ]
