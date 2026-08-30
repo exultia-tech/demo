@@ -29,9 +29,6 @@ export default function Navbar() {
         <Link href="/security" className={`nav-link ${pathname === "/security" ? "active" : ""}`}>
           Security
         </Link>
-        <Link href="/threat-feed" className={`nav-link ${pathname === "/threat-feed" ? "active" : ""}`}>
-          UVI Threat Feed
-        </Link>
         <Link href="/pricing" className={`nav-link ${pathname === "/pricing" ? "active" : ""}`}>
           Pricing
         </Link>

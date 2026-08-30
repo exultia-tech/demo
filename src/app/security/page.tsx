@@ -1,4 +1,113 @@
-import Link from "next/link";
+const PUBLIC_FEEDS = [
+  {
+    id: "nvd_cve",
+    name: "NIST NVD & Global CVE List",
+    category: "Global Vulnerability Registries",
+    badge: "GLOBAL CVE",
+    badgeColor: "#34D399",
+    target: "services.nvd.nist.gov / cve.mitre.org",
+    description: "Universal database of Common Vulnerabilities and Exposures across software components, runtime binaries, and dependencies."
+  },
+  {
+    id: "cisa_kev",
+    name: "CISA Known Exploited Vulnerabilities (KEV)",
+    category: "Active Weaponization",
+    badge: "EXPLOITED IN WILD",
+    badgeColor: "#EF4444",
+    target: "cisa.gov/known-exploited-vulnerabilities",
+    description: "Catalog of vulnerabilities actively exploited by threat actors and ransomware groups in production environments."
+  },
+  {
+    id: "ghsa",
+    name: "GitHub Advisory Database (GHSA)",
+    category: "Open Source Advisories",
+    badge: "LIVE GHSA",
+    badgeColor: "#60A5FA",
+    target: "github.com/advisories",
+    description: "Open-source advisories spanning TypeScript, JavaScript, Python, Go, Rust, Java, C/C++, and GitHub repository releases."
+  },
+  {
+    id: "osv_dev",
+    name: "Open Source Vulnerabilities (OSV.dev)",
+    category: "Ecosystem Aggregation",
+    badge: "OPENSSF OSV",
+    badgeColor: "#34D399",
+    target: "api.osv.dev/v1/query",
+    description: "Aggregates vulnerabilities across ecosystems (npm, PyPI, Crates.io, Go, Maven, NuGet, Linux distros) in OpenSSF OSV format."
+  },
+  {
+    id: "openssf_malicious",
+    name: "OpenSSF Malicious Packages Repository",
+    category: "Malware & Supply Chain",
+    badge: "MALWARE REPO",
+    badgeColor: "#F59E0B",
+    target: "github.com/ossf/malicious-packages",
+    description: "Community-driven open repository indexing confirmed malicious open-source packages, token stealers, and typosquats."
+  },
+  {
+    id: "msrc_eclipse",
+    name: "MSRC & Eclipse Security Advisories",
+    category: "Vendor Bulletins",
+    badge: "OFFICIAL VENDOR",
+    badgeColor: "#60A5FA",
+    target: "msrc.microsoft.com / eclipse.org/security",
+    description: "Official vendor bulletins, security updates, and runtime notices from Microsoft, Eclipse Foundation, and Open VSX."
+  },
+  {
+    id: "trail_of_bits",
+    name: "Trail of Bits vsix-audit IoC Engine",
+    category: "AST & C2 IoCs",
+    badge: "IOC SCANNER",
+    badgeColor: "#F87171",
+    target: "github.com/trailofbits/vsix-audit",
+    description: "Static AST inspection engine tracking malicious scripts, obfuscated payloads, and Command & Control network indicators."
+  },
+  {
+    id: "socket_dev",
+    name: "Socket.dev Threat Heuristics",
+    category: "Behavioral Heuristics",
+    badge: "BEHAVIOR SHIELD",
+    badgeColor: "#FBBF24",
+    target: "api.socket.dev/v0/threats",
+    description: "Monitors behavioral anomalies including unauthorized subprocess execution, environment variable harvesting, and network leaks."
+  },
+  {
+    id: "jfrog",
+    name: "JFrog Security Research",
+    category: "Reachability Analysis",
+    badge: "AST REACHABILITY",
+    badgeColor: "#34D399",
+    target: "research.jfrog.com/api",
+    description: "Evaluates call-graph reachability, distinguishing theoretical CVEs in packaged dependencies from exploitable execution paths."
+  },
+  {
+    id: "aqua_nautilus",
+    name: "Aqua Nautilus Research",
+    category: "Marketplace Integrity",
+    badge: "ANTI-TYPOSQUAT",
+    badgeColor: "#60A5FA",
+    target: "aquasec.com/nautilus/intel-feed",
+    description: "Monitors marketplace namespace typosquatting, publisher impersonation, and trojanized releases across public package registries."
+  },
+  {
+    id: "snyk",
+    name: "Snyk Open Vulnerability Database",
+    category: "Deep Dependency Tree",
+    badge: "TRANSITIVE SCA",
+    badgeColor: "#A78BFA",
+    target: "security.snyk.io/vuln",
+    description: "Indexes vulnerabilities affecting language servers, AST parsers, and deep transitive package dependency trees."
+  },
+  {
+    id: "openssf_scorecards",
+    name: "OpenSSF Scorecards",
+    category: "Supply Chain Health",
+    badge: "MAINTENANCE SCORE",
+    badgeColor: "#A78BFA",
+    target: "api.securityscorecards.dev",
+    description: "Measures upstream repository health, maintenance cadence, branch protection rules, and deterministic dependency pinning."
+  }
+];
 
 export default function SecurityPage() {
   return (
@@ -7,10 +116,10 @@ export default function SecurityPage() {
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🔒 Zero-Trust Endpoint Architecture & Threat Governance
+          🔒 Zero-Trust Architecture & Threat Governance
         </span>
         <h1 style={{ fontSize: '3.2rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          Enterprise Security Architecture
+          Enterprise Security & Threat Intelligence
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '840px', margin: '0 auto', lineHeight: '1.6' }}>
           SecureIDE eliminates the developer workstation as an attack vector through Unified Vulnerability Intelligence (UVI), immutable binary encapsulation, and isolated zero-custody cloud orchestration.
@@ -18,7 +127,7 @@ export default function SecurityPage() {
       </div>
 
       {/* 4 DEFENSE-IN-DEPTH LAYERS */}
-      <div style={{ marginBottom: '6rem' }}>
+      <div id="hardening" style={{ marginBottom: '6rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>Defense-in-Depth Endpoint Protection</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '750px', margin: '0 auto' }}>
@@ -58,7 +167,7 @@ export default function SecurityPage() {
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
+          <div id="sandbox" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(251, 191, 36, 0.15)', border: '1px solid rgba(251, 191, 36, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
               4
             </div>
@@ -71,68 +180,65 @@ export default function SecurityPage() {
         </div>
       </div>
 
-      {/* RECONCILING WITH UNIFIED VULNERABILITY INTELLIGENCE (UVI) */}
-      <div className="glass-card" style={{ padding: '3rem', marginBottom: '6rem', border: '1px solid rgba(52, 211, 153, 0.25)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '3.5rem', alignItems: 'center' }}>
-          <div>
-            <div style={{ color: '#34D399', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-              Threat Intelligence Integration
+      {/* UNIFIED VULNERABILITY INTELLIGENCE (UVI) SOURCE MATRIX */}
+      <div id="uvi" style={{ marginBottom: '6rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)', marginBottom: '1rem', display: 'inline-flex' }}>
+            📡 Threat Feed Ingestion
+          </span>
+          <h2 style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>Unified Vulnerability Intelligence (UVI) Multi-Feed</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '780px', margin: '0 auto' }}>
+            Before any extension, language server (LSP), or compiler binary is packaged, it is evaluated against our 12+ multi-feed intelligence consensus to block vulnerabilities, reachability exploits, and typosquats.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '3rem' }}>
+          {PUBLIC_FEEDS.map(source => (
+            <div key={source.id} className="glass-card" style={{ padding: '1.5rem', marginBottom: 0, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{source.category}</span>
+                <span style={{ fontSize: '0.68rem', color: source.badgeColor, background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontWeight: 700 }}>
+                  {source.badge}
+                </span>
+              </div>
+              <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>{source.name}</strong>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.5', marginBottom: '1rem', flex: 1 }}>
+                {source.description}
+              </p>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-main)', fontFamily: 'monospace', padding: '0.4rem 0.6rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
+                Source: <code>{source.target}</code>
+              </div>
             </div>
-            <h2 style={{ fontSize: '2.2rem', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-              Unified Vulnerability Intelligence (UVI) Gate
-            </h2>
-            <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-              Before any extension, language server (LSP), or compiler binary is packaged into a release, it is verified against the <strong>Unified Vulnerability Intelligence (UVI)</strong> multi-feed. Our build engine correlates signals across 12+ public and research databases to block threats at build-time.
-            </p>
-            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.9rem' }}>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
-                <div><strong>Live CVE & KEV Hard Stop</strong>: Zero builds are generated with unmitigated CVEs or CISA Known Exploited Vulnerabilities.</div>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
-                <div><strong>AST Reachability Analysis</strong>: Correlates JFrog and Trail of Bits research to evaluate runtime IPC call graphs and exploitability.</div>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
-                <div><strong>Anti-Typosquatting Shield</strong>: Verifies publisher cryptographic identity and blocks trojanized marketplace clones.</div>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-                <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
-                <div><strong>Behavioral Heuristics</strong>: Inspects extension code for hidden subprocess spawning, token theft, or unauthorized filesystem access.</div>
-              </li>
-            </ul>
+          ))}
+        </div>
+
+        {/* REST API EXPLORER */}
+        <div className="glass-card" style={{ padding: '2.5rem', marginBottom: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.35rem' }}>Unified Vulnerability Intelligence (UVI) REST API</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0.25rem 0 0 0' }}>
+                Query any public vulnerability, package ecosystem, extension, or language server directly via the open UVI endpoint.
+              </p>
+            </div>
+            <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.15)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)' }}>
+              ✓ CORS Enabled • Open Access (CC-BY-4.0)
+            </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: '#93C5FD' }}>UVI Feed Synchronizations</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>CVE Registries:</span>
-                <span style={{ fontWeight: 600, color: '#34D399' }}>NIST NVD / Global CVE List</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Active Exploits:</span>
-                <span style={{ fontWeight: 600, color: '#EF4444' }}>CISA KEV Catalog</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Open Source Advisories:</span>
-                <span style={{ fontWeight: 600, color: '#60A5FA' }}>GitHub GHSA & OSV.dev</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Supply Chain Malware:</span>
-                <span style={{ fontWeight: 600, color: '#F59E0B' }}>OpenSSF Malicious Packages</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Specialty Research:</span>
-                <span style={{ fontWeight: 600, color: '#A78BFA' }}>Trail of Bits / JFrog / Socket</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Marketplace Defense:</span>
-                <span style={{ fontWeight: 600, color: '#60A5FA' }}>Aqua Nautilus Anti-Typosquat</span>
-              </div>
-            </div>
-          </div>
+          <pre style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '10px', color: '#38BDF8', fontSize: '0.82rem', lineHeight: '1.6', overflowX: 'auto', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.06)' }}>
+{`# 1. Fetch entire Unified Vulnerability Intelligence (UVI) feed
+curl -s "https://secureide.dev/api/threat-feed" | jq .
+
+# 2. Query specific package or extension by keyword
+curl -s "https://secureide.dev/api/threat-feed?query=rust-analyzer" | jq .records[0].threatSignals
+
+# 3. Query language server binaries and toolchains
+curl -s "https://secureide.dev/api/threat-feed?query=gopls&ecosystem=golang" | jq .records
+
+# 4. Filter by security grade
+curl -s "https://secureide.dev/api/threat-feed?grade=A+" | jq .records`}
+          </pre>
         </div>
       </div>
 
