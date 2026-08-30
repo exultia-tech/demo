@@ -290,47 +290,47 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* TIER 4: ENTERPRISE FLEET (100+ LICENSES / CONTACT US) */}
+        {/* TIER 4: ENTERPRISE (100+ LICENSES / CONTACT US) */}
         <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem', border: '1px solid rgba(167, 139, 250, 0.4)', background: 'linear-gradient(180deg, rgba(30, 27, 75, 0.4), rgba(15, 23, 42, 0.6))' }}>
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.25rem', margin: 0, color: '#C084FC' }}>Fleet & Site</h3>
+              <h3 style={{ fontSize: '1.25rem', margin: 0, color: '#C084FC' }}>Enterprise (100+)</h3>
               <span style={{ fontSize: '0.68rem', color: '#C084FC', background: 'rgba(192,132,252,0.15)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                 100+ Licenses
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
-              For enterprise orders of more than 100 licenses requiring custom MSAs and site licensing.
+              For enterprise orders of more than 100 licenses. Contact our team to discuss your organization&apos;s requirements.
             </p>
           </div>
 
           {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div className="pricing-price" style={{ fontSize: '2rem', margin: 0, lineHeight: 1, color: '#C084FC', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
-              Custom <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>Volume Tier</span>
+            <div className="pricing-price" style={{ fontSize: '1.85rem', margin: 0, lineHeight: 1, color: '#C084FC', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+              Contact Us
             </div>
           </div>
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
             <p style={{ fontSize: '0.72rem', color: '#C084FC', margin: 0, lineHeight: 1.35 }}>
-              Dedicated MSA • Net-30/60 Invoicing • Tailored Volume Pricing
+              Contact our team to discuss tailored enterprise arrangements.
             </p>
           </div>
 
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#C084FC' }}>✓ Everything in Enterprise, plus:</li>
-            <li className="included">✓ Unlimited Org-Wide Site License</li>
-            <li className="included">✓ Custom Master Service Agreement (MSA)</li>
-            <li className="included">✓ Net-30 / Net-60 PO & Wire Invoicing</li>
-            <li className="included">✓ Dedicated Hardware HSM Key Attestation</li>
-            <li className="included">✓ SOC 2 & Security Questionnaire Support</li>
+            <li className="included">✓ Tailored Enterprise Discussion</li>
+            <li className="included">✓ Dedicated Cloud Sandbox Clusters</li>
+            <li className="included">✓ Custom Security & Architecture Reviews</li>
+            <li className="included">✓ Hardware HSM Key Signing & Attestation</li>
+            <li className="included">✓ Priority Engineering Support & SLA</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
             <a 
-              href="mailto:enterprise@secureide.dev?subject=Enterprise%20Order%20(100%2B%20Licenses)%20Inquiry&body=Hello%20SecureIDE%20Team,%0D%0A%0D%0AWe%20are%20planning%20an%20enterprise%20IDE%20deployment%20for%20more%20than%20100%20licenses%20and%20would%20like%20to%20discuss%20custom%20MSA%20terms,%20volume%20pricing,%20and%20purchase%20order%20invoicing.%0D%0A%0D%0AOrganization:%20%0D%0AEstimated%20Seats:%20%0D%0APrimary%20IDE%20Engines:%20"
+              href="mailto:enterprise@secureide.dev?subject=Enterprise%20Order%20(100%2B%20Licenses)%20Inquiry&body=Hello%20SecureIDE%20Team,%0D%0A%0D%0AWe%20are%20planning%20an%20enterprise%20IDE%20deployment%20for%20more%20than%20100%20licenses%20and%20would%20like%20to%20get%20in%20touch%20to%20discuss%20our%20organization%27s%20requirements.%0D%0A%0D%0AOrganization:%20%0D%0AEstimated%20Seats:%20%0D%0APrimary%20IDE%20Engines:%20"
               className="btn-primary" 
               style={{ textAlign: 'center', textDecoration: 'none', background: 'linear-gradient(135deg, #7C3AED, #4F46E5)', color: 'white', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', border: 'none', fontWeight: 600 }}
             >
@@ -459,10 +459,10 @@ export default function PricingPage() {
 
           <div>
             <h3 style={{ fontSize: '1.05rem', color: '#93C5FD', marginBottom: '0.4rem' }}>
-              How do Enterprise (1–100 seats) vs. Fleet (100+ licenses) orders work?
+              How do Enterprise orders of more than 100 licenses work?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Teams with 1 to 100 developer seats can self-serve instantly online via credit card under the Enterprise tier. For enterprise deployments with more than 100 licenses, our Fleet plan provides customized Master Service Agreements (MSAs), Net-30/60 purchase orders, volume discounts, and dedicated HSM key attestation.
+              Teams with 1 to 100 developer seats can self-serve instantly online via credit card under the Enterprise tier. For enterprise deployments of more than 100 licenses, please contact our team directly to discuss arrangements tailored to your organization&apos;s technical and operational requirements.
             </p>
           </div>
 
@@ -471,7 +471,7 @@ export default function PricingPage() {
               Can we run SecureIDE completely air-gapped on-premises?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Yes. Enterprise and Fleet tiers support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated HSM attestation with zero external internet dependencies.
+              Yes. Enterprise and custom tier deployments support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated key attestation with zero external internet dependencies.
             </p>
           </div>
 
