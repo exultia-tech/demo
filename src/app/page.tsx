@@ -5,19 +5,14 @@ export default function LandingPage() {
     <div className="fade-in">
       
       {/* HERO SECTION */}
-      <section className="hero-section" style={{ paddingBottom: '3.5rem' }}>
-        <div className="hero-badge">
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }}></span>
-          Zero-Trust Development, On-Demand
-        </div>
-
-        <h1 className="hero-title" style={{ fontSize: '3.3rem', marginBottom: '1.25rem' }}>
-          Hardened Developer Workstations, <br/>
-          <span className="gradient-text">Built & Governed in Seconds</span>
+      <section className="hero-section" style={{ paddingTop: '2.5rem', paddingBottom: '3.5rem' }}>
+        <h1 className="hero-title" style={{ fontSize: '3.6rem', marginBottom: '1.25rem', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
+          Zero-Trust Development, <br/>
+          <span className="gradient-text">On-Demand</span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: '780px', marginBottom: '2rem' }}>
-          SecureIDE compiles and distributes zero-trust, enterprise-hardened IDE releases across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, JupyterLab, and VSCodium</strong> — sealed with tamper-proof binary encapsulation, gated by Unified Vulnerability Intelligence (UVI), and verified with CycloneDX SBOMs.
+        <p className="hero-desc" style={{ maxWidth: '700px', marginBottom: '2.25rem', fontSize: '1.2rem', lineHeight: '1.6' }}>
+          Compile, harden, and distribute zero-trust developer releases across <strong>VS Code, Eclipse Theia, Zed, Neovim, JupyterLab, and VSCodium</strong> in seconds.
         </p>
 
         <div className="hero-cta-group">
