@@ -8,7 +8,7 @@ export default function LandingPage() {
       <section className="hero-section" style={{ paddingBottom: '3.5rem' }}>
         <div className="hero-badge">
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }}></span>
-          Zero-Trust Developer Workstation Platform
+          Zero-Trust Development, On-Demand
         </div>
 
         <h1 className="hero-title" style={{ fontSize: '3.3rem', marginBottom: '1.25rem' }}>
