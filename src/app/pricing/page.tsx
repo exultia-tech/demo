@@ -310,78 +310,51 @@ export default function PricingPage() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '1.5rem' }}>🎁</span>
-                  <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Community Tier: Pay What You Want</h2>
+                  <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Community Tier Contribution</h2>
                 </div>
                 
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.25rem' }}>
                   Thank you for supporting open-source IDE security awareness and continuous threat feed operations. 
                 </p>
 
+                {/* SELECTED DONATION SUMMARY (DIRECTLY FROM MAIN CARD) */}
+                <div style={{ padding: '1rem', background: 'rgba(52, 211, 153, 0.08)', border: '1px solid rgba(52, 211, 153, 0.3)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                      One-Time Contribution
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem' }}>
+                      <strong style={{ fontSize: '2rem', color: '#34D399', fontWeight: 800 }}>${parsedPrice}</strong>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>USD (Voluntary)</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDonationModal(false)}
+                    style={{ fontSize: '0.75rem', color: '#60A5FA', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Edit on card ✎
+                  </button>
+                </div>
+
                 {/* IMPORTANT DISCLOSURE BOX */}
-                <div style={{ padding: '0.75rem 1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.78rem', color: '#93C5FD', lineHeight: '1.5' }}>
+                <div style={{ padding: '0.75rem 1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.78rem', color: '#93C5FD', lineHeight: '1.5' }}>
                   <strong>ℹ️ Contribution Disclosure:</strong> This is a <strong>100% voluntary, one-time donation</strong> with zero recurring charges. Your Community Tier account remains free forever and this contribution does not confer Team or Enterprise paid plan entitlements.
                 </div>
 
                 <form onSubmit={handleProcessDonation}>
-                  <div style={{ marginBottom: '1.25rem' }}>
-                    <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                      Confirm One-Time Donation Amount (USD)
-                    </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                      {[5, 15, 30, 50].map((amt) => (
-                        <button
-                          key={amt}
-                          type="button"
-                          onClick={() => {
-                            setSelectedDonation(amt);
-                            setCommunityPrice(amt.toString());
-                          }}
-                          style={{
-                            padding: '0.6rem 0',
-                            borderRadius: '8px',
-                            fontWeight: 700,
-                            fontSize: '0.9rem',
-                            border: parsedPrice === amt ? '2px solid #34D399' : '1px solid var(--border-color)',
-                            background: parsedPrice === amt ? 'rgba(52, 211, 153, 0.15)' : 'rgba(255,255,255,0.03)',
-                            color: parsedPrice === amt ? '#34D399' : 'white',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ${amt}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div style={{ position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>$</span>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10000"
-                        value={communityPrice}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setCommunityPrice(val);
-                          setSelectedDonation(parseFloat(val) || 0);
-                        }}
-                        placeholder="Enter custom amount"
-                        style={{ width: '100%', padding: '0.5rem 0.5rem 0.5rem 1.6rem', borderRadius: '8px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: 'white', fontSize: '0.85rem', boxSizing: 'border-box' }}
-                      />
-                    </div>
-                  </div>
-
                   <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <button
                       type="submit"
                       className="btn-primary"
-                      style={{ flex: 1, padding: '0.8rem', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                      style={{ flex: 1, padding: '0.85rem', fontSize: '0.92rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
                     >
-                      <span>❤️</span> Complete One-Time Donation (${parsedPrice})
+                      <span>❤️</span> Confirm & Complete Donation (${parsedPrice})
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowDonationModal(false)}
-                      style={{ padding: '0.8rem 1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'white', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                      style={{ padding: '0.85rem 1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'white', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
                     >
                       Cancel
                     </button>
