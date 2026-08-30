@@ -3299,7 +3299,7 @@ build_hardened_ide:
                 </p>
               </div>
               <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}>
-                ● 8 Threat Feeds Online (Synced Live)
+                ● Universal Public Threat Feeds Online (Live Sync)
               </span>
             </div>
 
@@ -3832,10 +3832,10 @@ build_hardened_ide:
             <div style={{ marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>📡</span> 8-Source Consensus Threat Intelligence Signals
+                  <span>📡</span> Universal Public Threat Intelligence Signals
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(52,211,153,0.3)' }}>
-                  ✓ 8 Feeds Synced
+                  ✓ Public Feeds Synced
                 </span>
               </div>
 

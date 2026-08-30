@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="footer-col">
           <h4>Threat Intelligence</h4>
           <ul>
-            <li><Link href="/threat-feed">8-Source Threat Feeds</Link></li>
+            <li><Link href="/threat-feed">Universal Threat Feeds</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">Open Threat API (JSON)</a></li>
             <li><Link href="/features#sandbox">Air-Gap Architecture</Link></li>
             <li><Link href="/features#hardening">Binary Hardening</Link></li>

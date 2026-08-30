@@ -159,7 +159,7 @@ export default function PricingPage() {
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included">✓ Multi-IDE Builds (6 Engines)</li>
             <li className="included">✓ 0-CVE Verified Whitelist</li>
-            <li className="included">✓ 8-Source Threat Feeds Sync</li>
+            <li className="included">✓ Universal Threat Feeds Sync</li>
             <li className="included">✓ CycloneDX 1.5 JSON SBOMs</li>
             <li className="included">✓ Zero Outbound Telemetry</li>
             <li className="included">✓ Marketplace Catalog Carting</li>
