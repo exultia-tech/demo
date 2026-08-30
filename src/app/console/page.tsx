@@ -1761,8 +1761,8 @@ build_hardened_ide:
       `Verifying ${tier} Enterprise License...`,
       `Applying Custom Branding: [${brandName}] (Accent: ${brandColor})...`,
       `Enforcing Whitelist Policy: ${tier === "TEAM" ? "GitHub Open-Source Verified + 0 Open CVEs" : "Enterprise Artifactory Whitelist"}...`,
-      "Initiating connection to Acme Build Cloud...",
-      "Generating Cryptographic Software Bill of Materials (SBOM)..."
+      "Initiating Multi-OS Cloud Pipeline via GitHub Actions Runners...",
+      "Generating Cryptographic CycloneDX 1.5 Software Bill of Materials (SBOM)..."
     ]);
 
     generateSbomJson();

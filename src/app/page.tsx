@@ -8,7 +8,7 @@ export default function LandingPage() {
       <section className="hero-section">
         <div className="hero-badge">
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }}></span>
-          Next-Gen Zero-Trust IDE Platform • v2.4 Active
+          Multi-OS Cloud Pipeline Active • Powered by GitHub Actions
         </div>
 
         <h1 className="hero-title">
@@ -17,7 +17,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="hero-desc">
-          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — bundled with pre-approved plugins, air-gapped proxies, deterministic policy hardening, and automated CycloneDX SBOMs.
+          Empower engineering teams with customized, zero-trust distributions across <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong> — assembled on-demand via ephemeral multi-OS cloud runners, sealed with tamper-proof ASAR packaging, and verified with CycloneDX 1.5 SBOMs.
         </p>
 
         <div className="hero-cta-group">
@@ -40,13 +40,13 @@ export default function LandingPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto 5rem auto', padding: '0 2rem', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2.5rem', flexWrap: 'wrap', opacity: 0.9 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
-            <span style={{ color: '#34D399' }}>✓</span> 5 Major IDE Engines (VS Code, Theia, Zed, Neovim, Jupyter)
+            <span style={{ color: '#34D399' }}>✓</span> Multi-OS Cloud Runners (Win, Mac, Linux)
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
-            <span style={{ color: '#60A5FA' }}>✓</span> 0-CVE & Deprecation Policy Gating
+            <span style={{ color: '#60A5FA' }}>✓</span> Tamper-Proof ASAR Binary Sealing
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
-            <span style={{ color: '#A78BFA' }}>✓</span> 5-Source Threat Intelligence Feeds
+            <span style={{ color: '#A78BFA' }}>✓</span> 0-CVE & Deprecation Policy Gating
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#E2E8F0' }}>
             <span style={{ color: '#FBBF24' }}>✓</span> Cryptographic CycloneDX 1.5 SBOMs
@@ -54,12 +54,12 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* INTERACTIVE VALUE SHOWCASE */}
+      {/* VALUE SHOWCASE */}
       <section style={{ maxWidth: '1200px', margin: '0 auto 6rem auto', padding: '0 2rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <h2 style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>Eliminate Rogue Extensions & Supply Chain Leaks</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '650px', margin: '0 auto' }}>
-            Standard open-source IDE distributions pull unvetted plugins directly from public cloud marketplaces with zero outbound telemetry controls. SecureIDE flips the model.
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto' }}>
+            Standard open-source IDEs pull unvetted plugins from public marketplaces with background telemetry beacons active. SecureIDE delivers deterministic governance without server infrastructure overhead.
           </p>
         </div>
 
@@ -70,7 +70,17 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Zero-Trust Extension Curation</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Bundle pre-approved toolchains with our Verified Publisher & 0-CVE Community Whitelist or private JFrog Artifactory proxy. No rogue binaries executed.
+              Bundle pre-approved toolchains using our Verified Publisher & 0-CVE whitelist or private JFrog Artifactory proxy. No unvetted binaries executed.
+            </p>
+          </div>
+
+          <div className="feature-box">
+            <div className="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Tamper-Proof ASAR Sealing</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Configuration files and governance policies are compiled directly into a sealed binary ASAR container—inaccessible and un-editable on disk.
             </p>
           </div>
 
@@ -80,7 +90,7 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>CycloneDX 1.5 SBOM</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Every custom compiled release generates a cryptographically signed Software Bill of Materials with SHA-256 hashes and VCS source proofs.
+              Every custom compiled release generates a cryptographically signed Software Bill of Materials with individual SHA-256 package hashes and source proofs.
             </p>
           </div>
 
@@ -88,7 +98,7 @@ export default function LandingPage() {
             <div className="feature-icon-wrapper">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>1-Click Team Blueprints</h3>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>1-Click Role Blueprints</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
               Instantly provision role-based IDE setups for Full-Stack Web, Python AI/ML, Cloud DevOps, and Systems engineering in seconds.
             </p>
@@ -100,17 +110,7 @@ export default function LandingPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>White-Label Brand Studio</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Brand the IDE binary as your own corporate product (e.g. <code>AcmeCode.exe</code>) with customized accent themes, splash screens, and internal IT helpdesks.
-            </p>
-          </div>
-
-          <div className="feature-box">
-            <div className="feature-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Deterministic Policy as Code</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Bake zero-telemetry, extension auto-update freezes, and strict workspace trust rules directly into immutable <code>policy.json</code> configurations.
+              Brand the IDE binary as your own corporate product with custom window titles, accent themes, splash screens, and internal IT routing.
             </p>
           </div>
 
@@ -118,9 +118,9 @@ export default function LandingPage() {
             <div className="feature-icon-wrapper">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Universal Multi-IDE Support</h3>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Multi-OS Cloud Pipeline</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              One unified governance platform for <strong>VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab</strong>. Enforce policies consistently across all tools.
+              On-demand packaging across <strong>Windows (.exe / .zip), macOS (.dmg), and Linux (.tar.gz)</strong> executed in clean, isolated cloud virtual machines.
             </p>
           </div>
         </div>
@@ -145,17 +145,17 @@ export default function LandingPage() {
 
             <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-secondary)', marginBottom: '0.75rem' }}>02</div>
-              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Compile Native Binary</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Our hardened orchestrator packages a zero-telemetry IDE distribution (VS Code, Eclipse Theia, Zed, Neovim, JupyterLab) with baked-in governance and corporate branding.
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Assemble in Cloud Runners</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+                Isolated cloud runners assemble real, telemetry-free binaries across Windows, macOS, and Linux, sealing configuration files into immutable ASAR packages.
               </p>
             </div>
 
             <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#34D399', marginBottom: '0.75rem' }}>03</div>
-              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Sign, Audit & Deploy</h3>
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Audit, Sign & Deploy</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.6' }}>
-                Cryptographically sign the executable with HSM keys, generate exportable Signed Build Manifests & CycloneDX SBOMs, and deploy via MDM (Intune, Jamf) or CI/CD.
+                Compute cryptographic SHA-256 digests, generate exportable CycloneDX SBOMs, and deploy via MDM (Intune, Jamf) or corporate CI/CD.
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function LandingPage() {
       <section style={{ maxWidth: '1000px', margin: '6rem auto 3rem auto', padding: '0 2rem' }}>
         <div style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15))', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '24px', padding: '4rem 2rem', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>
-            Ready to Hardened Your Developer Workstations?
+            Ready to Harden Your Developer Workstations?
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2.5rem auto' }}>
             Test your configuration with instant dry-run validation, inspect the CycloneDX SBOM, or compile a custom release today.
