@@ -29,7 +29,7 @@ export default function Footer() {
             <li><Link href="/features">Features & Capabilities</Link></li>
             <li><Link href="/pricing">Plans & Pricing</Link></li>
             <li><Link href="/console">Builder Console</Link></li>
-            <li><Link href="/security">Zero-Trust Security</Link></li>
+            <li><Link href="/features#security">Zero-Trust Security</Link></li>
             <li><Link href="/docs#pipeline">Multi-OS Matrix</Link></li>
           </ul>
         </div>
@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="footer-col">
           <h4>Threat Intelligence</h4>
           <ul>
-            <li><Link href="/security#uvi">UVI Threat Feed</Link></li>
+            <li><Link href="/features#uvi">UVI Threat Feed</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
             <li><Link href="/features#sandbox">Air-Gap Architecture</Link></li>
             <li><Link href="/features#hardening">Binary Hardening</Link></li>

@@ -26,9 +26,6 @@ export default function Navbar() {
         <Link href="/features" className={`nav-link ${pathname === "/features" ? "active" : ""}`}>
           Features
         </Link>
-        <Link href="/security" className={`nav-link ${pathname === "/security" ? "active" : ""}`}>
-          Security
-        </Link>
         <Link href="/pricing" className={`nav-link ${pathname === "/pricing" ? "active" : ""}`}>
           Pricing
         </Link>
