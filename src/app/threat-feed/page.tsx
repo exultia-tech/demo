@@ -145,13 +145,13 @@ export default function ThreatFeedPage() {
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🌐 Unified Vulnerability Intelligence (UVI) Feed
+          📡 Unified Vulnerability Intelligence (UVI)
         </span>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          Unified Vulnerability Intelligence (UVI)
+          The Unified Vulnerability Intelligence (UVI) Multi-Feed
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '840px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          An all-inclusive public threat feed synthesizing accessible vulnerability registries, vendor bulletins, and specialty supply chain audit engines into a unified, query-driven intelligence stream.
+          A real-time threat stream unifying global CVE registries, vendor security bulletins, and specialized supply-chain research into one query-driven intelligence platform.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a href="/api/threat-feed" target="_blank" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
@@ -166,24 +166,24 @@ export default function ThreatFeedPage() {
       {/* STATS OVERVIEW */}
       <div className="stats-grid" style={{ marginBottom: '4rem' }}>
         <div className="stat-card">
-          <span className="stat-label">Ingested Public Feeds</span>
-          <div className="stat-number" style={{ color: '#34D399' }}>12+ Sources</div>
-          <p style={{ fontSize: '0.75rem' }}>NVD, CISA KEV, GHSA, OSV & Specialty Feeds</p>
+          <span className="stat-label">UVI Feed Sources</span>
+          <div className="stat-number" style={{ color: '#34D399' }}>12+ Synced</div>
+          <p style={{ fontSize: '0.75rem' }}>Synthesized across public security databases</p>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Inclusion Model</span>
-          <div className="stat-number" style={{ color: '#60A5FA' }}>Query-Driven</div>
-          <p style={{ fontSize: '0.75rem' }}>Zero feed pre-exclusion; resolved by search</p>
+          <span className="stat-label">Resolution Model</span>
+          <div className="stat-number" style={{ color: '#60A5FA' }}>UVI Engine</div>
+          <p style={{ fontSize: '0.75rem' }}>Instant package and purl evaluation</p>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Ecosystem Coverage</span>
-          <div className="stat-number" style={{ color: '#FBBF24' }}>Full Stack</div>
-          <p style={{ fontSize: '0.75rem' }}>Extensions, LSPs, compilers & dependencies</p>
+          <span className="stat-label">Coverage Scope</span>
+          <div className="stat-number" style={{ color: '#FBBF24' }}>Full Stack UVI</div>
+          <p style={{ fontSize: '0.75rem' }}>Extensions, LSPs, toolchains & dependencies</p>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Public License</span>
+          <span className="stat-label">Open Standard</span>
           <div className="stat-number" style={{ color: '#A78BFA' }}>Open CC-BY-4.0</div>
-          <p style={{ fontSize: '0.75rem' }}>Free open access for all developers & CI/CD</p>
+          <p style={{ fontSize: '0.75rem' }}>Free public open access for all developers & CI/CD</p>
         </div>
       </div>
 
@@ -191,9 +191,9 @@ export default function ThreatFeedPage() {
       <div className="glass-card" style={{ padding: '2rem', marginBottom: '4.5rem', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.4rem', margin: 0 }}>🔍 Live Multi-Feed Query Engine</h2>
+            <h2 style={{ fontSize: '1.4rem', margin: 0 }}>🔍 Live UVI Multi-Feed Query Engine</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0.25rem 0 0 0' }}>
-              Test how the multi-feed searches across public vulnerability databases for extensions, language servers, toolchains, or CVEs.
+              Search the Unified Vulnerability Intelligence (UVI) stream across extensions, language servers, toolchains, or CVEs.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -226,7 +226,7 @@ export default function ThreatFeedPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchThreatData(searchQuery)}
-            placeholder="Search by package name, extension ID, LSP binary, purl, or CVE ID..."
+            placeholder="Search UVI by package name, extension ID, LSP binary, purl, or CVE ID..."
             style={{
               flex: 1,
               padding: '0.75rem 1rem',
@@ -243,15 +243,15 @@ export default function ThreatFeedPage() {
             className="btn-primary"
             style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}
           >
-            {loading ? "Searching..." : "Query Feeds"}
+            {loading ? "Querying UVI..." : "Query UVI"}
           </button>
         </div>
 
         {apiData && (
           <div style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              <span>Matched Records: <strong>{apiData.matchedPackagesCount}</strong></span>
-              <span>Feed Sources Evaluated: <strong>{apiData.publicFeedSources?.length || 12} Public Feeds</strong></span>
+              <span>Matched UVI Records: <strong>{apiData.matchedPackagesCount}</strong></span>
+              <span>UVI Sources Evaluated: <strong>{apiData.publicFeedSources?.length || 12} Feeds</strong></span>
             </div>
             <pre style={{ margin: 0, maxHeight: '280px', overflowY: 'auto', color: '#38BDF8', fontSize: '0.8rem', lineHeight: '1.5', fontFamily: 'monospace' }}>
               {JSON.stringify(apiData.records, null, 2)}
@@ -263,9 +263,9 @@ export default function ThreatFeedPage() {
       {/* PUBLIC FEED SOURCES DIRECTORY */}
       <div style={{ marginBottom: '5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Integrated Public Vulnerability Feeds</h2>
+          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>The Unified Vulnerability Intelligence (UVI) Source Matrix</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '750px', margin: '0 auto' }}>
-            Aggregated continuously from official CVE repositories, OpenSSF aggregators, vendor advisories, and specialized supply-chain research labs.
+            Continuous multi-feed ingestion synthesized across official CVE repositories, OpenSSF aggregators, vendor advisories, and supply-chain research labs.
           </p>
         </div>
 
