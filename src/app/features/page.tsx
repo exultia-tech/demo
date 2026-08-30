@@ -13,7 +13,7 @@ export default function FeaturesPage() {
           Enterprise Security, Threat Intelligence & Multi-IDE Governance
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          Explore the defense-in-depth security architecture, 5-source threat intelligence feeds, immutable binary encapsulation, and ephemeral cloud pipeline built into SecureIDE.
+          Explore the defense-in-depth security architecture, 8-source threat intelligence consensus matrix, immutable binary encapsulation, and ephemeral cloud pipeline built into SecureIDE.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
@@ -91,55 +91,79 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* FEATURE 2: 5-SOURCE THREAT INTELLIGENCE */}
+      {/* FEATURE 2: 8-SOURCE THREAT INTELLIGENCE */}
       <div id="threat-feed" style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '3.5rem', alignItems: 'center', marginBottom: '6rem' }}>
         <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
             <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span>📡</span> Synchronized Threat Feeds
             </span>
-            <span className="status-chip approved">5 Synced</span>
+            <span className="status-chip approved">8 Synced</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: '#93C5FD' }}>🏛️ NIST NVD / GHSA / OSV.dev</strong>
-                <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>LIVE CVE GATE</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#93C5FD' }}>🏛️ NIST NVD / GHSA / OSV.dev</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>LIVE CVE GATE</span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Continuous CVE ingestion and CVSS severity scoring.</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Continuous CVE ingestion and standard OpenSSF OSV mapping.</p>
             </div>
 
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: '#34D399' }}>🐸 JFrog Security Research</strong>
-                <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>REACHABILITY ANALYSIS</span>
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#60A5FA' }}>🏢 MSRC & Eclipse Advisories</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>VENDOR BULLETINS</span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Evaluates contextual runtime IPC exploitability and payload reachability.</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Microsoft, Eclipse Theia, and Open VSX marketplace bulletins.</p>
             </div>
 
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: '#60A5FA' }}>🌊 Aqua Nautilus Research</strong>
-                <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>ANTI-TYPOSQUAT</span>
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#F87171' }}>⚔️ Trail of Bits vsix-audit</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>C2 IOC SCANNER</span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Marketplace publisher impersonation and trojanized package detection.</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Tracks malicious extension IDs, obfuscated scripts, and C2 beacons.</p>
             </div>
 
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: '#FBBF24' }}>🔌 Socket.dev Threat Engine</strong>
-                <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>BEHAVIORAL HEURISTICS</span>
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#34D399' }}>🐸 JFrog Security Research</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>REACHABILITY ANALYSIS</span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Monitors child process execution, environment reads, and token theft.</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Evaluates contextual runtime IPC exploitability and reachability.</p>
             </div>
 
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: '#A78BFA' }}>🎖️ OpenSSF Scorecards</strong>
-                <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>SUPPLY CHAIN HEALTH</span>
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#60A5FA' }}>🌊 Aqua Nautilus Research</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>ANTI-TYPOSQUAT</span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Measures upstream maintenance frequency, branch protection, and dependency pinning.</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Publisher identity impersonation and trojanized extension shield.</p>
+            </div>
+
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#FBBF24' }}>🔌 Socket.dev Threat Engine</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>BEHAVIORAL HEURISTICS</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Monitors child process execution, environment reads, and token theft.</p>
+            </div>
+
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#C084FC' }}>🐕 Snyk Vulnerability DB</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>TRANSITIVE SCA</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Deep scanning of language servers and nested AST parsers.</p>
+            </div>
+
+            <div style={{ padding: '0.65rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.15rem' }}>
+                <strong style={{ fontSize: '0.82rem', color: '#A78BFA' }}>🎖️ OpenSSF Scorecards</strong>
+                <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>SUPPLY CHAIN HEALTH</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Measures upstream maintenance frequency and branch protection.</p>
             </div>
           </div>
         </div>

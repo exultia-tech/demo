@@ -23,7 +23,7 @@ export default function DocsPage() {
             <li><a href="#quickstart" style={{ color: '#60A5FA', textDecoration: 'none', fontSize: '0.85rem' }}>1. Quickstart Guide</a></li>
             <li><a href="#pipeline" style={{ color: '#34D399', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>2. Multi-OS Cloud Engine</a></li>
             <li><a href="#tamperproof" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>3. Tamper-Proof Binary Hardening</a></li>
-            <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. 5-Source Threat Intelligence API</a></li>
+            <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. 8-Source Threat Intelligence API</a></li>
             <li><a href="#rest-api" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>5. Headless Build REST API</a></li>
             <li><a href="#sbom" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>6. CycloneDX 1.5 SBOM Attestation</a></li>
           </ul>
@@ -118,14 +118,24 @@ export default function DocsPage() {
             </ul>
           </section>
 
-          {/* SECTION 4: 5-SOURCE THREAT INTELLIGENCE */}
+          {/* SECTION 4: 8-SOURCE THREAT INTELLIGENCE */}
           <section id="threat-intel" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>4. 5-Source Threat Intelligence & Public API</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>4. 8-Source Threat Intelligence & Public API</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              SecureIDE aggregates security signals across NIST NVD, JFrog Security Research, Aqua Nautilus, Socket.dev, and OpenSSF Scorecards:
+              SecureIDE correlates security signals across 8 authoritative vulnerability registries, vendor advisories, and specialized supply chain audit scanners:
             </p>
+            <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+              <li><strong>NIST NVD / GHSA / OSV.dev</strong>: CVE registry, GitHub Security Advisories, and OpenSSF OSV format mapping.</li>
+              <li><strong>MSRC & Eclipse Security Advisories</strong>: Microsoft Security Response Center bulletins and Eclipse / Open VSX notices.</li>
+              <li><strong>Trail of Bits vsix-audit</strong>: Scanner and rule database tracking malicious patterns and C2 IoCs.</li>
+              <li><strong>JFrog Security Research</strong>: Contextual exploitability and IDE IPC call-graph reachability.</li>
+              <li><strong>Aqua Nautilus Research</strong>: Marketplace publisher impersonation and anti-typosquatting telemetry.</li>
+              <li><strong>Socket.dev Threat Engine</strong>: Behavioral heuristics, unauthorized subprocess spawning, and token theft defense.</li>
+              <li><strong>Snyk Vulnerability Database</strong>: Transitive dependency tree scanning and language server AST security.</li>
+              <li><strong>OpenSSF Scorecards</strong>: Maintenance health scores, branch protection verification, and pinned dependency analysis.</li>
+            </ul>
             <pre style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '8px', color: '#38BDF8', fontSize: '0.8rem', lineHeight: '1.6', overflowX: 'auto', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.06)' }}>
-{`# Query live threat intelligence feed
+{`# Query live consolidated 8-source threat intelligence feed
 curl -s "https://secureide.dev/api/threat-feed" | jq .
 
 # Filter by Grade A+ packages only

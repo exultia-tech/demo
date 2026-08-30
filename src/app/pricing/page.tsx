@@ -50,9 +50,9 @@ export default function PricingPage() {
           </p>
 
           <ul className="pricing-features-list" style={{ fontSize: '0.85rem' }}>
-            <li className="included">✓ Multi-IDE Air-Gapped Builds (5 Engines)</li>
+            <li className="included">✓ Multi-IDE Air-Gapped Builds (6 Engines)</li>
             <li className="included">✓ 0-CVE Verified Whitelist & Deprecation Gating</li>
-            <li className="included">✓ 5-Source Threat Intelligence Sync</li>
+            <li className="included">✓ 8-Source Threat Intelligence Sync</li>
             <li className="included">✓ CycloneDX 1.5 JSON SBOMs & SHA-256 Manifests</li>
             <li className="included">✓ Zero Outbound Telemetry Binary Policy</li>
             <li className="included">✓ Manual Marketplace Catalog Carting</li>
