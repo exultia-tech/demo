@@ -10,7 +10,6 @@ export default function PricingPage() {
   const [communityPrice, setCommunityPrice] = useState<string>("0");
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<number | "custom">(0);
-  const [customDonation, setCustomDonation] = useState<string>("15");
   const [donationSuccess, setDonationSuccess] = useState(false);
   const [donationReceiptId, setDonationReceiptId] = useState<string>("");
 
@@ -62,25 +61,27 @@ export default function PricingPage() {
       </div>
 
       {/* PRICING CARDS (3 TIERS) */}
-      <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))' }}>
+      <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', alignItems: 'stretch' }}>
         
         {/* COMMUNITY EDITION TIER (DYNAMIC PAY-WHAT-YOU-WANT PRICE LABEL) */}
         <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', border: parsedPrice > 0 ? '1px solid rgba(52, 211, 153, 0.4)' : undefined }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Community</h3>
-            <span style={{ fontSize: '0.7rem', color: '#34D399', background: 'rgba(52,211,153,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
-              {parsedPrice === 0 ? "Free & Open" : "Supporter"}
-            </span>
+          {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
+          <div style={{ minHeight: '80px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Community</h3>
+              <span style={{ fontSize: '0.7rem', color: '#34D399', background: 'rgba(52,211,153,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
+                {parsedPrice === 0 ? "Free & Open" : "Supporter"}
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+              Free forever. Open-source zero-trust developer workstation for every engineer.
+            </p>
           </div>
           
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem', minHeight: '38px', lineHeight: '1.5' }}>
-            Free forever. We believe raising awareness for secure IDE environments is most effective when zero-trust tools are freely accessible to every engineer.
-          </p>
-          
-          {/* MAIN DYNAMIC PRICE INPUT & LABEL */}
-          <div style={{ margin: '0.75rem 0 0.4rem 0' }}>
+          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
+          <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)' }}>$</span>
+              <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>$</span>
               <input
                 type="number"
                 min="0"
@@ -94,25 +95,27 @@ export default function PricingPage() {
                 }}
                 title="Enter your voluntary price or donation amount"
                 style={{
-                  fontSize: '2.2rem',
+                  fontSize: '2rem',
                   fontWeight: 800,
-                  width: '110px',
+                  width: '95px',
+                  height: '38px',
                   background: 'rgba(0, 0, 0, 0.4)',
                   border: '1px solid rgba(52, 211, 153, 0.4)',
                   borderRadius: '8px',
                   color: '#34D399',
-                  padding: '0.1rem 0.5rem',
+                  padding: '0.1rem 0.4rem',
                   outline: 'none',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box'
                 }}
               />
-              <span style={{ fontSize: '0.75rem', color: '#34D399', fontWeight: 600, background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.45rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.72rem', color: '#34D399', fontWeight: 600, background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.45rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                 Pay What You Want
               </span>
             </div>
 
             {/* Quick Price Preset Chips */}
-            <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
               {["0", "5", "15", "30", "50"].map((amt) => {
                 const isSelected = communityPrice === amt;
                 return (
@@ -125,10 +128,10 @@ export default function PricingPage() {
                       setSelectedDonation(num);
                     }}
                     style={{
-                      padding: '0.2rem 0.55rem',
-                      fontSize: '0.72rem',
+                      padding: '0.15rem 0.45rem',
+                      fontSize: '0.68rem',
                       fontWeight: 600,
-                      borderRadius: '6px',
+                      borderRadius: '5px',
                       border: isSelected ? '1px solid #34D399' : '1px solid var(--border-color)',
                       background: isSelected ? 'rgba(52, 211, 153, 0.15)' : 'rgba(255,255,255,0.03)',
                       color: isSelected ? '#34D399' : 'var(--text-muted)',
@@ -143,12 +146,15 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <p style={{ fontSize: '0.75rem', color: parsedPrice > 0 ? '#93C5FD' : '#34D399', margin: '0 0 1.25rem 0', lineHeight: 1.4 }}>
-            {parsedPrice > 0 
-              ? `Voluntary one-time contribution ($${parsedPrice}) • Does not grant paid entitlements`
-              : "100% Free Forever • Zero payment required to build"
-            }
-          </p>
+          {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
+          <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.75rem', color: parsedPrice > 0 ? '#93C5FD' : '#34D399', margin: 0, lineHeight: 1.35 }}>
+              {parsedPrice > 0 
+                ? `Voluntary one-time contribution ($${parsedPrice}) • No paid entitlements`
+                : "100% Free Forever • Zero payment required to build"
+              }
+            </p>
+          </div>
 
           <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
             <li className="included">✓ Multi-IDE Air-Gapped Builds (6 Engines)</li>
@@ -192,19 +198,34 @@ export default function PricingPage() {
 
         {/* TEAM EDITION TIER */}
         <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Team</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem', minHeight: '38px' }}>
-            For engineering teams wanting shared blueprints & automated CI/CD.
-          </p>
-
-          <div className="pricing-price" style={{ fontSize: '2.2rem', margin: '0.75rem 0 0.2rem 0' }}>
-            ${billingCycle === "annual" ? "19" : "24"} <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+          {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
+          <div style={{ minHeight: '80px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Team</h3>
+              <span style={{ fontSize: '0.7rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
+                Pro Teams
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+              For engineering teams wanting shared blueprints & automated CI/CD.
+            </p>
           </div>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 1.25rem 0' }}>
-            {billingCycle === "annual" ? "Billed annually ($19/mo) • Save 20%" : "Billed monthly ($24/mo) • Cancel anytime"}
-          </p>
 
-          <ul className="pricing-features-list" style={{ fontSize: '0.85rem' }}>
+          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
+          <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+              ${billingCycle === "annual" ? "19" : "24"} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+            </div>
+          </div>
+
+          {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
+          <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.35 }}>
+              {billingCycle === "annual" ? "Billed annually ($19/mo) • Save 20%" : "Billed monthly ($24/mo) • Cancel anytime"}
+            </p>
+          </div>
+
+          <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Community, plus:</li>
             <li className="included">✓ Curated & Community-Contributed Blueprints (20+ Stacks)</li>
             <li className="included">✓ Publish & Share Custom Org Blueprints</li>
@@ -226,19 +247,35 @@ export default function PricingPage() {
           <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-primary)', color: 'white', padding: '0.2rem 0.75rem', borderRadius: '9999px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>
             MOST POPULAR
           </div>
-          <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Enterprise</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem', minHeight: '38px' }}>
-            Full White-Labeling, Headless build APIs, private Artifactory proxying, and policy overrides.
-          </p>
 
-          <div className="pricing-price" style={{ fontSize: '2.2rem', margin: '0.75rem 0 0.2rem 0' }}>
-            ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+          {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
+          <div style={{ minHeight: '80px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <h3 style={{ fontSize: '1.3rem', margin: 0 }}>Enterprise</h3>
+              <span style={{ fontSize: '0.7rem', color: '#A78BFA', background: 'rgba(167,139,250,0.12)', padding: '0.15rem 0.5rem', borderRadius: '9999px', fontWeight: 700 }}>
+                Fleet Security
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.5' }}>
+              Full White-Labeling, Headless build APIs, private Artifactory proxying, and policy overrides.
+            </p>
           </div>
-          <p style={{ fontSize: '0.78rem', color: '#93C5FD', margin: '0 0 1.25rem 0', lineHeight: 1.4 }}>
-            Self-serve for 1–100 seats • <Link href="/console" style={{ color: '#60A5FA', textDecoration: 'underline' }}>100+ dev fleet? Inquire for Site License / MSA →</Link>
-          </p>
 
-          <ul className="pricing-features-list" style={{ fontSize: '0.85rem' }}>
+          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
+          <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+            </div>
+          </div>
+
+          {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
+          <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.75rem', color: '#93C5FD', margin: 0, lineHeight: 1.35 }}>
+              Self-serve for 1–100 seats • <Link href="/console" style={{ color: '#60A5FA', textDecoration: 'underline' }}>100+ seats? Inquire →</Link>
+            </p>
+          </div>
+
+          <ul className="pricing-features-list" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Team, plus:</li>
             <li className="included">✓ Full White-Label Brand Studio (Custom Binary Names & Themes)</li>
             <li className="included">✓ Headless REST Build API & Webhooks</li>
