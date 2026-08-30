@@ -302,9 +302,9 @@ export async function GET(request: Request) {
   }
 
   const responsePayload = {
-    schemaVersion: "https://schema.secureide.dev/threat-intel/v2.json",
-    feedName: "SecureIDE Universal Public Threat Intelligence Multi-Feed",
-    mission: "Universal open aggregation across all accessible public vulnerability and security advisory feeds. Feeds are ingested in their entirety without pre-exclusion; relevance to IDE extensions, language servers, toolchains, and package dependencies is determined dynamically by the search query.",
+    schemaVersion: "https://schema.secureide.dev/uvi/v2.json",
+    feedName: "Unified Vulnerability Intelligence (UVI) Feed",
+    mission: "Universal open aggregation providing Unified Vulnerability Intelligence (UVI) across all accessible public vulnerability registries and advisory databases. Feeds are ingested in their entirety without pre-exclusion; relevance to IDE extensions, language servers, toolchains, and package dependencies is determined dynamically by search query.",
     license: "CC-BY-4.0 (Open Access for All Developers)",
     generatedAt: new Date().toISOString(),
     queryParameters: {

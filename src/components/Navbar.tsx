@@ -30,7 +30,7 @@ export default function Navbar() {
           Security
         </Link>
         <Link href="/threat-feed" className={`nav-link ${pathname === "/threat-feed" ? "active" : ""}`}>
-          Threat Feed
+          UVI Threat Feed
         </Link>
         <Link href="/pricing" className={`nav-link ${pathname === "/pricing" ? "active" : ""}`}>
           Pricing

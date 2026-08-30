@@ -91,12 +91,12 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* FEATURE 2: UNIVERSAL PUBLIC THREAT INTELLIGENCE FEED */}
+      {/* FEATURE 2: UNIFIED VULNERABILITY INTELLIGENCE (UVI) FEED */}
       <div id="threat-feed" style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '3.5rem', alignItems: 'center', marginBottom: '6rem' }}>
         <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
             <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span>📡</span> Universal Public Feeds
+              <span>📡</span> UVI Public Multi-Feed
             </span>
             <span className="status-chip approved">12+ Ingested</span>
           </div>
@@ -170,13 +170,13 @@ export default function FeaturesPage() {
 
         <div>
           <div style={{ color: '#34D399', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-            Universal Vulnerability Intelligence
+            Unified Vulnerability Intelligence (UVI)
           </div>
           <h2 style={{ fontSize: '2.2rem', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-            All Public Feeds Ingested • Query-Driven Filtering
+            Unified Vulnerability Intelligence (UVI) Feed
           </h2>
           <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-            We ingest all accessible public vulnerability registries and advisory databases without pre-exclusion. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is determined dynamically by the query.
+            All accessible public vulnerability registries and advisory databases synthesized into a single query-driven intelligence stream. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is determined dynamically by the query.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', fontSize: '0.9rem' }}>

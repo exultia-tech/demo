@@ -145,17 +145,17 @@ export default function ThreatFeedPage() {
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🌐 Universal Public Threat Intelligence Multi-Feed
+          🌐 Unified Vulnerability Intelligence (UVI) Feed
         </span>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          All Accessible Public Vulnerability & Security Feeds
+          Unified Vulnerability Intelligence (UVI)
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '840px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          We ingest all accessible public vulnerability registries and advisory databases without pre-exclusion. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is determined dynamically by the query.
+          An all-inclusive public threat feed synthesizing accessible vulnerability registries, vendor bulletins, and specialty supply chain audit engines into a unified, query-driven intelligence stream.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a href="/api/threat-feed" target="_blank" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
-            Query Public Threat API (JSON) →
+            Query UVI REST API (JSON) →
           </a>
           <Link href="/console" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem', background: 'rgba(255,255,255,0.06)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '10px', fontWeight: 600 }}>
             Open Builder Console
@@ -294,9 +294,9 @@ export default function ThreatFeedPage() {
       <div className="glass-card" style={{ padding: '2.5rem', marginBottom: '4rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Universal Threat Feed REST API</h2>
+            <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Unified Vulnerability Intelligence (UVI) REST API</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0.25rem 0 0 0' }}>
-              Query any public vulnerability, package ecosystem, extension, or language server directly via REST.
+              Query any public vulnerability, package ecosystem, extension, or language server directly via the open UVI endpoint.
             </p>
           </div>
           <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.15)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)' }}>
@@ -305,7 +305,7 @@ export default function ThreatFeedPage() {
         </div>
 
         <pre style={{ background: '#0F172A', padding: '1.25rem', borderRadius: '10px', color: '#38BDF8', fontSize: '0.82rem', lineHeight: '1.6', overflowX: 'auto', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.06)' }}>
-{`# 1. Fetch entire universal threat intelligence feed
+{`# 1. Fetch entire Unified Vulnerability Intelligence (UVI) feed
 curl -s "https://secureide.dev/api/threat-feed" | jq .
 
 # 2. Query specific package or extension by keyword

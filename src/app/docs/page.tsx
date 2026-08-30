@@ -23,7 +23,7 @@ export default function DocsPage() {
             <li><a href="#quickstart" style={{ color: '#60A5FA', textDecoration: 'none', fontSize: '0.85rem' }}>1. Quickstart Guide</a></li>
             <li><a href="#pipeline" style={{ color: '#34D399', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>2. Multi-OS Cloud Engine</a></li>
             <li><a href="#tamperproof" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>3. Tamper-Proof Binary Hardening</a></li>
-            <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. Universal Threat Intelligence API</a></li>
+            <li><a href="#threat-intel" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>4. Unified Vulnerability Intelligence (UVI) API</a></li>
             <li><a href="#rest-api" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>5. Headless Build REST API</a></li>
             <li><a href="#sbom" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>6. CycloneDX 1.5 SBOM Attestation</a></li>
           </ul>
@@ -118,11 +118,11 @@ export default function DocsPage() {
             </ul>
           </section>
 
-          {/* SECTION 4: UNIVERSAL PUBLIC THREAT INTELLIGENCE FEED */}
+          {/* SECTION 4: UNIFIED VULNERABILITY INTELLIGENCE (UVI) FEED */}
           <section id="threat-intel" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>4. Universal Public Threat Intelligence & REST API</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>4. Unified Vulnerability Intelligence (UVI) & REST API</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              SecureIDE ingests all accessible public vulnerability registries and security advisory feeds without pre-exclusion. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is evaluated dynamically by search query and Package URL (<code style={{ color: '#60A5FA' }}>purl</code>):
+              SecureIDE ingests all accessible public vulnerability registries and security advisory feeds into a single <strong>Unified Vulnerability Intelligence (UVI)</strong> multi-feed. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is evaluated dynamically by search query and Package URL (<code style={{ color: '#60A5FA' }}>purl</code>):
             </p>
             <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
               <li><strong>NIST NVD & Global CVE List</strong>: Universal common vulnerabilities and exposures repository.</li>
