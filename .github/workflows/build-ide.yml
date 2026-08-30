@@ -54,6 +54,11 @@ on:
         required: false
         default: ''
         type: string
+      locale:
+        description: 'Default UI Language Locale (en, es, ja, zh-cn, de, fr, ko, pt-br, it, tr, pl, ru)'
+        required: false
+        default: 'en'
+        type: string
       build_id:
         description: 'Unique Build ID for Tracking'
         required: false
@@ -112,6 +117,7 @@ jobs:
             -TargetOS "${{ matrix.os }}" `
             -Engine "${{ inputs.engine }}" `
             -BrandName "${{ inputs.brand_name }}" `
+            -Locale "${{ inputs.locale }}" `
             -RegistryUrl "${{ inputs.registry_url }}" `
             -Extensions "${{ inputs.extensions }}" `
             -TelemetryUrl "${{ inputs.telemetry_url }}" `

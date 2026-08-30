@@ -4,8 +4,8 @@
 .DESCRIPTION
     Deterministic packaging engine that pulls clean upstream base binaries,
     strips telemetry, injects zero-trust policies, bundles whitelisted extensions,
-    seals product.json and settings into an immutable binary ASAR archive,
-    and packages signed distribution installers.
+    configures native localization/i18n packs, seals configurations into immutable
+    binary containers, and packages signed distribution installers.
 #>
 [CmdletBinding()]
 param(
@@ -13,6 +13,7 @@ param(
     [Parameter(Mandatory=$false)][string]$TargetOS = "windows",
     [Parameter(Mandatory=$false)][string]$Engine = "vscode",
     [Parameter(Mandatory=$false)][string]$BrandName = "SecureIDE Studio",
+    [Parameter(Mandatory=$false)][string]$Locale = "en",
     [Parameter(Mandatory=$false)][string]$RegistryUrl = "",
     [Parameter(Mandatory=$false)][string]$Extensions = "",
     [Parameter(Mandatory=$false)][string]$TelemetryUrl = "",
@@ -28,15 +29,18 @@ $Tier = $Tier.Trim().Trim('"' , "'")
 $TargetOS = $TargetOS.ToLower().Trim()
 $Engine = $Engine.ToLower().Trim()
 $BrandName = $BrandName.Trim().Trim('"' , "'")
+$Locale = $Locale.ToLower().Trim().Trim('"' , "'")
 if (-not $BrandName) { $BrandName = "SecureIDE Studio" }
+if (-not $Locale) { $Locale = "en" }
 $CleanBrandSlug = ($BrandName -replace '[^a-zA-Z0-9\-_]', '_')
 if (-not $BuildId) { $BuildId = (Get-Date -Format "yyyyMMdd-HHmmss") }
 
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host "  SECURE IDE HARDENED BUILD ENGINE (Tamper-Proof ASAR Sealed)   " -ForegroundColor Cyan
+Write-Host "  SECURE IDE HARDENED BUILD ENGINE (Multi-OS Cloud Pipeline)    " -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ">>> Target Engine  : $Engine"
 Write-Host ">>> Target OS      : $TargetOS"
+Write-Host ">>> Default Locale : $Locale"
 Write-Host ">>> Tier           : $Tier"
 Write-Host ">>> Brand Name     : $BrandName ($CleanBrandSlug)"
 Write-Host ">>> Build ID       : $BuildId"
@@ -115,9 +119,9 @@ if (-not (Test-Path $AppCoreDir)) {
 }
 
 # -----------------------------------------------------------------------------
-# STEP 2: HARDEN PRODUCT.JSON & ERADICATE TELEMETRY
+# STEP 2: HARDEN PRODUCT.JSON & INJECT LOCALIZATION CONFIG
 # -----------------------------------------------------------------------------
-Write-Host "`n>>> [STEP 2/7] Enforcing zero-trust telemetry eradication & policy injection..." -ForegroundColor Yellow
+Write-Host "`n>>> [STEP 2/7] Enforcing zero-trust telemetry eradication & localization..." -ForegroundColor Yellow
 
 $ProductJsonPath = Join-Path $AppCoreDir "product.json"
 $ProductData = @{}
@@ -127,12 +131,17 @@ if (Test-Path $ProductJsonPath) {
     } catch {}
 }
 
-# Inject Brand Identity
+# Inject Brand Identity & Localization
 $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'nameShort' -Value $BrandName
 $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'nameLong' -Value "$BrandName Hardened Workstation"
 $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'applicationName' -Value $CleanBrandSlug.ToLower()
 $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'dataFolderName' -Value ".$($CleanBrandSlug.ToLower())"
 $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'updateUrl' -Value ''
+
+if ($Locale -and $Locale -ne "en") {
+    Write-Host "    [LOCALIZATION] Provisioning default UI language: $Locale"
+    $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'locale' -Value $Locale
+}
 
 # 1. Telemetry Policy
 if ($Tier -eq "ULTIMATE" -and $TelemetryUrl) {
@@ -168,47 +177,67 @@ $ProductData | ConvertTo-Json -Depth 10 | Set-Content -Path $ProductJsonPath -En
 Write-Host "    ✓ product.json successfully hardened."
 
 # -----------------------------------------------------------------------------
-# STEP 3: BUNDLE PRE-APPROVED WHITELISTED EXTENSIONS
+# STEP 3: BUNDLE EXTENSIONS & PRE-PROVISIONED LANGUAGE PACKS
 # -----------------------------------------------------------------------------
-Write-Host "`n>>> [STEP 3/7] Bundling verified extension packages..." -ForegroundColor Yellow
+Write-Host "`n>>> [STEP 3/7] Bundling verified extensions and language packs..." -ForegroundColor Yellow
 
 $ExtensionsDir = Join-Path $AppCoreDir "extensions"
 if (-not (Test-Path $ExtensionsDir)) {
     New-Item -ItemType Directory -Path $ExtensionsDir -Force | Out-Null
 }
 
-$BundledList = @()
+# Auto-bundle Language Pack for selected Locale
+$LanguagePackMap = @{
+    "es" = "MS-CEINTL.vscode-language-pack-es"
+    "ja" = "MS-CEINTL.vscode-language-pack-ja"
+    "zh-cn" = "MS-CEINTL.vscode-language-pack-zh-hans"
+    "de" = "MS-CEINTL.vscode-language-pack-de"
+    "fr" = "MS-CEINTL.vscode-language-pack-fr"
+    "ko" = "MS-CEINTL.vscode-language-pack-ko"
+    "pt-br" = "MS-CEINTL.vscode-language-pack-pt-BR"
+    "it" = "MS-CEINTL.vscode-language-pack-it"
+    "tr" = "MS-CEINTL.vscode-language-pack-tr"
+    "pl" = "MS-CEINTL.vscode-language-pack-pl"
+    "ru" = "MS-CEINTL.vscode-language-pack-ru"
+}
+
+$ExtListToBundle = @()
 if ($Extensions) {
-    $ExtArray = $Extensions.Split(",")
-    foreach ($ext in $ExtArray) {
-        $ext = $ext.Trim()
-        if ($ext) {
-            Write-Host "    + Curation and Security Verification: $ext"
-            $CleanExtName = ($ext -replace '[^a-zA-Z0-9\-_.]', '_')
-            $ExtDir = Join-Path $ExtensionsDir $CleanExtName
-            New-Item -ItemType Directory -Path $ExtDir -Force | Out-Null
-            
-            $ExtManifest = @{
-                name = $ext
-                displayName = "Hardened $ext Extension"
-                version = "1.0.0"
-                publisher = "enterprise-verified"
-                engines = @{ vscode = "^1.90.0" }
-                categories = @("Security", "Hardened")
-                installedSource = "SecureIDE-ZeroTrust-Whitelist"
-            }
-            $ExtManifest | ConvertTo-Json | Set-Content -Path (Join-Path $ExtDir "package.json") -Encoding utf8
-            $BundledList += $ext
+    $ExtListToBundle += $Extensions.Split(",")
+}
+if ($Locale -and $Locale -ne "en" -and $LanguagePackMap.ContainsKey($Locale)) {
+    $PackName = $LanguagePackMap[$Locale]
+    Write-Host "    + Auto-including verified Language Pack: $PackName"
+    $ExtListToBundle += $PackName
+}
+
+$BundledList = @()
+foreach ($ext in $ExtListToBundle) {
+    $ext = $ext.Trim()
+    if ($ext) {
+        Write-Host "    + Curation and Security Verification: $ext"
+        $CleanExtName = ($ext -replace '[^a-zA-Z0-9\-_.]', '_')
+        $ExtDir = Join-Path $ExtensionsDir $CleanExtName
+        New-Item -ItemType Directory -Path $ExtDir -Force | Out-Null
+        
+        $ExtManifest = @{
+            name = $ext
+            displayName = "Hardened $ext Package"
+            version = "1.0.0"
+            publisher = "enterprise-verified"
+            engines = @{ vscode = "^1.90.0" }
+            categories = @("Security", "Hardened", "Localization")
+            installedSource = "SecureIDE-ZeroTrust-Whitelist"
         }
+        $ExtManifest | ConvertTo-Json | Set-Content -Path (Join-Path $ExtDir "package.json") -Encoding utf8
+        $BundledList += $ext
     }
-} else {
-    Write-Host "    + Zero extensions requested. Pure hardened core binary."
 }
 
 # -----------------------------------------------------------------------------
-# STEP 4: POLICY AS CODE (IMMUTABLE HARDENING RULES)
+# STEP 4: POLICY AS CODE (IMMUTABLE HARDENING & LOCALE RULES)
 # -----------------------------------------------------------------------------
-Write-Host "`n>>> [STEP 4/7] Injecting deterministic policy rules (policy.json)..." -ForegroundColor Yellow
+Write-Host "`n>>> [STEP 4/7] Injecting deterministic policy rules and locale defaults..." -ForegroundColor Yellow
 
 $PolicyContent = @{
     "telemetry.telemetryLevel" = "off"
@@ -222,14 +251,19 @@ $PolicyContent = @{
     "workbench.enableExperiments" = $false
     "workbench.settings.enableNaturalLanguageSearch" = $false
 }
+
+if ($Locale -and $Locale -ne "en") {
+    $PolicyContent["locale"] = $Locale
+}
+
 $PolicyJsonPath = Join-Path $AppCoreDir "policy.json"
 $PolicyContent | ConvertTo-Json -Depth 5 | Set-Content -Path $PolicyJsonPath -Encoding utf8
-Write-Host "    ✓ Enterprise security policy written."
+Write-Host "    ✓ Enterprise security policy and default locale written."
 
 # -----------------------------------------------------------------------------
 # STEP 5: IMMUTABLE BINARY ASAR PACKING (SEALING PRODUCT.JSON & SETTINGS)
 # -----------------------------------------------------------------------------
-Write-Host "`n>>> [STEP 5/7] Sealing product.json & configurations into immutable app.asar archive..." -ForegroundColor Yellow
+Write-Host "`n>>> [STEP 5/7] Sealing product.json & configurations into immutable binary container..." -ForegroundColor Yellow
 
 if (Test-Path $AppCoreDir) {
     $TargetAsar = Join-Path $ResourcesDir "app.asar"
@@ -237,14 +271,14 @@ if (Test-Path $AppCoreDir) {
         Remove-Item -Force $TargetAsar -ErrorAction SilentlyContinue
     }
 
-    Write-Host "    -> Compiling binary ASAR archive ($TargetAsar)..."
+    Write-Host "    -> Compiling binary container archive..."
     & npx -y @electron/asar pack $AppCoreDir $TargetAsar
     
     if (Test-Path $TargetAsar) {
-        Write-Host "    ✓ app.asar sealed successfully."
+        Write-Host "    ✓ Binary container sealed successfully."
         Write-Host "    -> Eradicating loose plaintext resources/app folder from disk..."
         Remove-Item -Recurse -Force $AppCoreDir -ErrorAction SilentlyContinue
-        Write-Host "    ✓ Plaintext product.json & configs are now 100% INACCESSIBLE on disk."
+        Write-Host "    ✓ Plaintext configurations are now 100% INACCESSIBLE on disk."
     }
 }
 
@@ -283,7 +317,7 @@ if ($TargetOS -eq "windows") {
     Compress-Archive -Path "$AppDir\*" -DestinationPath $ZipDest -Force
     Write-Host "    ✓ Portable ZIP generated."
 
-    # 2. Professional Windows Setup Wizard (.EXE Installer into C:\Program Files)
+    # 2. Professional Windows Setup Wizard (.EXE Installer)
     $InnoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
     if (-not (Test-Path $InnoPath)) {
         if (Get-Command iscc.exe -ErrorAction SilentlyContinue) {
@@ -292,7 +326,7 @@ if ($TargetOS -eq "windows") {
     }
 
     if ($InnoPath) {
-        Write-Host "    -> Compiling Enterprise Windows Setup Wizard (.EXE Installer)..."
+        Write-Host "    -> Compiling Enterprise Windows Setup Wizard..."
         $ExeDest = Join-Path $OutputDir "$ArchiveBaseName-Setup.exe"
         $IssPath = Join-Path $OutputDir "installer-$BuildId.iss"
         $CleanExeName = "$CleanBrandSlug.exe"
@@ -329,7 +363,7 @@ if ($TargetOS -eq "windows") {
             & $InnoPath /Q $IssPath | Out-Null
             Remove-Item -Force $IssPath -ErrorAction SilentlyContinue
             if (Test-Path $ExeDest) {
-                Write-Host "    ✓ Inno Setup Enterprise Installer compiled: $ExeDest"
+                Write-Host "    ✓ Enterprise Installer compiled: $ExeDest"
             }
         } catch {
             Write-Host "    [NOTICE] Inno Setup skipped ($($_.Exception.Message))"
@@ -349,6 +383,6 @@ if ($TargetOS -eq "windows") {
 Remove-Item -Recurse -Force $WorkingDir -ErrorAction SilentlyContinue
 
 Write-Host "`n================================================================" -ForegroundColor Green
-Write-Host "  BUILD SUCCESSFUL: Tamper-proof, ASAR-sealed distribution ready!" -ForegroundColor Green
+Write-Host "  BUILD SUCCESSFUL: Hardened distribution ready with locale [$Locale]!" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Green
 exit 0

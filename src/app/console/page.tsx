@@ -162,6 +162,43 @@ interface AuditEvent {
   status: "SUCCESS" | "BLOCKED" | "FLAGGED";
 }
 
+export interface LocaleOption {
+  code: string;
+  name: string;
+  native: string;
+  flag: string;
+}
+
+export const SUPPORTED_LOCALES: LocaleOption[] = [
+  { code: "en", name: "English (US)", native: "English", flag: "🇺🇸" },
+  { code: "es", name: "Spanish", native: "Español", flag: "🇪🇸" },
+  { code: "ja", name: "Japanese", native: "日本語", flag: "🇯🇵" },
+  { code: "zh-cn", name: "Simplified Chinese", native: "简体中文", flag: "🇨🇳" },
+  { code: "de", name: "German", native: "Deutsch", flag: "🇩🇪" },
+  { code: "fr", name: "French", native: "Français", flag: "🇫🇷" },
+  { code: "ko", name: "Korean", native: "한국어", flag: "🇰🇷" },
+  { code: "pt-br", name: "Portuguese (Brazil)", native: "Português", flag: "🇧🇷" },
+  { code: "it", name: "Italian", native: "Italiano", flag: "🇮🇹" },
+  { code: "tr", name: "Turkish", native: "Türkçe", flag: "🇹🇷" },
+  { code: "pl", name: "Polish", native: "Polski", flag: "🇵🇱" },
+  { code: "ru", name: "Russian", native: "Русский", flag: "🇷🇺" }
+];
+
+export const LOCALE_MENUS: Record<string, { explorer: string; file: string; edit: string; selection: string; view: string; go: string; run: string; terminal: string; help: string; ready: string }> = {
+  en: { explorer: "EXPLORER", file: "File", edit: "Edit", selection: "Selection", view: "View", go: "Go", run: "Run", terminal: "Terminal", help: "Help", ready: "Air-Gap Ready" },
+  es: { explorer: "EXPLORADOR", file: "Archivo", edit: "Editar", selection: "Selección", view: "Ver", go: "Ir", run: "Ejecutar", terminal: "Terminal", help: "Ayuda", ready: "Listo (Air-Gap)" },
+  de: { explorer: "EXPLORER", file: "Datei", edit: "Bearbeiten", selection: "Auswahl", view: "Ansicht", go: "Gehe zu", run: "Ausführen", terminal: "Terminal", help: "Hilfe", ready: "Bereit (Air-Gap)" },
+  fr: { explorer: "EXPLORATEUR", file: "Fichier", edit: "Modifier", selection: "Sélection", view: "Affichage", go: "Aller", run: "Exécuter", terminal: "Terminal", help: "Aide", ready: "Prêt (Air-Gap)" },
+  ja: { explorer: "エクスプローラー", file: "ファイル", edit: "編集", selection: "選択", view: "表示", go: "移動", run: "実行", terminal: "ターミナル", help: "ヘルプ", ready: "準備完了" },
+  "zh-cn": { explorer: "资源管理器", file: "文件", edit: "编辑", selection: "选择", view: "查看", go: "转到", run: "运行", terminal: "终端", help: "帮助", ready: "已就绪 (隔离模式)" },
+  ko: { explorer: "탐색기", file: "파일", edit: "편집", selection: "선택", view: "보기", go: "이동", run: "실행", terminal: "터미널", help: "도움말", ready: "준비 완료" },
+  "pt-br": { explorer: "EXPLORADOR", file: "Arquivo", edit: "Editar", selection: "Seleção", view: "Exibir", go: "Ir", run: "Executar", terminal: "Terminal", help: "Ajuda", ready: "Pronto (Air-Gap)" },
+  it: { explorer: "ESPLORA", file: "File", edit: "Modifica", selection: "Selezione", view: "Visualizza", go: "Vai", run: "Esegui", terminal: "Terminale", help: "Aiuto", ready: "Pronto" },
+  tr: { explorer: "GEZGİN", file: "Dosya", edit: "Düzenle", selection: "Seçim", view: "Görünüm", go: "Git", run: "Çalıştır", terminal: "Terminal", help: "Yardım", ready: "Hazır" },
+  pl: { explorer: "EKSPLORATOR", file: "Plik", edit: "Edycja", selection: "Zaznaczenie", view: "Widok", go: "Przejdź", run: "Uruchom", terminal: "Terminal", help: "Pomoc", ready: "Gotowy" },
+  ru: { explorer: "ПРОВОДНИК", file: "Файл", edit: "Правка", selection: "Выделение", view: "Вид", go: "Переход", run: "Запуск", terminal: "Терминал", help: "Справка", ready: "Готово" }
+};
+
 type SubscriptionTier = "COMMUNITY" | "TEAM" | "ENTERPRISE";
 type ActiveTab = "studio" | "blueprints" | "theme" | "policy" | "platforms" | "sbom" | "fleet";
 type MarketplaceFilter = "ALL" | "COMMUNITY_VERIFIED" | "GRADE_A";
@@ -233,11 +270,12 @@ export default function ConsolePage() {
   const [offlineDocRouting, setOfflineDocRouting] = useState(true);
   const [blockOutboundTelemetry, setBlockOutboundTelemetry] = useState(true);
 
-  // Theme & White-label Branding
+  // Theme & White-label Branding & Localization
   const [brandName, setBrandName] = useState("SecureIDE Studio");
   const [brandColor, setBrandColor] = useState("#3B82F6"); // Default Quantum Blue
   const [brandHelpdesk, setBrandHelpdesk] = useState("https://it-support.corp.internal");
   const [brandSecChannel, setBrandSecChannel] = useState("#sec-ops-alert");
+  const [selectedLocale, setSelectedLocale] = useState("en");
 
   // Multi-OS Target Matrix
   const [targetWinX64, setTargetWinX64] = useState(true);
@@ -1760,7 +1798,8 @@ build_hardened_ide:
       `Targeting Engine: [${selectedEngine.toUpperCase()}]...`,
       `Verifying ${tier} Enterprise License...`,
       `Applying Custom Branding: [${brandName}] (Accent: ${brandColor})...`,
-      `Enforcing Whitelist Policy: ${tier === "TEAM" ? "GitHub Open-Source Verified + 0 Open CVEs" : "Enterprise Artifactory Whitelist"}...`,
+      `Applying UI Language: [${SUPPORTED_LOCALES.find(l => l.code === selectedLocale)?.name || selectedLocale.toUpperCase()}]...`,
+      `Enforcing Whitelist Policy: ${tier === "TEAM" ? "Verified Whitelist + 0 Open CVEs" : "Enterprise Whitelist"}...`,
       "Initiating Multi-OS Cloud Build Engine...",
       "Generating Cryptographic CycloneDX 1.5 Software Bill of Materials (SBOM)..."
     ]);
@@ -1776,6 +1815,7 @@ build_hardened_ide:
         body: JSON.stringify({
           tier,
           brandName: brandName || 'SecureIDE Studio',
+          locale: selectedLocale,
           registryUrl: canUseRegistryUrl ? registryUrl : "",
           extensions: extList,
           engine: selectedEngine,
@@ -2961,12 +3001,63 @@ build_hardened_ide:
                   onChange={(e) => setBrandSecChannel(e.target.value)}
                 />
               </div>
+
+              {/* Localization & Internationalization (i18n) */}
+              <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <label style={{ margin: 0, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#E2E8F0' }}>
+                    <span>🌐</span> Default UI Language (i18n)
+                  </label>
+                  <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.12)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.25)', fontSize: '0.7rem', padding: '0.15rem 0.5rem' }}>
+                    ✓ Air-Gap Bundled
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.85rem', lineHeight: '1.4' }}>
+                  Pre-bundles verified language packs and configures native localization during compilation.
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))', gap: '0.4rem' }}>
+                  {SUPPORTED_LOCALES.map(loc => {
+                    const isSelected = selectedLocale === loc.code;
+                    return (
+                      <button
+                        key={loc.code}
+                        type="button"
+                        onClick={() => setSelectedLocale(loc.code)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.45rem',
+                          padding: '0.45rem 0.6rem',
+                          borderRadius: '8px',
+                          border: isSelected ? `2px solid ${brandColor}` : '1px solid rgba(255,255,255,0.08)',
+                          background: isSelected ? 'rgba(59, 130, 246, 0.2)' : 'rgba(0, 0, 0, 0.25)',
+                          color: isSelected ? '#fff' : 'var(--text-muted)',
+                          fontWeight: isSelected ? 700 : 500,
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <span style={{ fontSize: '1rem' }}>{loc.flag}</span>
+                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ lineHeight: 1.2 }}>{loc.native}</div>
+                          <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>{loc.name.split(' ')[0]}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Live Interactive Mockup */}
             <div>
               <h2 style={{ marginBottom: '0.5rem' }}>Live {selectedEngine.toUpperCase()} Preview</h2>
-              <p style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>Simulated execution of the compiled {brandName} binary targeting {selectedEngine.toUpperCase()}.</p>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                Simulated execution of the compiled {brandName} binary with <strong>{SUPPORTED_LOCALES.find(l => l.code === selectedLocale)?.name || selectedLocale.toUpperCase()}</strong> locale.
+              </p>
               
               <div className="ide-mockup">
                 <div className="ide-titlebar">
@@ -2978,6 +3069,26 @@ build_hardened_ide:
                   <span>[{brandName}] ({selectedEngine.toUpperCase()}) — Zero-Trust Mode</span>
                   <span style={{ fontSize: '0.7rem', color: '#34D399' }}>● HSM Signed</span>
                 </div>
+
+                {/* Top Menubar with Active Locale Translation */}
+                <div style={{ display: 'flex', gap: '0.85rem', padding: '0.3rem 0.75rem', background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.72rem', color: '#94A3B8' }}>
+                  {(() => {
+                    const m = LOCALE_MENUS[selectedLocale] || LOCALE_MENUS.en;
+                    return (
+                      <>
+                        <span style={{ color: '#F1F5F9', fontWeight: 600 }}>{m.file}</span>
+                        <span>{m.edit}</span>
+                        <span>{m.selection}</span>
+                        <span>{m.view}</span>
+                        <span>{m.go}</span>
+                        <span>{m.run}</span>
+                        <span>{m.terminal}</span>
+                        <span>{m.help}</span>
+                      </>
+                    );
+                  })()}
+                </div>
+
                 <div className="ide-body">
                   <div className="ide-activitybar">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
@@ -2985,7 +3096,9 @@ build_hardened_ide:
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   </div>
                   <div className="ide-sidebar">
-                    <strong style={{ color: 'var(--text-main)' }}>EXPLORER ({selectedEngine.toUpperCase()})</strong>
+                    <strong style={{ color: 'var(--text-main)', fontSize: '0.75rem', letterSpacing: '0.03em' }}>
+                      {(LOCALE_MENUS[selectedLocale] || LOCALE_MENUS.en).explorer} ({selectedEngine.toUpperCase()})
+                    </strong>
                     <span>📁 src/</span>
                     <span style={{ paddingLeft: '0.5rem', color: brandColor }}>📄 main.ts</span>
                     <span style={{ paddingLeft: '0.5rem' }}>📄 policy.json</span>
@@ -3004,6 +3117,7 @@ build_hardened_ide:
                       <span style={{ color: '#93C5FD' }}>const</span> app = <span style={{ color: '#60A5FA' }}>createZeroTrustRunner</span>(&#123;<br/>
                       &nbsp;&nbsp;engine: <span style={{ color: '#FDE047' }}>"{selectedEngine}"</span>,<br/>
                       &nbsp;&nbsp;brand: <span style={{ color: '#FDE047' }}>"{brandName}"</span>,<br/>
+                      &nbsp;&nbsp;locale: <span style={{ color: '#FDE047' }}>"{selectedLocale}"</span>,<br/>
                       &nbsp;&nbsp;telemetry: <span style={{ color: '#F87171' }}>false</span>,<br/>
                       &nbsp;&nbsp;airGap: <span style={{ color: '#34D399' }}>true</span><br/>
                       &#125;);
@@ -3012,7 +3126,7 @@ build_hardened_ide:
                 </div>
                 <div className="ide-statusbar" style={{ background: brandColor }}>
                   <div style={{ display: 'flex', gap: '1rem' }}>
-                    <span>✓ {selectedEngine.toUpperCase()} Air-Gap Verified</span>
+                    <span>✓ {selectedEngine.toUpperCase()} ({(LOCALE_MENUS[selectedLocale] || LOCALE_MENUS.en).ready})</span>
                     <span>SOC 2: Evidence Ready</span>
                   </div>
                   <div>

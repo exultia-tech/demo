@@ -1,33 +1,33 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { generateCycloneDX } from '@/lib/sbom';
 
-export const dynamic = 'force-dynamic';
-
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const {
-      tier = 'PRO',
+      tier = 'COMMUNITY',
       targetOs = 'windows',
       engine = 'vscode',
       registryUrl = '',
       extensions = '',
       brandName = 'SecureIDE Studio',
+      locale = 'en',
       telemetryUrl = ''
     } = body;
 
     const buildId = `build-${Date.now()}`;
     const safeBrand = (brandName || 'SecureIDE Studio').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim();
+    const safeLocale = (locale || 'en').replace(/[^a-zA-Z0-9\-_]/g, '').toLowerCase().trim();
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOwner = process.env.GITHUB_OWNER;
     const githubRepo = process.env.GITHUB_REPO;
     const workflowFile = process.env.GITHUB_WORKFLOW || 'build-ide.yml';
 
     // -----------------------------------------------------------------------
-    // MODE A: GITHUB ACTIONS CLOUD DISPATCH (If GitHub credentials configured)
+    // MODE A: MULTI-OS CLOUD ENGINE DISPATCH (If credentials configured)
     // -----------------------------------------------------------------------
     if (githubToken && githubOwner && githubRepo) {
       const dispatchUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/actions/workflows/${workflowFile}/dispatches`;
@@ -47,6 +47,7 @@ export async function POST(request: Request) {
             target_os: targetOs.toLowerCase(),
             engine: engine.toLowerCase(),
             brand_name: safeBrand,
+            locale: safeLocale,
             registry_url: registryUrl,
             extensions: extensions,
             telemetry_url: telemetryUrl,
@@ -57,17 +58,17 @@ export async function POST(request: Request) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`GitHub Actions dispatch failed (${response.status}): ${errorText}`);
+        throw new Error(`Cloud engine dispatch failed (${response.status}): ${errorText}`);
       }
 
       const stream = new ReadableStream({
         start(controller) {
           const encoder = new TextEncoder();
           controller.enqueue(encoder.encode(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine}\n`));
+          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine} | Locale: ${safeLocale.toUpperCase()}\n`));
           controller.enqueue(encoder.encode(`>>> [CLOUD] Build ID: ${buildId}\n`));
           controller.enqueue(encoder.encode(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`));
-          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine"}\n`));
+          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine","locale":"${safeLocale}"}\n`));
           controller.close();
         }
       });
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     }
 
     // -----------------------------------------------------------------------
-    // MODE B: LOCAL PIPELINE ASSEMBLY RUNNER (Zero-Config / Development Mode)
+    // MODE B: LOCAL PIPELINE ASSEMBLY ENGINE (Standard / Development Mode)
     // -----------------------------------------------------------------------
     const scriptPath = path.join(process.cwd(), 'scripts', 'assemble-ide.ps1');
     const distDir = path.join(process.cwd(), 'public', 'downloads');
@@ -98,6 +99,7 @@ export async function POST(request: Request) {
       '-TargetOS', targetOs.toLowerCase(),
       '-Engine', engine.toLowerCase(),
       '-BrandName', safeBrand,
+      '-Locale', safeLocale,
       '-BuildId', buildId,
       '-OutputDir', distDir
     ];
@@ -121,7 +123,7 @@ export async function POST(request: Request) {
     const stream = new ReadableStream({
       start(controller) {
         const encoder = new TextEncoder();
-        controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()})...\n`));
+        controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()} / ${safeLocale.toUpperCase()})...\n`));
         controller.enqueue(encoder.encode(`>>> [NOTICE] Cloud build engine active in standard environment.\n\n`));
 
         child.stdout.on('data', (data) => {
@@ -137,35 +139,27 @@ export async function POST(request: Request) {
             try {
               const sbomOut = path.join(distDir, `cyclonedx-sbom-${buildId}.json`);
               generateCycloneDX({
-                dist: distDir,
-                brand: safeBrand,
+                distDir,
+                brandName: safeBrand,
                 tier: tier.toUpperCase(),
-                engine: engine.toLowerCase(),
-                os: targetOs.toLowerCase(),
-                output: sbomOut
+                engine,
+                targetOs,
+                outputPath: sbomOut
               });
-
-              const cleanSlug = safeBrand.replace(/[^a-zA-Z0-9\-_]/g, '_');
-              const zipName = `${cleanSlug}-${targetOs.toLowerCase()}-${tier.toUpperCase()}-${buildId}.zip`;
-              controller.enqueue(encoder.encode(`\n>>> [SBOM] CycloneDX 1.5 SBOM generated: ${sbomOut}\n`));
-              controller.enqueue(encoder.encode(`>>> [SUCCESS] Custom build generated: ${path.join(distDir, zipName)}\n`));
-              controller.enqueue(encoder.encode(`>>> Release binary is 100% telemetry-free and enterprise-governed.\n`));
-              controller.enqueue(encoder.encode(`>>> Ready for enterprise deployment.\n`));
-            } catch (err: any) {
-              controller.enqueue(encoder.encode(`>>> [SBOM Warning] Failed to generate SBOM: ${err.message}\n`));
+              controller.enqueue(encoder.encode(`>>> [SBOM] Cryptographic CycloneDX 1.5 JSON generated.\n`));
+            } catch (err: unknown) {
+              const msg = err instanceof Error ? err.message : String(err);
+              controller.enqueue(encoder.encode(`>>> [WARNING] SBOM Generation Notice: ${msg}\n`));
             }
-            controller.close();
-          } else {
-            controller.enqueue(encoder.encode(`\n>>> [ERROR] Assembly process exited with code ${code}\n`));
-            controller.close();
           }
+          controller.close();
         });
 
         child.on('error', (err) => {
-          controller.enqueue(encoder.encode(`>>> Process Error: ${err.message}\n`));
+          controller.enqueue(encoder.encode(`>>> [CRITICAL] Subprocess Error: ${err.message}\n`));
           controller.close();
         });
-      }
+      },
     });
 
     return new Response(stream, {
@@ -176,7 +170,8 @@ export async function POST(request: Request) {
       },
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown internal error';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

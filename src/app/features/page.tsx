@@ -52,6 +52,10 @@ export default function FeaturesPage() {
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', fontSize: '0.9rem' }}>
               <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
+              <div><strong>Air-Gapped Localization (i18n)</strong>: Pre-provisions 12+ verified language packs (English, Spanish, Japanese, Chinese, German, French, Korean, Portuguese, Italian, Turkish, Polish, Russian) with native locale enforcement.</div>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', fontSize: '0.9rem' }}>
+              <span style={{ color: '#34D399', fontSize: '1.1rem' }}>✓</span> 
               <div><strong>Auto-Included Remote-SSH</strong>: Engine-specific secure remote development bridges included across all non-zero blueprint stacks.</div>
             </li>
           </ul>

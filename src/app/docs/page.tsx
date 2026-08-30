@@ -124,6 +124,7 @@ curl -X POST https://api.secureide.dev/api/build \\
     "tier": "ENTERPRISE",
     "targetOs": "windows",
     "brandName": "Citadel Studio",
+    "locale": "es",
     "registryUrl": "https://artifactory.corp.internal/vscode/gallery",
     "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
   }'`}
