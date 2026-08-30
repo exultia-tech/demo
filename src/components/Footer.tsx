@@ -22,41 +22,44 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* COLUMN 1: PRODUCT */}
         <div className="footer-col">
           <h4>Product</h4>
           <ul>
-            <li><Link href="/features">Features & Architecture</Link></li>
+            <li><Link href="/features">Features & Capabilities</Link></li>
             <li><Link href="/pricing">Plans & Pricing</Link></li>
             <li><Link href="/console">Builder Console</Link></li>
-            <li><Link href="/features#blueprints">Stack Blueprints</Link></li>
-            <li><Link href="/features#theme">Theme Studio</Link></li>
+            <li><Link href="/security">Zero-Trust Security</Link></li>
+            <li><Link href="/docs#pipeline">Multi-OS Matrix</Link></li>
           </ul>
         </div>
 
+        {/* COLUMN 2: THREAT INTELLIGENCE */}
         <div className="footer-col">
-          <h4>Security Intelligence</h4>
+          <h4>Threat Intelligence</h4>
           <ul>
             <li><Link href="/threat-feed">8-Source Threat Feeds</Link></li>
-            <li><a href="/api/threat-feed" target="_blank">Open Threat API (JSON)</a></li>
-            <li><Link href="/features#sandbox">Air-Gap Sandboxing</Link></li>
-            <li><Link href="/features#sbom">CycloneDX 1.5 SBOM</Link></li>
-            <li><Link href="/features#hardening">Binary Policy Hardening</Link></li>
+            <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">Open Threat API (JSON)</a></li>
+            <li><Link href="/features#sandbox">Air-Gap Architecture</Link></li>
+            <li><Link href="/features#hardening">Binary Hardening</Link></li>
+            <li><Link href="/docs#sbom">CycloneDX SBOMs</Link></li>
           </ul>
         </div>
 
+        {/* COLUMN 3: DEVELOPER RESOURCES */}
         <div className="footer-col">
-          <h4>Resources</h4>
+          <h4>Developer Resources</h4>
           <ul>
             <li><Link href="/docs">Documentation</Link></li>
             <li><Link href="/docs#quickstart">Quickstart Guide</Link></li>
-            <li><Link href="/docs#cicd">CI/CD Pipelines</Link></li>
-            <li><a href="/api/threat-feed" target="_blank">Threat Intel REST API</a></li>
-            <li><Link href="/docs#api">Orchestrator API</Link></li>
+            <li><Link href="/docs#pipeline">Cloud Build Pipeline</Link></li>
+            <li><Link href="/docs#tamperproof">Governance Specs</Link></li>
+            <li><Link href="/docs#rest-api">Headless REST API</Link></li>
           </ul>
         </div>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '1rem' }}>
         <div>© 2026 SecureIDE Inc. All rights reserved. Zero telemetry recorded.</div>
         <div style={{ display: 'flex', gap: '1.5rem' }}>
           <span>System Status: <strong style={{ color: '#34D399' }}>● 100% Operational</strong></span>
