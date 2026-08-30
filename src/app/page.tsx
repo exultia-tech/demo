@@ -5,7 +5,7 @@ export default function LandingPage() {
     <div className="fade-in">
       
       {/* HERO SECTION */}
-      <section className="hero-section" style={{ paddingBottom: '3rem' }}>
+      <section className="hero-section" style={{ paddingBottom: '3.5rem' }}>
         <div className="hero-badge">
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }}></span>
           Zero-Trust Developer Workstation Platform
@@ -36,13 +36,62 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* HOW IT WORKS (3 CONCISE STEPS - MOVED TO TOP) */}
+      <section style={{ background: 'rgba(255,255,255,0.015)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', padding: '4.5rem 2rem', marginBottom: '5.5rem' }}>
+        <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+              Deterministic Workflow
+            </span>
+            <h2 style={{ fontSize: '2.2rem', marginTop: '0.35rem', marginBottom: '0.5rem' }}>How It Works in 3 Steps</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '600px', margin: '0 auto' }}>
+              From stack curation and threat validation to signed workstation distribution.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            
+            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>
+                01. Curate
+              </div>
+              <strong style={{ fontSize: '1.05rem', display: 'block', marginBottom: '0.35rem' }}>Select Engine & Stack</strong>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.5', margin: 0 }}>
+                Choose your IDE engine, apply a curated role blueprint or custom extension list, and set zero-telemetry and proxy rules.
+              </p>
+            </div>
+
+            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-secondary)', marginBottom: '0.5rem' }}>
+                02. Assemble
+              </div>
+              <strong style={{ fontSize: '1.05rem', display: 'block', marginBottom: '0.35rem' }}>Cloud Sandbox Compilation</strong>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.5', margin: 0 }}>
+                Our stateless cloud runner correlates UVI threat signals, strips telemetry, and compiles sealed binaries for Win, Mac, and Linux.
+              </p>
+            </div>
+
+            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34D399', marginBottom: '0.5rem' }}>
+                03. Deploy
+              </div>
+              <strong style={{ fontSize: '1.05rem', display: 'block', marginBottom: '0.35rem' }}>Download & Distribute</strong>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.5', margin: 0 }}>
+                Download digitally signed native installers with exportable CycloneDX 1.5 JSON SBOMs for MDM and enterprise audits.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* 4 CORE PRODUCT PILLARS (POINT-BY-POINT) */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto 5.5rem auto', padding: '0 2rem' }}>
+      <section style={{ maxWidth: '1240px', margin: '0 auto 6rem auto', padding: '0 2rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <span style={{ fontSize: '0.8rem', color: '#34D399', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
             Product Summary
           </span>
-          <h2 style={{ fontSize: '2rem', marginTop: '0.4rem', letterSpacing: '-0.01em' }}>
+          <h2 style={{ fontSize: '2.2rem', marginTop: '0.4rem', letterSpacing: '-0.01em' }}>
             The Platform in 4 Key Points
           </h2>
         </div>
@@ -183,50 +232,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-        </div>
-      </section>
-
-      {/* HOW IT WORKS (3 CONCISE STEPS) */}
-      <section style={{ background: 'rgba(255,255,255,0.01)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', padding: '4.5rem 2rem' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>How It Works in 3 Steps</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Deterministic workflow from curation to workstation deployment.</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            
-            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>
-                01. Curate
-              </div>
-              <strong style={{ fontSize: '1rem', display: 'block', marginBottom: '0.35rem' }}>Select Engine & Stack</strong>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
-                Choose your IDE engine, apply a role blueprint or custom extension list, and set zero-telemetry and proxy rules.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-secondary)', marginBottom: '0.5rem' }}>
-                02. Assemble
-              </div>
-              <strong style={{ fontSize: '1rem', display: 'block', marginBottom: '0.35rem' }}>Cloud Sandbox Compilation</strong>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
-                Our stateless cloud runner correlates UVI threat signals, strips telemetry, and compiles sealed binaries for Win, Mac, and Linux.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '1.75rem', marginBottom: 0 }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34D399', marginBottom: '0.5rem' }}>
-                03. Deploy
-              </div>
-              <strong style={{ fontSize: '1rem', display: 'block', marginBottom: '0.35rem' }}>Download & Distribute</strong>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
-                Download digitally signed native installers with exportable CycloneDX 1.5 JSON SBOMs for MDM and enterprise audits.
-              </p>
-            </div>
-
-          </div>
         </div>
       </section>
 
