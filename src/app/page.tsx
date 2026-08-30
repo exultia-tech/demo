@@ -11,8 +11,8 @@ export default function LandingPage() {
           <span className="gradient-text">On-Demand</span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: '700px', marginBottom: '2.25rem', fontSize: '1.2rem', lineHeight: '1.6' }}>
-          Compile, harden, and distribute zero-trust developer releases across <strong>VS Code, Eclipse Theia, Zed, Neovim, JupyterLab, and VSCodium</strong> in seconds.
+        <p className="hero-desc" style={{ maxWidth: '700px', marginBottom: '2.25rem', fontSize: '1.25rem', lineHeight: '1.6' }}>
+          Compile, harden and distribute secure dev environments in seconds.
         </p>
 
         <div className="hero-cta-group">
