@@ -41,8 +41,8 @@ export default function PricingPage() {
       
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <span className="hero-badge">Transparent Enterprise Pricing</span>
-        <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1rem' }}>
-          Predictable Plans for Engineering Teams of Any Size
+        <h1 style={{ fontSize: '3.2rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+          Simple Pricing, Strong Security
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '680px', margin: '0 auto 2rem auto' }}>
           From free air-gapped open-source builds to fully dedicated multi-cluster enterprise deployments.
