@@ -268,50 +268,10 @@ export default function PricingPage() {
             </p>
           </div>
 
-          {/* SCALE TOGGLE CONTROL (SWAP BETWEEN ≤ 100 USERS AND 100+ USERS) */}
-          <div style={{ margin: '0.5rem 0 0.25rem 0', display: 'flex', background: 'rgba(0,0,0,0.35)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-            <button
-              type="button"
-              onClick={() => setEnterpriseScale("100")}
-              style={{
-                flex: 1,
-                padding: '0.35rem 0.5rem',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                borderRadius: '6px',
-                border: 'none',
-                background: enterpriseScale === "100" ? 'var(--accent-primary)' : 'transparent',
-                color: enterpriseScale === "100" ? '#fff' : 'var(--text-muted)',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              100 Users
-            </button>
-            <button
-              type="button"
-              onClick={() => setEnterpriseScale("100+")}
-              style={{
-                flex: 1,
-                padding: '0.35rem 0.5rem',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                borderRadius: '6px',
-                border: 'none',
-                background: enterpriseScale === "100+" ? '#7C3AED' : 'transparent',
-                color: enterpriseScale === "100+" ? '#fff' : 'var(--text-muted)',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              100+ Users
-            </button>
-          </div>
-
-          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
+          {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED WITH TEAM & COMMUNITY) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             {enterpriseScale === "100+" ? (
-              <div className="pricing-price" style={{ fontSize: '1.85rem', margin: 0, lineHeight: 1, color: '#C084FC', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+              <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, color: '#C084FC', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
                 Contact Us
               </div>
             ) : (
@@ -321,14 +281,46 @@ export default function PricingPage() {
             )}
           </div>
 
-          {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
+          {/* SCALE TOGGLE CONTROL (UNDERNEATH PRICE LINE) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <p style={{ fontSize: '0.72rem', color: enterpriseScale === "100+" ? '#C084FC' : '#93C5FD', margin: 0, lineHeight: 1.35 }}>
-              {enterpriseScale === "100+"
-                ? "Contact our team to discuss tailored enterprise arrangements."
-                : "Self-serve for engineering teams with 1 to 100 developer seats."
-              }
-            </p>
+            <div style={{ width: '100%', display: 'flex', background: 'rgba(0,0,0,0.35)', padding: '0.2rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <button
+                type="button"
+                onClick={() => setEnterpriseScale("100")}
+                style={{
+                  flex: 1,
+                  padding: '0.3rem 0.4rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: enterpriseScale === "100" ? 'var(--accent-primary)' : 'transparent',
+                  color: enterpriseScale === "100" ? '#fff' : 'var(--text-muted)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                100 Users
+              </button>
+              <button
+                type="button"
+                onClick={() => setEnterpriseScale("100+")}
+                style={{
+                  flex: 1,
+                  padding: '0.3rem 0.4rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: enterpriseScale === "100+" ? '#7C3AED' : 'transparent',
+                  color: enterpriseScale === "100+" ? '#fff' : 'var(--text-muted)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                100+ Users
+              </button>
+            </div>
           </div>
 
           {/* DYNAMIC FEATURE LIST BASED ON TOGGLE */}
