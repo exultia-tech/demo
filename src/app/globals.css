@@ -1058,7 +1058,30 @@ input:checked + .slider:before {
   color: var(--text-main);
 }
 
+/* 4 Containment Layers Grid */
+.containment-layers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
 
+/* When the viewport is taller than it is wide (portrait / aspect-ratio <= 1), stack 2 on top, 2 on bottom */
+@media (orientation: portrait), (max-aspect-ratio: 1/1) {
+  .containment-layers-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
 
+/* Landscape tablet & medium screens fallback */
+@media (max-width: 1080px) and (min-width: 601px) {
+  .containment-layers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
-
+/* Narrow mobile single-column fallback */
+@media (max-width: 540px) {
+  .containment-layers-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

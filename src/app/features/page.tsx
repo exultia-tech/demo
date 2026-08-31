@@ -210,7 +210,7 @@ export default function FeaturesPage() {
           </p>
         </div>
 
-        <div className="feature-grid-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+        <div className="containment-layers-grid">
           
           <div id="hardening" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60A5FA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
