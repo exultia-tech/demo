@@ -123,8 +123,8 @@ export default function FeaturesPage() {
         <h1 style={{ fontSize: '3.3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
           DevSecOps By Design
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          Immutable binary hardening and Unified Vulnerability Intelligence (UVI) built for security-first teams.
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
+          The first step in secure development is securing the developer.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
