@@ -118,10 +118,10 @@ export default function FeaturesPage() {
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🛡️ Defense-in-Depth Architecture
+          🛡️ Enterprise Platform Architecture
         </span>
         <h1 style={{ fontSize: '3.3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          Defense-in-Depth for Modern Engineering
+          DevSecOps By Design
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
           Sandboxed IDE engines, immutable binary hardening, and Unified Vulnerability Intelligence (UVI) built for security-first teams.
