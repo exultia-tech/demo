@@ -40,7 +40,6 @@ export default function PricingPage() {
     <div className="fade-in" style={{ padding: '3rem 1.5rem', maxWidth: '1360px', margin: '0 auto' }}>
       
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <span className="hero-badge">Transparent Enterprise Pricing</span>
         <h1 style={{ fontSize: '3.2rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
           Strong Security, Simple Pricing
         </h1>
