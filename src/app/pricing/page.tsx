@@ -45,7 +45,7 @@ export default function PricingPage() {
           Simple Pricing, Strong Security
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '680px', margin: '0 auto 2rem auto' }}>
-          From free air-gapped open-source builds to fully dedicated multi-cluster enterprise deployments.
+          From free individual builds to automated enterprise deployment.
         </p>
 
         {/* Billing Toggle */}
