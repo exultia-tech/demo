@@ -1662,7 +1662,9 @@ export default function ConsolePage() {
 
   // Generate CycloneDX 1.5 SBOM
   const generateSbomJson = () => {
-    const effectiveVersion = vscodeVersion === 'custom' && customTag ? customTag : vscodeVersion;
+    const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
+    const activeVersionObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
+    const effectiveVersion = versionChannel === 'custom' && customTag ? customTag : activeVersionObj.tag;
     const sbom = {
       bomFormat: "CycloneDX",
       specVersion: "1.5",
@@ -1971,11 +1973,14 @@ build_hardened_ide:
     setBuildLogs([`[DRY RUN] Validating zero-trust ${selectedEngine.toUpperCase()} configuration payload...`]);
     
     setTimeout(() => {
+      const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
+      const activeVersionObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
+      const effectiveVersion = versionChannel === 'custom' && customTag ? customTag : activeVersionObj.tag;
       const extList = cart.map(c => `${c.namespace}.${c.name}`);
       const payload = {
         ideEngine: selectedEngine,
         tier,
-        vscodeEngineVersion: vscodeVersion === 'custom' && customTag ? customTag : vscodeVersion,
+        vscodeEngineVersion: effectiveVersion,
         whitelistMode: tier === "TEAM" ? "GITHUB_VERIFIED_ZERO_CVE_REASONABLY_OK" : "ENTERPRISE_CUSTOM_WHITELIST",
         brand: {
           name: brandName,

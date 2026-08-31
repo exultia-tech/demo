@@ -144,12 +144,12 @@ export async function POST(req: NextRequest) {
             try {
               const sbomOut = path.join(distDir, `cyclonedx-sbom-${buildId}.json`);
               generateCycloneDX({
-                distDir,
-                brandName: safeBrand,
+                dist: distDir,
+                brand: safeBrand,
                 tier: tier.toUpperCase(),
                 engine,
-                targetOs,
-                outputPath: sbomOut
+                os: targetOs,
+                output: sbomOut
               });
               controller.enqueue(encoder.encode(`>>> [SBOM] Cryptographic CycloneDX 1.5 JSON generated.\n`));
             } catch (err: unknown) {
