@@ -118,13 +118,13 @@ export default function FeaturesPage() {
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
         <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🛡️ Enterprise Features & Zero-Trust Architecture
+          🛡️ Defense-in-Depth Architecture
         </span>
-        <h1 style={{ fontSize: '3.2rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-          Features, Security & Threat Intelligence
+        <h1 style={{ fontSize: '3.3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+          Defense-in-Depth for Modern Engineering
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '840px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
-          Explore the defense-in-depth security model, Unified Vulnerability Intelligence (UVI) multi-feed, immutable binary encapsulation, and ephemeral cloud pipeline built into SecureIDE.
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
+          Sandboxed IDE engines, immutable binary hardening, and Unified Vulnerability Intelligence (UVI) built for security-first teams.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <Link href="/console" className="btn-primary" style={{ padding: '0.85rem 1.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
