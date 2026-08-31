@@ -44,68 +44,68 @@ const PUBLIC_FEEDS = [
     badge: "MALWARE REPO",
     badgeColor: "#F59E0B",
     target: "github.com/ossf/malicious-packages",
-    description: "Community-driven open repository indexing confirmed malicious open-source packages, token stealers, and typosquats."
+    description: "Community feed documenting malicious packages, backdoored dependencies, brandjacking attempts, and cryptominers."
   },
   {
     id: "msrc_eclipse",
-    name: "MSRC & Eclipse Security Advisories",
-    category: "Vendor Bulletins",
-    badge: "OFFICIAL VENDOR",
+    name: "Microsoft MSRC & Eclipse Security Advisories",
+    category: "Upstream IDE Vendor Advisories",
+    badge: "UPSTREAM VENDOR",
     badgeColor: "#60A5FA",
     target: "msrc.microsoft.com / eclipse.org/security",
-    description: "Official vendor bulletins, security updates, and runtime notices from Microsoft, Eclipse Foundation, and Open VSX."
+    description: "Direct security disclosures for upstream VS Code Core, Eclipse Theia, LSP implementations, and Electron frameworks."
   },
   {
-    id: "trail_of_bits",
-    name: "Trail of Bits vsix-audit IoC Engine",
-    category: "AST & C2 IoCs",
-    badge: "IOC SCANNER",
-    badgeColor: "#F87171",
-    target: "github.com/trailofbits/vsix-audit",
-    description: "Static AST inspection engine tracking malicious scripts, obfuscated payloads, and Command & Control network indicators."
+    id: "trailofbits",
+    name: "Trail of Bits Research & Audit Disclosures",
+    category: "Security Research Labs",
+    badge: "EXPERT AUDIT",
+    badgeColor: "#A78BFA",
+    target: "trailofbits.com/publications",
+    description: "In-depth security evaluations, compiler instrumentation audits, memory-safety reviews, and advanced tooling advisories."
   },
   {
     id: "socket_dev",
-    name: "Socket.dev Threat Heuristics",
-    category: "Behavioral Heuristics",
-    badge: "BEHAVIOR SHIELD",
-    badgeColor: "#FBBF24",
-    target: "api.socket.dev/v0/threats",
-    description: "Monitors behavioral anomalies including unauthorized subprocess execution, environment variable harvesting, and network leaks."
+    name: "Socket.dev Supply Chain Intelligence",
+    category: "Behavioral Analysis",
+    badge: "BEHAVIORAL RISK",
+    badgeColor: "#EC4899",
+    target: "socket.dev/api",
+    description: "Detects supply chain attacks via behavioral risk indicators (network calls in install scripts, typo-squatting, obfuscated code)."
   },
   {
-    id: "jfrog",
-    name: "JFrog Security Research",
-    category: "Reachability Analysis",
-    badge: "AST REACHABILITY",
+    id: "jfrog_research",
+    name: "JFrog Security Research & Zero-Day Feed",
+    category: "Artifact Analysis",
+    badge: "ARTIFACT ANALYSIS",
     badgeColor: "#34D399",
-    target: "research.jfrog.com/api",
-    description: "Evaluates call-graph reachability, distinguishing theoretical CVEs in packaged dependencies from exploitable execution paths."
+    target: "research.jfrog.com",
+    description: "Automated analysis of binary packages, transitive dependency graphs, and newly disclosed zero-day vulnerabilities."
   },
   {
     id: "aqua_nautilus",
-    name: "Aqua Nautilus Research",
-    category: "Marketplace Integrity",
-    badge: "ANTI-TYPOSQUAT",
+    name: "Aqua Nautilus Cloud & Container Threat Feed",
+    category: "Runtime & Container",
+    badge: "CONTAINER THREATS",
+    badgeColor: "#38BDF8",
+    target: "aquasec.com/research",
+    description: "Monitors malicious activity in cloud-native developer containers, CI/CD runners, and developer images."
+  },
+  {
+    id: "snyk_intel",
+    name: "Snyk Open Source Vulnerability Database",
+    category: "Developer Toolchains",
+    badge: "DEVELOPER TOOLCHAINS",
+    badgeColor: "#FBBF24",
+    target: "security.snyk.io",
+    description: "Comprehensive vulnerability data across programming language ecosystems and integrated IDE extensions."
+  },
+  {
+    id: "openssf_scorecard",
+    name: "OpenSSF Scorecards (Supply Chain Health)",
+    category: "Repository Posture",
+    badge: "SUPPLY CHAIN POSTURE",
     badgeColor: "#60A5FA",
-    target: "aquasec.com/nautilus/intel-feed",
-    description: "Monitors marketplace namespace typosquatting, publisher impersonation, and trojanized releases across public package registries."
-  },
-  {
-    id: "snyk",
-    name: "Snyk Open Vulnerability Database",
-    category: "Deep Dependency Tree",
-    badge: "TRANSITIVE SCA",
-    badgeColor: "#A78BFA",
-    target: "security.snyk.io/vuln",
-    description: "Indexes vulnerabilities affecting language servers, AST parsers, and deep transitive package dependency trees."
-  },
-  {
-    id: "openssf_scorecards",
-    name: "OpenSSF Scorecards",
-    category: "Supply Chain Health",
-    badge: "MAINTENANCE SCORE",
-    badgeColor: "#A78BFA",
     target: "api.securityscorecards.dev",
     description: "Measures upstream repository health, maintenance cadence, branch protection rules, and deterministic dependency pinning."
   }
@@ -136,7 +136,80 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* WIDESCREEN DUAL SECTION: EXTENSION SANDBOXING & CLOUD PIPELINE */}
+      {/* SECTION 1: 4 DEFENSE-IN-DEPTH CONTAINMENT LAYERS (MOVED TO TOP) */}
+      <div id="security" style={{ marginBottom: '4rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <div style={{ color: '#60A5FA', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+            Zero-Trust Endpoint Security
+          </div>
+          <h2 style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>The 4 Defense-in-Depth Containment Layers</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '750px', margin: '0 auto' }}>
+            A four-tier containment architecture ensuring developer releases cannot be tampered with on disk, bypassed locally, or compromised via unvetted marketplace access.
+          </p>
+        </div>
+
+        <div className="containment-layers-grid">
+          
+          <div id="hardening" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60A5FA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+              1
+            </div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Immutable Binary Encapsulation</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Governance rules, air-gap registry routes, and core security boundaries are sealed directly into the native runtime binary, eliminating editable plaintext configurations on disk.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(52, 211, 153, 0.15)', border: '1px solid rgba(52, 211, 153, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#34D399', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+              2
+            </div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>OS-Protected Directory Scopes</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Installers target root system directories (<code>Program Files</code> / <code>Applications</code>), enforcing standard non-admin read-only permissions so users cannot modify bundled extension payloads.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(167, 139, 250, 0.15)', border: '1px solid rgba(167, 139, 250, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A78BFA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+              3
+            </div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Code-Signing & EDR Integrity</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Cryptographic signatures bind binary contents. Any disk-level modification invalidates the digital signature, triggering immediate Windows Defender WDAC and macOS Gatekeeper execution blocks.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(251, 191, 36, 0.15)', border: '1px solid rgba(251, 191, 36, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+              4
+            </div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Network Egress Sandboxing</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Default public marketplace endpoints are removed. Editor network traffic is restricted to your private internal registry proxy (e.g. JFrog Artifactory) or completely air-gapped from outbound traffic.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* SECTION 2: STRICT ZERO TELEMETRY PROTOCOL (PLACED UNDERNEATH 4 LAYERS) */}
+      <div id="telemetry" className="glass-card" style={{ padding: '2.5rem', marginBottom: '6rem', background: 'rgba(52, 211, 153, 0.03)', border: '1px solid rgba(52, 211, 153, 0.25)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(52, 211, 153, 0.15)', display: 'grid', placeItems: 'center', color: '#34D399', fontSize: '1.35rem' }}>
+            🛡️
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.35rem' }}>Strict Zero Outbound Telemetry Protocol</h3>
+            <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>Engineered for air-gapped financial institutions, defense contractors, and regulated environments.</p>
+          </div>
+        </div>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: '1.65', margin: 0 }}>
+          All upstream telemetry modules, usage analytics probes, remote crash reporting daemons, and Microsoft/Google tracking endpoints are permanently excised from the source tree during compilation. Your engineering team's keystrokes, repository names, file structures, and code remain 100% private to your workstations.
+        </p>
+      </div>
+
+      {/* SECTION 3: WIDESCREEN DUAL SECTION: EXTENSION SANDBOXING & CLOUD PIPELINE */}
       <div className="widescreen-duo-grid">
         
         {/* CARD 1: SUPPLY CHAIN SANDBOXING & UNIVERSAL ENGINES */}
@@ -241,64 +314,7 @@ export default function FeaturesPage() {
 
       </div>
 
-      {/* SECTION 2: 4 DEFENSE-IN-DEPTH CONTAINMENT LAYERS */}
-      <div id="security" style={{ marginBottom: '6rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <div style={{ color: '#60A5FA', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-            Zero-Trust Endpoint Security
-          </div>
-          <h2 style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>The 4 Defense-in-Depth Containment Layers</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '750px', margin: '0 auto' }}>
-            A four-tier containment architecture ensuring developer releases cannot be tampered with on disk, bypassed locally, or compromised via unvetted marketplace access.
-          </p>
-        </div>
-
-        <div className="containment-layers-grid">
-          
-          <div id="hardening" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60A5FA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-              1
-            </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Immutable Binary Encapsulation</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Governance rules, air-gap registry routes, and core security boundaries are sealed directly into the native runtime binary, eliminating editable plaintext configurations on disk.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(52, 211, 153, 0.15)', border: '1px solid rgba(52, 211, 153, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#34D399', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-              2
-            </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>OS-Protected Directory Scopes</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Installers target root system directories (<code>Program Files</code> / <code>Applications</code>), enforcing standard non-admin read-only permissions so users cannot modify bundled extension payloads.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(167, 139, 250, 0.15)', border: '1px solid rgba(167, 139, 250, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A78BFA', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-              3
-            </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Code-Signing & EDR Integrity</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Cryptographic signatures bind binary contents. Any disk-level modification invalidates the digital signature, triggering immediate Windows Defender WDAC and macOS Gatekeeper execution blocks.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(251, 191, 36, 0.15)', border: '1px solid rgba(251, 191, 36, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24', fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-              4
-            </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem' }}>Network Egress Sandboxing</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Default public marketplace endpoints are removed. Editor network traffic is restricted to your private internal registry proxy (e.g. JFrog Artifactory) or completely air-gapped from outbound traffic.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
-      {/* SECTION 3: UNIFIED VULNERABILITY INTELLIGENCE (UVI) MULTI-FEED */}
+      {/* SECTION 4: UNIFIED VULNERABILITY INTELLIGENCE (UVI) MULTI-FEED */}
       <div id="uvi" style={{ marginBottom: '6rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ color: '#34D399', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
@@ -358,22 +374,6 @@ curl -s "https://secureide.dev/api/threat-feed?query=gopls&ecosystem=golang" | j
 curl -s "https://secureide.dev/api/threat-feed?grade=A+" | jq .records`}
           </pre>
         </div>
-      </div>
-
-      {/* SECTION 5: STRICT ZERO TELEMETRY PROTOCOL */}
-      <div id="telemetry" className="glass-card" style={{ padding: '2.5rem', marginBottom: '5rem', background: 'rgba(52, 211, 153, 0.03)', border: '1px solid rgba(52, 211, 153, 0.2)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(52, 211, 153, 0.15)', display: 'grid', placeItems: 'center', color: '#34D399', fontSize: '1.2rem' }}>
-            🛡️
-          </div>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '1.3rem' }}>Strict Zero Outbound Telemetry Protocol</h3>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Engineered for air-gapped financial institutions, defense contractors, and regulated environments.</p>
-          </div>
-        </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
-          All upstream telemetry modules, usage analytics probes, remote crash reporting daemons, and Microsoft/Google tracking endpoints are permanently excised from the source tree during compilation. Your engineering team's keystrokes, repository names, file structures, and code remain 100% private to your workstations.
-        </p>
       </div>
 
       {/* BOTTOM CTA */}
