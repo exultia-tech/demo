@@ -140,81 +140,49 @@ export default function FeaturesPage() {
       <div className="widescreen-duo-grid">
         
         {/* CARD 1: SUPPLY CHAIN SANDBOXING & UNIVERSAL ENGINES */}
-        <div id="sandbox" className="glass-card" style={{ padding: '2.5rem', marginBottom: 0 }}>
-          <div style={{ marginBottom: '1.75rem' }}>
+        <div id="sandbox" className="glass-card" style={{ padding: '2.5rem', marginBottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
             <div style={{ color: 'var(--accent-primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
               Supply Chain Defense & Universal Engines
             </div>
             <h2 style={{ fontSize: '1.85rem', marginBottom: '0.6rem', letterSpacing: '-0.01em' }}>
               Zero-Trust Extension Sandboxing Across 6 IDE Engines
             </h2>
-            <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '0.92rem', margin: 0 }}>
+            <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '0.92rem', marginBottom: '1.75rem' }}>
               Standard IDEs allow arbitrary marketplace plugins to execute native code with root-level access. SecureIDE enforces strict policy boundaries and pre-approved extension toolchains across 6 engines.
             </p>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* CHECKLIST HIGHLIGHTS */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#34D399', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#34D399', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Strict 0 Open CVEs Baseline</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>Any extension with active CVEs is blocked from bundling.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Strict 0 Open CVEs Baseline</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>Any extension with active CVEs is blocked from bundling.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#60A5FA', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#60A5FA', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Universal IDE Matrix</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>VS Code, Theia, Zed (Rust), Neovim, JupyterLab, VSCodium.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Universal IDE Matrix</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>VS Code, Theia, Zed (Rust), Neovim, JupyterLab, and VSCodium.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#A78BFA', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#A78BFA', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Air-Gapped Localization (i18n)</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>12+ verified language packs pre-provisioned offline.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Air-Gapped Localization (i18n)</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>12+ verified language packs pre-provisioned for offline use.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#FBBF24', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#FBBF24', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Auto-Included Remote-SSH</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>Secure remote bridges bundled across all toolchains.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* PERMISSION SANDBOX STATUS MATRIX */}
-            <div style={{ padding: '1.25rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>Extension Permission Sandbox</span>
-                <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Enforced</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem' }}>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Outbound Sockets:</span>
-                  <span style={{ color: '#F87171', fontWeight: 600 }}>BLOCKED (Air-Gapped)</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Subprocesses:</span>
-                  <span style={{ color: '#FBBF24', fontWeight: 600 }}>AUDITED & RESTRICTED</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Credential Access:</span>
-                  <span style={{ color: '#34D399', fontWeight: 600 }}>ISOLATED</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Telemetry:</span>
-                  <span style={{ color: '#F87171', fontWeight: 600 }}>PERMANENTLY ZEROED</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Filesystem Scope:</span>
-                  <span style={{ color: '#34D399', fontWeight: 600 }}>WORKSPACE ONLY</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Auto-Included Remote-SSH</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>Secure remote development bridges bundled across all toolchains.</p>
                 </div>
               </div>
             </div>
@@ -222,81 +190,49 @@ export default function FeaturesPage() {
         </div>
 
         {/* CARD 2: CLOUD PIPELINE, SBOMs & ZERO CUSTODY */}
-        <div id="pipeline" className="glass-card" style={{ padding: '2.5rem', marginBottom: 0 }}>
-          <div style={{ marginBottom: '1.75rem' }}>
+        <div id="pipeline" className="glass-card" style={{ padding: '2.5rem', marginBottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
             <div style={{ color: '#34D399', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
               Stateless Cloud Orchestration
             </div>
             <h2 style={{ fontSize: '1.85rem', marginBottom: '0.6rem', letterSpacing: '-0.01em' }}>
               Isolated Multi-OS Cloud Pipeline & Attestation
             </h2>
-            <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '0.92rem', margin: 0 }}>
+            <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '0.92rem', marginBottom: '1.75rem' }}>
               Builds execute inside dedicated, ephemeral cloud runners. Each sandbox is provisioned on-demand, compiles sealed binaries, and is permanently destroyed upon completion.
             </p>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* PIPELINE CAPABILITIES CHECKLIST */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#34D399', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#34D399', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Zero Local Server Overhead</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>No dedicated build hardware or local OS runners required.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Zero Local Server Overhead</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>No dedicated build hardware or local OS runners required.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#60A5FA', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#60A5FA', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Zero Customer Code Custody</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>We never store customer source code, keys, or build logs.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Zero Customer Code Custody</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>We never store customer source code, keys, or build logs.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#A78BFA', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div id="sbom" style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#A78BFA', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Multi-OS Cross-Compilation</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>Simultaneous output for Windows, macOS, and Linux.</p>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>CycloneDX 1.5 JSON SBOMs</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>SLSA-compliant Software Bill of Materials with SHA-256 binary digests.</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                <span style={{ color: '#FBBF24', fontSize: '1rem', lineHeight: '1.3' }}>✓</span> 
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1.1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+                <span style={{ color: '#FBBF24', fontSize: '1.1rem', lineHeight: '1.3' }}>✓</span> 
                 <div>
-                  <strong style={{ fontSize: '0.88rem', color: '#fff' }}>Headless REST API Support</strong>
-                  <p style={{ margin: '0.1rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: '1.4' }}>Trigger builds automatically via your existing CI/CD.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ATTESTATION STANDARDS */}
-            <div id="sbom" style={{ padding: '1.25rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>Compliance & Attestation Standards</span>
-                <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Verified</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem' }}>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>SBOM Standard:</span>
-                  <span style={{ fontWeight: 600, color: '#34D399' }}>CycloneDX 1.5 JSON</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Integrity Verification:</span>
-                  <span style={{ fontWeight: 600, color: '#60A5FA' }}>Cryptographic SHA-256</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Supply Chain Level:</span>
-                  <span style={{ fontWeight: 600, color: '#A78BFA' }}>SLSA Compliant</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Telemetry Level:</span>
-                  <span style={{ fontWeight: 600, color: '#34D399' }}>Strict Zero Outbound</span>
-                </div>
-                <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Executive Order:</span>
-                  <span style={{ fontWeight: 600, color: '#FBBF24' }}>EO 14028 Ready</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff' }}>Multi-OS Cross-Compilation & REST API</strong>
+                  <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.4' }}>Simultaneous output for Windows, macOS, and Linux with CI/CD triggers.</p>
                 </div>
               </div>
             </div>
