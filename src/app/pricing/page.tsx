@@ -64,7 +64,7 @@ export default function PricingPage() {
       </div>
 
       {/* PRICING CARDS (3 TIERS: COMMUNITY, TEAM, ENTERPRISE WITH SCALE TOGGLE) */}
-      <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'stretch', gap: '1.5rem' }}>
+      <div className="pricing-grid">
         
         {/* TIER 1: COMMUNITY EDITION */}
         <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem', border: parsedPrice > 0 ? '1px solid rgba(52, 211, 153, 0.4)' : undefined }}>
