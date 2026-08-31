@@ -117,9 +117,6 @@ export default function FeaturesPage() {
       
       {/* HEADER HERO */}
       <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
-        <span className="hero-badge" style={{ color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', borderColor: 'rgba(52, 211, 153, 0.3)' }}>
-          🛡️ Enterprise Platform Architecture
-        </span>
         <h1 style={{ fontSize: '3.3rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
           DevSecOps By Design
         </h1>
