@@ -2719,7 +2719,8 @@ build_hardened_ide:
                         onClick={() => {
                           const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
                           const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
-                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer`;
+                          const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
                           const a = document.createElement('a');
                           a.href = url;
                           a.setAttribute('download', '');
@@ -2736,7 +2737,8 @@ build_hardened_ide:
                         onClick={() => {
                           const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
                           const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
-                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip`;
+                          const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
                           const a = document.createElement('a');
                           a.href = url;
                           a.setAttribute('download', '');
