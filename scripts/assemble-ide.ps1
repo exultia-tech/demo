@@ -245,68 +245,70 @@ if (($Tier -eq "ENTERPRISE" -or $Tier -eq "ULTIMATE") -and $RegistryUrl) {
     $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'extensionsGallery' -Value $GalleryObj
 } else {
     Write-Host "    [AIR-GAPPED] Eradicating default marketplace endpoints. Direct public downloads disabled."
-    if ($ProductData.PSObject.Properties.Match('extensionsGallery').Count -gt 0) {
-        $ProductData.PSObject.Properties.Remove('extensionsGallery')
+    $EmptyGalleryObj = [PSCustomObject]@{
+        serviceUrl = ""
+        itemUrl = ""
+        resourceUrlTemplate = ""
+        controlUrl = ""
+        recommendationsUrl = ""
     }
+    $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'extensionsGallery' -Value $EmptyGalleryObj
 }
 
 $ProductData | ConvertTo-Json -Depth 10 | Set-Content -Path $ProductJsonPath -Encoding utf8
 Write-Host "    ✓ product.json successfully hardened."
 
 # -----------------------------------------------------------------------------
-# STEP 3: BUNDLE EXTENSIONS & PRE-PROVISIONED LANGUAGE PACKS
+# STEP 3: BUNDLE REAL VSIX EXTENSIONS & PRE-PROVISIONED LANGUAGE PACKS
 # -----------------------------------------------------------------------------
 Write-Host "`n>>> [STEP 3/7] Bundling verified extensions and language packs..." -ForegroundColor Yellow
 
-$ExtensionsDir = Join-Path $AppCoreDir "extensions"
-if (-not (Test-Path $ExtensionsDir)) {
-    New-Item -ItemType Directory -Path $ExtensionsDir -Force | Out-Null
-}
-
-# Auto-bundle Language Pack for selected Locale
-$LanguagePackMap = @{
-    "es" = "MS-CEINTL.vscode-language-pack-es"
-    "ja" = "MS-CEINTL.vscode-language-pack-ja"
-    "zh-cn" = "MS-CEINTL.vscode-language-pack-zh-hans"
-    "de" = "MS-CEINTL.vscode-language-pack-de"
-    "fr" = "MS-CEINTL.vscode-language-pack-fr"
-    "ko" = "MS-CEINTL.vscode-language-pack-ko"
-    "pt-br" = "MS-CEINTL.vscode-language-pack-pt-BR"
-    "it" = "MS-CEINTL.vscode-language-pack-it"
-    "tr" = "MS-CEINTL.vscode-language-pack-tr"
-    "pl" = "MS-CEINTL.vscode-language-pack-pl"
-    "ru" = "MS-CEINTL.vscode-language-pack-ru"
+$PortableDataExtsDir = Join-Path $AppDir "data\extensions"
+if (-not (Test-Path $PortableDataExtsDir)) {
+    New-Item -ItemType Directory -Path $PortableDataExtsDir -Force | Out-Null
 }
 
 $ExtListToBundle = @()
 if ($Extensions) {
     $ExtListToBundle += $Extensions.Split(",")
 }
-if ($Locale -and $Locale -ne "en" -and $LanguagePackMap.ContainsKey($Locale)) {
-    $PackName = $LanguagePackMap[$Locale]
-    Write-Host "    + Auto-including verified Language Pack: $PackName"
-    $ExtListToBundle += $PackName
-}
 
 $BundledList = @()
 foreach ($ext in $ExtListToBundle) {
     $ext = $ext.Trim()
     if ($ext) {
-        Write-Host "    + Curation and Security Verification: $ext"
-        $CleanExtName = ($ext -replace '[^a-zA-Z0-9\-_.]', '_')
-        $ExtDir = Join-Path $ExtensionsDir $CleanExtName
-        New-Item -ItemType Directory -Path $ExtDir -Force | Out-Null
-        
-        $ExtManifest = @{
-            name = $ext
-            displayName = "Hardened $ext Package"
-            version = "1.0.0"
-            publisher = "enterprise-verified"
-            engines = @{ vscode = "^1.90.0" }
-            categories = @("Security", "Hardened", "Localization")
-            installedSource = "SecureIDE-ZeroTrust-Whitelist"
+        Write-Host "    + Fetching real extension package: $ext"
+        $parts = $ext.Split(".")
+        if ($parts.Length -ge 2) {
+            $ns = $parts[0]
+            $name = $parts[1]
+            try {
+                $metaUrl = "https://open-vsx.org/api/$ns/$name"
+                $meta = (Invoke-RestMethod -Uri $metaUrl -UseBasicParsing)
+                $dlUrl = $meta.files.download
+                $version = if ($meta.version) { $meta.version } else { "1.0.0" }
+                
+                if ($dlUrl) {
+                    $tempVsix = Join-Path $OutputDir "$name.zip"
+                    Invoke-WebRequest -Uri $dlUrl -OutFile $tempVsix -UseBasicParsing
+                    
+                    $tempExtExtract = Join-Path $OutputDir "temp_ext_$name"
+                    New-Item -ItemType Directory -Path $tempExtExtract -Force | Out-Null
+                    tar -xf $tempVsix -C $tempExtExtract
+                    
+                    $innerExtDir = Join-Path $tempExtExtract "extension"
+                    $targetExtDir = Join-Path $PortableDataExtsDir "$ns.$name-$version"
+                    if (Test-Path $innerExtDir) {
+                        Copy-Item -Path "$innerExtDir\*" -Destination $targetExtDir -Recurse -Force
+                        Write-Host "    ✓ Bundled extension: $ns.$name ($version)"
+                    }
+                    Remove-Item -Force $tempVsix -ErrorAction SilentlyContinue
+                    Remove-Item -Recurse -Force $tempExtExtract -ErrorAction SilentlyContinue
+                }
+            } catch {
+                Write-Host "    [NOTICE] Could not download extension $ext ($($_.Exception.Message))" -ForegroundColor DarkYellow
+            }
         }
-        $ExtManifest | ConvertTo-Json | Set-Content -Path (Join-Path $ExtDir "package.json") -Encoding utf8
         $BundledList += $ext
     }
 }
