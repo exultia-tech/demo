@@ -85,15 +85,15 @@ if ($Version -eq "insiders" -or $Version -eq "preview") {
 $DownloadUrl = ""
 $TempArchive = ""
 
-if ($Engine -eq "vscode") {
+if ($Engine -eq "vscode" -or $Engine -eq "vscodium") {
     if ($TargetOS -eq "windows") {
-        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-archive"
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-win32-x64-$VscodiumTag.zip"
         $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.zip"
     } elseif ($TargetOS -eq "linux") {
-        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=linux-x64"
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-linux-x64-$VscodiumTag.tar.gz"
         $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.tar.gz"
     } elseif ($TargetOS -eq "macos") {
-        $DownloadUrl = "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
+        $DownloadUrl = "https://github.com/VSCodium/vscodium/releases/download/$VscodiumTag/VSCodium-darwin-arm64-$VscodiumTag.zip"
         $TempArchive = Join-Path $OutputDir "vscode-base-$TargetOS.zip"
     }
 } elseif ($Engine -eq "theia") {
@@ -173,6 +173,15 @@ try {
         Copy-Item -Path $TempArchive -Destination (Join-Path $AppDir (Split-Path $TempArchive -Leaf)) -Force
     }
     Remove-Item -Force $TempArchive -ErrorAction SilentlyContinue
+
+    # Auto-flatten any nested single subdirectory (e.g. commit-hash folder)
+    $SubDirs = Get-ChildItem -Path $AppDir -Directory
+    if ($SubDirs.Count -eq 1 -and ((Test-Path (Join-Path $SubDirs[0].FullName "Code.exe")) -or (Test-Path (Join-Path $SubDirs[0].FullName "VSCodium.exe")) -or (Test-Path (Join-Path $SubDirs[0].FullName "chrome_100_percent.pak")))) {
+        Write-Host "    -> Flattening nested directory: $($SubDirs[0].Name)"
+        $NestedDir = $SubDirs[0].FullName
+        Get-ChildItem -Path $NestedDir | Move-Item -Destination $AppDir -Force
+        Remove-Item -Recurse -Force $NestedDir -ErrorAction SilentlyContinue
+    }
 } catch {
     Write-Host "    [NOTICE] Pulling local base template structure ($($_.Exception.Message))" -ForegroundColor DarkYellow
     $FallbackResources = Join-Path $AppDir "resources\app"
