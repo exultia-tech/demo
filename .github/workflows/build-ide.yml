@@ -4,15 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       tier:
-        description: 'Subscription Tier (COMMUNITY, PRO, ENTERPRISE, ULTIMATE)'
+        description: 'Subscription Tier (COMMUNITY, TEAM, ENTERPRISE)'
         required: true
-        default: 'PRO'
+        default: 'TEAM'
         type: choice
         options:
           - COMMUNITY
-          - PRO
+          - TEAM
           - ENTERPRISE
-          - ULTIMATE
       target_os:
         description: 'Target Operating System'
         required: true

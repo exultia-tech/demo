@@ -221,7 +221,7 @@ if ($Locale -and $Locale -ne "en") {
 }
 
 # 1. Telemetry Policy
-if ($Tier -eq "ULTIMATE" -and $TelemetryUrl) {
+if ($Tier -eq "ENTERPRISE" -and $TelemetryUrl) {
     Write-Host "    [SIEM REROUTING] Routing endpoint audit events to enterprise SIEM: $TelemetryUrl"
     $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'telemetryOptIn' -Value $true
     $ProductData | Add-Member -Force -MemberType NoteProperty -Name 'enableTelemetry' -Value $true
@@ -235,7 +235,7 @@ if ($Tier -eq "ULTIMATE" -and $TelemetryUrl) {
 }
 
 # 2. Extension Gallery Policy
-if (($Tier -eq "ENTERPRISE" -or $Tier -eq "ULTIMATE") -and $RegistryUrl) {
+if ($Tier -eq "ENTERPRISE" -and $RegistryUrl) {
     Write-Host "    [PROXY REGISTRY] Routing extensions through enterprise gallery: $RegistryUrl"
     $GalleryObj = [PSCustomObject]@{
         serviceUrl = $RegistryUrl

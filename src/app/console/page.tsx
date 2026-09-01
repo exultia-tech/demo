@@ -1873,6 +1873,14 @@ build_hardened_ide:
         })
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: `Server returned status ${res.status}` }));
+        const errorMsg = errorData.error || `Build server error (${res.status})`;
+        setBuildLogs(prev => [...prev, `[ERROR] ${errorMsg}`]);
+        setBuildState("IDLE");
+        return;
+      }
+
       if (!res.body) throw new Error("No response stream from API");
 
       const reader = res.body.getReader();
