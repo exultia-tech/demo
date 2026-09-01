@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,79 +31,87 @@ export async function GET(request: Request) {
       localFilePath = path.join(publicDownloadsPath, baseName);
     }
 
-    // 2. If not found, scan public/downloads for best candidate match
-    if (!localFilePath || !fs.existsSync(localFilePath)) {
+    // 2. Scan public/downloads for real compiled distributions (> 100KB)
+    if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
       const allFiles = fs.readdirSync(publicDownloadsPath).filter(f => !f.startsWith('.'));
       
       if (isInstaller) {
-        // Find existing .exe installer
-        const exeMatch = allFiles.find(f => f.endsWith('.exe') && (f.toLowerCase().includes(safeBrand.toLowerCase()) || f.toLowerCase().includes('setup') || f.toLowerCase().includes('secureide')));
+        // Find real .exe installer
+        const exeMatch = allFiles.find(f => f.endsWith('.exe') && fs.statSync(path.join(publicDownloadsPath, f)).size > 1000000);
         if (exeMatch) {
           localFilePath = path.join(publicDownloadsPath, exeMatch);
         }
       } else {
-        // Find existing .zip / .tar.gz archive
-        const zipMatch = allFiles.find(f => (f.endsWith('.zip') || f.endsWith('.tar.gz')) && (f.toLowerCase().includes(safeBrand.toLowerCase()) || f.toLowerCase().includes('secureide') || f.toLowerCase().includes(engine.toLowerCase())));
+        // Find real .zip distribution archive (> 10MB)
+        const zipMatch = allFiles.find(f => (f.endsWith('.zip') || f.endsWith('.tar.gz')) && !f.includes('github-enterprise') && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000);
         if (zipMatch) {
           localFilePath = path.join(publicDownloadsPath, zipMatch);
         }
       }
 
-      // Any fallback file of matching extension
+      // Fallback to any real large archive
       if (!localFilePath) {
-        const fallback = allFiles.find(f => isInstaller ? f.endsWith('.exe') : f.endsWith('.zip'));
+        const fallback = allFiles.find(f => (f.endsWith('.zip') || f.endsWith('.exe')) && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000);
         if (fallback) {
           localFilePath = path.join(publicDownloadsPath, fallback);
         }
       }
     }
 
-    // 3. If no matching archive exists on disk, create a self-contained portable distribution on-the-fly
+    // 3. If no local binary exists, dynamically fetch the latest compiled cloud release artifact from GitHub Actions
     if (!localFilePath || !fs.existsSync(localFilePath)) {
-      const targetZipName = `${safeBrand}_${engine.toUpperCase()}_Portable.zip`;
-      localFilePath = path.join(publicDownloadsPath, targetZipName);
+      const token = process.env.GITHUB_TOKEN;
+      const owner = process.env.GITHUB_OWNER || 'wstrika';
+      const repo = process.env.GITHUB_REPO || 'secure-ide';
 
-      if (!fs.existsSync(localFilePath)) {
-        const stagingDir = path.join(publicDownloadsPath, `temp_${Date.now()}`);
-        fs.mkdirSync(stagingDir, { recursive: true });
-
-        // Add launcher script
-        const launcherScript = `@echo off\r\necho Starting Hardened ${brand} (${engine.toUpperCase()})...\r\nstart "" "%~dp0Code.exe" %*\r\n`;
-        fs.writeFileSync(path.join(stagingDir, `${safeBrand}.cmd`), launcherScript);
-
-        // Add Zero-Trust Policy settings.json
-        const settingsJson = JSON.stringify({
-          "telemetry.telemetryLevel": "off",
-          "telemetry.enableCrashReporter": false,
-          "telemetry.enableTelemetry": false,
-          "update.mode": "none",
-          "extensions.autoUpdate": false,
-          "security.workspace.trust.enabled": true,
-          "workbench.colorCustomizations": {
-            "titleBar.activeBackground": "#1e293b",
-            "titleBar.activeForeground": "#ffffff"
-          }
-        }, null, 2);
-        fs.writeFileSync(path.join(stagingDir, 'settings.json'), settingsJson);
-
-        // Add README
-        const readme = `=================================================================\r\n  ${brand.toUpperCase()} - ZERO TRUST HARDENED DISTRIBUTION\r\n=================================================================\r\nEngine: ${engine.toUpperCase()}\r\nSecurity Baseline: 0 Open CVEs + Strict Supply-Chain Sandboxing\r\nTelemetry Status: Permanently Disabled\r\n\r\nTo launch in air-gapped mode, run '${safeBrand}.cmd'.\r\n`;
-        fs.writeFileSync(path.join(stagingDir, 'README.txt'), readme);
-
-        // Package into ZIP using PowerShell Compress-Archive
+      if (token) {
         try {
-          execSync(`powershell -NoProfile -Command "Compress-Archive -Path '${stagingDir}\\*' -DestinationPath '${localFilePath}' -Force"`);
-        } catch (_) {
-          // Fallback if Compress-Archive fails
-        }
+          const runsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs?status=completed&conclusion=success&per_page=5`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json',
+              'User-Agent': 'SecureIDE-Web'
+            }
+          });
+          const runsData = await runsRes.json();
+          const latestRun = runsData.workflow_runs?.[0];
 
-        // Cleanup staging
-        fs.rmSync(stagingDir, { recursive: true, force: true });
+          if (latestRun) {
+            const artifactsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs/${latestRun.id}/artifacts`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json',
+                'User-Agent': 'SecureIDE-Web'
+              }
+            });
+            const artifactsData = await artifactsRes.json();
+            const targetArtifact = artifactsData.artifacts?.[0];
+
+            if (targetArtifact) {
+              const downloadRes = await fetch(targetArtifact.archive_download_url, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Accept': 'application/vnd.github+json',
+                  'User-Agent': 'SecureIDE-Web'
+                }
+              });
+
+              if (downloadRes.ok) {
+                const arrayBuf = await downloadRes.arrayBuffer();
+                const downloadedZipPath = path.join(publicDownloadsPath, `${targetArtifact.name}.zip`);
+                fs.writeFileSync(downloadedZipPath, Buffer.from(arrayBuf));
+                localFilePath = downloadedZipPath;
+              }
+            }
+          }
+        } catch (e) {
+          console.error('GitHub Actions artifact fetch error:', e);
+        }
       }
     }
 
     // 4. Stream the binary file directly to client with attachment headers
-    if (fs.existsSync(localFilePath) && fs.statSync(localFilePath).isFile()) {
+    if (localFilePath && fs.existsSync(localFilePath) && fs.statSync(localFilePath).isFile()) {
       const stat = fs.statSync(localFilePath);
       const downloadFileName = path.basename(localFilePath);
       const fileBuffer = fs.readFileSync(localFilePath);
@@ -126,7 +133,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ error: 'Download file could not be generated' }, { status: 404 });
+    return NextResponse.json({ error: 'Release artifact not ready yet. Please trigger a build or wait for GitHub Actions completion.' }, { status: 404 });
 
   } catch (error: any) {
     console.error('Download route error:', error);

@@ -373,11 +373,13 @@ if ($TargetOS -eq "windows") {
     $BrandExe = Join-Path $AppDir "$CleanBrandSlug.exe"
     if (Test-Path $VscodeExe) {
         Copy-Item -Path $VscodeExe -Destination $BrandExe -Force
-        Write-Host "    ✓ Cloned native binary to branded executable: $CleanBrandSlug.exe"
+    # Ensure CLI launcher is placed in bin/ subfolder (avoid root .cmd/.exe collision loop)
+    $BinDir = Join-Path $AppDir "bin"
+    if (-not (Test-Path $BinDir)) {
+        New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
     }
-
-    $LauncherCmd = "@echo off`r`nstart """" ""%~dp0$CleanBrandSlug.exe"" %*"
-    Set-Content -Path (Join-Path $AppDir "$CleanBrandSlug.cmd") -Value $LauncherCmd -Encoding utf8
+    $LauncherCmd = "@echo off`r`n""%~dp0..\$CleanBrandSlug.exe"" %*"
+    Set-Content -Path (Join-Path $BinDir "$CleanBrandSlug.cmd") -Value $LauncherCmd -Encoding utf8
 }
 
 # -----------------------------------------------------------------------------
