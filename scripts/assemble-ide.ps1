@@ -393,6 +393,7 @@ if ($TargetOS -eq "windows") {
     Write-Host "    -> Compressing Portable ZIP archive: $ZipDest"
     Compress-Archive -Path "$AppDir\*" -DestinationPath $ZipDest -Force
     Write-Host "    ✓ Portable ZIP generated."
+    Write-Host ">>> [SUCCESS] Custom build generated: $ZipDest"
 
     # 2. Professional Windows Setup Wizard (.EXE Installer)
     $InnoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
@@ -441,6 +442,7 @@ if ($TargetOS -eq "windows") {
             Remove-Item -Force $IssPath -ErrorAction SilentlyContinue
             if (Test-Path $ExeDest) {
                 Write-Host "    ✓ Enterprise Installer compiled: $ExeDest"
+                Write-Host ">>> [SUCCESS] Windows Setup installer generated: $ExeDest"
             }
         } catch {
             Write-Host "    [NOTICE] Inno Setup skipped ($($_.Exception.Message))"
@@ -450,10 +452,12 @@ if ($TargetOS -eq "windows") {
     $TarDest = Join-Path $OutputDir "$ArchiveBaseName.tar.gz"
     Write-Host "    -> Packaging TAR.GZ archive: $TarDest"
     tar -czf $TarDest -C $AppDir .
+    Write-Host ">>> [SUCCESS] Custom build generated: $TarDest"
 } elseif ($TargetOS -eq "macos") {
     $ZipDest = Join-Path $OutputDir "$ArchiveBaseName-macOS.zip"
     Write-Host "    -> Packaging macOS release bundle: $ZipDest"
     Compress-Archive -Path "$AppDir\*" -DestinationPath $ZipDest -Force
+    Write-Host ">>> [SUCCESS] Custom build generated: $ZipDest"
 }
 
 # Clean up staging temp

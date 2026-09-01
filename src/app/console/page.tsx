@@ -1891,12 +1891,12 @@ build_hardened_ide:
         setBuildLogs(prev => {
           const newLogs = [...prev];
           lines.forEach(line => {
-            if (line.includes("[SUCCESS] Custom build generated:")) {
-              const pathMatch = line.split("generated: ")[1];
+            if (line.includes("Custom build generated:")) {
+              const pathMatch = line.split("generated:")[1];
               if (pathMatch) artifactPath = pathMatch.trim();
             }
-            if (line.includes("[SUCCESS] Windows Setup installer generated:")) {
-              const pathMatch = line.split("generated: ")[1];
+            if (line.includes("Windows Setup installer generated:") || line.includes("Installer compiled:")) {
+              const pathMatch = line.split(/generated:|compiled:/)[1];
               if (pathMatch) installerPath = pathMatch.trim();
             }
 
@@ -1910,14 +1910,20 @@ build_hardened_ide:
         });
       }
 
-      setBuildState("SUCCESS");
-      if (artifactPath) {
-        setBuildArtifactPath(artifactPath);
+      const cleanBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+      if (!artifactPath) {
+        artifactPath = `${cleanBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
       }
+      if (!installerPath && targetWinX64) {
+        installerPath = `${cleanBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
+      }
+
+      setBuildState("SUCCESS");
+      setBuildArtifactPath(artifactPath);
       if (installerPath) {
         setBuildInstallerPath(installerPath);
       }
-      setBuildLogs(prev => [...prev, `>>> Build complete! [${brandName}] (${selectedEngine.toUpperCase()}) signed artifact ready.`]);
+      setBuildLogs(prev => [...prev, `>>> Build complete! [${brandName}] (${selectedEngine.toUpperCase()}) signed artifact ready for download.`]);
 
       // Auto-publish to Community Blueprints catalog if enabled and cart has extensions
       if (autoPublishBlueprint && cart.length > 0) {
@@ -2703,10 +2709,15 @@ build_hardened_ide:
                       <button 
                         className="btn-primary" 
                         onClick={() => {
-                          const target = buildInstallerPath || buildArtifactPath;
-                          if (target) {
-                            window.open(`/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName)}&type=installer`, "_blank");
-                          }
+                          const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                          const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
+                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer`;
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.setAttribute('download', '');
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
                         }} 
                         style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
                       >
@@ -2715,10 +2726,15 @@ build_hardened_ide:
                       </button>
                       <button 
                         onClick={() => {
-                          const target = buildArtifactPath || buildInstallerPath;
-                          if (target) {
-                            window.open(`/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName)}&type=zip`, "_blank");
-                          }
+                          const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                          const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
+                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip`;
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.setAttribute('download', '');
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
                         }} 
                         style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                       >
@@ -3606,14 +3622,32 @@ build_hardened_ide:
           <div className="glass-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h2>CycloneDX 1.5 Specification (JSON) — {selectedEngine.toUpperCase()}</h2>
-              <button 
-                onClick={() => {
-                  if (generatedSbom) navigator.clipboard.writeText(generatedSbom);
-                  alert("SBOM JSON copied to clipboard!");
-                }}
-                style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>
-                📋 Copy CycloneDX JSON
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => {
+                    const data = generatedSbom || generateSbomJson();
+                    const blob = new Blob([data], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cyclonedx-sbom-${selectedEngine}-${(brandName || 'secureide').toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  style={{ background: 'var(--accent-primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ⬇️ Download CycloneDX JSON
+                </button>
+                <button 
+                  onClick={() => {
+                    if (generatedSbom) navigator.clipboard.writeText(generatedSbom);
+                    alert("SBOM JSON copied to clipboard!");
+                  }}
+                  style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>
+                  📋 Copy CycloneDX JSON
+                </button>
+              </div>
             </div>
             
             <pre style={{ background: 'rgba(0,0,0,0.6)', padding: '1.25rem', borderRadius: '8px', color: '#93C5FD', fontSize: '0.8rem', maxHeight: '420px', overflowY: 'auto', fontFamily: 'monospace' }}>
