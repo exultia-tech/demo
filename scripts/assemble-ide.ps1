@@ -378,8 +378,20 @@ if ($TargetOS -eq "windows") {
     if (-not (Test-Path $BinDir)) {
         New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
     }
-    $LauncherCmd = "@echo off`r`n""%~dp0..\$CleanBrandSlug.exe"" %*"
+    $LauncherCmd = "@echo off`r`n""%~dp0..\Code.exe"" %*"
     Set-Content -Path (Join-Path $BinDir "$CleanBrandSlug.cmd") -Value $LauncherCmd -Encoding utf8
+
+    # Provision official Portable Mode 'data' directory (guarantees zero-conflict with existing installed VS Code)
+    Write-Host "    -> Provisioning isolated Portable Mode data directory..."
+    $DataDir = Join-Path $AppDir "data"
+    $UserDataDir = Join-Path $DataDir "user-data"
+    $ExtsDir = Join-Path $DataDir "extensions"
+    New-Item -ItemType Directory -Path $UserDataDir -Force | Out-Null
+    New-Item -ItemType Directory -Path $ExtsDir -Force | Out-Null
+
+    # Create root direct launcher script that enforces isolation
+    $RootLauncherCmd = "@echo off`r`necho Starting Isolated Portable $BrandName...`r`nstart """" ""%~dp0Code.exe"" --user-data-dir ""%~dp0data\user-data"" --extensions-dir ""%~dp0data\extensions"" %*"
+    Set-Content -Path (Join-Path $AppDir "Launch-SecureIDE.cmd") -Value $RootLauncherCmd -Encoding utf8
 }
 
 # -----------------------------------------------------------------------------
