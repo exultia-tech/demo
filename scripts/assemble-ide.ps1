@@ -238,6 +238,28 @@ foreach ($ext in $ExtListToBundle) {
                         New-Item -ItemType Directory -Path $targetExtDir -Force | Out-Null
                     }
                     tar -xf $vsixPath -C $targetExtDir --strip-components=1
+
+                    # Prune deep stub/typeshed directories that cause MAX_PATH (>260 char) issues
+                    # on Windows extraction. These are type-checking stubs not needed at runtime.
+                    $deepPrunePaths = @(
+                        (Join-Path $targetExtDir "python_files" | ForEach-Object { Join-Path $_ "lib" | ForEach-Object { Join-Path $_ "jedilsp" | ForEach-Object { Join-Path $_ "jedi" | ForEach-Object { Join-Path $_ "third_party" } } } }),
+                        (Join-Path $targetExtDir "python_files\lib\jedilsp\jedi\third_party"),
+                        (Join-Path $targetExtDir "extension\python_files\lib\jedilsp\jedi\third_party")
+                    )
+                    foreach ($prunePath in $deepPrunePaths) {
+                        if (Test-Path $prunePath) {
+                            Remove-Item -Recurse -Force $prunePath -ErrorAction SilentlyContinue
+                            Write-Host "    [TRIM] Pruned deep stubs: $prunePath"
+                        }
+                    }
+                    # Also prune any remaining path > 200 chars depth by targeting known offenders
+                    $knownDeepDirs = @("typeshed", "bundled\stubs")
+                    foreach ($deepDir in $knownDeepDirs) {
+                        Get-ChildItem -Path $targetExtDir -Directory -Recurse -Filter (Split-Path $deepDir -Leaf) -ErrorAction SilentlyContinue | Where-Object { $_.FullName.Length -gt 200 } | ForEach-Object {
+                            Remove-Item -Recurse -Force $_.FullName -ErrorAction SilentlyContinue
+                        }
+                    }
+
                     Write-Host "    [OK] Pre-installed: $extFolderName"
                 }
             } catch {
@@ -332,12 +354,24 @@ Write-Host "`n>>> [STEP 6/6] Packaging final release artifacts..." -ForegroundCo
 
 $ArchiveBaseName = "${CleanBrandSlug}-${TargetOS}-${Tier}-${BuildId}"
 
-if ($TargetOS -eq "windows") {
-    $ZipDest = Join-Path $OutputDir "$ArchiveBaseName.zip"
-    Write-Host "    -> Compressing Portable ZIP: $ZipDest"
+if ($TargetOS -eq "windows" -or $TargetOS -eq "macos") {
+    $ZipSuffix = if ($TargetOS -eq "macos") { "-macOS" } else { "" }
+    $ZipDest = Join-Path $OutputDir "$ArchiveBaseName$ZipSuffix.zip"
+    Write-Host "    -> Compressing Portable ZIP (long-path safe): $ZipDest"
     if (Test-Path $ZipDest) { Remove-Item -Force $ZipDest }
-    tar -a -cf $ZipDest -C $AppDir .
-    Write-Host "    [OK] Portable ZIP generated."
+
+    # Use .NET ZipFile with long-path support (handles paths > 260 chars on Win10+)
+    # This ensures Windows Explorer can extract without corruption errors.
+    Add-Type -Assembly System.IO.Compression
+    Add-Type -Assembly System.IO.Compression.FileSystem
+    [System.IO.Compression.ZipFile]::CreateFromDirectory(
+        $AppDir,
+        $ZipDest,
+        [System.IO.Compression.CompressionLevel]::Optimal,
+        $false  # includeBaseDirectory = false (files go to root of zip)
+    )
+
+    Write-Host "    [OK] Portable ZIP generated (long-path safe)."
     Write-Host ">>> [SUCCESS] Custom build generated: $ZipDest"
 } elseif ($TargetOS -eq "linux") {
     $TarDest = Join-Path $OutputDir "$ArchiveBaseName.tar.gz"
@@ -345,12 +379,6 @@ if ($TargetOS -eq "windows") {
     if (Test-Path $TarDest) { Remove-Item -Force $TarDest }
     tar -czf $TarDest -C $AppDir .
     Write-Host ">>> [SUCCESS] Custom build generated: $TarDest"
-} elseif ($TargetOS -eq "macos") {
-    $ZipDest = Join-Path $OutputDir "$ArchiveBaseName-macOS.zip"
-    Write-Host "    -> Packaging macOS release bundle: $ZipDest"
-    if (Test-Path $ZipDest) { Remove-Item -Force $ZipDest }
-    tar -a -cf $ZipDest -C $AppDir .
-    Write-Host ">>> [SUCCESS] Custom build generated: $ZipDest"
 }
 
 # Cleanup temporary staging folder

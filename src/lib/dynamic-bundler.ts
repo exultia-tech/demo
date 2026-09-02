@@ -144,6 +144,20 @@ export async function assembleCustomDistribution(options: BundleOptions): Promis
           const extDest = path.join(extsDir, vsixLeaf);
           fs.mkdirSync(extDest, { recursive: true });
           execSync(`tar -xf "${vsixFile}" -C "${extDest}" --strip-components=1`);
+
+          // Prune deep stub/typeshed directories that cause MAX_PATH (>260 char) issues
+          // on Windows extraction. Type stubs are not needed at runtime.
+          const deepPrunePaths = [
+            path.join(extDest, 'python_files', 'lib', 'jedilsp', 'jedi', 'third_party'),
+            path.join(extDest, 'extension', 'python_files', 'lib', 'jedilsp', 'jedi', 'third_party'),
+            path.join(extDest, 'bundled', 'stubs'),
+          ];
+          for (const prunePath of deepPrunePaths) {
+            if (fs.existsSync(prunePath)) {
+              fs.rmSync(prunePath, { recursive: true, force: true });
+              console.log(`[BUNDLER TRIM] Pruned deep stubs: ${prunePath}`);
+            }
+          }
         }
       } catch (err: any) {
         console.warn(`[BUNDLER NOTICE] Extension bundling skipped for ${extStr}:`, err.message);
@@ -198,9 +212,20 @@ export async function assembleCustomDistribution(options: BundleOptions): Promis
     fs.writeFileSync(path.join(stagingDir, `Launch-${safeBrand}.cmd`), rootCmd);
     fs.writeFileSync(path.join(stagingDir, `Launch-SecureIDE.cmd`), rootCmd);
 
-    // 6. Compress into destination zip using fast long-path tar
+    // 6. Package into long-path-safe ZIP using .NET ZipFile
+    // (tar -a -cf creates zip but Windows Explorer can't handle paths >260 chars)
     if (fs.existsSync(targetZipPath)) fs.unlinkSync(targetZipPath);
-    execSync(`tar -a -cf "${targetZipPath}" -C "${stagingDir}" .`);
+    const psZipScript = [
+      `Add-Type -Assembly System.IO.Compression`,
+      `Add-Type -Assembly System.IO.Compression.FileSystem`,
+      `[System.IO.Compression.ZipFile]::CreateFromDirectory(`,
+      `  '${stagingDir.replace(/'/g, "''")}',`,
+      `  '${targetZipPath.replace(/'/g, "''")}',`,
+      `  [System.IO.Compression.CompressionLevel]::Optimal,`,
+      `  $false`,
+      `)`,
+    ].join('\n');
+    execSync(`powershell -NoProfile -Command "${psZipScript.replace(/"/g, '\\"').replace(/\n/g, '; ')}"`);
 
     return targetZipPath;
   } finally {
