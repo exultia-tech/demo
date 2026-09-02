@@ -15,75 +15,79 @@ export async function GET(request: Request) {
     const tier = searchParams.get('tier') || 'TEAM';
     const extensions = searchParams.get('extensions') || '';
 
-    const safeBrand = brand.replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
     const isInstaller = type === 'installer' || requestedPath.endsWith('.exe');
-
     const publicDownloadsPath = path.join(process.cwd(), 'public', 'downloads');
-    if (!fs.existsSync(publicDownloadsPath)) {
-      fs.mkdirSync(publicDownloadsPath, { recursive: true });
-    }
+    const buildsPath = path.join(publicDownloadsPath, 'builds');
+
+    if (!fs.existsSync(publicDownloadsPath)) fs.mkdirSync(publicDownloadsPath, { recursive: true });
+    if (!fs.existsSync(buildsPath)) fs.mkdirSync(buildsPath, { recursive: true });
 
     let localFilePath = '';
 
-    // 1. Check if the exact requested release artifact exists on disk
+    // 1. Check exact requested release artifact path
     if (requestedPath) {
       const baseName = path.basename(requestedPath);
-      if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
-        localFilePath = requestedPath;
-      } else if (baseName && fs.existsSync(path.join(publicDownloadsPath, baseName))) {
-        localFilePath = path.join(publicDownloadsPath, baseName);
-      } else if (baseName && fs.existsSync(path.join(publicDownloadsPath, 'builds', baseName))) {
-        localFilePath = path.join(publicDownloadsPath, 'builds', baseName);
-      }
-    }
+      const candidates = [
+        requestedPath,
+        path.join(process.cwd(), requestedPath),
+        path.join(publicDownloadsPath, baseName),
+        path.join(buildsPath, baseName)
+      ];
 
-    // 2. If not pre-compiled, assemble customized distribution on-the-fly
-    if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
-      if (extensions) {
-        try {
-          localFilePath = await assembleCustomDistribution({
-            brandName: brand,
-            engine,
-            tier,
-            extensions,
-            targetOs: 'windows'
-          });
-        } catch (err: any) {
-          console.error('Dynamic bundler error:', err);
+      for (const candidate of candidates) {
+        if (candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile() && fs.statSync(candidate).size > 100000) {
+          localFilePath = candidate;
+          break;
         }
       }
     }
 
-    // 3. Scan public/downloads for real compiled distributions (> 10MB)
-    if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
+    // 2. Scan public/downloads for any freshly compiled distribution
+    if (!localFilePath) {
       const allFiles = fs.readdirSync(publicDownloadsPath).filter(f => !f.startsWith('.'));
       
       if (isInstaller) {
         const exeMatch = allFiles.find(f => f.endsWith('.exe') && fs.statSync(path.join(publicDownloadsPath, f)).size > 1000000);
         if (exeMatch) localFilePath = path.join(publicDownloadsPath, exeMatch);
-      } else {
-        const zipMatch = allFiles.find(f => (f.endsWith('.zip') || f.endsWith('.tar.gz')) && !f.includes('github-enterprise') && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000);
-        if (zipMatch) localFilePath = path.join(publicDownloadsPath, zipMatch);
       }
 
       if (!localFilePath) {
-        const fallback = allFiles.find(f => (f.endsWith('.zip') || f.endsWith('.exe')) && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000);
-        if (fallback) localFilePath = path.join(publicDownloadsPath, fallback);
+        // Look for recent compiled zip
+        const zipMatches = allFiles
+          .filter(f => f.endsWith('.zip') && !f.includes('vscodium-base') && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000)
+          .map(f => ({ name: f, time: fs.statSync(path.join(publicDownloadsPath, f)).mtimeMs }))
+          .sort((a, b) => b.time - a.time);
+
+        if (zipMatches.length > 0) {
+          localFilePath = path.join(publicDownloadsPath, zipMatches[0].name);
+        }
       }
     }
 
-    // 4. If still not found, assemble default base with dynamic bundler
-    if (!localFilePath || !fs.existsSync(localFilePath)) {
-      localFilePath = await assembleCustomDistribution({
-        brandName: brand,
-        engine,
-        tier,
-        extensions: 'dbaeumer.vscode-eslint,esbenp.prettier-vscode,redhat.vscode-yaml,tamasfe.even-better-toml',
-        targetOs: 'windows'
-      });
+    // 3. If still not found, assemble customized distribution on-the-fly
+    if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
+      try {
+        localFilePath = await assembleCustomDistribution({
+          brandName: brand,
+          engine,
+          tier,
+          extensions,
+          targetOs: 'windows'
+        });
+      } catch (err: any) {
+        console.error('Dynamic bundler error:', err);
+      }
     }
 
-    // 5. Stream the binary file directly to client with attachment headers
+    // 4. Fallback: check builds folder
+    if (!localFilePath || !fs.existsSync(localFilePath)) {
+      const buildFiles = fs.readdirSync(buildsPath).filter(f => f.endsWith('.zip') && fs.statSync(path.join(buildsPath, f)).size > 10000000);
+      if (buildFiles.length > 0) {
+        localFilePath = path.join(buildsPath, buildFiles[0]);
+      }
+    }
+
+    // 5. Stream the binary file directly with proper attachment headers
     if (localFilePath && fs.existsSync(localFilePath) && fs.statSync(localFilePath).isFile()) {
       const stat = fs.statSync(localFilePath);
       const downloadFileName = path.basename(localFilePath);
@@ -106,7 +110,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ error: 'Release artifact could not be assembled.' }, { status: 404 });
+    return NextResponse.json({ error: 'Release artifact not ready yet. Please wait for build completion.' }, { status: 404 });
 
   } catch (error: any) {
     console.error('Download route error:', error);

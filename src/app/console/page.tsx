@@ -2721,12 +2721,7 @@ build_hardened_ide:
                           const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
                           const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
                           const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.setAttribute('download', '');
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
+                          window.location.href = url;
                         }} 
                         style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
                       >
@@ -2739,12 +2734,7 @@ build_hardened_ide:
                           const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
                           const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
                           const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.setAttribute('download', '');
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
+                          window.location.href = url;
                         }} 
                         style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                       >
