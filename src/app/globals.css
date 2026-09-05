@@ -1013,47 +1013,29 @@ input:checked + .slider:before {
   color: #60A5FA;
 }
 
-/* Multi-IDE Engine Switcher Bar (Responsive Grid, Never Scrolls Horizontally) */
-.ide-engine-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.45rem;
-  margin-bottom: 1.25rem;
-  background: rgba(0, 0, 0, 0.35);
-  padding: 0.45rem;
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  overflow-x: hidden;
+/* IDE Engine Dropdown & Selector Menu */
+.ide-selector-menu {
+  position: relative;
 }
 
-.ide-engine-btn {
+.ide-selector-trigger {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.55rem 0.85rem;
+  gap: 0.65rem;
+  padding: 0.55rem 0.95rem;
   border-radius: 10px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  font-weight: 600;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   cursor: pointer;
-  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
-.ide-engine-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
+.ide-selector-trigger:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.ide-engine-btn.active {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: var(--accent-primary);
-  color: #60A5FA;
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
-}
 
 .ide-badge-pill {
   font-size: 0.7rem;

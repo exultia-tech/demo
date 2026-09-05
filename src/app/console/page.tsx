@@ -1,9 +1,68 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Multi-IDE Types
 type IdeEngine = "vscode" | "theia" | "zed" | "neovim" | "jupyter";
+
+export interface IdeEngineMeta {
+  id: IdeEngine;
+  name: string;
+  shortName: string;
+  tagline: string;
+  icon: string;
+  badge: string;
+  description: string;
+}
+
+export const IDE_ENGINES: IdeEngineMeta[] = [
+  {
+    id: "vscode",
+    name: "VS Code / VSCodium",
+    shortName: "VS Code Core",
+    tagline: "Microsoft & Open VSX Marketplace",
+    icon: "🟦",
+    badge: "VSIX Core",
+    description: "Standard VSIX extension ecosystem, Electron runtime, and multi-language LSP support."
+  },
+  {
+    id: "theia",
+    name: "Eclipse Theia",
+    shortName: "Eclipse Theia",
+    tagline: "Enterprise Cloud & Desktop",
+    icon: "🟣",
+    badge: "Enterprise Cloud",
+    description: "Modular, vendor-neutral enterprise IDE framework supporting web and desktop."
+  },
+  {
+    id: "zed",
+    name: "Zed Editor",
+    shortName: "Zed Editor",
+    tagline: "High-Performance GPU Editor",
+    icon: "⚡",
+    badge: "Rust GPU",
+    description: "Blazing-fast native Rust editor with GPU rendering and collaborative CRDTs."
+  },
+  {
+    id: "neovim",
+    name: "Neovim Hardened",
+    shortName: "Neovim Hardened",
+    tagline: "Modal Editing & LazyVim",
+    icon: "🟢",
+    badge: "LazyVim / Lua",
+    description: "Extensible modal editor with verified Lua plugin architecture and sandboxed LSP."
+  },
+  {
+    id: "jupyter",
+    name: "JupyterLab Desktop",
+    shortName: "JupyterLab",
+    tagline: "AI & Data Science Workstation",
+    icon: "🟠",
+    badge: "AI / Data",
+    description: "Interactive Python, R, and Julia notebooks with integrated conda runtime."
+  }
+];
+
 
 interface CveAdvisory {
   id: string;
@@ -255,6 +314,9 @@ export default function ConsolePage() {
   
   // Selected IDE Engine
   const [selectedEngine, setSelectedEngine] = useState<IdeEngine>("vscode");
+  const [engineMenuOpen, setEngineMenuOpen] = useState(false);
+  const engineMenuRef = useRef<HTMLDivElement>(null);
+  const activeEngineObj = IDE_ENGINES.find(e => e.id === selectedEngine) || IDE_ENGINES[0];
 
   // Marketplace & Cart
   const [query, setQuery] = useState("");
@@ -714,6 +776,28 @@ export default function ConsolePage() {
       setBrandColor("#3B82F6");
     }
   }, [tier, canUseWhitelabel]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (engineMenuRef.current && !engineMenuRef.current.contains(event.target as Node)) {
+        setEngineMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && engineMenuOpen) {
+        setEngineMenuOpen(false);
+      }
+    };
+    if (engineMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [engineMenuOpen]);
+
 
   // Multi-Source Threat Intelligence Synthesis (NVD, JFrog, Aqua Nautilus, Socket.dev, OpenSSF)
   const buildThreatFeeds = (
@@ -2206,58 +2290,159 @@ build_hardened_ide:
         {activeTab === "studio" && (
           <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             
-            {/* Header & Brand */}
-            <div style={{ marginBottom: '1rem' }}>
-              <h1>{brandName}</h1>
-              <p>Universal Zero-Trust Build & Governance Platform for Open-Source IDEs.</p>
-            </div>
+            {/* Header & Brand + Target IDE Selector Menu */}
+            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>{brandName}</h1>
+                <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  Universal Zero-Trust Build & Governance Platform for Open-Source IDEs.
+                </p>
+              </div>
 
-            {/* MULTI-IDE ENGINE SELECTOR BAR */}
-            <div className="ide-engine-bar">
-              <button 
-                className={`ide-engine-btn ${selectedEngine === "vscode" ? "active" : ""}`}
-                onClick={() => handleEngineSwitch("vscode")}>
-                <span>🟦</span>
-                <span>VS Code / VSCodium</span>
-                <span className="ide-badge-pill">VSIX Core</span>
-              </button>
+              {/* STREAMLINED TARGET IDE SELECTOR MENU */}
+              <div ref={engineMenuRef} style={{ position: 'relative' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+                  Target IDE Platform
+                </div>
+                <button
+                  type="button"
+                  id="target-ide-menu-trigger"
+                  onClick={() => setEngineMenuOpen(!engineMenuOpen)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                    padding: '0.55rem 0.95rem',
+                    background: engineMenuOpen ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 0, 0, 0.45)',
+                    border: `1px solid ${engineMenuOpen ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                    borderRadius: '10px',
+                    color: 'var(--text-main)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: engineMenuOpen ? '0 0 15px rgba(59, 130, 246, 0.25)' : 'none'
+                  }}
+                  title="Click to switch target IDE platform"
+                >
+                  <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{activeEngineObj.icon}</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                      {activeEngineObj.name}
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 600,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '6px',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#93C5FD',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    marginLeft: '0.25rem'
+                  }}>
+                    {activeEngineObj.badge}
+                  </span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    style={{
+                      transform: engineMenuOpen ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 0.2s ease',
+                      color: 'var(--text-muted)',
+                      marginLeft: '0.25rem'
+                    }}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
 
-              <button 
-                className={`ide-engine-btn ${selectedEngine === "theia" ? "active" : ""}`}
-                onClick={() => handleEngineSwitch("theia")}>
-                <span>🟣</span>
-                <span>Eclipse Theia</span>
-                <span className="ide-badge-pill">Enterprise Cloud</span>
-              </button>
+                {/* Dropdown Menu */}
+                {engineMenuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 'calc(100% + 6px)',
+                      width: '320px',
+                      background: 'rgba(15, 23, 42, 0.96)',
+                      backdropFilter: 'blur(16px)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      padding: '0.45rem',
+                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.15)',
+                      zIndex: 100,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.3rem'
+                    }}
+                  >
+                    <div style={{ padding: '0.35rem 0.55rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '0.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Switch Target IDE
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: '#60A5FA' }}>
+                        5 Engines
+                      </span>
+                    </div>
 
-              <button 
-                className={`ide-engine-btn ${selectedEngine === "zed" ? "active" : ""}`}
-                onClick={() => handleEngineSwitch("zed")}>
-                <span>⚡</span>
-                <span>Zed Editor</span>
-                <span className="ide-badge-pill">Rust GPU</span>
-              </button>
-
-              <button 
-                className={`ide-engine-btn ${selectedEngine === "neovim" ? "active" : ""}`}
-                onClick={() => handleEngineSwitch("neovim")}>
-                <span>🟢</span>
-                <span>Neovim Hardened</span>
-                <span className="ide-badge-pill">LazyVim / Lua</span>
-              </button>
-
-              <button 
-                className={`ide-engine-btn ${selectedEngine === "jupyter" ? "active" : ""}`}
-                onClick={() => handleEngineSwitch("jupyter")}>
-                <span>🟠</span>
-                <span>JupyterLab Desktop</span>
-                <span className="ide-badge-pill">AI / Data</span>
-              </button>
+                    {IDE_ENGINES.map((eng) => {
+                      const isSelected = selectedEngine === eng.id;
+                      return (
+                        <button
+                          key={eng.id}
+                          type="button"
+                          onClick={() => {
+                            setEngineMenuOpen(false);
+                            handleEngineSwitch(eng.id);
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '0.65rem',
+                            padding: '0.6rem 0.75rem',
+                            borderRadius: '8px',
+                            background: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+                            border: `1px solid ${isSelected ? 'rgba(59, 130, 246, 0.35)' : 'transparent'}`,
+                            color: 'var(--text-main)',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            width: '100%',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span style={{ fontSize: '1.25rem', lineHeight: 1, marginTop: '2px' }}>{eng.icon}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', marginBottom: '0.15rem' }}>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isSelected ? '#93C5FD' : 'var(--text-main)' }}>
+                                {eng.name}
+                              </span>
+                              <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
+                                {eng.badge}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                              {eng.description}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <span style={{ color: '#34D399', fontSize: '0.85rem', fontWeight: 'bold', marginLeft: '0.2rem', marginTop: '2px' }}>
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Community Edition "0 Open CVEs & Active Support" Notification Banner */}
             {tier === "COMMUNITY" && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', background: 'rgba(35, 134, 54, 0.1)', border: '1px solid rgba(35, 134, 54, 0.25)', borderRadius: '10px', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'rgba(35, 134, 54, 0.1)', border: '1px solid rgba(35, 134, 54, 0.25)', borderRadius: '10px', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flex: 1 }}>
                   <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>🛡️</span>
                   <div>
@@ -2270,22 +2455,6 @@ build_hardened_ide:
                 <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.12)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)', flexShrink: 0 }}>✓ 0 CVEs & Maintained</span>
               </div>
             )}
-
-            {/* UNIFIED MULTI-IDE MARKETPLACE BANNER */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flex: 1 }}>
-                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>🌐</span>
-                <div>
-                  <strong style={{ fontSize: '0.85rem', color: '#93C5FD' }}>Unified Multi-IDE Extension Marketplace</strong>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                    Search all open-source, Microsoft, and engine-native tools in one place. Dynamically enabled for active engine: <strong>{selectedEngine.toUpperCase()}</strong>.
-                  </span>
-                </div>
-              </div>
-              <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', flexShrink: 0 }}>
-                Target: {selectedEngine.toUpperCase()}
-              </span>
-            </div>
 
             {/* QUICK-START STACKS BAR */}
             <div className="quick-stack-bar">
@@ -3674,11 +3843,42 @@ build_hardened_ide:
         <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Governance Policy</h2>
 
-          {/* Target Engine Indicator */}
+          {/* Target Engine Selector */}
           <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-            <label style={{ fontSize: '0.75rem' }}>Selected IDE Engine</label>
-            <div style={{ fontSize: '0.85rem', color: '#60A5FA', padding: '0.55rem 0.8rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)', fontWeight: 600 }}>
-              {selectedEngine === 'vscode' ? '🟦 VS Code / VSCodium' : selectedEngine === 'theia' ? '🟣 Eclipse Theia' : selectedEngine === 'zed' ? '⚡ Zed (Rust GPU)' : selectedEngine === 'neovim' ? '🟢 Neovim (LazyVim)' : '🟠 JupyterLab'}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+              <label style={{ fontSize: '0.75rem', margin: 0 }}>Target IDE Engine</label>
+              <span style={{ fontSize: '0.68rem', color: '#93C5FD', fontWeight: 600 }}>{activeEngineObj.badge}</span>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={selectedEngine}
+                onChange={(e) => handleEngineSwitch(e.target.value as IdeEngine)}
+                style={{
+                  width: '100%',
+                  padding: '0.55rem 2rem 0.55rem 0.8rem',
+                  background: 'rgba(0,0,0,0.45)',
+                  color: '#93C5FD',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  appearance: 'none',
+                  WebkitAppearance: 'none'
+                }}
+              >
+                {IDE_ENGINES.map(eng => (
+                  <option key={eng.id} value={eng.id} style={{ background: '#1e293b', color: '#fff' }}>
+                    {eng.icon} {eng.name} ({eng.badge})
+                  </option>
+                ))}
+              </select>
+              <div style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
             </div>
           </div>
 
