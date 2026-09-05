@@ -2290,20 +2290,11 @@ build_hardened_ide:
         {activeTab === "studio" && (
           <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             
-            {/* Header & Brand + Target IDE Selector Menu */}
-            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>{brandName}</h1>
-                <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  Universal Zero-Trust Build & Governance Platform for Open-Source IDEs.
-                </p>
-              </div>
-
-              {/* STREAMLINED TARGET IDE SELECTOR MENU */}
+            {/* CLEAN TOP BAR: Target IDE Selector & Plugin Search */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+              
+              {/* TARGET IDE SELECTOR */}
               <div ref={engineMenuRef} style={{ position: 'relative' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
-                  Target IDE Platform
-                </div>
                 <button
                   type="button"
                   id="target-ide-menu-trigger"
@@ -2312,7 +2303,7 @@ build_hardened_ide:
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.65rem',
-                    padding: '0.55rem 0.95rem',
+                    padding: '0.55rem 1rem',
                     background: engineMenuOpen ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 0, 0, 0.45)',
                     border: `1px solid ${engineMenuOpen ? 'var(--accent-primary)' : 'var(--border-color)'}`,
                     borderRadius: '10px',
@@ -2324,11 +2315,9 @@ build_hardened_ide:
                   title="Click to switch target IDE platform"
                 >
                   <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{activeEngineObj.icon}</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                      {activeEngineObj.name}
-                    </div>
-                  </div>
+                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                    {activeEngineObj.name}
+                  </span>
                   <span style={{
                     fontSize: '0.68rem',
                     fontWeight: 600,
@@ -2364,7 +2353,7 @@ build_hardened_ide:
                   <div
                     style={{
                       position: 'absolute',
-                      right: 0,
+                      left: 0,
                       top: 'calc(100% + 6px)',
                       width: '320px',
                       background: 'rgba(15, 23, 42, 0.96)',
@@ -2381,7 +2370,7 @@ build_hardened_ide:
                   >
                     <div style={{ padding: '0.35rem 0.55rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '0.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Switch Target IDE
+                        Target IDE Platform
                       </span>
                       <span style={{ fontSize: '0.7rem', color: '#60A5FA' }}>
                         5 Engines
@@ -2438,79 +2427,31 @@ build_hardened_ide:
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Community Edition "0 Open CVEs & Active Support" Notification Banner */}
-            {tier === "COMMUNITY" && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'rgba(35, 134, 54, 0.1)', border: '1px solid rgba(35, 134, 54, 0.25)', borderRadius: '10px', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flex: 1 }}>
-                  <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>🛡️</span>
-                  <div>
-                    <strong style={{ fontSize: '0.85rem', color: '#3FB950' }}>Community Edition Policy Active:</strong>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                      Pre-approves extensions with <strong>0 Open CVEs</strong> and active maintenance. Deprecated or vulnerable packages require Enterprise override.
-                    </span>
-                  </div>
+              {/* SEARCH & SORT BAR (Compact, Minimal) */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: '240px', justifyContent: 'flex-end' }}>
+                <div style={{ position: 'relative', flex: 1, maxWidth: '380px' }}>
+                  <input 
+                    type="text" 
+                    placeholder={`Search ${activeEngineObj.shortName} plugins...`} 
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.52rem 0.9rem 0.52rem 2.2rem',
+                      background: 'rgba(0, 0, 0, 0.35)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px',
+                      fontSize: '0.85rem',
+                      color: 'var(--text-main)',
+                      outline: 'none'
+                    }}
+                  />
+                  <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.45, fontSize: '0.8rem', pointerEvents: 'none' }}>
+                    🔍
+                  </span>
                 </div>
-                <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.12)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)', flexShrink: 0 }}>✓ 0 CVEs & Maintained</span>
-              </div>
-            )}
 
-            {/* QUICK-START STACKS BAR */}
-            <div className="quick-stack-bar">
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', marginRight: '0.25rem' }}>
-                ⚡ Quick Stacks:
-              </span>
-              {blueprints.slice(0, 6).map(bp => (
-                <button 
-                  key={bp.id} 
-                  type="button" 
-                  className="quick-stack-chip" 
-                  onClick={() => loadBlueprint(bp, "replace")}
-                  title={`Load ${bp.name} (${bp.extensions.length} extensions)`}
-                >
-                  <span>{bp.icon}</span>
-                  <span>{bp.name.split('(')[0].trim()}</span>
-                  <span style={{ fontSize: '0.65rem', opacity: 0.7, background: 'rgba(255,255,255,0.08)', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>+{bp.extensions.length}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Search Input */}
-            <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-              <input 
-                type="text" 
-                placeholder="Search all extensions & tools (Copilot, Python, Docker, Zed, Neovim, Jupyter)..." 
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                style={{ fontSize: '1rem', padding: '0.8rem 1.25rem', background: 'rgba(0,0,0,0.4)' }}
-              />
-            </div>
-
-            {/* Marketplace Filter & Sort Bar */}
-            <div className="filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <button 
-                  className={`filter-chip ${marketplaceFilter === "ALL" ? "active" : ""}`}
-                  onClick={() => setMarketplaceFilter("ALL")}>
-                  All Extensions ({displayedExtensions.length})
-                </button>
-                <button 
-                  className={`filter-chip ${marketplaceFilter === "COMMUNITY_VERIFIED" ? "active" : ""}`}
-                  onClick={() => setMarketplaceFilter("COMMUNITY_VERIFIED")}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                  ★ 0 Open CVEs (Clean)
-                </button>
-                <button 
-                  className={`filter-chip ${marketplaceFilter === "GRADE_A" ? "active" : ""}`}
-                  onClick={() => setMarketplaceFilter("GRADE_A")}>
-                  🛡️ Security Grade A+
-                </button>
-              </div>
-
-              {/* SORT BY CONTROL */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sort by:</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => {
@@ -2518,22 +2459,24 @@ build_hardened_ide:
                     setOffset(0);
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    color: 'white',
+                    background: 'rgba(0, 0, 0, 0.35)',
+                    color: 'var(--text-muted)',
                     border: '1px solid var(--border-color)',
                     borderRadius: '8px',
-                    padding: '0.4rem 0.8rem',
+                    padding: '0.52rem 0.75rem',
                     fontSize: '0.8rem',
                     fontWeight: 500,
                     cursor: 'pointer',
-                    outline: 'none'
+                    outline: 'none',
+                    whiteSpace: 'nowrap'
                   }}>
-                  <option value="POPULARITY_DESC">🔥 Most Popular (Downloads ↓)</option>
-                  <option value="ALPHA_ASC">🔤 Alphabetical (A → Z)</option>
-                  <option value="ALPHA_DESC">🔤 Alphabetical (Z → A)</option>
-                  <option value="DOWNLOADS_ASC">📉 Fewest Downloads (Downloads ↑)</option>
+                  <option value="POPULARITY_DESC">🔥 Popular</option>
+                  <option value="ALPHA_ASC">🔤 A → Z</option>
+                  <option value="ALPHA_DESC">🔤 Z → A</option>
+                  <option value="DOWNLOADS_ASC">📉 Fewest DL</option>
                 </select>
               </div>
+
             </div>
 
             <div 
