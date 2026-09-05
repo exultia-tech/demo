@@ -364,6 +364,194 @@ input:checked + .slider:before {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
 }
 
+/* =========================================================================
+   Console Workbench Architecture (Sidebar + Main View + Persistent Dock)
+   ========================================================================= */
+
+.console-workbench {
+  display: flex;
+  gap: 1.25rem;
+  height: calc(100vh - 5.5rem);
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+  overflow: hidden;
+}
+
+.console-sidebar {
+  width: 230px;
+  min-width: 230px;
+  background: rgba(10, 14, 23, 0.75);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 0.65rem;
+  gap: 1rem;
+  overflow-y: auto;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.console-sidebar.collapsed {
+  width: 66px;
+  min-width: 66px;
+  padding: 0.85rem 0.4rem;
+}
+
+.console-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.4rem 0.65rem 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.console-sidebar-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.console-collapse-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.console-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.console-sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.console-sidebar-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.1rem;
+}
+
+.console-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.console-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+}
+
+.console-sidebar-item.active {
+  background: rgba(59, 130, 246, 0.14);
+  color: #93C5FD;
+  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.15);
+}
+
+.console-sidebar-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.console-sidebar-item.active .console-sidebar-badge {
+  background: rgba(59, 130, 246, 0.25);
+  color: #60A5FA;
+}
+
+.console-main-view {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.console-dock {
+  width: 380px;
+  min-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+/* Quick Stack Carousel in Marketplace */
+.quick-stack-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.1rem;
+  margin-bottom: 0.65rem;
+  scrollbar-width: thin;
+}
+
+.quick-stack-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.quick-stack-chip:hover {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #93C5FD;
+  transform: translateY(-1px);
+}
+
 /* Blueprint Presets */
 .blueprint-grid {
   display: grid;

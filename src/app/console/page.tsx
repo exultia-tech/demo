@@ -246,7 +246,8 @@ type ActiveTab = "studio" | "blueprints" | "theme" | "policy" | "platforms" | "s
 type MarketplaceFilter = "ALL" | "COMMUNITY_VERIFIED" | "GRADE_A";
 
 export default function ConsolePage() {
-  const [activeTab, setActiveTab] = useState("builder");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("studio");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [buildArtifactPath, setBuildArtifactPath] = useState<string | null>(null);
   const [buildInstallerPath, setBuildInstallerPath] = useState<string | null>(null);
   const [activeBuildId, setActiveBuildId] = useState<string | null>(null);
@@ -2062,45 +2063,148 @@ build_hardened_ide:
   };
 
   return (
-    <div className="fade-in" style={{ padding: '2rem', maxWidth: '1600px', margin: '0 auto' }}>
+    <div className="console-workbench fade-in">
       
-      {/* Top Secondary Tab Navigation */}
-      <div className="tab-nav">
-        <button className={`tab-btn ${activeTab === "studio" ? "active" : ""}`} onClick={() => setActiveTab("studio")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          Builder Studio
-        </button>
-        <button className={`tab-btn ${activeTab === "blueprints" ? "active" : ""}`} onClick={() => setActiveTab("blueprints")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Stack Blueprints ({blueprints.length})
-        </button>
-        <button className={`tab-btn ${activeTab === "theme" ? "active" : ""}`} onClick={() => setActiveTab("theme")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14 2.5 2.5 0 0 0 2.5-2.5c0-.8-.3-1.5-.8-2"/></svg>
-          Brand & Theme Studio
-        </button>
-        <button className={`tab-btn ${activeTab === "policy" ? "active" : ""}`} onClick={() => setActiveTab("policy")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          IDE Hardening & Policy as Code
-        </button>
-        <button className={`tab-btn ${activeTab === "platforms" ? "active" : ""}`} onClick={() => setActiveTab("platforms")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          Cross-OS & CI/CD Export
-        </button>
-        <button className={`tab-btn ${activeTab === "sbom" ? "active" : ""}`} onClick={() => { setActiveTab("sbom"); generateSbomJson(); }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          CycloneDX SBOM & Manifests
-        </button>
-        <button className={`tab-btn ${activeTab === "fleet" ? "active" : ""}`} onClick={() => setActiveTab("fleet")}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82"/></svg>
-          Procurement & Entitlements
-        </button>
-      </div>
+      {/* Modern Collapsible Sidebar Navigation */}
+      <aside className={`console-sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <div className="console-sidebar-header">
+          {!sidebarCollapsed && (
+            <div className="console-sidebar-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              <span>Workbench</span>
+            </div>
+          )}
+          <button 
+            type="button" 
+            className="console-collapse-btn" 
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {sidebarCollapsed ? (
+                <polyline points="9 18 15 12 9 6" />
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
+        </div>
 
-      {/* TAB 1: BUILDER STUDIO */}
-      {activeTab === "studio" && (
-        <div style={{ display: 'flex', gap: '2rem', height: 'calc(100vh - 15rem)' }}>
-          {/* Marketplace Pane */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Group 1: Toolchain */}
+        <div className="console-sidebar-group">
+          {!sidebarCollapsed && <span className="console-sidebar-label">Toolchain</span>}
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "studio" ? "active" : ""}`}
+            onClick={() => setActiveTab("studio")}
+            title="Extensions & Tools"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>⚡</span>
+            {!sidebarCollapsed && <span>Extensions & Tools</span>}
+            {!sidebarCollapsed && cart.length > 0 && (
+              <span className="console-sidebar-badge">{cart.length}</span>
+            )}
+          </button>
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "blueprints" ? "active" : ""}`}
+            onClick={() => setActiveTab("blueprints")}
+            title="Stack Blueprints Catalog"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>📦</span>
+            {!sidebarCollapsed && <span>Stack Blueprints</span>}
+            {!sidebarCollapsed && (
+              <span className="console-sidebar-badge">{blueprints.length + customBlueprints.length}</span>
+            )}
+          </button>
+        </div>
+
+        {/* Group 2: Hardening & Brand */}
+        <div className="console-sidebar-group">
+          {!sidebarCollapsed && <span className="console-sidebar-label">Hardening & Brand</span>}
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "theme" ? "active" : ""}`}
+            onClick={() => setActiveTab("theme")}
+            title="Brand & Theme Studio"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🎨</span>
+            {!sidebarCollapsed && <span>Brand & Theme</span>}
+          </button>
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "policy" ? "active" : ""}`}
+            onClick={() => setActiveTab("policy")}
+            title="IDE Hardening & Policy as Code"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🛡️</span>
+            {!sidebarCollapsed && <span>Security Policies</span>}
+          </button>
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "platforms" ? "active" : ""}`}
+            onClick={() => setActiveTab("platforms")}
+            title="Cross-OS & CI/CD Export"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🖥️</span>
+            {!sidebarCollapsed && <span>Cross-OS & CI/CD</span>}
+          </button>
+        </div>
+
+        {/* Group 3: Audit & Fleet */}
+        <div className="console-sidebar-group">
+          {!sidebarCollapsed && <span className="console-sidebar-label">Audit & Fleet</span>}
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "sbom" ? "active" : ""}`}
+            onClick={() => { setActiveTab("sbom"); generateSbomJson(); }}
+            title="CycloneDX SBOM & Manifests"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>📋</span>
+            {!sidebarCollapsed && <span>CycloneDX SBOM</span>}
+          </button>
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "fleet" ? "active" : ""}`}
+            onClick={() => setActiveTab("fleet")}
+            title="Procurement & Fleet Entitlements"
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🏢</span>
+            {!sidebarCollapsed && <span>Fleet & Licensing</span>}
+          </button>
+        </div>
+
+        {/* Engine Status Pill in Sidebar Footer */}
+        <div style={{ marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          {!sidebarCollapsed ? (
+            <div style={{ padding: '0.45rem 0.6rem', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.9rem' }}>
+                {selectedEngine === 'vscode' ? '🟦' : selectedEngine === 'theia' ? '🟣' : selectedEngine === 'zed' ? '⚡' : selectedEngine === 'neovim' ? '🟢' : '🟠'}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {selectedEngine === 'vscode' ? 'VS Code Core' : selectedEngine === 'theia' ? 'Eclipse Theia' : selectedEngine === 'zed' ? 'Zed Editor' : selectedEngine === 'neovim' ? 'Neovim' : 'JupyterLab'}
+                </div>
+                <div style={{ fontSize: '0.65rem', color: '#34D399', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34D399', display: 'inline-block' }}></span>
+                  {tier} Edition
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', fontSize: '1.1rem' }} title={`Engine: ${selectedEngine.toUpperCase()} (${tier})`}>
+              {selectedEngine === 'vscode' ? '🟦' : selectedEngine === 'theia' ? '🟣' : selectedEngine === 'zed' ? '⚡' : selectedEngine === 'neovim' ? '🟢' : '🟠'}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* Main Center Viewport */}
+      <main className="console-main-view">
+
+        {/* TAB 1: BUILDER STUDIO */}
+        {activeTab === "studio" && (
+          <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             
             {/* Header & Brand */}
             <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -2195,6 +2299,34 @@ build_hardened_ide:
               <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
                 Target: {selectedEngine.toUpperCase()}
               </span>
+            </div>
+
+            {/* QUICK-START STACKS BAR */}
+            <div className="quick-stack-bar">
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', marginRight: '0.25rem' }}>
+                ⚡ Quick Stacks:
+              </span>
+              {blueprints.slice(0, 6).map(bp => (
+                <button 
+                  key={bp.id} 
+                  type="button" 
+                  className="quick-stack-chip" 
+                  onClick={() => loadBlueprint(bp, "replace")}
+                  title={`Load ${bp.name} (${bp.extensions.length} extensions)`}
+                >
+                  <span>{bp.icon}</span>
+                  <span>{bp.name.split('(')[0].trim()}</span>
+                  <span style={{ fontSize: '0.65rem', opacity: 0.7, background: 'rgba(255,255,255,0.08)', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>+{bp.extensions.length}</span>
+                </button>
+              ))}
+              <button 
+                type="button" 
+                className="quick-stack-chip" 
+                onClick={() => setActiveTab("blueprints")} 
+                style={{ background: 'rgba(59,130,246,0.1)', borderColor: 'rgba(59,130,246,0.25)', color: '#93C5FD' }}
+              >
+                <span>All {blueprints.length + customBlueprints.length} Stacks →</span>
+              </button>
             </div>
 
             {/* Search Input */}
@@ -2488,292 +2620,7 @@ build_hardened_ide:
               )}
             </div>
           </div>
-
-          {/* Right Sidebar: Build Cart, Governance, Orchestration */}
-          <div style={{ width: '380px', display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
-            
-            {/* Tier Selector */}
-            <div className="tier-selector" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-              <button className={`tier-btn ${tier === "COMMUNITY" ? "active" : ""}`} onClick={() => setTier("COMMUNITY")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Community</button>
-              <button className={`tier-btn ${tier === "TEAM" ? "active" : ""}`} onClick={() => setTier("TEAM")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Team</button>
-              <button className={`tier-btn ${tier === "ENTERPRISE" ? "active" : ""}`} onClick={() => setTier("ENTERPRISE")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Enterprise</button>
-            </div>
-
-            {/* Build Cart */}
-            <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <h2 style={{ fontSize: '1.1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                  Build Cart ({cart.length})
-                </h2>
-                {cart.length > 0 && (
-                  <button onClick={() => setCart([])} style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.75rem', cursor: 'pointer' }}>
-                    Clear All
-                  </button>
-                )}
-              </div>
-              
-              <div style={{ minHeight: '80px', maxHeight: '160px', overflowY: 'auto', marginBottom: '0.5rem' }}>
-                {cart.length === 0 ? (
-                  <div style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
-                    No extensions carted.
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {cart.map(ext => (
-                      <div key={`${ext.namespace}.${ext.name}`} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0.6rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
-                        <img src={ext.files.icon} alt="" style={{ width: '20px', height: '20px', borderRadius: '4px' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
-                        <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{ext.displayName}</div>
-                        <span className={`risk-grade ${ext.securityGrade === 'A+' ? 'grade-a' : 'grade-b'}`} style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem' }}>
-                          {ext.securityGrade || 'A+'}
-                        </span>
-                        <button onClick={() => toggleCart(ext)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Governance Controls */}
-            <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Governance Policy</h2>
-
-              {/* Target Engine Indicator */}
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ fontSize: '0.75rem' }}>Selected IDE Engine</label>
-                <div style={{ fontSize: '0.85rem', color: '#60A5FA', padding: '0.55rem 0.8rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)', fontWeight: 600 }}>
-                  {selectedEngine === 'vscode' ? '🟦 VS Code / VSCodium' : selectedEngine === 'theia' ? '🟣 Eclipse Theia' : selectedEngine === 'zed' ? '⚡ Zed (Rust GPU)' : selectedEngine === 'neovim' ? '🟢 Neovim (LazyVim)' : '🟠 JupyterLab'}
-                </div>
-              </div>
-
-              {/* Upstream Engine Version Channel Selector (Latest, Preview, Previous, Custom) */}
-              <div className="form-group" style={{ marginBottom: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <label style={{ fontSize: '0.75rem', margin: 0, fontWeight: 600 }}>
-                    Editor Version Channel
-                  </label>
-                  <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>
-                    {versionChannel === "latest" ? "✓ Upstream Verified" : versionChannel === "preview" ? "⚡ Pre-Release" : versionChannel === "previous" ? "🛡️ LTS Stable" : "Custom Tag"}
-                  </span>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.4rem' }}>
-                  {(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).map((ch) => {
-                    const isSelected = versionChannel === ch.id;
-                    return (
-                      <button
-                        key={ch.id}
-                        type="button"
-                        onClick={() => setVersionChannel(ch.id)}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                          padding: '0.5rem 0.6rem',
-                          borderRadius: '8px',
-                          border: isSelected ? `2px solid ${brandColor}` : '1px solid rgba(255,255,255,0.08)',
-                          background: isSelected ? 'rgba(59, 130, 246, 0.18)' : 'rgba(0, 0, 0, 0.25)',
-                          color: isSelected ? '#fff' : 'var(--text-muted)',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.15rem' }}>
-                          <strong style={{ fontSize: '0.78rem', color: isSelected ? '#fff' : 'var(--text-main)' }}>{ch.name}</strong>
-                          <span style={{ fontSize: '0.62rem', color: ch.badgeColor, background: 'rgba(255,255,255,0.05)', padding: '0.08rem 0.3rem', borderRadius: '4px' }}>
-                            {ch.badge}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: '0.68rem', color: isSelected ? '#93C5FD' : 'var(--text-muted)', fontFamily: ch.id !== 'custom' ? 'monospace' : 'inherit' }}>
-                          {ch.id === 'custom' ? 'User-defined Git Tag' : `Tag: ${ch.tag}`}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Custom Git Tag Input Field */}
-                {versionChannel === "custom" && (
-                  <div className="fade-in" style={{ marginTop: '0.4rem', marginBottom: '0.4rem' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. release/1.92.0, v1.91.5, or commit SHA..."
-                      value={customTag}
-                      onChange={(e) => setCustomTag(e.target.value)}
-                      style={{ fontSize: '0.8rem', padding: '0.45rem 0.7rem', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-color)', borderRadius: '6px', width: '100%', color: 'white' }}
-                    />
-                    {customTag && (
-                      <div style={{ marginTop: '0.3rem', padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem',
-                        background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.25)' }}>
-                        ✓ Custom upstream tag <code>{customTag}</code> mapped for compilation.
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Channel Description / Status */}
-                {versionChannel !== "custom" && (
-                  <div style={{ padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <span>ℹ️</span>
-                    <span>{(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).find(c => c.id === versionChannel)?.description}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  Whitelist Policy Mode
-                  {tier === "COMMUNITY" && <span className="upgrade-badge" style={{ color: '#3FB950', background: 'rgba(35,134,54,0.1)', borderColor: 'rgba(35,134,54,0.3)' }}>Community Edition</span>}
-                </label>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', padding: '0.5rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
-                  {tier === "COMMUNITY" 
-                    ? "✓ Community Verified (Reputation + 0 Open CVEs)" 
-                    : "🔒 Full Custom Enterprise Artifactory Whitelist"}
-                </div>
-              </div>
-
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  JFrog / Artifactory Proxy
-                  {!canUseRegistryUrl && <span className="upgrade-badge">Enterprise</span>}
-                </label>
-                <input 
-                  type="url" 
-                  value={canUseRegistryUrl ? registryUrl : "Air-gapped (Offline Core)"}
-                  onChange={(e) => setRegistryUrl(e.target.value)}
-                  disabled={!canUseRegistryUrl}
-                  className={!canUseRegistryUrl ? "locked-field" : ""}
-                  style={{ fontSize: '0.85rem', padding: '0.6rem 0.8rem' }}
-                />
-              </div>
-
-              <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: '0.5rem' }}>
-                <div className="toggle-info">
-                  <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Zero Telemetry Beacons</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>All analytics & crash pings neutralized</span>
-                </div>
-                <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Enforced</span>
-              </div>
-
-              <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: 0 }}>
-                <div className="toggle-info">
-                  <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Remote Tunnels / SSH</span>
-                </div>
-                <label className="toggle-switch" style={{ width: '38px', height: '20px' }}>
-                  <input type="checkbox" checked={tunnel} onChange={(e) => setTunnel(e.target.checked)} />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            </div>
-
-            {/* Build / Dry Run Action Card */}
-            <div className="glass-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', marginBottom: 0, padding: '1.25rem' }}>
-              {buildState === "IDLE" && (
-                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  
-                  {/* AUTO-PUBLISH COMMUNITY BLUEPRINT TOGGLE */}
-                  <div style={{ padding: '0.65rem 0.85rem', background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', marginBottom: '0.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#DDD6FE', fontWeight: 600 }}>
-                        <input 
-                          type="checkbox" 
-                          checked={autoPublishBlueprint} 
-                          onChange={(e) => setAutoPublishBlueprint(e.target.checked)}
-                          style={{ accentColor: '#8B5CF6' }}
-                        />
-                        <span>🌐 Auto-Publish to Community Catalog</span>
-                      </label>
-                      <span style={{ fontSize: '0.68rem', background: autoPublishBlueprint ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.06)', color: autoPublishBlueprint ? '#C084FC' : 'var(--text-muted)', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
-                        {autoPublishBlueprint ? 'Public Flywheel' : 'Private Build'}
-                      </span>
-                    </div>
-
-                    {autoPublishBlueprint && (
-                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Author:</span>
-                        <input 
-                          type="text" 
-                          placeholder="@your_handle (optional)" 
-                          value={communityAuthorHandle}
-                          onChange={(e) => setCommunityAuthorHandle(e.target.value)}
-                          style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'white', flex: 1 }}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <button onClick={startDryRun} style={{ fontSize: '0.9rem', padding: '0.8rem', background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
-                    🔍 Dry Run Validation ({selectedEngine.toUpperCase()})
-                  </button>
-                  <button className="btn-primary" onClick={startBuild} style={{ fontSize: '1rem', padding: '1rem', background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))` }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    Compile {selectedEngine.toUpperCase()} Release
-                  </button>
-                </div>
-              )}
-
-              {buildState !== "IDLE" && (
-                <div className="fade-in" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '0.875rem', flex: 1, display: 'flex', flexDirection: 'column', fontFamily: 'monospace', fontSize: '0.75rem', overflowY: 'auto' }}>
-                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'var(--text-muted)' }}>
-                    {buildLogs.map((log, i) => (
-                      <div key={i} style={{ color: log.includes("Error") ? '#F87171' : log.includes("complete") || log.includes("SUCCESS") ? 'var(--success)' : 'inherit', marginBottom: '0.2rem' }}>
-                        {log.startsWith("{") || log.startsWith(" ") ? log : `> ${log}`}
-                      </div>
-                    ))}
-                  </pre>
-                  
-                  {buildState === "BUILDING" && (
-                    <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: brandColor, paddingTop: '0.5rem' }}>
-                      <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
-                      Packaging Distribution on Server...
-                    </div>
-                  )}
-
-                  {buildState === "SUCCESS" && (
-                    <div className="fade-in" style={{ marginTop: 'auto', paddingTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <button 
-                        className="btn-primary" 
-                        onClick={() => {
-                          const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
-                          const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
-                          const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                          const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                          window.location.href = url;
-                        }} 
-                        style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
-                      >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        ✓ Download Windows Setup (.EXE)
-                      </button>
-                      <button 
-                        onClick={() => {
-                          const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
-                          const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
-                          const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                          const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                          window.location.href = url;
-                        }} 
-                        style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                      >
-                        📦 Portable (.ZIP)
-                      </button>
-                      <button onClick={() => { setActiveTab("sbom"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer' }}>
-                        View SBOM
-                      </button>
-                      <button onClick={() => { setBuildState("IDLE"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer' }}>
-                        New Build
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-          </div>
-        </div>
-      )}
+        )}
 
       {/* TAB 2: ROLE-BASED & COMMUNITY STACK BLUEPRINTS */}
       {activeTab === "blueprints" && (
@@ -3800,6 +3647,290 @@ build_hardened_ide:
           </div>
         </div>
       )}
+      </main>
+
+      {/* Persistent Right Dock: Cart, Governance, Orchestration & Live Build Output */}
+      <aside className="console-dock">
+        
+        {/* Tier Selector */}
+        <div className="tier-selector" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          <button className={`tier-btn ${tier === "COMMUNITY" ? "active" : ""}`} onClick={() => setTier("COMMUNITY")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Community</button>
+          <button className={`tier-btn ${tier === "TEAM" ? "active" : ""}`} onClick={() => setTier("TEAM")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Team</button>
+          <button className={`tier-btn ${tier === "ENTERPRISE" ? "active" : ""}`} onClick={() => setTier("ENTERPRISE")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Enterprise</button>
+        </div>
+
+        {/* Build Cart */}
+        <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <h2 style={{ fontSize: '1.1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Build Cart ({cart.length})
+            </h2>
+            {cart.length > 0 && (
+              <button onClick={() => setCart([])} style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.75rem', cursor: 'pointer' }}>
+                Clear All
+              </button>
+            )}
+          </div>
+          
+          <div style={{ minHeight: '80px', maxHeight: '160px', overflowY: 'auto', marginBottom: '0.5rem' }}>
+            {cart.length === 0 ? (
+              <div style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
+                No extensions carted.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {cart.map(ext => (
+                  <div key={`${ext.namespace}.${ext.name}`} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0.6rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
+                    <img src={ext.files.icon} alt="" style={{ width: '20px', height: '20px', borderRadius: '4px' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{ext.displayName}</div>
+                    <span className={`risk-grade ${ext.securityGrade === 'A+' ? 'grade-a' : 'grade-b'}`} style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem' }}>
+                      {ext.securityGrade || 'A+'}
+                    </span>
+                    <button onClick={() => toggleCart(ext)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Governance Controls */}
+        <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Governance Policy</h2>
+
+          {/* Target Engine Indicator */}
+          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+            <label style={{ fontSize: '0.75rem' }}>Selected IDE Engine</label>
+            <div style={{ fontSize: '0.85rem', color: '#60A5FA', padding: '0.55rem 0.8rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)', fontWeight: 600 }}>
+              {selectedEngine === 'vscode' ? '🟦 VS Code / VSCodium' : selectedEngine === 'theia' ? '🟣 Eclipse Theia' : selectedEngine === 'zed' ? '⚡ Zed (Rust GPU)' : selectedEngine === 'neovim' ? '🟢 Neovim (LazyVim)' : '🟠 JupyterLab'}
+            </div>
+          </div>
+
+          {/* Upstream Engine Version Channel Selector (Latest, Preview, Previous, Custom) */}
+          <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <label style={{ fontSize: '0.75rem', margin: 0, fontWeight: 600 }}>
+                Editor Version Channel
+              </label>
+              <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>
+                {versionChannel === "latest" ? "✓ Upstream Verified" : versionChannel === "preview" ? "⚡ Pre-Release" : versionChannel === "previous" ? "🛡️ LTS Stable" : "Custom Tag"}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              {(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).map((ch) => {
+                const isSelected = versionChannel === ch.id;
+                return (
+                  <button
+                    key={ch.id}
+                    type="button"
+                    onClick={() => setVersionChannel(ch.id)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      padding: '0.5rem 0.6rem',
+                      borderRadius: '8px',
+                      border: isSelected ? `2px solid ${brandColor}` : '1px solid rgba(255,255,255,0.08)',
+                      background: isSelected ? 'rgba(59, 130, 246, 0.18)' : 'rgba(0, 0, 0, 0.25)',
+                      color: isSelected ? '#fff' : 'var(--text-muted)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.15rem' }}>
+                      <strong style={{ fontSize: '0.78rem', color: isSelected ? '#fff' : 'var(--text-main)' }}>{ch.name}</strong>
+                      <span style={{ fontSize: '0.62rem', color: ch.badgeColor, background: 'rgba(255,255,255,0.05)', padding: '0.08rem 0.3rem', borderRadius: '4px' }}>
+                        {ch.badge}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.68rem', color: isSelected ? '#93C5FD' : 'var(--text-muted)', fontFamily: ch.id !== 'custom' ? 'monospace' : 'inherit' }}>
+                      {ch.id === 'custom' ? 'User-defined Git Tag' : `Tag: ${ch.tag}`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom Git Tag Input Field */}
+            {versionChannel === "custom" && (
+              <div className="fade-in" style={{ marginTop: '0.4rem', marginBottom: '0.4rem' }}>
+                <input 
+                  type="text" 
+                  placeholder="e.g. release/1.92.0, v1.91.5, or commit SHA..."
+                  value={customTag}
+                  onChange={(e) => setCustomTag(e.target.value)}
+                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.7rem', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-color)', borderRadius: '6px', width: '100%', color: 'white' }}
+                />
+                {customTag && (
+                  <div style={{ marginTop: '0.3rem', padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem',
+                    background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.25)' }}>
+                    ✓ Custom upstream tag <code>{customTag}</code> mapped for compilation.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Channel Description / Status */}
+            {versionChannel !== "custom" && (
+              <div style={{ padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>ℹ️</span>
+                <span>{(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).find(c => c.id === versionChannel)?.description}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              Whitelist Policy Mode
+              {tier === "COMMUNITY" && <span className="upgrade-badge" style={{ color: '#3FB950', background: 'rgba(35,134,54,0.1)', borderColor: 'rgba(35,134,54,0.3)' }}>Community Edition</span>}
+            </label>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', padding: '0.5rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+              {tier === "COMMUNITY" 
+                ? "✓ Community Verified (Reputation + 0 Open CVEs)" 
+                : "🔒 Full Custom Enterprise Artifactory Whitelist"}
+            </div>
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              JFrog / Artifactory Proxy
+              {!canUseRegistryUrl && <span className="upgrade-badge">Enterprise</span>}
+            </label>
+            <input 
+              type="url" 
+              value={canUseRegistryUrl ? registryUrl : "Air-gapped (Offline Core)"}
+              onChange={(e) => setRegistryUrl(e.target.value)}
+              disabled={!canUseRegistryUrl}
+              className={!canUseRegistryUrl ? "locked-field" : ""}
+              style={{ fontSize: '0.85rem', padding: '0.6rem 0.8rem' }}
+            />
+          </div>
+
+          <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: '0.5rem' }}>
+            <div className="toggle-info">
+              <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Zero Telemetry Beacons</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>All analytics & crash pings neutralized</span>
+            </div>
+            <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Enforced</span>
+          </div>
+
+          <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: 0 }}>
+            <div className="toggle-info">
+              <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Remote Tunnels / SSH</span>
+            </div>
+            <label className="toggle-switch" style={{ width: '38px', height: '20px' }}>
+              <input type="checkbox" checked={tunnel} onChange={(e) => setTunnel(e.target.checked)} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        {/* Build / Dry Run Action Card */}
+        <div className="glass-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', marginBottom: 0, padding: '1.25rem' }}>
+          {buildState === "IDLE" && (
+            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              
+              {/* AUTO-PUBLISH COMMUNITY BLUEPRINT TOGGLE */}
+              <div style={{ padding: '0.65rem 0.85rem', background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', marginBottom: '0.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#DDD6FE', fontWeight: 600 }}>
+                    <input 
+                      type="checkbox" 
+                      checked={autoPublishBlueprint} 
+                      onChange={(e) => setAutoPublishBlueprint(e.target.checked)}
+                      style={{ accentColor: '#8B5CF6' }}
+                    />
+                    <span>🌐 Auto-Publish to Community Catalog</span>
+                  </label>
+                  <span style={{ fontSize: '0.68rem', background: autoPublishBlueprint ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.06)', color: autoPublishBlueprint ? '#C084FC' : 'var(--text-muted)', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
+                    {autoPublishBlueprint ? 'Public Flywheel' : 'Private Build'}
+                  </span>
+                </div>
+
+                {autoPublishBlueprint && (
+                  <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Author:</span>
+                    <input 
+                      type="text" 
+                      placeholder="@your_handle (optional)" 
+                      value={communityAuthorHandle}
+                      onChange={(e) => setCommunityAuthorHandle(e.target.value)}
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'white', flex: 1 }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <button onClick={startDryRun} style={{ fontSize: '0.9rem', padding: '0.8rem', background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                🔍 Dry Run Validation ({selectedEngine.toUpperCase()})
+              </button>
+              <button className="btn-primary" onClick={startBuild} style={{ fontSize: '1rem', padding: '1rem', background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))` }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Compile {selectedEngine.toUpperCase()} Release
+              </button>
+            </div>
+          )}
+
+          {buildState !== "IDLE" && (
+            <div className="fade-in" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '0.875rem', flex: 1, display: 'flex', flexDirection: 'column', fontFamily: 'monospace', fontSize: '0.75rem', overflowY: 'auto' }}>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'var(--text-muted)' }}>
+                {buildLogs.map((log, i) => (
+                  <div key={i} style={{ color: log.includes("Error") ? '#F87171' : log.includes("complete") || log.includes("SUCCESS") ? 'var(--success)' : 'inherit', marginBottom: '0.2rem' }}>
+                    {log.startsWith("{") || log.startsWith(" ") ? log : `> ${log}`}
+                  </div>
+                ))}
+              </pre>
+              
+              {buildState === "BUILDING" && (
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: brandColor, paddingTop: '0.5rem' }}>
+                  <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                  Packaging Distribution on Server...
+                </div>
+              )}
+
+              {buildState === "SUCCESS" && (
+                <div className="fade-in" style={{ marginTop: 'auto', paddingTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button 
+                    className="btn-primary" 
+                    onClick={() => {
+                      const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                      const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
+                      const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                      const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                      window.location.href = url;
+                    }} 
+                    style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    ✓ Download Windows Setup (.EXE)
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                      const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
+                      const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                      const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                      window.location.href = url;
+                    }} 
+                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    📦 Portable (.ZIP)
+                  </button>
+                  <button onClick={() => { setActiveTab("sbom"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer' }}>
+                    View SBOM
+                  </button>
+                  <button onClick={() => { setBuildState("IDLE"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer' }}>
+                    New Build
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </aside>
 
       {/* MODAL 1: DEEP SECURITY & PERMISSION INSPECTOR */}
       {inspectingExt && (
