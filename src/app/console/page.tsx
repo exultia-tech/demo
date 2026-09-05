@@ -2271,9 +2271,9 @@ build_hardened_ide:
 
             {/* Community Edition "0 Open CVEs & Active Support" Notification Banner */}
             {tier === "COMMUNITY" && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', background: 'rgba(35, 134, 54, 0.1)', border: '1px solid rgba(35, 134, 54, 0.25)', borderRadius: '10px', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <span style={{ fontSize: '1.1rem' }}>🛡️</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', background: 'rgba(35, 134, 54, 0.1)', border: '1px solid rgba(35, 134, 54, 0.25)', borderRadius: '10px', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flex: 1 }}>
+                  <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>🛡️</span>
                   <div>
                     <strong style={{ fontSize: '0.85rem', color: '#3FB950' }}>Community Edition Policy Active:</strong>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
@@ -2281,14 +2281,14 @@ build_hardened_ide:
                     </span>
                   </div>
                 </div>
-                <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.12)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)' }}>✓ 0 CVEs & Maintained</span>
+                <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.12)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.3)', flexShrink: 0 }}>✓ 0 CVEs & Maintained</span>
               </div>
             )}
 
             {/* UNIFIED MULTI-IDE MARKETPLACE BANNER */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', marginBottom: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '1.1rem' }}>🌐</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>🌐</span>
                 <div>
                   <strong style={{ fontSize: '0.85rem', color: '#93C5FD' }}>Unified Multi-IDE Extension Marketplace</strong>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
@@ -2296,7 +2296,7 @@ build_hardened_ide:
                   </span>
                 </div>
               </div>
-              <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
+              <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', flexShrink: 0 }}>
                 Target: {selectedEngine.toUpperCase()}
               </span>
             </div>
@@ -2396,7 +2396,7 @@ build_hardened_ide:
                   loadNextBatch();
                 }
               }}
-              style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem', paddingBottom: '2rem' }}>
+              style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingRight: '0.5rem', paddingBottom: '2rem' }}>
               {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
                   <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid var(--border-color)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%' }}></div>
@@ -2412,7 +2412,7 @@ build_hardened_ide:
               ) : (
                 <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
                   {/* Table Header */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '44px minmax(260px, 2fr) 90px 130px 130px 80px', padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', alignItems: 'center' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px', padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', alignItems: 'center' }}>
                     <div style={{ textAlign: 'center' }}>
                       <input 
                         type="checkbox" 
@@ -2472,7 +2472,7 @@ build_hardened_ide:
                           }}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '44px minmax(260px, 2fr) 90px 130px 130px 80px',
+                            gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px',
                             padding: '0.6rem 1rem',
                             borderBottom: rowIdx === displayedExtensions.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.04)',
                             background: inCart ? 'rgba(59, 130, 246, 0.08)' : rowIdx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.015)',
@@ -3608,42 +3608,44 @@ build_hardened_ide:
               </button>
             </div>
             
-            <table className="enterprise-table">
-              <thead>
-                <tr>
-                  <th>Audit ID</th>
-                  <th>Timestamp (UTC)</th>
-                  <th>Actor</th>
-                  <th>Action</th>
-                  <th>Tier</th>
-                  <th>Engine</th>
-                  <th>Bundled Ext</th>
-                  <th>SHA-256 Checksum</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {auditLog.map(log => (
-                  <tr key={log.id}>
-                    <td style={{ fontFamily: 'monospace', color: 'var(--text-muted)' }}>{log.id}</td>
-                    <td style={{ fontSize: '0.85rem' }}>{log.timestamp}</td>
-                    <td><strong>{log.actor}</strong></td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{log.action}</td>
-                    <td><span className="blueprint-pill">{log.tier}</span></td>
-                    <td><span className="blueprint-pill">{log.engine.toUpperCase()}</span></td>
-                    <td>{log.extensionsCount}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#93C5FD', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {log.sha256}
-                    </td>
-                    <td>
-                      <span className={`status-chip ${log.status === 'SUCCESS' ? 'approved' : log.status === 'BLOCKED' ? 'rejected' : 'pending'}`}>
-                        {log.status}
-                      </span>
-                    </td>
+            <div className="table-responsive">
+              <table className="enterprise-table">
+                <thead>
+                  <tr>
+                    <th>Audit ID</th>
+                    <th>Timestamp (UTC)</th>
+                    <th>Actor</th>
+                    <th>Action</th>
+                    <th>Tier</th>
+                    <th>Engine</th>
+                    <th>Bundled Ext</th>
+                    <th>SHA-256 Checksum</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {auditLog.map(log => (
+                    <tr key={log.id}>
+                      <td style={{ fontFamily: 'monospace', color: 'var(--text-muted)' }}>{log.id}</td>
+                      <td style={{ fontSize: '0.85rem' }}>{log.timestamp}</td>
+                      <td><strong>{log.actor}</strong></td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{log.action}</td>
+                      <td><span className="blueprint-pill">{log.tier}</span></td>
+                      <td><span className="blueprint-pill">{log.engine.toUpperCase()}</span></td>
+                      <td>{log.extensionsCount}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#93C5FD', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {log.sha256}
+                      </td>
+                      <td>
+                        <span className={`status-chip ${log.status === 'SUCCESS' ? 'approved' : log.status === 'BLOCKED' ? 'rejected' : 'pending'}`}>
+                          {log.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -3673,7 +3675,7 @@ build_hardened_ide:
             )}
           </div>
           
-          <div style={{ minHeight: '80px', maxHeight: '160px', overflowY: 'auto', marginBottom: '0.5rem' }}>
+          <div style={{ minHeight: '80px', maxHeight: '160px', overflowY: 'auto', overflowX: 'hidden', marginBottom: '0.5rem' }}>
             {cart.length === 0 ? (
               <div style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
                 No extensions carted.
@@ -3875,8 +3877,8 @@ build_hardened_ide:
           )}
 
           {buildState !== "IDLE" && (
-            <div className="fade-in" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '0.875rem', flex: 1, display: 'flex', flexDirection: 'column', fontFamily: 'monospace', fontSize: '0.75rem', overflowY: 'auto' }}>
-              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'var(--text-muted)' }}>
+            <div className="fade-in" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '0.875rem', flex: 1, display: 'flex', flexDirection: 'column', fontFamily: 'monospace', fontSize: '0.75rem', overflowY: 'auto', overflowX: 'hidden' }}>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-word', color: 'var(--text-muted)' }}>
                 {buildLogs.map((log, i) => (
                   <div key={i} style={{ color: log.includes("Error") ? '#F87171' : log.includes("complete") || log.includes("SUCCESS") ? 'var(--success)' : 'inherit', marginBottom: '0.2rem' }}>
                     {log.startsWith("{") || log.startsWith(" ") ? log : `> ${log}`}
