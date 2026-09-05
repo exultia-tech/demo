@@ -2295,145 +2295,149 @@ build_hardened_ide:
           <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             
             {/* CLEAN TOP BAR: Target IDE Selector & Plugin Search */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1.25rem', flexWrap: 'wrap', marginBottom: '0.6rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
               
-              {/* TARGET IDE SELECTOR */}
-              <div ref={engineMenuRef} style={{ position: 'relative' }}>
-                <button
-                  type="button"
-                  id="target-ide-menu-trigger"
-                  onClick={() => setEngineMenuOpen(!engineMenuOpen)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.65rem',
-                    padding: '0.55rem 1rem',
-                    background: engineMenuOpen ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 0, 0, 0.45)',
-                    border: `1px solid ${engineMenuOpen ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                    borderRadius: '10px',
-                    color: 'var(--text-main)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: engineMenuOpen ? '0 0 15px rgba(59, 130, 246, 0.25)' : 'none'
-                  }}
-                  title="Click to switch target IDE platform"
-                >
-                  <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{activeEngineObj.icon}</span>
-                  <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                    {activeEngineObj.name}
-                  </span>
-                  <span style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 600,
-                    padding: '0.15rem 0.45rem',
-                    borderRadius: '6px',
-                    background: 'rgba(59, 130, 246, 0.15)',
-                    color: '#93C5FD',
-                    border: '1px solid rgba(59, 130, 246, 0.3)',
-                    marginLeft: '0.25rem'
-                  }}>
-                    {activeEngineObj.badge}
-                  </span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
+              {/* LEFT GROUP: IDE SELECTOR + COMPACT VERSION BUTTONS UNDERNEATH */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                
+                {/* 1. TARGET IDE SELECTOR DROPDOWN */}
+                <div ref={engineMenuRef} style={{ position: 'relative', width: 'fit-content' }}>
+                  <button
+                    type="button"
+                    id="target-ide-menu-trigger"
+                    onClick={() => setEngineMenuOpen(!engineMenuOpen)}
                     style={{
-                      transform: engineMenuOpen ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.2s ease',
-                      color: 'var(--text-muted)',
-                      marginLeft: '0.25rem'
-                    }}
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </button>
-
-                {/* Dropdown Menu */}
-                {engineMenuOpen && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: 'calc(100% + 6px)',
-                      width: '320px',
-                      background: 'rgba(15, 23, 42, 0.96)',
-                      backdropFilter: 'blur(16px)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '12px',
-                      padding: '0.45rem',
-                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.15)',
-                      zIndex: 100,
                       display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.3rem'
+                      alignItems: 'center',
+                      gap: '0.65rem',
+                      padding: '0.55rem 1rem',
+                      background: engineMenuOpen ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 0, 0, 0.45)',
+                      border: `1px solid ${engineMenuOpen ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                      borderRadius: '10px',
+                      color: 'var(--text-main)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: engineMenuOpen ? '0 0 15px rgba(59, 130, 246, 0.25)' : 'none'
                     }}
+                    title="Click to switch target IDE platform"
                   >
-                    <div style={{ padding: '0.35rem 0.55rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '0.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Target IDE Platform
-                      </span>
-                      <span style={{ fontSize: '0.7rem', color: '#60A5FA' }}>
-                        5 Engines
-                      </span>
+                    <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{activeEngineObj.icon}</span>
+                    <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                      {activeEngineObj.name}
+                    </span>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 600,
+                      padding: '0.15rem 0.45rem',
+                      borderRadius: '6px',
+                      background: 'rgba(59, 130, 246, 0.15)',
+                      color: '#93C5FD',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      marginLeft: '0.25rem'
+                    }}>
+                      {activeEngineObj.badge}
+                    </span>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      style={{
+                        transform: engineMenuOpen ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s ease',
+                        color: 'var(--text-muted)',
+                        marginLeft: '0.25rem'
+                      }}
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {engineMenuOpen && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 'calc(100% + 6px)',
+                        width: '320px',
+                        background: 'rgba(15, 23, 42, 0.98)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '12px',
+                        padding: '0.45rem',
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.2)',
+                        zIndex: 100,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.3rem'
+                      }}
+                    >
+                      <div style={{ padding: '0.35rem 0.55rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '0.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Target IDE Platform
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#60A5FA' }}>
+                          5 Engines
+                        </span>
+                      </div>
+
+                      {IDE_ENGINES.map((eng) => {
+                        const isSelected = selectedEngine === eng.id;
+                        return (
+                          <button
+                            key={eng.id}
+                            type="button"
+                            onClick={() => {
+                              setEngineMenuOpen(false);
+                              handleEngineSwitch(eng.id);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '0.65rem',
+                              padding: '0.6rem 0.75rem',
+                              borderRadius: '8px',
+                              background: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+                              border: `1px solid ${isSelected ? 'rgba(59, 130, 246, 0.35)' : 'transparent'}`,
+                              color: 'var(--text-main)',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              width: '100%',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <span style={{ fontSize: '1.25rem', lineHeight: 1, marginTop: '2px' }}>{eng.icon}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', marginBottom: '0.15rem' }}>
+                                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isSelected ? '#93C5FD' : 'var(--text-main)' }}>
+                                  {eng.name}
+                                </span>
+                                <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
+                                  {eng.badge}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                                {eng.description}
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <span style={{ color: '#34D399', fontSize: '0.85rem', fontWeight: 'bold', marginLeft: '0.2rem', marginTop: '2px' }}>
+                                ✓
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
+                  )}
+                </div>
 
-                    {IDE_ENGINES.map((eng) => {
-                      const isSelected = selectedEngine === eng.id;
-                      return (
-                        <button
-                          key={eng.id}
-                          type="button"
-                          onClick={() => {
-                            setEngineMenuOpen(false);
-                            handleEngineSwitch(eng.id);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: '0.65rem',
-                            padding: '0.6rem 0.75rem',
-                            borderRadius: '8px',
-                            background: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-                            border: `1px solid ${isSelected ? 'rgba(59, 130, 246, 0.35)' : 'transparent'}`,
-                            color: 'var(--text-main)',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            width: '100%',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <span style={{ fontSize: '1.25rem', lineHeight: 1, marginTop: '2px' }}>{eng.icon}</span>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', marginBottom: '0.15rem' }}>
-                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isSelected ? '#93C5FD' : 'var(--text-main)' }}>
-                                {eng.name}
-                              </span>
-                              <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
-                                {eng.badge}
-                              </span>
-                            </div>
-                            <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
-                              {eng.description}
-                            </div>
-                          </div>
-                          {isSelected && (
-                            <span style={{ color: '#34D399', fontSize: '0.85rem', fontWeight: 'bold', marginLeft: '0.2rem', marginTop: '2px' }}>
-                              ✓
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* COMPACT VERSION CHANNEL SELECTOR UNDERNEATH IDE SELECTOR */}
-                <div style={{ marginTop: '0.45rem' }}>
-                  <div style={{ display: 'inline-flex', background: 'rgba(0, 0, 0, 0.45)', padding: '2px', borderRadius: '7px', border: '1px solid var(--border-color)', gap: '2px' }}>
+                {/* 2. COMPACT VERSION CHANNEL SELECTOR UNDERNEATH IDE SELECTOR */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <div style={{ display: 'inline-flex', width: 'fit-content', background: 'rgba(0, 0, 0, 0.55)', padding: '2px', borderRadius: '8px', border: '1px solid var(--border-color)', gap: '2px' }}>
                     {(["previous", "latest", "preview"] as const).map((chKey) => {
                       const isSelected = versionChannel === chKey;
                       const label = chKey === "previous" ? "last" : chKey;
@@ -2441,18 +2445,20 @@ build_hardened_ide:
                         <button
                           key={chKey}
                           type="button"
+                          id={`version-channel-btn-${label}`}
                           onClick={() => setVersionChannel(chKey)}
                           style={{
-                            padding: '0.2rem 0.65rem',
-                            fontSize: '0.72rem',
+                            padding: '0.25rem 0.8rem',
+                            fontSize: '0.75rem',
                             fontWeight: isSelected ? 700 : 500,
-                            borderRadius: '5px',
-                            border: 'none',
+                            borderRadius: '6px',
+                            border: isSelected ? '1px solid var(--accent-primary)' : '1px solid transparent',
                             cursor: 'pointer',
                             background: isSelected ? 'var(--accent-primary)' : 'transparent',
                             color: isSelected ? '#ffffff' : 'var(--text-muted)',
                             transition: 'all 0.15s ease',
-                            textTransform: 'lowercase'
+                            textTransform: 'lowercase',
+                            letterSpacing: '0.02em'
                           }}
                         >
                           {label}
@@ -2466,11 +2472,11 @@ build_hardened_ide:
                     const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
                     const chObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
                     return (
-                      <div style={{ marginTop: '0.25rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-                        <span style={{ color: chObj.badgeColor, fontWeight: 600 }}>
+                      <div id="version-channel-desc-text" style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                        <span style={{ color: chObj.badgeColor, fontWeight: 700 }}>
                           {chObj.badge}:
                         </span>
-                        <span style={{ fontFamily: 'monospace', color: '#93C5FD', background: 'rgba(255,255,255,0.06)', padding: '0.05rem 0.35rem', borderRadius: '4px' }}>
+                        <span style={{ fontFamily: 'monospace', color: '#93C5FD', background: 'rgba(255,255,255,0.06)', padding: '0.08rem 0.4rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.08)' }}>
                           {chObj.tag}
                         </span>
                         <span style={{ color: 'var(--text-muted)' }}>
@@ -2480,6 +2486,7 @@ build_hardened_ide:
                     );
                   })()}
                 </div>
+
               </div>
 
               {/* SEARCH & SORT BAR (Compact, Minimal) */}
