@@ -328,6 +328,8 @@ export default function ConsolePage() {
   const [totalExtensions, setTotalExtensions] = useState(0);
   const [sortBy, setSortBy] = useState<"POPULARITY_DESC" | "ALPHA_ASC" | "ALPHA_DESC" | "DOWNLOADS_ASC">("POPULARITY_DESC");
   const [cart, setCart] = useState<Extension[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [buildModalOpen, setBuildModalOpen] = useState(false);
   const [marketplaceFilter, setMarketplaceFilter] = useState<MarketplaceFilter>("ALL");
   const [blueprintCategory, setBlueprintCategory] = useState<string>("ALL");
   const [blueprintSourceFilter, setBlueprintSourceFilter] = useState<"ALL" | "OFFICIAL" | "COMMUNITY">("ALL");
@@ -1924,6 +1926,7 @@ build_hardened_ide:
   // Build via API
   const startBuild = async () => {
     setBuildState("BUILDING");
+    setBuildModalOpen(true);
     const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
     const activeVersionObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
     const resolvedVersionTag = versionChannel === "custom" ? (customTag || "latest") : activeVersionObj.tag;
@@ -2088,6 +2091,7 @@ build_hardened_ide:
   // Dry Run Validation
   const startDryRun = () => {
     setBuildState("BUILDING");
+    setBuildModalOpen(true);
     setBuildLogs([`[DRY RUN] Validating zero-trust ${selectedEngine.toUpperCase()} configuration payload...`]);
     
     setTimeout(() => {
@@ -2426,6 +2430,56 @@ build_hardened_ide:
                     })}
                   </div>
                 )}
+
+                {/* COMPACT VERSION CHANNEL SELECTOR UNDERNEATH IDE SELECTOR */}
+                <div style={{ marginTop: '0.45rem' }}>
+                  <div style={{ display: 'inline-flex', background: 'rgba(0, 0, 0, 0.45)', padding: '2px', borderRadius: '7px', border: '1px solid var(--border-color)', gap: '2px' }}>
+                    {(["previous", "latest", "preview"] as const).map((chKey) => {
+                      const isSelected = versionChannel === chKey;
+                      const label = chKey === "previous" ? "last" : chKey;
+                      return (
+                        <button
+                          key={chKey}
+                          type="button"
+                          onClick={() => setVersionChannel(chKey)}
+                          style={{
+                            padding: '0.2rem 0.65rem',
+                            fontSize: '0.72rem',
+                            fontWeight: isSelected ? 700 : 500,
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            background: isSelected ? 'var(--accent-primary)' : 'transparent',
+                            color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                            transition: 'all 0.15s ease',
+                            textTransform: 'lowercase'
+                          }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* DYNAMIC TEXT UNDERNEATH THAT CHANGES BASED ON SELECTION */}
+                  {(() => {
+                    const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
+                    const chObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
+                    return (
+                      <div style={{ marginTop: '0.25rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+                        <span style={{ color: chObj.badgeColor, fontWeight: 600 }}>
+                          {chObj.badge}:
+                        </span>
+                        <span style={{ fontFamily: 'monospace', color: '#93C5FD', background: 'rgba(255,255,255,0.06)', padding: '0.05rem 0.35rem', borderRadius: '4px' }}>
+                          {chObj.tag}
+                        </span>
+                        <span style={{ color: 'var(--text-muted)' }}>
+                          • {chObj.description}
+                        </span>
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
 
               {/* SEARCH & SORT BAR (Compact, Minimal) */}
@@ -2709,6 +2763,281 @@ build_hardened_ide:
                 </div>
               )}
             </div>
+
+            {/* BUILD CART DRAWER / POPOVER (Reconciled from Right Dock) */}
+            {cartOpen && (
+              <div 
+                className="fade-in"
+                style={{
+                  position: 'sticky',
+                  bottom: '4.8rem',
+                  zIndex: 95,
+                  background: 'rgba(15, 23, 42, 0.97)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(59, 130, 246, 0.4)',
+                  borderRadius: '12px',
+                  padding: '1rem 1.25rem',
+                  boxShadow: '0 -10px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(59, 130, 246, 0.25)',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.1rem' }}>🛒</span>
+                    <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                      Build Cart ({cart.length} extension{cart.length === 1 ? '' : 's'})
+                    </strong>
+                    <span style={{ fontSize: '0.7rem', color: '#93C5FD', background: 'rgba(59, 130, 246, 0.15)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                      {selectedEngine.toUpperCase()} • {versionChannel === "previous" ? "last" : versionChannel}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {cart.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setCart([])}
+                        style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        Clear Cart
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCartOpen(false)}
+                      style={{ background: 'rgba(255, 255, 255, 0.08)', border: 'none', color: 'var(--text-muted)', borderRadius: '4px', padding: '0.2rem 0.45rem', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                {cart.length === 0 ? (
+                  <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    No extensions in cart. Click &ldquo;+ Add to Build&rdquo; on any extension to include it in your custom distribution.
+                  </div>
+                ) : (
+                  <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.4rem', paddingRight: '0.25rem' }}>
+                    {cart.map((ext) => (
+                      <div
+                        key={`${ext.namespace}.${ext.name}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.6rem',
+                          padding: '0.4rem 0.65rem',
+                          background: 'rgba(0, 0, 0, 0.35)',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(255, 255, 255, 0.05)'
+                        }}
+                      >
+                        <img
+                          src={ext.files.icon}
+                          alt=""
+                          style={{ width: '22px', height: '22px', borderRadius: '4px' }}
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                        />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {ext.displayName || ext.name}
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                            {ext.namespace}.{ext.name}
+                          </div>
+                        </div>
+                        <span
+                          className={`risk-grade ${ext.securityGrade === 'A+' ? 'grade-a' : 'grade-b'}`}
+                          style={{ fontSize: '0.68rem', padding: '0.1rem 0.35rem' }}
+                        >
+                          {ext.securityGrade || 'A+'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleCart(ext)}
+                          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}
+                          title="Remove from cart"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Auto-Publish Community Blueprint Option */}
+                <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer', fontSize: '0.78rem', color: '#DDD6FE' }}>
+                    <input
+                      type="checkbox"
+                      checked={autoPublishBlueprint}
+                      onChange={(e) => setAutoPublishBlueprint(e.target.checked)}
+                      style={{ accentColor: '#8B5CF6' }}
+                    />
+                    <span>🌐 Auto-Publish to Community Catalog</span>
+                  </label>
+                  {autoPublishBlueprint && (
+                    <input
+                      type="text"
+                      placeholder="Author handle: @my_team"
+                      value={communityAuthorHandle}
+                      onChange={(e) => setCommunityAuthorHandle(e.target.value)}
+                      style={{ fontSize: '0.74rem', padding: '0.2rem 0.5rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'white', maxWidth: '180px' }}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* STICKY BOTTOM BAR: Build Cart Summary, Dry Run & Release Compiler (Reconciled from Right Dock) */}
+            {(cart.length > 0 || buildState !== "IDLE") && (
+              <div
+                style={{
+                  position: 'sticky',
+                  bottom: '0.75rem',
+                  zIndex: 90,
+                  marginTop: '1rem',
+                  background: 'rgba(15, 23, 42, 0.94)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(59, 130, 246, 0.35)',
+                  borderRadius: '12px',
+                  padding: '0.65rem 1.15rem',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                  flexWrap: 'wrap'
+                }}
+              >
+                {/* Left: Cart items trigger & status */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setCartOpen(!cartOpen)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '8px',
+                      background: cartOpen ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid var(--border-color)',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.82rem'
+                    }}
+                  >
+                    <span>🛒</span>
+                    <span>Build Cart</span>
+                    <span
+                      style={{
+                        background: 'var(--accent-primary)',
+                        color: '#fff',
+                        borderRadius: '10px',
+                        padding: '0.1rem 0.45rem',
+                        fontSize: '0.7rem',
+                        fontWeight: 700
+                      }}
+                    >
+                      {cart.length}
+                    </span>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      style={{ transform: cartOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    Target: <strong style={{ color: '#93C5FD' }}>{selectedEngine.toUpperCase()}</strong> ({versionChannel === "previous" ? "last" : versionChannel})
+                  </span>
+
+                  {buildState !== "IDLE" && (
+                    <button
+                      type="button"
+                      onClick={() => setBuildModalOpen(true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: '6px',
+                        background: buildState === "BUILDING" ? 'rgba(59, 130, 246, 0.2)' : buildState === "SUCCESS" ? 'rgba(52, 211, 153, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        border: `1px solid ${buildState === "BUILDING" ? '#3B82F6' : buildState === "SUCCESS" ? '#34D399' : '#EF4444'}`,
+                        color: buildState === "BUILDING" ? '#93C5FD' : buildState === "SUCCESS" ? '#34D399' : '#F87171',
+                        cursor: 'pointer',
+                        fontSize: '0.74rem',
+                        fontWeight: 600
+                      }}
+                    >
+                      {buildState === "BUILDING" && <span className="animate-spin">⚙️</span>}
+                      {buildState === "SUCCESS" && <span>✓</span>}
+                      <span>Build Status: {buildState} (View Logs)</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Right: Actions */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={startDryRun}
+                    disabled={buildState === "BUILDING"}
+                    style={{
+                      padding: '0.5rem 0.9rem',
+                      borderRadius: '8px',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid var(--border-color)',
+                      color: '#fff',
+                      cursor: buildState === "BUILDING" ? 'not-allowed' : 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.8rem'
+                    }}
+                  >
+                    🔍 Dry Run Validation
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={startBuild}
+                    disabled={buildState === "BUILDING"}
+                    style={{
+                      padding: '0.5rem 1.15rem',
+                      borderRadius: '8px',
+                      background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))`,
+                      border: 'none',
+                      color: '#fff',
+                      fontWeight: 700,
+                      fontSize: '0.84rem',
+                      cursor: buildState === "BUILDING" ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem'
+                    }}
+                  >
+                    {buildState === "BUILDING" ? (
+                      <>
+                        <span className="animate-spin">⚙️</span>
+                        <span>Compiling...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span>Compile {selectedEngine.toUpperCase()} Release</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -3261,6 +3590,71 @@ build_hardened_ide:
             </div>
           </div>
 
+          {/* Enterprise Registry Proxy & Tunnel Governance (Reconciled from Right Dock) */}
+          <div className="glass-card" style={{ marginTop: '2rem' }}>
+            <h2>Enterprise Registry Proxy & Tunnel Governance</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+              Configure zero-trust artifact proxying, private package repositories, and remote tunnel controls for the compiled distribution.
+            </p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+              {/* Whitelist Policy Mode */}
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>Whitelist Policy Mode</span>
+                  {tier === "COMMUNITY" && (
+                    <span className="upgrade-badge" style={{ color: '#3FB950', background: 'rgba(35,134,54,0.1)', borderColor: 'rgba(35,134,54,0.3)' }}>
+                      Community Policy
+                    </span>
+                  )}
+                </label>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-main)', padding: '0.6rem 0.8rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '0.35rem' }}>
+                  {tier === "COMMUNITY" 
+                    ? "✓ Community Verified (Reputation + 0 Open CVEs Required)" 
+                    : "🔒 Full Custom Enterprise Artifactory Whitelist"}
+                </div>
+              </div>
+
+              {/* JFrog / Artifactory Proxy */}
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>JFrog / Artifactory Proxy URL</span>
+                  {!canUseRegistryUrl && <span className="upgrade-badge">Enterprise Tier</span>}
+                </label>
+                <input 
+                  type="url" 
+                  value={canUseRegistryUrl ? registryUrl : "Air-gapped (Offline Core)"}
+                  onChange={(e) => setRegistryUrl(e.target.value)}
+                  disabled={!canUseRegistryUrl}
+                  className={!canUseRegistryUrl ? "locked-field" : ""}
+                  style={{ fontSize: '0.85rem', padding: '0.6rem 0.8rem', marginTop: '0.35rem' }}
+                  placeholder="https://artifactory.internal.corp/api/openvsx"
+                />
+              </div>
+
+              {/* Remote Tunnels / SSH */}
+              <div className="toggle-wrapper" style={{ margin: 0, padding: '0.75rem', height: 'fit-content' }}>
+                <div className="toggle-info">
+                  <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Remote Tunnels / SSH Access</span>
+                  <span className="toggle-desc" style={{ fontSize: '0.72rem' }}>Allow secure SSH tunnel forwarding to remote dev containers.</span>
+                </div>
+                <label className="toggle-switch" style={{ width: '38px', height: '20px' }}>
+                  <input type="checkbox" checked={tunnel} onChange={(e) => setTunnel(e.target.checked)} />
+                  <span className="slider"></span>
+                </label>
+              </div>
+
+              {/* Zero Telemetry Beacons */}
+              <div className="toggle-wrapper" style={{ margin: 0, padding: '0.75rem', height: 'fit-content' }}>
+                <div className="toggle-info">
+                  <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Zero Telemetry Beacons</span>
+                  <span className="toggle-desc" style={{ fontSize: '0.72rem' }}>All outbound analytics and diagnostic pings neutralized.</span>
+                </div>
+                <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Enforced</span>
+              </div>
+            </div>
+          </div>
+
           {/* MULTI-FEED THREAT INTELLIGENCE SYNC MATRIX */}
           <div className="glass-card" style={{ marginTop: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -3448,6 +3842,72 @@ build_hardened_ide:
                   </div>
                 </div>
               </div>
+
+              {/* UPSTREAM GIT RELEASE TAG & BUILD OVERRIDES (Reconciled from Right Dock) */}
+              <div className="glass-card" style={{ marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Upstream Git Release & Tags</h2>
+                  <span style={{ fontSize: '0.72rem', color: '#93C5FD', background: 'rgba(59, 130, 246, 0.15)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontWeight: 600 }}>
+                    {selectedEngine.toUpperCase()}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.85rem', lineHeight: '1.4' }}>
+                  Select an official channel tag or provide an internal commit SHA / branch tag to override the build compiler.
+                </p>
+
+                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <span>Active Version Channel</span>
+                    <span style={{ color: '#34D399' }}>{versionChannel === "previous" ? "last (N-1)" : versionChannel}</span>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem' }}>
+                    {(["previous", "latest", "preview"] as const).map((chKey) => {
+                      const isSelected = versionChannel === chKey;
+                      const label = chKey === "previous" ? "last" : chKey;
+                      return (
+                        <button
+                          key={chKey}
+                          type="button"
+                          onClick={() => setVersionChannel(chKey)}
+                          style={{
+                            padding: '0.45rem 0.3rem',
+                            fontSize: '0.75rem',
+                            fontWeight: isSelected ? 700 : 500,
+                            borderRadius: '6px',
+                            border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                            cursor: 'pointer',
+                            background: isSelected ? 'rgba(59, 130, 246, 0.2)' : 'rgba(0,0,0,0.3)',
+                            color: isSelected ? '#93C5FD' : 'var(--text-muted)',
+                            textAlign: 'center'
+                          }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Custom Git Tag / Commit SHA Override</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. release/1.92.0, v1.91.5, or commit SHA..."
+                    value={customTag}
+                    onChange={(e) => setCustomTag(e.target.value)}
+                    style={{ fontSize: '0.8rem', padding: '0.5rem 0.75rem', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-color)', borderRadius: '6px', width: '100%', color: 'white', marginTop: '0.3rem' }}
+                  />
+                  {customTag ? (
+                    <div style={{ marginTop: '0.35rem', padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.25)' }}>
+                      ✓ Custom upstream tag <code>{customTag}</code> mapped for compilation.
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', display: 'block' }}>
+                      Using upstream channel tag: <code>{(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).find(c => c.id === versionChannel)?.tag || "latest"}</code>
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="glass-card">
@@ -3611,9 +4071,89 @@ build_hardened_ide:
       {/* TAB 7: PROCUREMENT & SERVICE OWNER ENTITLEMENTS */}
       {activeTab === "fleet" && (
         <div className="fade-in">
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <h1>Procurement & License Entitlements</h1>
             <p>Service-level license allocation, procured IDE engine mix, and customer-owned exportable build manifests. Zero customer code or endpoint telemetry is stored.</p>
+          </div>
+
+          {/* SUBSCRIPTION & LICENSE ALLOCATION SELECTOR (Reconciled from Right Dock) */}
+          <div className="glass-card" style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Subscription & Licensing Tier</h2>
+                <p style={{ margin: '0.2rem 0 0', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                  Select the procurement tier to allocate license seats, private registries, and binary whitelabeling.
+                </p>
+              </div>
+              <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
+                Active: {tier} Edition
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+              {[
+                {
+                  id: "COMMUNITY" as SubscriptionTier,
+                  name: "Community Edition",
+                  price: "Free ($0)",
+                  badge: "Open Source",
+                  badgeColor: "#34D399",
+                  features: ["0 Open CVEs Baseline Enforcement", "Public OpenVSX Registry Access", "Single Local Seat License"]
+                },
+                {
+                  id: "TEAM" as SubscriptionTier,
+                  name: "Team Edition",
+                  price: "$19 / seat / mo",
+                  badge: "Most Popular",
+                  badgeColor: "#60A5FA",
+                  features: ["Stack Blueprints Catalog Access", "Multi-Role Composite Stacks", "50 Procured Seat Licenses"]
+                },
+                {
+                  id: "ENTERPRISE" as SubscriptionTier,
+                  name: "Enterprise Edition",
+                  price: "$39 / seat / mo",
+                  badge: "Full Governance",
+                  badgeColor: "#A78BFA",
+                  features: ["Custom Brand Whitelabeling Studio", "Private JFrog / Artifactory Proxy", "250+ Procured Seat Licenses"]
+                }
+              ].map(t => {
+                const isSelected = tier === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTier(t.id)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      padding: '1rem',
+                      borderRadius: '10px',
+                      background: isSelected ? 'rgba(59, 130, 246, 0.12)' : 'rgba(0, 0, 0, 0.3)',
+                      border: `1.5px solid ${isSelected ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isSelected ? '0 0 15px rgba(59, 130, 246, 0.2)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <strong style={{ fontSize: '0.95rem', color: isSelected ? '#93C5FD' : 'var(--text-main)' }}>{t.name}</strong>
+                      <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: t.badgeColor, fontWeight: 600 }}>
+                        {t.badge}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '0.5rem' }}>
+                      {t.price}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                      {t.features.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="stats-grid">
@@ -3736,316 +4276,158 @@ build_hardened_ide:
       )}
       </main>
 
-      {/* Persistent Right Dock: Cart, Governance, Orchestration & Live Build Output */}
-      <aside className="console-dock">
-        
-        {/* Tier Selector */}
-        <div className="tier-selector" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          <button className={`tier-btn ${tier === "COMMUNITY" ? "active" : ""}`} onClick={() => setTier("COMMUNITY")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Community</button>
-          <button className={`tier-btn ${tier === "TEAM" ? "active" : ""}`} onClick={() => setTier("TEAM")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Team</button>
-          <button className={`tier-btn ${tier === "ENTERPRISE" ? "active" : ""}`} onClick={() => setTier("ENTERPRISE")} style={{ fontSize: '0.75rem', padding: '0.45rem 0.2rem' }}>Enterprise</button>
-        </div>
-
-        {/* Build Cart */}
-        <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <h2 style={{ fontSize: '1.1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-              Build Cart ({cart.length})
-            </h2>
-            {cart.length > 0 && (
-              <button onClick={() => setCart([])} style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.75rem', cursor: 'pointer' }}>
-                Clear All
-              </button>
-            )}
-          </div>
-          
-          <div style={{ minHeight: '80px', maxHeight: '160px', overflowY: 'auto', overflowX: 'hidden', marginBottom: '0.5rem' }}>
-            {cart.length === 0 ? (
-              <div style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
-                No extensions carted.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {cart.map(ext => (
-                  <div key={`${ext.namespace}.${ext.name}`} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0.6rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
-                    <img src={ext.files.icon} alt="" style={{ width: '20px', height: '20px', borderRadius: '4px' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
-                    <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{ext.displayName}</div>
-                    <span className={`risk-grade ${ext.securityGrade === 'A+' ? 'grade-a' : 'grade-b'}`} style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem' }}>
-                      {ext.securityGrade || 'A+'}
+      {/* LIVE BUILD CONSOLE & PACKAGING MODAL (Reconciled from Right Dock) */}
+      {buildModalOpen && (
+        <div className="modal-overlay" onClick={() => setBuildModalOpen(false)}>
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              maxWidth: '740px', 
+              width: '95%',
+              background: 'rgba(10, 15, 26, 0.98)', 
+              border: '1px solid rgba(59, 130, 246, 0.4)',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(59, 130, 246, 0.25)' 
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', display: 'grid', placeItems: 'center', fontSize: '1.3rem' }}>
+                  ⚙️
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.2rem' }}>
+                      {brandName || 'SecureIDE'} Build & Packaging Pipeline
+                    </h2>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '0.15rem 0.5rem',
+                      borderRadius: '4px',
+                      background: buildState === "BUILDING" ? 'rgba(59, 130, 246, 0.2)' : buildState === "SUCCESS" ? 'rgba(52, 211, 153, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                      color: buildState === "BUILDING" ? '#93C5FD' : buildState === "SUCCESS" ? '#34D399' : 'var(--text-muted)',
+                      border: `1px solid ${buildState === "BUILDING" ? '#3B82F6' : buildState === "SUCCESS" ? '#34D399' : 'var(--border-color)'}`
+                    }}>
+                      {buildState === "BUILDING" ? "⚡ Packaging..." : buildState === "SUCCESS" ? "✓ Build Success" : "Ready"}
                     </span>
-                    <button onClick={() => toggleCart(ext)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
                   </div>
-                ))}
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    Target: <strong style={{ color: '#93C5FD' }}>{selectedEngine.toUpperCase()}</strong> • Channel: <strong>{versionChannel === "previous" ? "last" : versionChannel}</strong> • Tier: <strong>{tier} Edition</strong>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Governance Controls */}
-        <div className="glass-card" style={{ marginBottom: 0, padding: '1.25rem' }}>
-          <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Governance Policy</h2>
-
-          {/* Target Engine Selector */}
-          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <label style={{ fontSize: '0.75rem', margin: 0 }}>Target IDE Engine</label>
-              <span style={{ fontSize: '0.68rem', color: '#93C5FD', fontWeight: 600 }}>{activeEngineObj.badge}</span>
-            </div>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={selectedEngine}
-                onChange={(e) => handleEngineSwitch(e.target.value as IdeEngine)}
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 2rem 0.55rem 0.8rem',
-                  background: 'rgba(0,0,0,0.45)',
-                  color: '#93C5FD',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  outline: 'none',
-                  appearance: 'none',
-                  WebkitAppearance: 'none'
-                }}
+              <button 
+                onClick={() => setBuildModalOpen(false)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '1.3rem', cursor: 'pointer', padding: '0.2rem 0.5rem' }}
+                title="Minimize modal"
               >
-                {IDE_ENGINES.map(eng => (
-                  <option key={eng.id} value={eng.id} style={{ background: '#1e293b', color: '#fff' }}>
-                    {eng.icon} {eng.name} ({eng.badge})
-                  </option>
-                ))}
-              </select>
-              <div style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                ✕
+              </button>
+            </div>
+
+            {/* Terminal Window */}
+            <div style={{ 
+              background: 'rgba(0, 0, 0, 0.75)', 
+              borderRadius: '8px', 
+              border: '1px solid rgba(255, 255, 255, 0.08)', 
+              padding: '1rem', 
+              minHeight: '220px', 
+              maxHeight: '340px', 
+              overflowY: 'auto', 
+              fontFamily: 'Consolas, Monaco, "Courier New", monospace', 
+              fontSize: '0.78rem',
+              lineHeight: '1.5',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.4rem', marginBottom: '0.6rem', color: 'var(--text-muted)', fontSize: '0.72rem' }}>
+                <span>$ secureide-orchestrator --target={selectedEngine} --tier={tier}</span>
+                <span>Session ID: {activeBuildId || 'init'}</span>
               </div>
-            </div>
-          </div>
 
-          {/* Upstream Engine Version Channel Selector (Latest, Preview, Previous, Custom) */}
-          <div className="form-group" style={{ marginBottom: '0.85rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <label style={{ fontSize: '0.75rem', margin: 0, fontWeight: 600 }}>
-                Editor Version Channel
-              </label>
-              <span style={{ fontSize: '0.7rem', color: '#34D399', fontWeight: 600 }}>
-                {versionChannel === "latest" ? "✓ Upstream Verified" : versionChannel === "preview" ? "⚡ Pre-Release" : versionChannel === "previous" ? "🛡️ LTS Stable" : "Custom Tag"}
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.4rem' }}>
-              {(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).map((ch) => {
-                const isSelected = versionChannel === ch.id;
-                return (
-                  <button
-                    key={ch.id}
-                    type="button"
-                    onClick={() => setVersionChannel(ch.id)}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      padding: '0.5rem 0.6rem',
-                      borderRadius: '8px',
-                      border: isSelected ? `2px solid ${brandColor}` : '1px solid rgba(255,255,255,0.08)',
-                      background: isSelected ? 'rgba(59, 130, 246, 0.18)' : 'rgba(0, 0, 0, 0.25)',
-                      color: isSelected ? '#fff' : 'var(--text-muted)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.15s ease'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.15rem' }}>
-                      <strong style={{ fontSize: '0.78rem', color: isSelected ? '#fff' : 'var(--text-main)' }}>{ch.name}</strong>
-                      <span style={{ fontSize: '0.62rem', color: ch.badgeColor, background: 'rgba(255,255,255,0.05)', padding: '0.08rem 0.3rem', borderRadius: '4px' }}>
-                        {ch.badge}
-                      </span>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-word', color: 'var(--text-muted)', flex: 1 }}>
+                {buildLogs.length === 0 ? (
+                  <div style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Waiting for compilation trigger...</div>
+                ) : (
+                  buildLogs.map((log, i) => (
+                    <div key={i} style={{ color: log.includes("Error") ? '#F87171' : log.includes("complete") || log.includes("SUCCESS") ? '#34D399' : log.includes("Packaging") || log.includes("Bundling") ? '#93C5FD' : 'inherit', marginBottom: '0.2rem' }}>
+                      {log.startsWith("{") || log.startsWith(" ") ? log : `> ${log}`}
                     </div>
-                    <span style={{ fontSize: '0.68rem', color: isSelected ? '#93C5FD' : 'var(--text-muted)', fontFamily: ch.id !== 'custom' ? 'monospace' : 'inherit' }}>
-                      {ch.id === 'custom' ? 'User-defined Git Tag' : `Tag: ${ch.tag}`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Custom Git Tag Input Field */}
-            {versionChannel === "custom" && (
-              <div className="fade-in" style={{ marginTop: '0.4rem', marginBottom: '0.4rem' }}>
-                <input 
-                  type="text" 
-                  placeholder="e.g. release/1.92.0, v1.91.5, or commit SHA..."
-                  value={customTag}
-                  onChange={(e) => setCustomTag(e.target.value)}
-                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.7rem', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-color)', borderRadius: '6px', width: '100%', color: 'white' }}
-                />
-                {customTag && (
-                  <div style={{ marginTop: '0.3rem', padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem',
-                    background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.25)' }}>
-                    ✓ Custom upstream tag <code>{customTag}</code> mapped for compilation.
-                  </div>
+                  ))
                 )}
-              </div>
-            )}
-
-            {/* Channel Description / Status */}
-            {versionChannel !== "custom" && (
-              <div style={{ padding: '0.35rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span>ℹ️</span>
-                <span>{(ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode).find(c => c.id === versionChannel)?.description}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              Whitelist Policy Mode
-              {tier === "COMMUNITY" && <span className="upgrade-badge" style={{ color: '#3FB950', background: 'rgba(35,134,54,0.1)', borderColor: 'rgba(35,134,54,0.3)' }}>Community Edition</span>}
-            </label>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', padding: '0.5rem 0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
-              {tier === "COMMUNITY" 
-                ? "✓ Community Verified (Reputation + 0 Open CVEs)" 
-                : "🔒 Full Custom Enterprise Artifactory Whitelist"}
-            </div>
-          </div>
-
-          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              JFrog / Artifactory Proxy
-              {!canUseRegistryUrl && <span className="upgrade-badge">Enterprise</span>}
-            </label>
-            <input 
-              type="url" 
-              value={canUseRegistryUrl ? registryUrl : "Air-gapped (Offline Core)"}
-              onChange={(e) => setRegistryUrl(e.target.value)}
-              disabled={!canUseRegistryUrl}
-              className={!canUseRegistryUrl ? "locked-field" : ""}
-              style={{ fontSize: '0.85rem', padding: '0.6rem 0.8rem' }}
-            />
-          </div>
-
-          <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: '0.5rem' }}>
-            <div className="toggle-info">
-              <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Zero Telemetry Beacons</span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>All analytics & crash pings neutralized</span>
-            </div>
-            <span className="status-chip approved" style={{ fontSize: '0.7rem' }}>Enforced</span>
-          </div>
-
-          <div className="toggle-wrapper" style={{ padding: '0.6rem', marginBottom: 0 }}>
-            <div className="toggle-info">
-              <span className="toggle-title" style={{ fontSize: '0.85rem' }}>Remote Tunnels / SSH</span>
-            </div>
-            <label className="toggle-switch" style={{ width: '38px', height: '20px' }}>
-              <input type="checkbox" checked={tunnel} onChange={(e) => setTunnel(e.target.checked)} />
-              <span className="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        {/* Build / Dry Run Action Card */}
-        <div className="glass-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', marginBottom: 0, padding: '1.25rem' }}>
-          {buildState === "IDLE" && (
-            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              
-              {/* AUTO-PUBLISH COMMUNITY BLUEPRINT TOGGLE */}
-              <div style={{ padding: '0.65rem 0.85rem', background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', marginBottom: '0.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#DDD6FE', fontWeight: 600 }}>
-                    <input 
-                      type="checkbox" 
-                      checked={autoPublishBlueprint} 
-                      onChange={(e) => setAutoPublishBlueprint(e.target.checked)}
-                      style={{ accentColor: '#8B5CF6' }}
-                    />
-                    <span>🌐 Auto-Publish to Community Catalog</span>
-                  </label>
-                  <span style={{ fontSize: '0.68rem', background: autoPublishBlueprint ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.06)', color: autoPublishBlueprint ? '#C084FC' : 'var(--text-muted)', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
-                    {autoPublishBlueprint ? 'Public Flywheel' : 'Private Build'}
-                  </span>
-                </div>
-
-                {autoPublishBlueprint && (
-                  <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Author:</span>
-                    <input 
-                      type="text" 
-                      placeholder="@your_handle (optional)" 
-                      value={communityAuthorHandle}
-                      onChange={(e) => setCommunityAuthorHandle(e.target.value)}
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'white', flex: 1 }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <button onClick={startDryRun} style={{ fontSize: '0.9rem', padding: '0.8rem', background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
-                🔍 Dry Run Validation ({selectedEngine.toUpperCase()})
-              </button>
-              <button className="btn-primary" onClick={startBuild} style={{ fontSize: '1rem', padding: '1rem', background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))` }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                Compile {selectedEngine.toUpperCase()} Release
-              </button>
-            </div>
-          )}
-
-          {buildState !== "IDLE" && (
-            <div className="fade-in" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '0.875rem', flex: 1, display: 'flex', flexDirection: 'column', fontFamily: 'monospace', fontSize: '0.75rem', overflowY: 'auto', overflowX: 'hidden' }}>
-              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-word', color: 'var(--text-muted)' }}>
-                {buildLogs.map((log, i) => (
-                  <div key={i} style={{ color: log.includes("Error") ? '#F87171' : log.includes("complete") || log.includes("SUCCESS") ? 'var(--success)' : 'inherit', marginBottom: '0.2rem' }}>
-                    {log.startsWith("{") || log.startsWith(" ") ? log : `> ${log}`}
-                  </div>
-                ))}
               </pre>
-              
-              {buildState === "BUILDING" && (
-                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: brandColor, paddingTop: '0.5rem' }}>
-                  <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
-                  Packaging Distribution on Server...
-                </div>
-              )}
 
-              {buildState === "SUCCESS" && (
-                <div className="fade-in" style={{ marginTop: 'auto', paddingTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button 
-                    className="btn-primary" 
-                    onClick={() => {
-                      const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
-                      const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
-                      const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                      const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                      window.location.href = url;
-                    }} 
-                    style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    ✓ Download Windows Setup (.EXE)
-                  </button>
-                  <button 
-                    onClick={() => {
-                      const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
-                      const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
-                      const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                      const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
-                      window.location.href = url;
-                    }} 
-                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                  >
-                    📦 Portable (.ZIP)
-                  </button>
-                  <button onClick={() => { setBuildState("IDLE"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    New Build
-                  </button>
+              {buildState === "BUILDING" && (
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: brandColor, paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                  <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                  <span>Packaging Distribution on Server (0 Open CVEs Enforced)...</span>
                 </div>
               )}
             </div>
-          )}
+
+            {/* Modal Footer / Actions */}
+            <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <button 
+                type="button"
+                onClick={() => setBuildModalOpen(false)}
+                style={{ padding: '0.6rem 1.1rem', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid var(--border-color)', color: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                Close Window
+              </button>
+
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                {buildState === "SUCCESS" && (
+                  <>
+                    <button 
+                      className="btn-primary" 
+                      onClick={() => {
+                        const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                        const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
+                        const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                        const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                        window.location.href = url;
+                      }} 
+                      style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.25rem', fontSize: '0.88rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 10px rgba(99, 102, 241, 0.4)' }}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      ✓ Download Windows Setup (.EXE)
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                        const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
+                        const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
+                        const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                        window.location.href = url;
+                      }} 
+                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 1rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                    >
+                      📦 Portable (.ZIP)
+                    </button>
+                    <button 
+                      onClick={() => { setBuildState("IDLE"); }} 
+                      style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      New Build
+                    </button>
+                  </>
+                )}
+                {buildState === "IDLE" && (
+                  <button 
+                    className="btn-primary"
+                    onClick={startBuild}
+                    style={{ padding: '0.65rem 1.25rem', background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))`, border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                  >
+                    Start Compilation Now
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </aside>
+      )}
 
       {/* MODAL 1: DEEP SECURITY & PERMISSION INSPECTOR */}
       {inspectingExt && (

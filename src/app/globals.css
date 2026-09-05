@@ -526,16 +526,8 @@ input:checked + .slider:before {
   padding-right: 0.5rem;
 }
 
-.console-dock {
-  width: 380px;
-  min-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.25rem;
-}
+/* .console-dock removed: reconciled into workbench configuration tabs */
+
 
 /* Quick Stack Chips in Marketplace (Wraps cleanly, no horizontal scroll) */
 .quick-stack-bar {
