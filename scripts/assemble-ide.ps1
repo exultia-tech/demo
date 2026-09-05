@@ -194,7 +194,7 @@ $PortableDataExtsDir = Join-Path $DataDir "extensions"
 New-Item -ItemType Directory -Path $UserDataDir -Force | Out-Null
 New-Item -ItemType Directory -Path $PortableDataExtsDir -Force | Out-Null
 
-$ExtCacheDir = Join-Path $OutputDir "extensions_cache"
+$ExtCacheDir = Join-Path $WorkingDir "extensions_cache"
 if (-not (Test-Path $ExtCacheDir)) {
     New-Item -ItemType Directory -Path $ExtCacheDir -Force | Out-Null
 }
@@ -373,6 +373,61 @@ if ($TargetOS -eq "windows" -or $TargetOS -eq "macos") {
 
     Write-Host "    [OK] Portable ZIP generated (long-path safe)."
     Write-Host ">>> [SUCCESS] Custom build generated: $ZipDest"
+
+    # Windows Setup Installer (.EXE) via Inno Setup Compiler
+    $IsccCmd = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
+    if (-not $IsccCmd) {
+        $PossiblePaths = @(
+            "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+            "C:\Program Files\Inno Setup 6\ISCC.exe"
+        )
+        foreach ($p in $PossiblePaths) {
+            if (Test-Path $p) { $IsccCmd = $p; break }
+        }
+    }
+
+    if ($IsccCmd) {
+        Write-Host "    -> Compressing Windows Setup Installer (.exe) with Inno Setup..." -ForegroundColor Cyan
+        $IssPath = Join-Path $OutputDir "setup_$BuildId.iss"
+        $ExeOutputBase = "${CleanBrandSlug}_${Engine}_Setup"
+        $IssContent = @"
+[Setup]
+AppName=$BrandName
+AppVersion=1.0.0
+DefaultDirName={autopf}\$BrandName
+DefaultGroupName=$BrandName
+OutputDir=$OutputDir
+OutputBaseFilename=$ExeOutputBase
+Compression=lzma2/ultra64
+SolidCompression=yes
+ArchitecturesInstallIn64BitMode=x64
+PrivilegesRequired=lowest
+DisableProgramGroupPage=yes
+
+[Files]
+Source: "$AppDir\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{group}\$BrandName"; Filename: "{app}\Code.exe"
+Name: "{autodesktop}\$BrandName"; Filename: "{app}\Code.exe"
+
+[Run]
+Filename: "{app}\Code.exe"; Description: "Launch $BrandName"; Flags: nowait postinstall skipifsilent
+"@
+        Set-Content -Path $IssPath -Value $IssContent -Encoding utf8
+        try {
+            & $IsccCmd "$IssPath"
+            $InstallerExe = Join-Path $OutputDir "$ExeOutputBase.exe"
+            if (Test-Path $InstallerExe) {
+                Write-Host "    [OK] Windows Setup Wizard installer generated: $InstallerExe" -ForegroundColor Green
+                Write-Host ">>> [SUCCESS] Windows Setup installer generated: $InstallerExe"
+            }
+        } catch {
+            Write-Host "    [WARNING] Inno Setup compilation notice: $($_.Exception.Message)"
+        } finally {
+            Remove-Item -Force $IssPath -ErrorAction SilentlyContinue
+        }
+    }
 } elseif ($TargetOS -eq "linux") {
     $TarDest = Join-Path $OutputDir "$ArchiveBaseName.tar.gz"
     Write-Host "    -> Packaging TAR.GZ archive: $TarDest"

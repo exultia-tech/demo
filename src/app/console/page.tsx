@@ -249,6 +249,7 @@ export default function ConsolePage() {
   const [activeTab, setActiveTab] = useState("builder");
   const [buildArtifactPath, setBuildArtifactPath] = useState<string | null>(null);
   const [buildInstallerPath, setBuildInstallerPath] = useState<string | null>(null);
+  const [activeBuildId, setActiveBuildId] = useState<string | null>(null);
   const [tier, setTier] = useState<SubscriptionTier>("COMMUNITY");
   
   // Selected IDE Engine
@@ -1888,6 +1889,7 @@ build_hardened_ide:
 
       let artifactPath = "";
       let installerPath = "";
+      let currentBuildId = "";
 
       while (true) {
         const { value, done } = await reader.read();
@@ -1899,6 +1901,23 @@ build_hardened_ide:
         setBuildLogs(prev => {
           const newLogs = [...prev];
           lines.forEach(line => {
+            if (line.includes("[METADATA]")) {
+              try {
+                const metaStr = line.split("[METADATA]")[1].trim();
+                const meta = JSON.parse(metaStr);
+                if (meta.buildId) {
+                  currentBuildId = meta.buildId;
+                  setActiveBuildId(meta.buildId);
+                }
+              } catch {}
+            }
+            if (line.includes("Build ID:")) {
+              const bIdMatch = line.split("Build ID:")[1];
+              if (bIdMatch) {
+                currentBuildId = bIdMatch.trim();
+                setActiveBuildId(bIdMatch.trim());
+              }
+            }
             if (line.includes("Custom build generated:")) {
               const pathMatch = line.split("generated:")[1];
               if (pathMatch) artifactPath = pathMatch.trim();
@@ -2720,7 +2739,7 @@ build_hardened_ide:
                           const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
                           const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
                           const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                          const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
                           window.location.href = url;
                         }} 
                         style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.45rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)' }}
@@ -2733,7 +2752,7 @@ build_hardened_ide:
                           const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
                           const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
                           const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                          const url = `/api/download?path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                          const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
                           window.location.href = url;
                         }} 
                         style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}

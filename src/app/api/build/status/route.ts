@@ -1,77 +1,89 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+import {
+  findWorkflowRun,
+  getWorkflowRunStatus,
+  getWorkflowJobSteps,
+  downloadAndExtractArtifact,
+  WorkflowRunInfo
+} from '@/lib/github-actions';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const runId = searchParams.get('runId');
-    const buildId = searchParams.get('buildId');
+    const { searchParams } = new URL(req.url);
+    const buildId = searchParams.get('buildId') || '';
+    const runIdParam = searchParams.get('runId') || '';
 
-    const githubToken = process.env.GITHUB_TOKEN;
-    const githubOwner = process.env.GITHUB_OWNER;
-    const githubRepo = process.env.GITHUB_REPO;
+    const publicDownloadsPath = path.join(process.cwd(), 'public', 'downloads');
 
-    if (!githubToken || !githubOwner || !githubRepo) {
-      return NextResponse.json({
-        mode: 'local',
-        status: 'completed',
-        message: 'Local assembly engine active.'
-      });
-    }
+    // 1. Check if artifacts for this buildId already exist locally
+    if (buildId) {
+      const allFiles = fs.existsSync(publicDownloadsPath) ? fs.readdirSync(publicDownloadsPath) : [];
+      const localZip = allFiles.find(f => f.endsWith('.zip') && f.includes(buildId));
+      const localExe = allFiles.find(f => f.endsWith('.exe') && f.includes(buildId));
 
-    if (runId) {
-      const response = await fetch(`https://api.github.com/repos/${githubOwner}/${githubRepo}/actions/runs/${runId}`, {
-        headers: {
-          'Accept': 'application/vnd.github+json',
-          'Authorization': `Bearer ${githubToken}`,
-          'X-GitHub-Api-Version': '2022-11-28',
-        }
-      });
-
-      if (!response.ok) {
-        return NextResponse.json({ error: 'Failed to fetch run details' }, { status: response.status });
+      if (localZip) {
+        return NextResponse.json({
+          status: 'completed',
+          conclusion: 'success',
+          artifactReady: true,
+          zipFile: localZip,
+          exeFile: localExe || null,
+          steps: [{ name: 'Build and Package Artifacts', status: 'completed', conclusion: 'success', number: 1 }]
+        });
       }
+    }
 
-      const data = await response.json();
+    // 2. Query GitHub Actions run status
+    let run: WorkflowRunInfo | null = null;
+    if (runIdParam) {
+      run = await getWorkflowRunStatus(parseInt(runIdParam, 10));
+    } else {
+      run = await findWorkflowRun();
+    }
+
+    if (!run) {
       return NextResponse.json({
-        mode: 'github_actions',
-        status: data.status, // queued, in_progress, completed
-        conclusion: data.conclusion, // success, failure, neutral, cancelled, timed_out
-        htmlUrl: data.html_url,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-        runNumber: data.run_number
+        status: 'queued',
+        conclusion: null,
+        artifactReady: false,
+        steps: []
       });
     }
 
-    // If querying by workflow runs list
-    const runsResponse = await fetch(`https://api.github.com/repos/${githubOwner}/${githubRepo}/actions/runs?per_page=5`, {
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `Bearer ${githubToken}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      }
-    });
+    const steps = await getWorkflowJobSteps(run.id);
 
-    if (!runsResponse.ok) {
-      return NextResponse.json({ error: 'Failed to list workflow runs' }, { status: runsResponse.status });
+    // 3. If run succeeded, ensure artifact is downloaded & extracted
+    let zipFile: string | undefined;
+    let exeFile: string | undefined;
+    let artifactReady = false;
+
+    if (run.conclusion === 'success') {
+      try {
+        const result = await downloadAndExtractArtifact(run.id, publicDownloadsPath, buildId);
+        zipFile = result.zipFile ? path.basename(result.zipFile) : undefined;
+        exeFile = result.exeFile ? path.basename(result.exeFile) : undefined;
+        artifactReady = !!(zipFile || exeFile);
+      } catch (err: any) {
+        console.error('Artifact extraction error in status endpoint:', err);
+      }
     }
 
-    const runsData = await runsResponse.json();
     return NextResponse.json({
-      mode: 'github_actions',
-      latestRuns: (runsData.workflow_runs || []).map((r: any) => ({
-        id: r.id,
-        name: r.name,
-        status: r.status,
-        conclusion: r.conclusion,
-        htmlUrl: r.html_url,
-        createdAt: r.created_at
-      }))
+      runId: run.id,
+      status: run.status,
+      conclusion: run.conclusion,
+      artifactReady,
+      zipFile: zipFile || null,
+      exeFile: exeFile || null,
+      steps
     });
 
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Build status API error:', error);
+    return NextResponse.json({ error: error.message || 'Status check failed' }, { status: 500 });
   }
 }

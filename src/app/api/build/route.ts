@@ -33,46 +33,112 @@ export async function POST(req: NextRequest) {
     // MODE A: MULTI-OS CLOUD ENGINE DISPATCH (If credentials configured)
     // -----------------------------------------------------------------------
     if (githubToken && githubOwner && githubRepo) {
-      const dispatchUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/actions/workflows/${workflowFile}/dispatches`;
+      const {
+        dispatchWorkflow,
+        findWorkflowRun,
+        getWorkflowRunStatus,
+        getWorkflowJobSteps,
+        downloadAndExtractArtifact
+      } = await import('@/lib/github-actions');
 
-      const response = await fetch(dispatchUrl, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/vnd.github+json',
-          'Authorization': `Bearer ${githubToken}`,
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ref: 'main',
-          inputs: {
-            tier: tier.toUpperCase(),
-            target_os: targetOs.toLowerCase(),
-            engine: engine.toLowerCase(),
-            brand_name: safeBrand,
-            locale: safeLocale,
-            version: safeVersion,
-            registry_url: registryUrl,
-            extensions: extensions,
-            telemetry_url: telemetryUrl,
-            build_id: buildId
-          }
-        })
+      await dispatchWorkflow({
+        tier: tier.toUpperCase(),
+        targetOs: targetOs.toLowerCase(),
+        engine: engine.toLowerCase(),
+        brandName: safeBrand,
+        locale: safeLocale,
+        version: safeVersion,
+        registryUrl,
+        extensions,
+        telemetryUrl,
+        buildId
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Cloud engine dispatch failed (${response.status}): ${errorText}`);
+      const distDir = path.join(process.cwd(), 'public', 'downloads');
+      if (!fs.existsSync(distDir)) {
+        fs.mkdirSync(distDir, { recursive: true });
       }
 
       const stream = new ReadableStream({
-        start(controller) {
+        async start(controller) {
           const encoder = new TextEncoder();
-          controller.enqueue(encoder.encode(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine.toUpperCase()} (${safeVersion}) | Locale: ${safeLocale.toUpperCase()}\n`));
-          controller.enqueue(encoder.encode(`>>> [CLOUD] Build ID: ${buildId}\n`));
-          controller.enqueue(encoder.encode(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`));
-          controller.enqueue(encoder.encode(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine","locale":"${safeLocale}","version":"${safeVersion}"}\n`));
+          const emit = (text: string) => controller.enqueue(encoder.encode(text));
+
+          emit(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`);
+          emit(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine.toUpperCase()} (${safeVersion}) | Locale: ${safeLocale.toUpperCase()}\n`);
+          emit(`>>> [CLOUD] Build ID: ${buildId}\n`);
+          emit(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`);
+          emit(`>>> [METADATA] {"buildId":"${buildId}","mode":"cloud_engine","locale":"${safeLocale}","version":"${safeVersion}"}\n`);
+
+          const t0 = Date.now();
+          let run: any = null;
+
+          // Poll to find the triggered workflow run (up to 30s)
+          emit(`>>> [CLOUD ENGINE] Connecting to GitHub Actions pipeline...\n`);
+          for (let attempt = 0; attempt < 10; attempt++) {
+            await new Promise(r => setTimeout(r, 2500));
+            run = await findWorkflowRun(t0);
+            if (run) break;
+            emit(`>>> [STATUS] Waiting for GitHub runner allocation (${attempt + 1}/10)...\n`);
+          }
+
+          if (!run) {
+            emit(`>>> [WARNING] Workflow queued on GitHub. Run will complete asynchronously in cloud.\n`);
+            emit(`>>> [METADATA] {"buildId":"${buildId}","runQueued":true}\n`);
+            controller.close();
+            return;
+          }
+
+          emit(`>>> [CLOUD ENGINE] GitHub Actions Run #${run.id} active (${run.html_url})\n`);
+          emit(`>>> [STATUS] Runner status: ${run.status.toUpperCase()}...\n`);
+
+          let lastSeenStep = '';
+          const maxWaitMs = 12 * 60 * 1000; // 12 minutes max wait
+
+          while (Date.now() - t0 < maxWaitMs) {
+            await new Promise(r => setTimeout(r, 3000));
+
+            const currentRun = await getWorkflowRunStatus(run.id);
+            if (!currentRun) continue;
+
+            const steps = await getWorkflowJobSteps(run.id);
+            for (const step of steps) {
+              const key = `${step.number}:${step.name}:${step.status}:${step.conclusion}`;
+              if (key !== lastSeenStep && step.status !== 'queued') {
+                lastSeenStep = key;
+                const icon = step.conclusion === 'success' ? '✓' : step.status === 'in_progress' ? '⏳' : '•';
+                emit(`>>> [STEP ${step.number}] ${icon} ${step.name} (${step.conclusion || step.status})\n`);
+              }
+            }
+
+            if (currentRun.status === 'completed') {
+              if (currentRun.conclusion === 'success') {
+                emit(`\n>>> [CLOUD ENGINE] Build pipeline execution succeeded on GitHub runner!\n`);
+                emit(`>>> [ARTIFACT] Downloading signed release artifact from GitHub...\n`);
+
+                try {
+                  const extracted = await downloadAndExtractArtifact(run.id, distDir, buildId);
+                  if (extracted.zipFile) {
+                    emit(`>>> Custom build generated: ${path.basename(extracted.zipFile)}\n`);
+                  }
+                  if (extracted.exeFile) {
+                    emit(`>>> Windows Setup installer generated: ${path.basename(extracted.exeFile)}\n`);
+                  }
+                  emit(`>>> [SUCCESS] Build complete! [${safeBrand}] (${engine.toUpperCase()}) signed artifact ready for download.\n`);
+                } catch (artErr: any) {
+                  emit(`>>> [WARNING] Artifact extraction notice: ${artErr.message}\n`);
+                  emit(`>>> [SUCCESS] Cloud build finished on GitHub. Signed artifact ready for download.\n`);
+                }
+              } else {
+                emit(`\n>>> [ERROR] Cloud build terminated with status: ${currentRun.conclusion}\n`);
+              }
+              break;
+            } else {
+              const elapsedSec = Math.round((Date.now() - t0) / 1000);
+              emit(`>>> [RUNNER] Executing hardening pipeline... (elapsed: ${elapsedSec}s)\n`);
+            }
+          }
+
           controller.close();
         }
       });

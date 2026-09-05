@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { assembleCustomDistribution } from '@/lib/dynamic-bundler';
+import { getOrFetchLatestArtifact } from '@/lib/github-actions';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const buildId = searchParams.get('buildId') || '';
     const requestedPath = searchParams.get('path') || '';
     const brand = searchParams.get('brand') || 'SecureIDE Studio';
     const type = searchParams.get('type') || '';
@@ -24,8 +26,21 @@ export async function GET(request: Request) {
 
     let localFilePath = '';
 
-    // 1. Check exact requested release artifact path
-    if (requestedPath) {
+    // 1. If buildId is provided, look for exact files generated for this build
+    if (buildId) {
+      const allFiles = fs.readdirSync(publicDownloadsPath).filter(f => !f.startsWith('.'));
+      if (isInstaller) {
+        const exeMatch = allFiles.find(f => f.endsWith('.exe') && f.includes(buildId) && fs.statSync(path.join(publicDownloadsPath, f)).size > 1000000);
+        if (exeMatch) localFilePath = path.join(publicDownloadsPath, exeMatch);
+      }
+      if (!localFilePath) {
+        const zipMatch = allFiles.find(f => f.endsWith('.zip') && f.includes(buildId) && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000);
+        if (zipMatch) localFilePath = path.join(publicDownloadsPath, zipMatch);
+      }
+    }
+
+    // 2. Check exact requested release artifact path if specified
+    if (!localFilePath && requestedPath) {
       const baseName = path.basename(requestedPath);
       const candidates = [
         requestedPath,
@@ -42,19 +57,21 @@ export async function GET(request: Request) {
       }
     }
 
-    // 2. Scan public/downloads for any freshly compiled distribution
+    // 3. Scan public/downloads for any freshly compiled distribution, sorted by newest
     if (!localFilePath) {
       const allFiles = fs.readdirSync(publicDownloadsPath).filter(f => !f.startsWith('.'));
       
       if (isInstaller) {
-        const exeMatch = allFiles.find(f => f.endsWith('.exe') && fs.statSync(path.join(publicDownloadsPath, f)).size > 1000000);
-        if (exeMatch) localFilePath = path.join(publicDownloadsPath, exeMatch);
+        const exeMatches = allFiles
+          .filter(f => f.endsWith('.exe') && fs.statSync(path.join(publicDownloadsPath, f)).size > 1000000)
+          .map(f => ({ name: f, time: fs.statSync(path.join(publicDownloadsPath, f)).mtimeMs }))
+          .sort((a, b) => b.time - a.time);
+        if (exeMatches.length > 0) localFilePath = path.join(publicDownloadsPath, exeMatches[0].name);
       }
 
       if (!localFilePath) {
-        // Look for recent compiled zip
         const zipMatches = allFiles
-          .filter(f => f.endsWith('.zip') && !f.includes('vscodium-base') && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000)
+          .filter(f => f.endsWith('.zip') && !f.includes('base') && fs.statSync(path.join(publicDownloadsPath, f)).size > 10000000)
           .map(f => ({ name: f, time: fs.statSync(path.join(publicDownloadsPath, f)).mtimeMs }))
           .sort((a, b) => b.time - a.time);
 
@@ -64,7 +81,21 @@ export async function GET(request: Request) {
       }
     }
 
-    // 3. If still not found, assemble customized distribution on-the-fly
+    // 4. If still not found locally, fetch latest artifact from GitHub Actions
+    if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
+      try {
+        const ghArtifact = await getOrFetchLatestArtifact(publicDownloadsPath);
+        if (isInstaller && ghArtifact.exeFile && fs.existsSync(ghArtifact.exeFile)) {
+          localFilePath = ghArtifact.exeFile;
+        } else if (ghArtifact.zipFile && fs.existsSync(ghArtifact.zipFile)) {
+          localFilePath = ghArtifact.zipFile;
+        }
+      } catch (ghErr) {
+        console.error('GitHub artifact fetch note:', ghErr);
+      }
+    }
+
+    // 5. Fallback: Assemble customized distribution on-the-fly if cloud artifact not available
     if (!localFilePath || !fs.existsSync(localFilePath) || fs.statSync(localFilePath).size < 100000) {
       try {
         localFilePath = await assembleCustomDistribution({
@@ -79,7 +110,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // 4. Fallback: check builds folder
+    // 6. Fallback: check builds folder
     if (!localFilePath || !fs.existsSync(localFilePath)) {
       const buildFiles = fs.readdirSync(buildsPath).filter(f => f.endsWith('.zip') && fs.statSync(path.join(buildsPath, f)).size > 10000000);
       if (buildFiles.length > 0) {
