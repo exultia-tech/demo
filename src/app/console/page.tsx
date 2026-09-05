@@ -2207,23 +2207,9 @@ build_hardened_ide:
           <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             
             {/* Header & Brand */}
-            <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-              <div>
-                <h1>{brandName}</h1>
-                <p>Universal Zero-Trust Build & Governance Platform for Open-Source IDEs.</p>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  onClick={() => setActiveTab("theme")}
-                  style={{ background: 'rgba(255, 255, 255, 0.08)', color: 'white', border: '1px solid var(--border-color)', padding: '0.6rem 0.9rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, fontSize: '0.85rem' }}>
-                  🎨 Customize Brand
-                </button>
-                <button 
-                  onClick={() => setActiveTab("blueprints")}
-                  style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', padding: '0.6rem 0.9rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>
-                  Stack Blueprints →
-                </button>
-              </div>
+            <div style={{ marginBottom: '1rem' }}>
+              <h1>{brandName}</h1>
+              <p>Universal Zero-Trust Build & Governance Platform for Open-Source IDEs.</p>
             </div>
 
             {/* MULTI-IDE ENGINE SELECTOR BAR */}
@@ -2319,14 +2305,6 @@ build_hardened_ide:
                   <span style={{ fontSize: '0.65rem', opacity: 0.7, background: 'rgba(255,255,255,0.08)', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>+{bp.extensions.length}</span>
                 </button>
               ))}
-              <button 
-                type="button" 
-                className="quick-stack-chip" 
-                onClick={() => setActiveTab("blueprints")} 
-                style={{ background: 'rgba(59,130,246,0.1)', borderColor: 'rgba(59,130,246,0.25)', color: '#93C5FD' }}
-              >
-                <span>All {blueprints.length + customBlueprints.length} Stacks →</span>
-              </button>
             </div>
 
             {/* Search Input */}
@@ -2699,12 +2677,7 @@ build_hardened_ide:
                   {cart.length} extensions currently loaded in your custom build cart. You can merge multiple blueprints to build a multi-role toolchain!
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  onClick={() => setActiveTab("studio")}
-                  style={{ padding: '0.45rem 0.9rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
-                  Review & Build ({cart.length}) →
-                </button>
+              <div>
                 <button 
                   onClick={() => setCart([])}
                   style={{ padding: '0.45rem 0.75rem', background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}>
@@ -3920,9 +3893,6 @@ build_hardened_ide:
                     style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', padding: '0.65rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                   >
                     📦 Portable (.ZIP)
-                  </button>
-                  <button onClick={() => { setActiveTab("sbom"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    View SBOM
                   </button>
                   <button onClick={() => { setBuildState("IDLE"); }} style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer' }}>
                     New Build
