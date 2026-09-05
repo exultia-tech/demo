@@ -333,17 +333,23 @@ export default function ConsolePage() {
   const [marketplaceFilter, setMarketplaceFilter] = useState<MarketplaceFilter>("ALL");
   const [blueprintCategory, setBlueprintCategory] = useState<string>("ALL");
   const [blueprintSourceFilter, setBlueprintSourceFilter] = useState<"ALL" | "OFFICIAL" | "COMMUNITY">("ALL");
-  const [customBlueprints, setCustomBlueprints] = useState<StackBlueprint[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("secureide_custom_blueprints");
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+  const [customBlueprints, setCustomBlueprints] = useState<StackBlueprint[]>(initialCommunityBlueprints);
+
+  // Safely hydrate custom community blueprints from localStorage after initial mount to prevent SSR mismatch
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("secureide_custom_blueprints");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCustomBlueprints(parsed);
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
-    return initialCommunityBlueprints;
-  });
+  }, []);
+
 
   // Custom Blueprint Submission Modal State
   const [showCreateBlueprintModal, setShowCreateBlueprintModal] = useState(false);
@@ -2202,7 +2208,7 @@ build_hardened_ide:
             <span style={{ fontSize: '1rem', lineHeight: 1 }}>📦</span>
             {!sidebarCollapsed && <span>Stack Blueprints</span>}
             {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{blueprints.length + customBlueprints.length}</span>
+              <span className="console-sidebar-badge" suppressHydrationWarning>{blueprints.length + customBlueprints.length}</span>
             )}
           </button>
         </div>
@@ -3055,7 +3061,7 @@ build_hardened_ide:
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
                 <h1 style={{ margin: 0 }}>Stack Blueprints & Community Catalog</h1>
-                <span className="upgrade-badge" style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', fontSize: '0.75rem' }}>
+                <span className="upgrade-badge" suppressHydrationWarning style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', fontSize: '0.75rem' }}>
                   {blueprints.length + customBlueprints.length} Stacks Available
                 </span>
               </div>
@@ -3099,16 +3105,19 @@ build_hardened_ide:
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             <button 
               onClick={() => setBlueprintSourceFilter("ALL")}
+              suppressHydrationWarning
               style={{ padding: '0.4rem 0.9rem', borderRadius: '6px', border: 'none', background: blueprintSourceFilter === "ALL" ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
               All Stacks ({blueprints.length + customBlueprints.length})
             </button>
             <button 
               onClick={() => setBlueprintSourceFilter("OFFICIAL")}
+              suppressHydrationWarning
               style={{ padding: '0.4rem 0.9rem', borderRadius: '6px', border: 'none', background: blueprintSourceFilter === "OFFICIAL" ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <span>⭐</span> Official Curated ({blueprints.length})
             </button>
             <button 
               onClick={() => setBlueprintSourceFilter("COMMUNITY")}
+              suppressHydrationWarning
               style={{ padding: '0.4rem 0.9rem', borderRadius: '6px', border: 'none', background: blueprintSourceFilter === "COMMUNITY" ? '#8B5CF6' : 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <span>🌐</span> Community Contributed ({customBlueprints.length})
             </button>
