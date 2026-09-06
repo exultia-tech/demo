@@ -45,9 +45,11 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => f.cveList.some(c => c.toUpperCase() === cve));
   }
 
-  // Scope filter: Full Universal Feed vs Direct Developer / Build Impact Focus
+  // Scope filter: Full Universal Feed vs Direct Developer / Build Impact Focus vs Pure Non-CVE Threats
   if (scope === 'build-impact' || scope === 'dev') {
     filtered = filtered.filter(f => f.ideBuildImpact.hasDirectBuildImpact);
+  } else if (scope === 'non-cve' || scope === 'malware') {
+    filtered = filtered.filter(f => f.cveList.length === 0);
   }
 
   // Free-form Search Query across UVI ID, CVEs, Title, Headline, Summary, Impact, Targets, CWE, and Upstream findings
@@ -127,6 +129,7 @@ export async function GET(request: Request) {
     },
     totalConsolidatedCount: allAdvisories.length,
     directBuildImpactCount: allAdvisories.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
+    nonCveThreatsCount: allAdvisories.filter(a => a.cveList.length === 0).length,
     matchedAdvisoriesCount: totalMatched,
     page,
     totalPages,

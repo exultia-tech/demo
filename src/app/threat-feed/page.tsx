@@ -13,8 +13,9 @@ import {
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
-  // Dual-Perspective Scope State: "ALL" (Universal Software & Systems) vs "DEV_BUILD" (Developer & Build System Exposure)
-  const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD">("ALL");
+  // Tri-Perspective Scope State: "ALL" (Universal Software & Systems) vs "DEV_BUILD" (Developer & Build System Exposure) vs "NON_CVE" (Pure Non-CVE Threats & Malware)
+  const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE">("ALL");
+  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(35);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,9 +32,9 @@ export default function ThreatFeedPage() {
 
   // Live Aggregated Data State
   const [advisories, setAdvisories] = useState<UviAdvisoryRecord[]>(CONSOLIDATED_UVI_ADVISORIES);
-  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(1713);
-  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(311);
-  const [matchedCount, setMatchedCount] = useState<number>(1713);
+  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(1787);
+  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(385);
+  const [matchedCount, setMatchedCount] = useState<number>(1787);
   const [totalPages, setTotalPages] = useState<number>(35);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLiveSynced, setHasLiveSynced] = useState<boolean>(false);
@@ -68,6 +69,7 @@ export default function ThreatFeedPage() {
         const params = new URLSearchParams();
         if (searchQuery.trim()) params.set("query", searchQuery.trim());
         if (feedScope === "DEV_BUILD") params.set("scope", "build-impact");
+        if (feedScope === "NON_CVE") params.set("scope", "non-cve");
         if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
         if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
@@ -89,8 +91,9 @@ export default function ThreatFeedPage() {
             });
 
             setAdvisories(sorted);
-            setTotalUniversalCount(data.totalConsolidatedCount || 1713);
-            setDirectBuildImpactCount(data.directBuildImpactCount || 311);
+            setTotalUniversalCount(data.totalConsolidatedCount || 1787);
+            setDirectBuildImpactCount(data.directBuildImpactCount || 385);
+            setNonCveThreatsCount(data.nonCveThreatsCount || 35);
             setMatchedCount(data.matchedAdvisoriesCount ?? sorted.length);
             setTotalPages(data.totalPages || Math.ceil((data.matchedAdvisoriesCount || sorted.length) / pageSize));
             setHasLiveSynced(true);
@@ -314,7 +317,7 @@ export default function ThreatFeedPage() {
           <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700, paddingLeft: "0.5rem" }}>
             Feed Perspective:
           </span>
-          <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.04)", borderRadius: "10px", padding: "3px" }}>
+          <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.04)", borderRadius: "10px", padding: "3px", flexWrap: "wrap", gap: "2px" }}>
             <button
               onClick={() => handleFilterChange(() => setFeedScope("ALL"))}
               style={{
@@ -363,7 +366,7 @@ export default function ThreatFeedPage() {
               }}
             >
               <span>💻</span>
-              <span>Developer & Build System Exposure</span>
+              <span>Developer & Build Exposure</span>
               <span style={{
                 background: feedScope === "DEV_BUILD" ? "rgba(16, 185, 129, 0.4)" : "rgba(255, 255, 255, 0.08)",
                 padding: "0.1rem 0.45rem",
@@ -374,13 +377,45 @@ export default function ThreatFeedPage() {
                 {directBuildImpactCount.toLocaleString()}
               </span>
             </button>
+
+            <button
+              onClick={() => handleFilterChange(() => setFeedScope("NON_CVE"))}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.55rem 1.1rem",
+                borderRadius: "8px",
+                border: "none",
+                background: feedScope === "NON_CVE" ? "linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(168, 85, 247, 0.25))" : "transparent",
+                color: feedScope === "NON_CVE" ? "#F8FAFC" : "#94A3B8",
+                fontWeight: feedScope === "NON_CVE" ? 700 : 500,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                boxShadow: feedScope === "NON_CVE" ? "0 2px 8px rgba(0,0,0,0.3)" : "none"
+              }}
+            >
+              <span>🛡️</span>
+              <span>Pure Non-CVE Threats</span>
+              <span style={{
+                background: feedScope === "NON_CVE" ? "rgba(236, 72, 153, 0.45)" : "rgba(255, 255, 255, 0.08)",
+                padding: "0.1rem 0.45rem",
+                borderRadius: "10px",
+                fontSize: "0.72rem",
+                color: "#E2E8F0"
+              }}>
+                {nonCveThreatsCount.toLocaleString()}
+              </span>
+            </button>
           </div>
         </div>
 
         <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", paddingRight: "0.5rem" }}>
           {feedScope === "ALL" 
-            ? `Showing all ${totalUniversalCount.toLocaleString()} universal advisories across servers, cloud, OS & protocols (general awareness)`
-            : `Showing ${directBuildImpactCount.toLocaleString()} advisories with direct consequences for developer workstations, CI/CD, and IDE toolchains`}
+            ? `Showing all ${totalUniversalCount.toLocaleString()} universal advisories across servers, cloud, OS, packages & extensions`
+            : feedScope === "DEV_BUILD"
+            ? `Showing ${directBuildImpactCount.toLocaleString()} advisories with direct consequences for developer workstations, CI/CD, and IDE toolchains`
+            : `Showing ${nonCveThreatsCount.toLocaleString()} pure supply chain threats, rogue extensions, and CI/CD workflow exploits that do NOT have CVEs and bypass NVD`}
         </span>
       </div>
 
@@ -484,6 +519,30 @@ export default function ThreatFeedPage() {
           </div>
           <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
             Impacts local builds, Git & compilers
+          </div>
+        </div>
+
+        {/* Card 5: Pure Non-CVE Threats (Malware & Extensions) */}
+        <div style={{
+          background: "rgba(15, 23, 42, 0.65)",
+          border: "1px solid rgba(236, 72, 153, 0.25)",
+          borderRadius: "14px",
+          padding: "1.25rem 1.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.4rem"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#F472B6", fontWeight: 600 }}>
+              Non-CVE Supply Chain
+            </span>
+            <span style={{ fontSize: "1.2rem" }}>🛡️</span>
+          </div>
+          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#EC4899", letterSpacing: "-0.02em" }}>
+            {nonCveThreatsCount.toLocaleString()} <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "#F472B6" }}>Pure Malware</span>
+          </div>
+          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            Rogue extensions & workflow exploits
           </div>
         </div>
       </div>
@@ -962,23 +1021,56 @@ export default function ThreatFeedPage() {
                               </button>
                             </div>
 
-                            {/* CVE list tags */}
+                            {/* CVE list tags or Non-CVE badge */}
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
-                              {record.cveList.map((cve) => (
+                              {record.cveList.length > 0 ? (
+                                record.cveList.map((cve) => (
+                                  <span
+                                    key={cve}
+                                    style={{
+                                      fontSize: "0.7rem",
+                                      fontFamily: "monospace",
+                                      background: "rgba(255, 255, 255, 0.06)",
+                                      color: "#CBD5E1",
+                                      padding: "0.1rem 0.35rem",
+                                      borderRadius: "4px"
+                                    }}
+                                  >
+                                    {cve}
+                                  </span>
+                                ))
+                              ) : (
                                 <span
-                                  key={cve}
                                   style={{
-                                    fontSize: "0.7rem",
+                                    fontSize: "0.68rem",
                                     fontFamily: "monospace",
-                                    background: "rgba(255, 255, 255, 0.06)",
-                                    color: "#CBD5E1",
-                                    padding: "0.1rem 0.35rem",
+                                    fontWeight: 700,
+                                    background: record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                                      ? "rgba(168, 85, 247, 0.2)" 
+                                      : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                                      ? "rgba(59, 130, 246, 0.2)"
+                                      : "rgba(236, 72, 153, 0.2)",
+                                    color: record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                                      ? "#C084FC" 
+                                      : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                                      ? "#93C5FD"
+                                      : "#F472B6",
+                                    border: record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                                      ? "1px solid rgba(168, 85, 247, 0.4)" 
+                                      : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                                      ? "1px solid rgba(59, 130, 246, 0.4)"
+                                      : "1px solid rgba(236, 72, 153, 0.4)",
+                                    padding: "0.1rem 0.4rem",
                                     borderRadius: "4px"
                                   }}
                                 >
-                                  {cve}
+                                  {record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                                    ? "🧩 MALICIOUS EXTENSION" 
+                                    : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                                    ? "⚡ WORKFLOW EXPLOIT"
+                                    : "🛡️ NON-CVE MALWARE"}
                                 </span>
-                              ))}
+                              )}
                             </div>
 
                             <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
@@ -1689,25 +1781,63 @@ export default function ThreatFeedPage() {
                     {copiedUviId === selectedAdvisory.uviId ? "Copied!" : "Copy ID"}
                   </button>
 
-                  {/* Cross references */}
-                  {selectedAdvisory.cveList.map((cve) => (
+                  {/* Cross references or Non-CVE badge */}
+                  {selectedAdvisory.cveList.length > 0 ? (
+                    selectedAdvisory.cveList.map((cve) => (
+                      <span
+                        key={cve}
+                        style={{
+                          fontFamily: "monospace",
+                          fontSize: "0.75rem",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          padding: "0.2rem 0.5rem",
+                          borderRadius: "4px",
+                          color: "#E2E8F0"
+                        }}
+                      >
+                        {cve}
+                      </span>
+                    ))
+                  ) : (
                     <span
-                      key={cve}
                       style={{
                         fontFamily: "monospace",
                         fontSize: "0.75rem",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        padding: "0.2rem 0.5rem",
-                        borderRadius: "4px",
-                        color: "#E2E8F0"
+                        fontWeight: 700,
+                        background: selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                          ? "rgba(168, 85, 247, 0.2)" 
+                          : selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                          ? "rgba(59, 130, 246, 0.2)"
+                          : "rgba(236, 72, 153, 0.2)",
+                        color: selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                          ? "#C084FC" 
+                          : selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                          ? "#93C5FD"
+                          : "#F472B6",
+                        border: selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                          ? "1px solid rgba(168, 85, 247, 0.4)" 
+                          : selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                          ? "1px solid rgba(59, 130, 246, 0.4)"
+                          : "1px solid rgba(236, 72, 153, 0.4)",
+                        padding: "0.2rem 0.55rem",
+                        borderRadius: "4px"
                       }}
                     >
-                      {cve}
+                      {selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("VS Code") 
+                        ? "🧩 NON-CVE: MALICIOUS EXTENSION" 
+                        : selectedAdvisory.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
+                        ? "⚡ NON-CVE: WORKFLOW EXPLOIT"
+                        : "🛡️ NON-CVE: SUPPLY CHAIN MALWARE"}
                     </span>
-                  ))}
+                  )}
                   {selectedAdvisory.ghsaId && (
                     <span style={{ fontFamily: "monospace", fontSize: "0.75rem", background: "rgba(139, 92, 246, 0.15)", color: "#C4B5FD", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
                       {selectedAdvisory.ghsaId}
+                    </span>
+                  )}
+                  {selectedAdvisory.osvId && !selectedAdvisory.uviId.includes(selectedAdvisory.osvId) && (
+                    <span style={{ fontFamily: "monospace", fontSize: "0.75rem", background: "rgba(16, 185, 129, 0.15)", color: "#6EE7B7", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
+                      {selectedAdvisory.osvId}
                     </span>
                   )}
                 </div>
@@ -1816,6 +1946,27 @@ export default function ThreatFeedPage() {
               {/* TAB 1: Global Threat & Technical Analysis */}
               {dossierTab === "global" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  {/* Non-CVE Supply Chain Intelligence Banner if applicable */}
+                  {selectedAdvisory.cveList.length === 0 && (
+                    <div style={{
+                      background: "rgba(236, 72, 153, 0.12)",
+                      border: "1px solid rgba(236, 72, 153, 0.35)",
+                      borderRadius: "10px",
+                      padding: "0.85rem 1.25rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      color: "#F472B6",
+                      fontSize: "0.85rem",
+                      lineHeight: 1.5
+                    }}>
+                      <span style={{ fontSize: "1.3rem" }}>🛡️</span>
+                      <div>
+                        <strong>Pure Supply Chain Threat (Non-CVE):</strong> This advisory represents intentional malicious code, an extension back-door, or a CI/CD workflow exploit tracked by OpenSSF, OSV, and Socket.dev. It does not receive a traditional CVE/NVD identifier because NVD exclusively catalogs unintended software bugs, but is normalized here under the unified UVI threat schema.
+                      </div>
+                    </div>
+                  )}
+
                   {/* CVSS & Vector Breakdown */}
                   <div style={{
                     background: "rgba(15, 23, 42, 0.6)",
