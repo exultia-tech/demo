@@ -526,6 +526,21 @@ input:checked + .slider:before {
   padding-right: 0.5rem;
 }
 
+/* Extensions table scrollbar styling */
+#extensions-table-scroll-body::-webkit-scrollbar {
+  width: 6px;
+}
+#extensions-table-scroll-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+#extensions-table-scroll-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+#extensions-table-scroll-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
+}
+
 /* .console-dock removed: reconciled into workbench configuration tabs */
 
 

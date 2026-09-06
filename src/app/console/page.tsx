@@ -2443,38 +2443,115 @@ build_hardened_ide:
 
                 {/* 2. COMPACT VERSION CHANNEL SELECTOR UNDERNEATH IDE SELECTOR */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <div style={{ display: 'inline-flex', width: 'fit-content', background: 'rgba(0, 0, 0, 0.55)', padding: '2px', borderRadius: '8px', border: '1px solid var(--border-color)', gap: '2px' }}>
-                    {(["previous", "latest", "preview"] as const).map((chKey) => {
-                      const isSelected = versionChannel === chKey;
-                      const label = chKey === "previous" ? "last" : chKey;
-                      return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'inline-flex', width: 'fit-content', background: 'rgba(0, 0, 0, 0.55)', padding: '2px', borderRadius: '8px', border: '1px solid var(--border-color)', gap: '2px' }}>
+                      {(["previous", "latest", "preview"] as const).map((chKey) => {
+                        const isSelected = versionChannel === chKey && !customTag;
+                        const label = chKey === "previous" ? "last" : chKey;
+                        return (
+                          <button
+                            key={chKey}
+                            type="button"
+                            id={`version-channel-btn-${label}`}
+                            onClick={() => {
+                              setVersionChannel(chKey);
+                              setCustomTag("");
+                            }}
+                            style={{
+                              padding: '0.25rem 0.8rem',
+                              fontSize: '0.75rem',
+                              fontWeight: isSelected ? 700 : 500,
+                              borderRadius: '6px',
+                              border: isSelected ? '1px solid var(--accent-primary)' : '1px solid transparent',
+                              cursor: 'pointer',
+                              background: isSelected ? 'var(--accent-primary)' : 'transparent',
+                              color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                              transition: 'all 0.15s ease',
+                              textTransform: 'lowercase',
+                              letterSpacing: '0.02em'
+                            }}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500 }}>or</span>
+
+                    {/* Custom Release Tag Text Box */}
+                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        id="custom-release-tag-input"
+                        placeholder="Custom release / tag..."
+                        value={customTag}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomTag(val);
+                          if (val.trim()) {
+                            setVersionChannel("custom");
+                          } else if (versionChannel === "custom") {
+                            setVersionChannel("latest");
+                          }
+                        }}
+                        style={{
+                          padding: '0.25rem 1.6rem 0.25rem 0.65rem',
+                          fontSize: '0.75rem',
+                          height: '28px',
+                          background: versionChannel === "custom" && customTag ? 'rgba(59, 130, 246, 0.12)' : 'rgba(0, 0, 0, 0.45)',
+                          border: versionChannel === "custom" && customTag ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+                          borderRadius: '6px',
+                          color: '#ffffff',
+                          width: '185px',
+                          outline: 'none',
+                          transition: 'all 0.15s ease'
+                        }}
+                      />
+                      {customTag && (
                         <button
-                          key={chKey}
                           type="button"
-                          id={`version-channel-btn-${label}`}
-                          onClick={() => setVersionChannel(chKey)}
+                          onClick={() => {
+                            setCustomTag("");
+                            setVersionChannel("latest");
+                          }}
+                          title="Clear custom release tag"
                           style={{
-                            padding: '0.25rem 0.8rem',
-                            fontSize: '0.75rem',
-                            fontWeight: isSelected ? 700 : 500,
-                            borderRadius: '6px',
-                            border: isSelected ? '1px solid var(--accent-primary)' : '1px solid transparent',
+                            position: 'absolute',
+                            right: '6px',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-muted)',
                             cursor: 'pointer',
-                            background: isSelected ? 'var(--accent-primary)' : 'transparent',
-                            color: isSelected ? '#ffffff' : 'var(--text-muted)',
-                            transition: 'all 0.15s ease',
-                            textTransform: 'lowercase',
-                            letterSpacing: '0.02em'
+                            fontSize: '0.75rem',
+                            padding: '2px',
+                            lineHeight: 1
                           }}
                         >
-                          {label}
+                          ✕
                         </button>
-                      );
-                    })}
+                      )}
+                    </div>
                   </div>
 
                   {/* DYNAMIC TEXT UNDERNEATH THAT CHANGES BASED ON SELECTION */}
                   {(() => {
+                    if (versionChannel === "custom" && customTag) {
+                      return (
+                        <div id="version-channel-desc-text" style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          <span style={{ color: '#34D399', fontWeight: 700 }}>
+                            CUSTOM RELEASE:
+                          </span>
+                          <span style={{ fontFamily: 'monospace', color: '#6EE7B7', background: 'rgba(52, 211, 153, 0.1)', padding: '0.08rem 0.4rem', borderRadius: '4px', border: '1px solid rgba(52, 211, 153, 0.25)' }}>
+                            {customTag}
+                          </span>
+                          <span style={{ color: 'var(--text-muted)' }}>
+                            • Custom upstream git tag/branch override mapped for compilation
+                          </span>
+                        </div>
+                      );
+                    }
+
                     const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
                     const chObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
                     return (
@@ -2546,14 +2623,7 @@ build_hardened_ide:
 
             </div>
 
-            <div 
-              onScroll={(e) => {
-                const target = e.currentTarget;
-                if (target.scrollHeight - target.scrollTop - target.clientHeight < 500) {
-                  loadNextBatch();
-                }
-              }}
-              style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingRight: '0.5rem', paddingBottom: '2rem' }}>
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
               {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
                   <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid var(--border-color)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%' }}></div>
@@ -2567,9 +2637,47 @@ build_hardened_ide:
                   </p>
                 </div>
               ) : (
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                  {/* Table Header */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px', padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', alignItems: 'center' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                  {/* SCROLLABLE TABLE BODY WITH LOCKED (STICKY) HEADER */}
+                  <div 
+                    id="extensions-table-scroll-body"
+                    onScroll={(e) => {
+                      const target = e.currentTarget;
+                      if (target.scrollHeight - target.scrollTop - target.clientHeight < 500) {
+                        loadNextBatch();
+                      }
+                    }}
+                    style={{ 
+                      maxHeight: (cart.length > 0 || buildState !== "IDLE") ? (cartOpen ? 'calc(100vh - 490px)' : 'calc(100vh - 350px)') : 'calc(100vh - 280px)',
+                      minHeight: '340px',
+                      overflowY: 'auto', 
+                      overflowX: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
+                  >
+                    {/* Locked Table Header (Sticky at top of table scroll body) */}
+                    <div 
+                      id="extensions-table-header"
+                      style={{ 
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10,
+                        display: 'grid', 
+                        gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px', 
+                        padding: '0.75rem 1rem', 
+                        background: 'rgba(15, 23, 42, 0.98)', 
+                        backdropFilter: 'blur(16px)',
+                        borderBottom: '1px solid var(--border-color)', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 700, 
+                        color: 'var(--text-muted)', 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.05em', 
+                        alignItems: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.35)'
+                      }}
+                    >
                     <div style={{ textAlign: 'center' }}>
                       <input 
                         type="checkbox" 
@@ -2759,20 +2867,21 @@ build_hardened_ide:
                       );
                     })}
                   </div>
-                </div>
-              )}
 
-              {/* AUTOSCROLL SPINNER & BOTTOM INDICATOR */}
-              {loadingMore && (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
-                  <div className="animate-spin" style={{ width: '28px', height: '28px', border: '3px solid var(--border-color)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', margin: '0 auto 0.75rem auto' }}></div>
-                  <span style={{ fontSize: '0.85rem' }}>Auto-loading more extensions ({displayedExtensions.length} loaded)...</span>
-                </div>
-              )}
+                    {/* AUTOSCROLL SPINNER & BOTTOM INDICATOR */}
+                    {loadingMore && (
+                      <div style={{ textAlign: 'center', padding: '1.5rem 1rem', color: 'var(--text-muted)' }}>
+                        <div className="animate-spin" style={{ width: '26px', height: '26px', border: '3px solid var(--border-color)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', margin: '0 auto 0.5rem auto' }}></div>
+                        <span style={{ fontSize: '0.82rem' }}>Auto-loading more extensions ({displayedExtensions.length} loaded)...</span>
+                      </div>
+                    )}
 
-              {!loading && !loadingMore && !hasMore && displayedExtensions.length > 0 && (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  <span>✓ All {displayedExtensions.length} compatible extensions loaded for <strong>{selectedEngine.toUpperCase()}</strong></span>
+                    {!loading && !loadingMore && !hasMore && displayedExtensions.length > 0 && (
+                      <div style={{ textAlign: 'center', padding: '1.5rem 1rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                        <span>✓ All {displayedExtensions.length} compatible extensions loaded for <strong>{selectedEngine.toUpperCase()}</strong></span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -2968,7 +3077,7 @@ build_hardened_ide:
                   </button>
 
                   <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                    Target: <strong style={{ color: '#93C5FD' }}>{selectedEngine.toUpperCase()}</strong> ({versionChannel === "previous" ? "last" : versionChannel})
+                    Target: <strong style={{ color: '#93C5FD' }}>{selectedEngine.toUpperCase()}</strong> ({versionChannel === "previous" ? "last" : versionChannel === "custom" && customTag ? customTag : versionChannel})
                   </span>
 
                   {buildState !== "IDLE" && (
