@@ -2,8 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -176,10 +174,7 @@ export default function ThreatFeedPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-main)" }}>
-      <Navbar />
-
-      <main style={{ flex: 1, padding: "2.5rem 2rem 5rem", maxWidth: "1600px", margin: "0 auto", width: "100%" }}>
+    <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "2.5rem 2rem 5rem", width: "100%" }}>
         {/* Breadcrumb / Top Tag */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
           <span style={{ 
@@ -1356,7 +1351,6 @@ export default function ThreatFeedPage() {
             </button>
           </div>
         </div>
-      </main>
 
       {/* ADVISORY DOSSIER INSPECTION MODAL */}
       {selectedAdvisory && (
@@ -1854,8 +1848,6 @@ export default function ThreatFeedPage() {
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 }
