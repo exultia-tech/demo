@@ -43,7 +43,6 @@ export default function ThreatFeedPage() {
   const [selectedAdvisory, setSelectedAdvisory] = useState<UviAdvisoryRecord | null>(null);
   const [dossierTab, setDossierTab] = useState<"global" | "ide_build" | "upstream" | "targets" | "export">("global");
   const [copiedUviId, setCopiedUviId] = useState<string | null>(null);
-  const [copiedCurl, setCopiedCurl] = useState(false);
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
 
   // Available domain categories list
@@ -125,20 +124,6 @@ export default function ThreatFeedPage() {
     setTimeout(() => setCopiedUviId(null), 2500);
   };
 
-  const handleCopyCurl = () => {
-    const params = new URLSearchParams();
-    if (feedScope === "DEV_BUILD") params.set("scope", "build-impact");
-    if (searchQuery) params.set("query", searchQuery);
-    if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
-    if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
-    if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
-    if (kevOnly) params.set("kevOnly", "true");
-    const queryStr = params.toString() ? `?${params.toString()}` : "";
-    const curlCmd = `curl -s "https://secureide.dev/api/threat-feed${queryStr}" | jq .`;
-    navigator.clipboard.writeText(curlCmd);
-    setCopiedCurl(true);
-    setTimeout(() => setCopiedCurl(false), 2500);
-  };
 
   const handleCopyModalCurl = (record: UviAdvisoryRecord) => {
     const curlCmd = `curl -s "https://secureide.dev/api/threat-feed?id=${record.uviId}" | jq .`;
@@ -217,630 +202,347 @@ export default function ThreatFeedPage() {
         </span>
       </div>
 
-      {/* Hero Header */}
-      <div style={{ 
-        display: "flex", 
-        flexDirection: "row", 
-        justifyContent: "space-between", 
-        alignItems: "flex-start", 
-        gap: "2rem", 
-        marginBottom: "2rem",
-        flexWrap: "wrap"
-      }}>
-        <div style={{ maxWidth: "980px" }}>
-          <h1 style={{ 
-            fontSize: "2.85rem", 
-            fontWeight: 800, 
-            letterSpacing: "-0.03em", 
-            lineHeight: 1.15, 
-            marginBottom: "0.75rem",
-            background: "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          }}>
-            Universal Vulnerability Intelligence (UVI)
-          </h1>
-          <p style={{ fontSize: "1.1rem", color: "var(--text-muted)", lineHeight: 1.6, marginBottom: "1.25rem" }}>
-            An independent, open threat intelligence registry consolidating 12 authoritative feeds into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-NNNN</code> advisories. Universal coverage spanning operating systems, cloud containers, web frameworks, runtimes, protocols, and supply chains — providing both <strong>general security awareness</strong> and <strong>developer workstation / IDE build exposure</strong> analysis.
-          </p>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-              <span style={{ color: "#3B82F6", fontWeight: 600 }}>Standard:</span>
-              <span>UVI Specification v3.0</span>
-            </div>
-            <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-              <span style={{ color: "#10B981", fontWeight: 600 }}>Total Feed Volume:</span>
-              <span style={{ color: "#34D399", fontWeight: 700 }}>{totalUniversalCount.toLocaleString()} Ingested Records</span>
-            </div>
-            <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-              <span style={{ color: "#F59E0B", fontWeight: 600 }}>REST API:</span>
-              <code style={{ fontSize: "0.8rem", color: "#FCD34D" }}>/api/threat-feed</code>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick cURL query trigger button */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", alignItems: "flex-end" }}>
-          <button
-            onClick={handleCopyCurl}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.6rem",
-              padding: "0.75rem 1.25rem",
-              borderRadius: "10px",
-              background: copiedCurl ? "rgba(16, 185, 129, 0.2)" : "rgba(59, 130, 246, 0.15)",
-              border: copiedCurl ? "1px solid #10B981" : "1px solid rgba(59, 130, 246, 0.4)",
-              color: copiedCurl ? "#34D399" : "#93C5FD",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s ease"
-            }}
-            title="Copy cURL CLI query matching current filter state"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {copiedCurl ? (
-                <path d="M20 6L9 17l-5-5"/>
-              ) : (
-                <>
-                  <polyline points="4 17 10 11 4 5"></polyline>
-                  <line x1="12" y1="19" x2="20" y2="19"></line>
-                </>
-              )}
-            </svg>
-            {copiedCurl ? "cURL Command Copied!" : "Copy Active cURL Query"}
-          </button>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-            Full 1,700+ feed accessible programmatically
-          </span>
-        </div>
+      {/* Page Title Header */}
+      <div style={{ marginBottom: "2rem" }}>
+        <h1 style={{ 
+          fontSize: "2.4rem", 
+          fontWeight: 800, 
+          letterSpacing: "-0.03em", 
+          color: "#F8FAFC",
+          marginBottom: "0.5rem" 
+        }}>
+          Universal Vulnerability Intelligence (UVI) Threat Feed
+        </h1>
+        <p style={{ fontSize: "1.05rem", color: "var(--text-muted)", maxWidth: "900px", lineHeight: 1.6 }}>
+          Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-NNNN</code> records.
+        </p>
       </div>
 
-      {/* DUAL-PERSPECTIVE SCOPE SWITCHER */}
-      <div style={{
-        background: "rgba(11, 15, 25, 0.95)",
-        border: "1px solid rgba(59, 130, 246, 0.3)",
-        borderRadius: "14px",
-        padding: "0.6rem 0.8rem",
-        marginBottom: "2rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700, paddingLeft: "0.5rem" }}>
-            Feed Perspective:
-          </span>
-          <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.04)", borderRadius: "10px", padding: "3px", flexWrap: "wrap", gap: "2px" }}>
-            <button
-              onClick={() => handleFilterChange(() => setFeedScope("ALL"))}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.55rem 1.1rem",
-                borderRadius: "8px",
-                border: "none",
-                background: feedScope === "ALL" ? "linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.2))" : "transparent",
-                color: feedScope === "ALL" ? "#F8FAFC" : "#94A3B8",
-                fontWeight: feedScope === "ALL" ? 700 : 500,
-                fontSize: "0.85rem",
-                cursor: "pointer",
-                boxShadow: feedScope === "ALL" ? "0 2px 8px rgba(0,0,0,0.3)" : "none"
-              }}
-            >
-              <span>🌐</span>
-              <span>Universal Software & Systems</span>
-              <span style={{
-                background: feedScope === "ALL" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.08)",
-                padding: "0.1rem 0.45rem",
-                borderRadius: "10px",
-                fontSize: "0.72rem",
-                color: "#E2E8F0"
-              }}>
-                {totalUniversalCount.toLocaleString()}
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleFilterChange(() => setFeedScope("DEV_BUILD"))}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.55rem 1.1rem",
-                borderRadius: "8px",
-                border: "none",
-                background: feedScope === "DEV_BUILD" ? "linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.2))" : "transparent",
-                color: feedScope === "DEV_BUILD" ? "#F8FAFC" : "#94A3B8",
-                fontWeight: feedScope === "DEV_BUILD" ? 700 : 500,
-                fontSize: "0.85rem",
-                cursor: "pointer",
-                boxShadow: feedScope === "DEV_BUILD" ? "0 2px 8px rgba(0,0,0,0.3)" : "none"
-              }}
-            >
-              <span>💻</span>
-              <span>Developer & Build Exposure</span>
-              <span style={{
-                background: feedScope === "DEV_BUILD" ? "rgba(16, 185, 129, 0.4)" : "rgba(255, 255, 255, 0.08)",
-                padding: "0.1rem 0.45rem",
-                borderRadius: "10px",
-                fontSize: "0.72rem",
-                color: "#E2E8F0"
-              }}>
-                {directBuildImpactCount.toLocaleString()}
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleFilterChange(() => setFeedScope("NON_CVE"))}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.55rem 1.1rem",
-                borderRadius: "8px",
-                border: "none",
-                background: feedScope === "NON_CVE" ? "linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(168, 85, 247, 0.25))" : "transparent",
-                color: feedScope === "NON_CVE" ? "#F8FAFC" : "#94A3B8",
-                fontWeight: feedScope === "NON_CVE" ? 700 : 500,
-                fontSize: "0.85rem",
-                cursor: "pointer",
-                boxShadow: feedScope === "NON_CVE" ? "0 2px 8px rgba(0,0,0,0.3)" : "none"
-              }}
-            >
-              <span>🛡️</span>
-              <span>Pure Non-CVE Threats</span>
-              <span style={{
-                background: feedScope === "NON_CVE" ? "rgba(236, 72, 153, 0.45)" : "rgba(255, 255, 255, 0.08)",
-                padding: "0.1rem 0.45rem",
-                borderRadius: "10px",
-                fontSize: "0.72rem",
-                color: "#E2E8F0"
-              }}>
-                {nonCveThreatsCount.toLocaleString()}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", paddingRight: "0.5rem" }}>
-          {feedScope === "ALL" 
-            ? `Showing all ${totalUniversalCount.toLocaleString()} universal advisories across servers, cloud, OS, packages & extensions`
-            : feedScope === "DEV_BUILD"
-            ? `Showing ${directBuildImpactCount.toLocaleString()} advisories with direct consequences for developer workstations, CI/CD, and IDE toolchains`
-            : `Showing ${nonCveThreatsCount.toLocaleString()} pure supply chain threats, rogue extensions, and CI/CD workflow exploits that do NOT have CVEs and bypass NVD`}
-        </span>
-      </div>
-
-      {/* Global Telemetry Statistics Bar */}
+      {/* Two Summary Tiles */}
       <div style={{ 
         display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", 
-        gap: "1.25rem", 
-        marginBottom: "2.5rem" 
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
+        gap: "1.5rem", 
+        marginBottom: "2rem" 
       }}>
-        {/* Card 1: Total Universal Advisories */}
+        {/* Tile 1: Total Threats Mention */}
         <div style={{
-          background: "rgba(15, 23, 42, 0.65)",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          borderRadius: "14px",
-          padding: "1.25rem 1.5rem",
+          background: "rgba(15, 23, 42, 0.7)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "16px",
+          padding: "1.75rem",
           display: "flex",
           flexDirection: "column",
-          gap: "0.4rem"
+          justifyContent: "space-between",
+          gap: "1.25rem",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", fontWeight: 600 }}>
-              Universal Advisories
-            </span>
-            <span style={{ fontSize: "1.2rem" }}>🌐</span>
+          <div>
+            <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginBottom: "0.5rem" }}>
+              Total Consolidated Threats
+            </div>
+            <div style={{ fontSize: "3.25rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
+              {totalUniversalCount.toLocaleString()}
+            </div>
           </div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.02em" }}>
-            {totalUniversalCount.toLocaleString()} <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "var(--text-muted)" }}>Records</span>
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#60A5FA" }}>
-            Live normalized under <code>UVI-YYYY-NNNN</code>
+          <div style={{ 
+            display: "flex", 
+            flexWrap: "wrap", 
+            gap: "0.75rem", 
+            fontSize: "0.85rem", 
+            color: "var(--text-muted)", 
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
+            paddingTop: "0.9rem" 
+          }}>
+            <span>🚨 <strong style={{ color: "#EF4444" }}>1,695+</strong> In-the-Wild Zero-Days</span>
+            <span>•</span>
+            <span>💻 <strong style={{ color: "#10B981" }}>{directBuildImpactCount.toLocaleString()}</strong> Workstation Risks</span>
+            <span>•</span>
+            <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE Malware</span>
           </div>
         </div>
 
-        {/* Card 2: 12 Public Ingested Feeds */}
+        {/* Tile 2: Listing Feed Sources & Number of Feeds */}
         <div style={{
-          background: "rgba(15, 23, 42, 0.65)",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          borderRadius: "14px",
-          padding: "1.25rem 1.5rem",
+          background: "rgba(15, 23, 42, 0.7)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "16px",
+          padding: "1.75rem",
           display: "flex",
           flexDirection: "column",
-          gap: "0.4rem"
+          justifyContent: "space-between",
+          gap: "1rem",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", fontWeight: 600 }}>
-              Upstream Feeds Synced
-            </span>
-            <span style={{ fontSize: "1.2rem" }}>📡</span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
+              Ingested Threat Feed Sources
+            </div>
+            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#34D399" }}>
+              12 Active Feeds
+            </div>
           </div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#34D399", letterSpacing: "-0.02em" }}>
-            12 <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "var(--text-muted)" }}>Authoritative Sources</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
+            {UVI_PUBLIC_FEED_SOURCES.map((feed) => (
+              <span
+                key={feed.id}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.3rem 0.6rem",
+                  borderRadius: "6px",
+                  background: selectedSourceFeed === feed.id ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.05)",
+                  border: selectedSourceFeed === feed.id ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                  color: selectedSourceFeed === feed.id ? "#93C5FD" : "#CBD5E1",
+                  fontSize: "0.78rem",
+                  fontWeight: 500
+                }}
+                title={feed.scope}
+              >
+                <span>{feed.icon}</span>
+                <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "")}</span>
+              </span>
+            ))}
           </div>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-            {(totalUpstreamRecords / 1000).toFixed(0)}k+ records cross-correlated
-          </div>
-        </div>
-
-        {/* Card 3: CISA KEV Known Exploited Vulnerabilities */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.65)",
-          border: "1px solid rgba(239, 68, 68, 0.25)",
-          borderRadius: "14px",
-          padding: "1.25rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.4rem"
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#FCA5A5", fontWeight: 600 }}>
-              CISA KEV Zero-Days
-            </span>
-            <span style={{ fontSize: "1.2rem" }}>🚨</span>
-          </div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#EF4444", letterSpacing: "-0.02em" }}>
-            1,695+ <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "#FCA5A5" }}>Exploited in Wild</span>
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "#F87171" }}>
-            Full catalog ingested and queryable
-          </div>
-        </div>
-
-        {/* Card 4: Developer Workstation & Build Exposure */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.65)",
-          border: "1px solid rgba(16, 185, 129, 0.25)",
-          borderRadius: "14px",
-          padding: "1.25rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.4rem"
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#6EE7B7", fontWeight: 600 }}>
-              Dev Workstation Risks
-            </span>
-            <span style={{ fontSize: "1.2rem" }}>💻</span>
-          </div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#10B981", letterSpacing: "-0.02em" }}>
-            {directBuildImpactCount.toLocaleString()} <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "#6EE7B7" }}>Affect Toolchains</span>
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-            Impacts local builds, Git & compilers
-          </div>
-        </div>
-
-        {/* Card 5: Pure Non-CVE Threats (Malware & Extensions) */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.65)",
-          border: "1px solid rgba(236, 72, 153, 0.25)",
-          borderRadius: "14px",
-          padding: "1.25rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.4rem"
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#F472B6", fontWeight: 600 }}>
-              Non-CVE Supply Chain
-            </span>
-            <span style={{ fontSize: "1.2rem" }}>🛡️</span>
-          </div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#EC4899", letterSpacing: "-0.02em" }}>
-            {nonCveThreatsCount.toLocaleString()} <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "#F472B6" }}>Pure Malware</span>
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-            Rogue extensions & workflow exploits
+          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
+            Synchronized cross-correlation across NVD, CISA KEV, GitHub, OSV, OpenSSF, MSRC, Trail of Bits, Socket.dev, JFrog, Aqua, Snyk, and Ecosystem DBs.
           </div>
         </div>
       </div>
 
-      {/* Search, Filter & Viewport Matrix */}
+      {/* Unified Filter Control Bar */}
       <div style={{
         background: "rgba(15, 20, 32, 0.8)",
-        border: "1px solid rgba(255, 255, 255, 0.09)",
-        borderRadius: "16px",
-        padding: "1.75rem",
-        marginBottom: "2rem",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.36)"
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        borderRadius: "14px",
+        padding: "1.25rem 1.5rem",
+        marginBottom: "1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        boxShadow: "0 6px 24px rgba(0, 0, 0, 0.3)"
       }}>
-        {/* Main Search Input */}
-        <div style={{ display: "flex", gap: "1rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: "320px", position: "relative" }}>
-            <span style={{
-              position: "absolute",
-              left: "1rem",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)",
-              pointerEvents: "none"
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </span>
-            <input
-              type="text"
-              id="uvi-search-input"
-              value={searchQuery}
-              onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
-              placeholder="Search across all 1,700+ advisories by UVI ID, CVE, software product, vendor, protocol, or CWE..."
+        {/* Row 1: Search Input */}
+        <div style={{ position: "relative", width: "100%" }}>
+          <span style={{
+            position: "absolute",
+            left: "1rem",
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: "var(--text-muted)",
+            pointerEvents: "none"
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input
+            type="text"
+            id="uvi-search-input"
+            value={searchQuery}
+            onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
+            placeholder="Search across all 1,780+ threats by UVI ID, CVE, product, vendor, protocol, or CWE..."
+            style={{
+              width: "100%",
+              padding: "0.85rem 2.8rem 0.85rem 2.85rem",
+              background: "rgba(10, 14, 23, 0.9)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRadius: "10px",
+              color: "#F8FAFC",
+              fontSize: "0.95rem",
+              outline: "none"
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => handleFilterChange(() => setSearchQuery(""))}
               style={{
-                width: "100%",
-                padding: "0.85rem 3rem 0.85rem 2.85rem",
-                background: "rgba(10, 14, 23, 0.9)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                borderRadius: "10px",
+                position: "absolute",
+                right: "1rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                color: "var(--text-muted)",
+                cursor: "pointer",
+                fontSize: "1rem"
+              }}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Row 2: Clean Dropdown Filter Controls */}
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+          {/* Feed Source Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "180px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Feed Source
+            </label>
+            <select
+              value={selectedSourceFeed}
+              onChange={(e) => handleFilterChange(() => setSelectedSourceFeed(e.target.value))}
+              style={{
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
                 color: "#F8FAFC",
-                fontSize: "0.95rem",
+                fontSize: "0.85rem",
                 outline: "none",
-                transition: "border-color 0.2s ease, box-shadow 0.2s ease"
+                cursor: "pointer",
+                width: "100%"
               }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "var(--accent-primary)";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
-                e.target.style.boxShadow = "none";
-              }}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => handleFilterChange(() => setSearchQuery(""))}
-                style={{
-                  position: "absolute",
-                  right: "1rem",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "var(--text-muted)",
-                  cursor: "pointer",
-                  fontSize: "1rem"
-                }}
-                title="Clear search"
-              >
-                ✕
-              </button>
-            )}
+            >
+              <option value="ALL">All Feeds (12 Sources)</option>
+              {UVI_PUBLIC_FEED_SOURCES.map((feed) => (
+                <option key={feed.id} value={feed.id}>
+                  {feed.icon} {feed.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Sort Selector */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Sort by:</span>
+          {/* Event Type / Domain Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "210px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Event Type / Domain
+            </label>
+            <select
+              value={selectedDomain}
+              onChange={(e) => handleFilterChange(() => setSelectedDomain(e.target.value))}
+              style={{
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              {domainCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat === "ALL" ? "All Event Types & Domains" : cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Threat Scope Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "190px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Threat Scope
+            </label>
+            <select
+              value={feedScope}
+              onChange={(e) => handleFilterChange(() => setFeedScope(e.target.value as any))}
+              style={{
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">🌐 All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
+              <option value="DEV_BUILD">💻 Developer & Build Exposure ({directBuildImpactCount.toLocaleString()})</option>
+              <option value="NON_CVE">🛡️ Pure Non-CVE Threats Only ({nonCveThreatsCount.toLocaleString()})</option>
+            </select>
+          </div>
+
+          {/* Severity Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Severity
+            </label>
+            <select
+              value={selectedSeverity}
+              onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
+              style={{
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">All Severities</option>
+              <option value="CRITICAL">Critical (9.0 - 10.0)</option>
+              <option value="HIGH">High (7.0 - 8.9)</option>
+              <option value="MEDIUM">Medium (4.0 - 6.9)</option>
+              <option value="LOW">Low (0.1 - 3.9)</option>
+            </select>
+          </div>
+
+          {/* Sort Order Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "150px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Sort By
+            </label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               style={{
-                padding: "0.85rem 1rem",
-                background: "rgba(10, 14, 23, 0.9)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                borderRadius: "10px",
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
                 color: "#F8FAFC",
                 fontSize: "0.85rem",
                 outline: "none",
-                cursor: "pointer"
+                cursor: "pointer",
+                width: "100%"
               }}
             >
-              <option value="cvss_desc">CVSS Score (Highest First)</option>
+              <option value="cvss_desc">CVSS (Highest First)</option>
               <option value="uvi_desc">UVI ID (Descending)</option>
               <option value="uvi_asc">UVI ID (Ascending)</option>
-              <option value="published_desc">Publication Date (Newest)</option>
+              <option value="published_desc">Date (Newest First)</option>
             </select>
           </div>
 
-          {/* View Mode Toggle */}
-          <div style={{ 
-            display: "flex", 
-            background: "rgba(10, 14, 23, 0.9)", 
-            border: "1px solid rgba(255, 255, 255, 0.12)", 
-            borderRadius: "10px",
-            padding: "3px" 
-          }}>
+          {/* Reset Filters button if any filter is active */}
+          {(searchQuery || selectedSeverity !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
             <button
-              onClick={() => setViewMode("table")}
+              onClick={() => {
+                setFeedScope("ALL");
+                setSearchQuery("");
+                setSelectedSeverity("ALL");
+                setSelectedDomain("ALL");
+                setSelectedSourceFeed("ALL");
+                setKevOnly(false);
+                setPage(1);
+              }}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.6rem 0.9rem",
-                borderRadius: "7px",
-                border: "none",
-                background: viewMode === "table" ? "rgba(59, 130, 246, 0.25)" : "transparent",
-                color: viewMode === "table" ? "#93C5FD" : "var(--text-muted)",
-                fontWeight: viewMode === "table" ? 600 : 400,
+                padding: "0.65rem 1rem",
+                background: "rgba(239, 68, 68, 0.15)",
+                border: "1px solid rgba(239, 68, 68, 0.35)",
+                borderRadius: "8px",
+                color: "#FCA5A5",
                 fontSize: "0.85rem",
-                cursor: "pointer"
+                fontWeight: 600,
+                cursor: "pointer",
+                whiteSpace: "nowrap"
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18"/>
-              </svg>
-              Table View
+              ✕ Reset Filters
             </button>
-            <button
-              onClick={() => setViewMode("cards")}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.6rem 0.9rem",
-                borderRadius: "7px",
-                border: "none",
-                background: viewMode === "cards" ? "rgba(59, 130, 246, 0.25)" : "transparent",
-                color: viewMode === "cards" ? "#93C5FD" : "var(--text-muted)",
-                fontWeight: viewMode === "cards" ? 600 : 400,
-                fontSize: "0.85rem",
-                cursor: "pointer"
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-              Wiki Cards
-            </button>
-          </div>
-        </div>
-
-        {/* Filter Chips Matrix */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {/* Domain Category Selector */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, minWidth: "110px" }}>
-              Domain:
-            </span>
-            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-              {domainCategories.map((cat) => {
-                const isSelected = selectedDomain === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => handleFilterChange(() => setSelectedDomain(cat))}
-                    style={{
-                      padding: "0.35rem 0.75rem",
-                      borderRadius: "6px",
-                      fontSize: "0.8rem",
-                      fontWeight: isSelected ? 600 : 400,
-                      cursor: "pointer",
-                      border: isSelected ? "1px solid #8B5CF6" : "1px solid rgba(255,255,255,0.08)",
-                      background: isSelected ? "rgba(139, 92, 246, 0.2)" : "rgba(255,255,255,0.03)",
-                      color: isSelected ? "#C4B5FD" : "var(--text-muted)"
-                    }}
-                  >
-                    {cat === "ALL" ? "All Domains" : cat}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Feed Source Selector */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, minWidth: "110px" }}>
-              Source Feed:
-            </span>
-            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-              <button
-                onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
-                style={{
-                  padding: "0.35rem 0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  border: selectedSourceFeed === "ALL" ? "1px solid #3B82F6" : "1px solid rgba(255,255,255,0.08)",
-                  background: selectedSourceFeed === "ALL" ? "rgba(59, 130, 246, 0.2)" : "rgba(255,255,255,0.03)",
-                  color: selectedSourceFeed === "ALL" ? "#93C5FD" : "var(--text-muted)"
-                }}
-              >
-                All Feeds (12)
-              </button>
-              {UVI_PUBLIC_FEED_SOURCES.map((feed) => {
-                const isSelected = selectedSourceFeed === feed.id;
-                return (
-                  <button
-                    key={feed.id}
-                    onClick={() => handleFilterChange(() => setSelectedSourceFeed(isSelected ? "ALL" : feed.id))}
-                    style={{
-                      padding: "0.35rem 0.75rem",
-                      borderRadius: "6px",
-                      fontSize: "0.8rem",
-                      fontWeight: isSelected ? 600 : 400,
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.35rem",
-                      border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255,255,255,0.08)",
-                      background: isSelected ? "rgba(59, 130, 246, 0.2)" : "rgba(255,255,255,0.03)",
-                      color: isSelected ? "#93C5FD" : "var(--text-muted)"
-                    }}
-                    title={`${feed.name} - ${feed.scope}`}
-                  >
-                    <span>{feed.icon}</span>
-                    <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" (MSRC)", "").replace(" Security", "")}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Severity and CISA KEV Filter Row */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, minWidth: "110px" }}>
-              Severity:
-            </span>
-            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-              {(["ALL", "CRITICAL", "HIGH", "MEDIUM", "LOW"] as const).map((sev) => {
-                const isSelected = selectedSeverity === sev;
-                let badgeColor = "#94A3B8";
-                if (sev === "CRITICAL") badgeColor = "#EF4444";
-                if (sev === "HIGH") badgeColor = "#F97316";
-                if (sev === "MEDIUM") badgeColor = "#EAB308";
-                if (sev === "LOW") badgeColor = "#10B981";
-
-                return (
-                  <button
-                    key={sev}
-                    onClick={() => handleFilterChange(() => setSelectedSeverity(sev))}
-                    style={{
-                      padding: "0.35rem 0.8rem",
-                      borderRadius: "6px",
-                      fontSize: "0.8rem",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      border: isSelected ? `1px solid ${badgeColor}` : "1px solid rgba(255,255,255,0.08)",
-                      background: isSelected ? `${badgeColor}22` : "rgba(255,255,255,0.03)",
-                      color: isSelected ? badgeColor : "var(--text-muted)"
-                    }}
-                  >
-                    {sev === "ALL" ? "All Severities" : sev}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* CISA KEV Toggle Button */}
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                onClick={() => handleFilterChange(() => setKevOnly(!kevOnly))}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.4rem 0.9rem",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  border: kevOnly ? "1px solid #EF4444" : "1px solid rgba(239, 68, 68, 0.3)",
-                  background: kevOnly ? "rgba(239, 68, 68, 0.25)" : "rgba(239, 68, 68, 0.08)",
-                  color: kevOnly ? "#FCA5A5" : "#F87171",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                <span>🚨</span>
-                <span>CISA KEV Actively Exploited Only</span>
-                {kevOnly && <span style={{ background: "#EF4444", color: "#fff", padding: "0.1rem 0.4rem", borderRadius: "10px", fontSize: "0.7rem" }}>ACTIVE</span>}
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -1562,157 +1264,6 @@ export default function ThreatFeedPage() {
         </div>
       </div>
 
-      {/* SECTION: Ingested Public Threat Intelligence Feeds Directory */}
-      <div style={{ 
-        background: "rgba(11, 15, 25, 0.8)", 
-        border: "1px solid rgba(255, 255, 255, 0.08)", 
-        borderRadius: "18px", 
-        padding: "2.5rem 2rem",
-        marginBottom: "3rem"
-      }}>
-        <div style={{ marginBottom: "1.75rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.25rem 0.6rem", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", color: "#34D399" }}>
-              Universal Ingestion Engine
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>• 12 Independent Public Registries</span>
-          </div>
-          <h2 style={{ fontSize: "1.75rem", fontWeight: 700, color: "#F8FAFC", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>
-            Aggregated Upstream Threat Intelligence Feeds
-          </h2>
-          <p style={{ color: "var(--text-muted)", maxWidth: "900px", fontSize: "0.95rem", lineHeight: 1.6 }}>
-            The UVI Feed engine synthesizes continuous streaming data from 12 public cybersecurity registries without pre-filtering. Each record receives unified taxonomy, cross-linked identifiers, and algorithmic confidence scoring.
-          </p>
-        </div>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-          gap: "1.25rem"
-        }}>
-          {UVI_PUBLIC_FEED_SOURCES.map((source) => (
-            <div
-              key={source.id}
-              style={{
-                background: "rgba(15, 23, 42, 0.5)",
-                border: "1px solid rgba(255, 255, 255, 0.07)",
-                borderRadius: "12px",
-                padding: "1.25rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: "0.75rem"
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "1.25rem" }}>{source.icon}</span>
-                    <h4 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#F8FAFC" }}>
-                      {source.name}
-                    </h4>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
-                    borderRadius: "4px",
-                    background: "rgba(16, 185, 129, 0.15)",
-                    color: "#34D399",
-                    border: "1px solid rgba(16, 185, 129, 0.3)"
-                  }}>
-                    {source.status}
-                  </span>
-                </div>
-
-                <div style={{ fontSize: "0.75rem", color: "#60A5FA", fontWeight: 600, marginBottom: "0.4rem" }}>
-                  Scope: {source.scope}
-                </div>
-
-                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", lineHeight: 1.5, marginBottom: "0.75rem" }}>
-                  {source.coverage}
-                </p>
-              </div>
-
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center", 
-                borderTop: "1px solid rgba(255, 255, 255, 0.06)", 
-                paddingTop: "0.65rem",
-                fontSize: "0.75rem",
-                color: "var(--text-muted)"
-              }}>
-                <div>
-                  <strong style={{ color: "#E2E8F0" }}>{source.recordsIngested.toLocaleString()}</strong> records • {source.refreshRate}
-                </div>
-                <a
-                  href={source.homepageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "#93C5FD", textDecoration: "none", fontWeight: 600 }}
-                >
-                  Source ↗
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION: Universal API Integration & CLI Queries */}
-      <div style={{
-        background: "rgba(15, 20, 32, 0.7)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        borderRadius: "16px",
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.25rem"
-      }}>
-        <div>
-          <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#F8FAFC", marginBottom: "0.4rem" }}>
-            Query the Standalone UVI Feed via REST API
-          </h3>
-          <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-            The UVI feed is open for ingestion across enterprise SIEMs, runtime vulnerability scanners, build automation systems, and IDE security sidecars.
-          </p>
-        </div>
-
-        <div style={{
-          background: "rgba(6, 9, 15, 0.9)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "10px",
-          padding: "1rem 1.25rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontFamily: "monospace",
-          fontSize: "0.85rem",
-          color: "#93C5FD",
-          overflowX: "auto"
-        }}>
-          <code>
-            curl -s &quot;https://secureide.dev/api/threat-feed?page=1&amp;limit=50&quot; | jq .advisories
-          </code>
-          <button
-            onClick={handleCopyCurl}
-            style={{
-              background: "rgba(59, 130, 246, 0.2)",
-              border: "1px solid rgba(59, 130, 246, 0.4)",
-              color: "#93C5FD",
-              padding: "0.35rem 0.75rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              marginLeft: "1rem"
-            }}
-          >
-            {copiedCurl ? "Copied!" : "Copy cURL"}
-          </button>
-        </div>
-      </div>
 
       {/* ADVISORY DOSSIER INSPECTION MODAL */}
       {selectedAdvisory && (
