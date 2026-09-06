@@ -32,6 +32,9 @@ export default function Navbar() {
         <Link href="/docs" className={`nav-link ${pathname === "/docs" ? "active" : ""}`}>
           Docs
         </Link>
+        <Link href="/threat-feed" className={`nav-link ${pathname === "/threat-feed" ? "active" : ""}`}>
+          Threat Feed (UVI)
+        </Link>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
