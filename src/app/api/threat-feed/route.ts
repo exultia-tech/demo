@@ -1,69 +1,107 @@
 import { NextResponse } from 'next/server';
 import { 
-  THREAT_INTELLIGENCE_CATALOG, 
+  CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES,
-  ThreatFeedRecord,
-  PublicFeedSource 
+  UviAdvisoryRecord,
+  PublicFeedSource,
+  ThreatSeverity,
+  ThreatCategory
 } from '@/lib/threat-feed-data';
 
 export const dynamic = 'force-dynamic';
 
-export type { ThreatFeedRecord, PublicFeedSource };
+export type { UviAdvisoryRecord, PublicFeedSource, ThreatSeverity, ThreatCategory };
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('query')?.toLowerCase();
-  const format = searchParams.get('format') || 'json';
-  const grade = searchParams.get('grade')?.toUpperCase();
-  const ecosystem = searchParams.get('ecosystem')?.toLowerCase();
-  const cveOnly = searchParams.get('cveOnly') === 'true';
+  const query = searchParams.get('query')?.trim().toLowerCase();
+  const id = searchParams.get('id')?.trim().toUpperCase();
+  const cve = searchParams.get('cve')?.trim().toUpperCase();
+  const severity = searchParams.get('severity')?.toUpperCase();
+  const category = searchParams.get('category');
+  const source = searchParams.get('source');
   const kevOnly = searchParams.get('kevOnly') === 'true';
 
-  let filtered = [...THREAT_INTELLIGENCE_CATALOG];
+  let filtered = [...CONSOLIDATED_UVI_ADVISORIES];
 
-  // Query-Driven Resolution: Matches package name, namespace, display name, purl, or CVE identifier across all public feeds
+  // Specific UVI ID lookup (e.g., ?id=UVI-2024-3094)
+  if (id) {
+    filtered = filtered.filter(f => f.uviId.toUpperCase() === id);
+  }
+
+  // Specific CVE lookup (e.g., ?cve=CVE-2024-3094)
+  if (cve) {
+    filtered = filtered.filter(f => f.cveList.some(c => c.toUpperCase() === cve));
+  }
+
+  // Free-form Search Query across UVI ID, CVEs, Title, Headline, Targets, CWE, and Upstream findings
   if (query) {
     filtered = filtered.filter(f => 
-      f.name.toLowerCase().includes(query) ||
-      f.namespace.toLowerCase().includes(query) ||
-      f.displayName.toLowerCase().includes(query) ||
-      f.purl.toLowerCase().includes(query) ||
-      (f.threatSignals.nvdGhsaOsv.cveList && f.threatSignals.nvdGhsaOsv.cveList.some(cve => cve.toLowerCase().includes(query)))
+      f.uviId.toLowerCase().includes(query) ||
+      f.cveList.some(c => c.toLowerCase().includes(query)) ||
+      (f.ghsaId && f.ghsaId.toLowerCase().includes(query)) ||
+      (f.osvId && f.osvId.toLowerCase().includes(query)) ||
+      (f.msrcId && f.msrcId.toLowerCase().includes(query)) ||
+      f.title.toLowerCase().includes(query) ||
+      f.headline.toLowerCase().includes(query) ||
+      f.summary.toLowerCase().includes(query) ||
+      f.technicalDetails.toLowerCase().includes(query) ||
+      f.cwe.toLowerCase().includes(query) ||
+      f.category.toLowerCase().includes(query) ||
+      f.affectedTargets.some(t => 
+        t.product.toLowerCase().includes(query) || 
+        t.ecosystem.toLowerCase().includes(query) ||
+        (t.purl && t.purl.toLowerCase().includes(query))
+      ) ||
+      f.upstreamSignals.some(s => 
+        s.sourceName.toLowerCase().includes(query) || 
+        s.finding.toLowerCase().includes(query)
+      )
     );
   }
 
-  if (ecosystem && ecosystem !== "all") {
-    filtered = filtered.filter(f => f.ecosystem === ecosystem);
+  // Severity filter
+  if (severity && severity !== "ALL") {
+    filtered = filtered.filter(f => f.severity === severity);
   }
 
-  if (grade && (grade === "A+" || grade === "B" || grade === "C")) {
-    filtered = filtered.filter(f => f.securityGrade === grade);
+  // Category filter
+  if (category && category !== "all" && category !== "All Categories") {
+    filtered = filtered.filter(f => f.category.toLowerCase() === category.toLowerCase());
   }
 
-  if (cveOnly) {
-    filtered = filtered.filter(f => f.openCveCount > 0);
+  // Source feed filter
+  if (source && source !== "all" && source !== "All Feeds") {
+    filtered = filtered.filter(f => 
+      f.upstreamSignals.some(s => s.sourceId.toLowerCase() === source.toLowerCase() || s.sourceName.toLowerCase().includes(source.toLowerCase()))
+    );
   }
 
+  // CISA KEV Known Exploited Vulnerability filter
   if (kevOnly) {
-    filtered = filtered.filter(f => f.threatSignals.cisaKev.isKnownExploited);
+    filtered = filtered.filter(f => f.cisaKev.isKnownExploited);
   }
 
   const responsePayload = {
-    schemaVersion: "https://schema.secureide.dev/uvi/v2.json",
-    feedName: "Unified Vulnerability Intelligence (UVI) Feed",
-    mission: "Universal open aggregation providing Unified Vulnerability Intelligence (UVI) across all accessible public vulnerability registries and advisory databases. Feeds are ingested in their entirety without pre-exclusion; relevance to IDE extensions, language servers, toolchains, and package dependencies is determined dynamically by search query.",
-    license: "CC-BY-4.0 (Open Access for All Developers)",
+    schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
+    feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
+    identifierSystem: "UVI-YYYY-NNNN",
+    mission: "Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from 12 authoritative feeds (NVD, CISA KEV, GHSA, OSV.dev, OpenSSF, MSRC, Trail of Bits, Socket.dev, JFrog, Aqua Nautilus, Snyk, Language Advisory DBs). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, and protocol flaws into an organized, queryable encyclopedia.",
+    license: "CC-BY-4.0 (Open Access for All Developers and Systems)",
     generatedAt: new Date().toISOString(),
     queryParameters: {
       query: query || null,
-      ecosystem: ecosystem || "all",
-      grade: grade || "all",
-      cveOnly,
+      id: id || null,
+      cve: cve || null,
+      severity: severity || "ALL",
+      category: category || "all",
+      source: source || "all",
       kevOnly
     },
-    matchedPackagesCount: filtered.length,
+    totalConsolidatedCount: CONSOLIDATED_UVI_ADVISORIES.length,
+    matchedAdvisoriesCount: filtered.length,
     publicFeedSources: UVI_PUBLIC_FEED_SOURCES,
-    records: filtered
+    advisories: filtered
   };
 
   return NextResponse.json(responsePayload, {
