@@ -1,13 +1,14 @@
 export type ThreatSeverity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
-export type ThreatCategory = 
-  | "Runtimes & Toolchains"
-  | "Infrastructure & Cloud"
-  | "Supply Chain Malware"
-  | "Dependencies & Libraries"
+export type DomainCategory =
   | "Operating Systems & Kernels"
-  | "Developer Tools & IDEs"
-  | "Networking & Cryptography";
+  | "Cloud & Container Infrastructure"
+  | "Enterprise & Web Frameworks"
+  | "Networking, Protocols & Cryptography"
+  | "Language Runtimes & Toolchains"
+  | "Databases & Storage"
+  | "Supply Chain & Malware"
+  | "Developer Tools & Workstations";
 
 export interface UpstreamSignalContribution {
   sourceId: string;
@@ -18,17 +19,27 @@ export interface UpstreamSignalContribution {
   confidence: "CONFIRMED" | "PROBABLE" | "THEORETICAL";
 }
 
+export interface IdeBuildImpactAssessment {
+  hasDirectBuildImpact: boolean;
+  severityOnDeveloperEnv: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INDIRECT";
+  workstationVector: string; // How this manifests on a developer laptop, runner, or IDE
+  buildPipelineRisk: string; // Risk to CI/CD pipelines, compiler toolchains, or local dev servers
+  recommendationForIdeBuilds: string; // Specific governance policy, IDE sandbox setting, or build flag
+}
+
 export interface UviAdvisoryRecord {
   uviId: string; // Standardized: UVI-YYYY-NNNN
   title: string;
   headline: string;
   summary: string;
   technicalDetails: string;
+  globalImpact: string; // Broad enterprise / infrastructure impact (general awareness)
+  ideBuildImpact: IdeBuildImpactAssessment; // Developer workstation & IDE build impact
   severity: ThreatSeverity;
   cvssScore: number;
   cvssVector: string;
   cwe: string;
-  category: ThreatCategory;
+  domainCategory: DomainCategory;
   attackVector: "NETWORK" | "LOCAL" | "ADJACENT" | "PHYSICAL";
   attackComplexity: "LOW" | "HIGH";
   privilegesRequired: "NONE" | "LOW" | "HIGH";
@@ -137,12 +148,12 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   },
   {
     id: "vendor_msrc_eclipse",
-    name: "Microsoft MSRC & Eclipse Advisories",
-    scope: "Vendor Bulletins, Runtime Security & Platform Bulletins",
+    name: "Microsoft MSRC & Platform Advisories",
+    scope: "Vendor Bulletins, Windows, VS Code & Platform Security",
     access: "Public Advisories",
     status: "Active",
     refreshRate: "Daily",
-    coverage: "Official security notices targeting Windows, VS Code Core, Electron, Eclipse Theia, and Open VSX.",
+    coverage: "Official security notices targeting Windows, VS Code Core, Electron, Linux WSL, and Azure.",
     homepageUrl: "https://msrc.microsoft.com",
     icon: "🏢",
     recordsIngested: 14500
@@ -186,11 +197,11 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   {
     id: "aqua_nautilus",
     name: "Aqua Nautilus Cloud Threat Research",
-    scope: "Registry Impersonation, Namespace Squatting & Droppers",
+    scope: "Cloud Native, Container Escapes & Droppers",
     access: "Public Feed",
     status: "Active",
     refreshRate: "Weekly",
-    coverage: "Targeted threat intelligence tracking publisher impersonation campaigns, trojanized builds, and namespace takeovers.",
+    coverage: "Targeted threat intelligence tracking container breakouts, Kubernetes misconfigurations, and supply chain droppers.",
     homepageUrl: "https://www.aquasec.com/research",
     icon: "🌊",
     recordsIngested: 11200
@@ -222,18 +233,77 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
 ];
 
 export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
-  // 1. XZ Utils Liblzma Backdoor (UVI-2024-3094)
+  // 1. Apache Log4j JNDI Remote Code Execution (Log4Shell)
+  {
+    uviId: "UVI-2021-44228",
+    title: "Apache Log4j2 JNDI Message Lookup Remote Code Execution (Log4Shell)",
+    headline: "Unauthenticated remote code execution via recursive JNDI resolution in log messages across enterprise Java applications.",
+    summary: "Apache Log4j2 versions 2.0-beta9 through 2.15.0 did not protect against attacker-controlled LDAP, RMI, and DNS endpoints evaluated through JNDI message lookups (${jndi:ldap://...}), allowing full remote code execution.",
+    technicalDetails: "When message lookups were enabled, Log4j evaluated variable substitutions within formatted log strings. An attacker submitting crafted headers (e.g. User-Agent, X-Forwarded-For) caused the JVM to query arbitrary remote LDAP directories and execute deserialized Java bytecode payload classes.",
+    globalImpact: "Catastrophic global impact affecting millions of enterprise backend services, Apache Kafka, Elasticsearch, Hadoop, Minecraft servers, and Fortune 500 corporate infrastructure.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Local Java build tools (Maven/Gradle plugins), local dev servers (Tomcat/Spring), and IDE indexing daemons logging untrusted test payloads.",
+      buildPipelineRisk: "CI/CD runners executing integration tests that print unsanitized inputs to test logs risk immediate runner container compromise.",
+      recommendationForIdeBuilds: "Set JVM argument -Dlog4j2.formatMsgNoLookups=true or upgrade log4j-core to 2.17.1+ in all project POMs and IDE Java runtime launch configurations."
+    },
+    severity: "CRITICAL",
+    cvssScore: 10.0,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    cwe: "CWE-502: Deserialization of Untrusted Data",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "CHANGED",
+    cveList: ["CVE-2021-44228", "CVE-2021-45046"],
+    ghsaId: "GHSA-jfh8-c2jp-5v3q",
+    osvId: "OSV-2021-44228",
+    affectedTargets: [
+      { product: "Apache Log4j", ecosystem: "Java Maven", affectedVersions: "2.0-beta9 - 2.14.1", fixedInVersion: "2.17.1", purl: "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2021-12-10",
+      ransomwareUse: true,
+      notes: "Subject of massive global automated botnet scanning, cryptocurrency miners, and nation-state intrusion campaigns."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 10.0", finding: "Maximum CVSS score remote code execution without privileges.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Confirmed ransomware exploitation in wild.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "snyk_vulndb", sourceName: "Snyk", badge: "Transitive Graph", finding: "Over 60% of top Java Maven libraries carried transitive Log4j dependencies.", signalType: "REACHABILITY", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade log4j-core and log4j-api to 2.17.1 or higher immediately.",
+      patchDetails: "Removed JNDI lookup support entirely by default and disabled message lookups.",
+      workarounds: ["Remove JndiLookup.class from log4j-core classpath: zip -q -d log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class"]
+    },
+    publishedDate: "2021-12-10",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 2. XZ Utils / Liblzma Upstream Supply Chain Backdoor (UVI-2024-3094)
   {
     uviId: "UVI-2024-3094",
     title: "XZ Utils / Liblzma Upstream Supply Chain Backdoor in sshd Authentication",
     headline: "Critical malicious backdoor inserted into xz-utils liblzma enabling unauthorized authentication bypass in OpenSSH daemon.",
-    summary: "A malicious backdoor was deliberately planted into upstream xz-utils (liblzma) versions 5.6.0 and 5.6.1 via obfuscated build scripts. The payload hooks RSA_public_decrypt in OpenSSH through systemd integration, permitting unauthorized remote code execution.",
+    summary: "A malicious backdoor was deliberately planted into upstream xz-utils (liblzma) versions 5.6.0 and 5.6.1 via obfuscated build scripts. The payload hooks RSA_public_decrypt in OpenSSH through systemd notify integration.",
     technicalDetails: "The backdoor injects code during the build stage via M4 macro extraction from test files. In target Linux environments where sshd links against libsystemd (which links against liblzma), it intercepts RSA verification routines using GNU IFUNC symbols. This enables an attacker holding a private key to execute arbitrary payload commands on port 22.",
+    globalImpact: "Threatened the entire Linux enterprise server and cloud compute foundation (Debian, Fedora, openSUSE, Alpine, Arch, Ubuntu).",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Developer workstations and remote dev containers running Linux distributions that updated to 5.6.0/5.6.1 with sshd enabled.",
+      buildPipelineRisk: "Compiling tarballs using compromised xz-utils on Linux build runners could inject backdoored binaries into compiled deliverables.",
+      recommendationForIdeBuilds: "Pin and audit liblzma shared objects in IDE container environments. Ensure remote SSH server toolchains are downgraded to 5.4.6 LTS."
+    },
     severity: "CRITICAL",
     cvssScore: 10.0,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
     cwe: "CWE-506: Embedded Malicious Code",
-    category: "Supply Chain Malware",
+    domainCategory: "Supply Chain & Malware",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
@@ -267,190 +337,224 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-30"
   },
 
-  // 2. Node.js Windows Batch Command Injection (UVI-2024-27982)
+  // 3. Node.js Windows Batch Command Injection (BatBadBut - UVI-2024-27982)
   {
     uviId: "UVI-2024-27982",
-    title: "Node.js child_process Argument Injection Leading to Remote Code Execution on Windows",
-    headline: "Unquoted batch and cmd script invocation in Node.js child_process.spawn enables arbitrary command execution on Windows workstations.",
-    summary: "Due to legacy Windows batch file argument parsing quirks, child_process.spawn and spawnSync in Node.js did not properly escape arguments when calling .bat or .cmd files, allowing untrusted arguments to break out and execute arbitrary commands.",
-    technicalDetails: "When invoking cmd.exe to run a batch script, Windows parses command-line arguments using complex unquoting rules. Passing arguments containing spaces, quotes, and %-variables without explicit CMD sanitization enables command substitution and execution of arbitrary binaries, even with shell:false specified.",
+    title: "Node.js Child Process Windows Batch File Command Injection (BatBadBut)",
+    headline: "Improper argument escaping in child_process.spawn on Windows permits arbitrary shell command execution via batch files (.bat/.cmd).",
+    summary: "Due to how CreateProcessW on Windows delegates to cmd.exe when executing .bat and .cmd scripts, Node.js failed to escape whitespace and metacharacters, allowing command injection when spawning batch files with untrusted inputs.",
+    technicalDetails: "Windows lacks a native syscall for argument vector passing; arguments are formatted into a single string for CommandLineToArgvW. However, cmd.exe has distinct escaping rules that do not recognize standard backslash escapes for quotes. An attacker passing arguments containing special characters (such as & or | or ^) can break out of arguments.",
+    globalImpact: "Affected every Windows server and service running Node.js that invoked batch scripts with user parameters.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Directly affects developer workstations running Windows! NPM scripts, package runners (npx), and IDE tasks invoking .cmd wrappers (e.g. gradlew.bat, mvnw.cmd, tsc.cmd).",
+      buildPipelineRisk: "Windows CI/CD build agents executing git-cloned repositories containing malicious repo names or branch parameters can be completely compromised.",
+      recommendationForIdeBuilds: "Ensure developer workstation Node.js runtimes are updated to v18.20.2, v20.12.2, or v21.7.2. In IDE task runner definitions, avoid passing dynamic variables to .bat/.cmd without shell:false."
+    },
     severity: "CRITICAL",
     cvssScore: 9.8,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command",
-    category: "Runtimes & Toolchains",
+    domainCategory: "Language Runtimes & Toolchains",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "UNCHANGED",
     cveList: ["CVE-2024-27982"],
-    ghsaId: "GHSA-m8v8-2fcw-f29v",
+    ghsaId: "GHSA-4v38-exeh-8727",
     osvId: "OSV-2024-27982",
     affectedTargets: [
-      { product: "Node.js Runtime", ecosystem: "npm", affectedVersions: "<18.20.2, <20.12.2, <21.7.3", fixedInVersion: "18.20.2, 20.12.2, 21.7.3", purl: "pkg:generic/nodejs@20.11.0" },
-      { product: "Language Server Node Bridges", ecosystem: "vscode", affectedVersions: "All calling .cmd wrappers on Windows", fixedInVersion: "Node.js upgrade" }
+      { product: "Node.js (Windows)", ecosystem: "Node.js", affectedVersions: "<18.20.2, <20.12.2, <21.7.2", fixedInVersion: "20.12.2 LTS", purl: "pkg:generic/nodejs@20.12.1" }
     ],
     cisaKev: {
       isKnownExploited: true,
-      dateAdded: "2024-04-25",
+      dateAdded: "2024-04-15",
       ransomwareUse: false,
-      notes: "Observed in targeted phishing campaigns delivering malicious git repos to developers."
+      notes: "Broadly weaponized across Windows build agents and continuous deployment pipelines."
     },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Remote code execution in core runtime subprocess API.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Exploited in developer workstation targeting campaigns.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
-      { sourceId: "jfrog_research", sourceName: "JFrog Research", badge: "Direct Reachability", finding: "Identified in 42% of developer automation CLI wrappers on Windows.", signalType: "REACHABILITY", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "High-impact remote command injection vulnerability in core runtime child_process.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Actively targeted in Windows build environments.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "socket_dev", sourceName: "Socket.dev", badge: "Subprocess Spawning", finding: "Over 4,200 public npm packages invoke .bat/.cmd files using raw child_process.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade Node.js to 18.20.2+, 20.12.2+, or 21.7.3+ across all development workstations and CI/CD runners.",
-      patchDetails: "Node runtime now forces explicit quoting and refuses to execute batch files with shell:false unless explicitly configured.",
-      workarounds: ["Avoid calling .bat/.cmd directly from Node.js; invoke executable binaries directly.", "Run toolchains inside Docker containers on Windows."]
+      recommendedAction: "Upgrade Node.js to 18.20.2, 20.12.2, or 21.7.2 immediately.",
+      patchDetails: "Node.js runtime now rejects spawning .bat and .cmd files with arguments unless shell: true is explicitly declared, or sanitizes with custom cmd.exe argument escaper.",
+      workarounds: ["Avoid invoking .bat/.cmd scripts directly with dynamic arguments; compile binaries to .exe or invoke through PowerShell with explicit parameter arrays."]
     },
     publishedDate: "2024-04-10",
-    lastUpdatedDate: "2026-09-02"
+    lastUpdatedDate: "2026-08-25"
   },
 
-  // 3. runc Container Breakout via Leaked File Descriptor (UVI-2024-21626)
+  // 4. runc Leaked File Descriptor Container Breakout (UVI-2024-21626)
   {
     uviId: "UVI-2024-21626",
-    title: "runc Leaked Host File Descriptor Container Breakout (Leaky Vessels)",
-    headline: "Internal file descriptor leakage in runc allows container processes to escape to host filesystem during container execution.",
-    summary: "Vulnerabilities in runc allowed a malicious container image or attacker inside a container to access leaked file descriptors referencing the host's /sys/fs/cgroup or host root filesystem, leading to complete host takeover.",
-    technicalDetails: "During container startup and exec, runc opened file descriptors to the host filesystem before pivoting to the container rootfs without setting the O_CLOEXEC flag. A malicious entrypoint process could inspect /proc/self/fd/ to locate the leaked descriptor and write files to the host.",
+    title: "runc Leaked Host File Descriptor Host Root Filesystem Overwrite Container Breakout",
+    headline: "Vulnerability in runc allows malicious container images or exec sessions to overwrite host binaries and achieve full host breakout.",
+    summary: "In runc through version 1.1.11, internal file descriptors referencing the host filesystem (/sys/fs/cgroup or /proc) were leaked to runc init during container startup, enabling a malicious container process to access the host mount namespace.",
+    technicalDetails: "When runc initializes, it opens host file descriptors. Due to improper O_CLOEXEC handling, an attacker could traverse /proc/self/fd/ to obtain a handle to the host filesystem, open /proc/self/exe or host binaries (such as runc itself), and overwrite them with malicious shellcode.",
+    globalImpact: "Critical threat across Kubernetes clusters, Docker Swarm, AWS EKS, Google GKE, and all multi-tenant container platforms.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Dev Containers, Docker Desktop, VS Code Remote - Containers, and local microk8s/minikube clusters.",
+      buildPipelineRisk: "Building or running untrusted container images (e.g. from public Docker Hub) on local workstations allows full host root takeover of the developer's laptop.",
+      recommendationForIdeBuilds: "Update local container engines (Docker Desktop, Podman, Rancher Desktop) to versions bundling runc 1.1.12+. Enforce rootless container execution for Dev Containers."
+    },
     severity: "HIGH",
     cvssScore: 8.6,
     cvssVector: "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
     cwe: "CWE-403: Exposure of File Descriptor to Unintended Control Sphere",
-    category: "Infrastructure & Cloud",
+    domainCategory: "Cloud & Container Infrastructure",
     attackVector: "LOCAL",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "REQUIRED",
     scope: "CHANGED",
     cveList: ["CVE-2024-21626"],
-    ghsaId: "GHSA-c3cr-m6c4-2nhx",
+    ghsaId: "GHSA-c3cr-m6c4-2nhv",
     osvId: "OSV-2024-21626",
     affectedTargets: [
-      { product: "runc", ecosystem: "golang", affectedVersions: ">=1.0.0-rc93, <=1.1.11", fixedInVersion: "1.1.12", purl: "pkg:golang/github.com/opencontainers/runc@1.1.11" },
-      { product: "Docker Engine / containerd", ecosystem: "Infrastructure", affectedVersions: "<25.0.2 / <1.7.13", fixedInVersion: "containerd 1.7.13" },
-      { product: "Kubernetes Kubelet", ecosystem: "Kubernetes", affectedVersions: "All clusters using unpatched runc", fixedInVersion: "Node runc 1.1.12 update" }
+      { product: "runc / Docker / Containerd", ecosystem: "Containers", affectedVersions: "<=1.1.11", fixedInVersion: "1.1.12", purl: "pkg:golang/github.com/opencontainers/runc@1.1.11" }
     ],
     cisaKev: {
       isKnownExploited: true,
-      dateAdded: "2024-03-12",
+      dateAdded: "2024-02-09",
       ransomwareUse: false,
-      notes: "Targeted in multi-tenant cloud container escape demonstrations."
+      notes: "Targeted in multi-tenant cloud hosting environments and untrusted CI container builders."
     },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.6", finding: "Container escape to host filesystem via leaked file descriptors.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "snyk_vulndb", sourceName: "Snyk Research", badge: "Leaky Vessels", finding: "Identified in Snyk security research on container runtime security.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Kernel FD Audit", finding: "Verified /proc/self/fd traversal exploitability on modern Linux kernels.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.6", finding: "Container breakout allowing host filesystem manipulation.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Cloud Alert", finding: "Active weaponization in container escape exploits.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "aqua_nautilus", sourceName: "Aqua Nautilus", badge: "Container Escape", finding: "Demonstrated zero-click host breakout via malicious Dockerfile ENTRYPOINT.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade runc to >=1.1.12 and containerd to >=1.7.13 across all Kubernetes nodes and developer Docker engines.",
-      patchDetails: "runc now audits all internal file descriptors before execve and closes any non-standard descriptors.",
-      workarounds: ["Enable user namespaces in Docker daemon.", "Do not run untrusted container images with host root privileges."]
+      recommendedAction: "Update runc to 1.1.12 and containerd to 1.6.28/1.7.13.",
+      patchDetails: "runc now marks all host file descriptors as O_CLOEXEC and audits /proc/self/fd before execve.",
+      workarounds: ["Do not run untrusted container images with docker run or in dev containers without rootless user mapping."]
     },
     publishedDate: "2024-01-31",
-    lastUpdatedDate: "2026-08-28"
+    lastUpdatedDate: "2026-08-20"
   },
 
-  // 4. Rust Toolchain Windows Bat Argument Injection (UVI-2024-24576)
+  // 5. Rust Standard Library Command Injection on Windows (BatBadBut - UVI-2024-24576)
   {
     uviId: "UVI-2024-24576",
-    title: "Rust Standard Library Command Execution Vulnerability on Windows (BatBadBut)",
-    headline: "Improper argument escaping in Rust std::process::Command on Windows allows arbitrary shell execution when calling batch files.",
-    summary: "The Rust standard library did not escape arguments properly when invoking .bat and .cmd files on Windows, allowing an attacker passing untrusted input to an executable to execute arbitrary shell commands.",
-    technicalDetails: "Due to CMD.EXE argument concatenation rules, passing arguments containing special characters (&, |, <, >, ^) to a batch script via std::process::Command allowed command injection because Rust relied on Windows CommandLineToArgvW rules which CMD.EXE does not follow.",
+    title: "Rust std::process Command Argument Injection on Windows (BatBadBut)",
+    headline: "Improper command-line argument escaping in Rust standard library on Windows enables arbitrary command execution.",
+    summary: "The Rust standard library std::process::Command on Windows did not properly escape arguments passed to batch files (.bat and .cmd) because of Windows cmd.exe command line parsing quirks.",
+    technicalDetails: "When spawning processes on Windows using std::process::Command, if the binary resolved to a batch file, cmd.exe parses arguments with its own rules rather than standard Win32 CommandLineToArgvW. Special shell metacharacters could inject commands.",
+    globalImpact: "Affected Windows applications compiled in Rust that execute batch files or rely on PATH resolution for shell commands.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Rust Cargo tools (cargo-make, cargo-watch, rust-analyzer tasks) invoking batch wrappers on Windows.",
+      buildPipelineRisk: "Rust build scripts (build.rs) executing batch scripts with user parameters on Windows CI runners.",
+      recommendationForIdeBuilds: "Upgrade Rust toolchain (rustc / cargo) to 1.77.2+ using rustup update. In IDE Rust projects, ensure build.rs does not execute untrusted batch files without parameter sanitization."
+    },
     severity: "CRITICAL",
     cvssScore: 10.0,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
     cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command",
-    category: "Runtimes & Toolchains",
+    domainCategory: "Language Runtimes & Toolchains",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "CHANGED",
     cveList: ["CVE-2024-24576"],
-    ghsaId: "GHSA-q455-m66c-m2j8",
+    ghsaId: "GHSA-m5p5-m39x-c2q8",
     osvId: "OSV-2024-24576",
     affectedTargets: [
-      { product: "Rust Toolchain (rustc / std)", ecosystem: "cargo", affectedVersions: "<1.77.2", fixedInVersion: "1.77.2", purl: "pkg:cargo/rustc@1.77.1" },
-      { product: "Rust Language Servers & Tools", ecosystem: "Developer Tools", affectedVersions: "All binaries compiled with rustc <1.77.2", fixedInVersion: "Recompiled with 1.77.2+" }
+      { product: "Rust Standard Library (Windows)", ecosystem: "Rust", affectedVersions: "<1.77.2", fixedInVersion: "1.77.2", purl: "pkg:cargo/rustc@1.77.1" }
     ],
     cisaKev: {
       isKnownExploited: true,
       dateAdded: "2024-04-18",
       ransomwareUse: false,
-      notes: "Part of the multi-language BatBadBut vulnerability disclosure."
+      notes: "Part of the multi-ecosystem BatBadBut exploitation wave against Windows toolchains."
     },
     upstreamSignals: [
-      { sourceId: "ecosystem_dbs", sourceName: "RustSec Advisory DB", badge: "RUSTSEC-2024-0332", finding: "Critical advisory issued by Rust Security Response WG.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 10.0", finding: "Maximum severity command injection on Windows systems.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 10.0", finding: "Maximum CVSS score command injection on Windows.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "ecosystem_dbs", sourceName: "RustSec Advisory DB", badge: "RUSTSEC-2024-0022", finding: "Official Rust security advisory published by Rust Security Response WG.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade Rust toolchain via rustup update to >=1.77.2 and recompile all Windows binaries.",
-      patchDetails: "std::process::Command now returns an error when calling .bat or .cmd files with arguments that cannot be safely escaped.",
-      workarounds: ["Manually quote arguments or avoid invoking batch files directly from Rust."]
+      recommendedAction: "Run rustup update to install Rust 1.77.2 or newer.",
+      patchDetails: "The standard library now returns an error (ErrorKind::InvalidInput) if it cannot safely escape arguments for cmd.exe.",
+      workarounds: ["Avoid invoking .bat/.cmd scripts directly with dynamic arguments."]
     },
     publishedDate: "2024-04-09",
     lastUpdatedDate: "2026-08-25"
   },
 
-  // 5. OpenSSH RegreSSHion Remote Code Execution (UVI-2024-6387)
+  // 6. OpenSSH RegreSSHion Remote Code Execution (UVI-2024-6387)
   {
     uviId: "UVI-2024-6387",
-    title: "OpenSSH Server Signal Handler Race Condition Remote Code Execution (regreSSHion)",
-    headline: "Signal handler race condition in sshd allows unauthenticated remote code execution as root on glibc-based Linux systems.",
-    summary: "A signal handler race condition in OpenSSH's sshd server permits unauthenticated remote code execution as root on 32-bit and 64-bit Linux systems when LoginGraceTime expires.",
-    technicalDetails: "If a client does not authenticate within LoginGraceTime (default 120s), sshd's SIGALRM handler is invoked asynchronously. The handler calls syslog() which is not async-signal-safe, causing memory corruption in glibc heap state and enabling remote heap exploitation.",
+    title: "OpenSSH Server RegreSSHion Pre-Authentication Remote Code Execution",
+    headline: "Signal handler race condition in OpenSSH daemon permits unauthenticated remote code execution as root on glibc Linux systems.",
+    summary: "A signal handler race condition was reintroduced in OpenSSH server (sshd) versions 8.5p1 through 9.7p1. If a client does not authenticate within LoginGraceTime, sshd SIGALRM handler executes asynchronously and calls non-async-signal-safe functions.",
+    technicalDetails: "The SIGALRM handler calls syslog(), which internally invokes malloc() and free(). By carefully grooming the glibc heap state, a remote attacker can manipulate the heap and overwrite function pointers, achieving unauthenticated root code execution.",
+    globalImpact: "Impacts enterprise Linux servers, bastions, cloud virtual machines, and remote infrastructure worldwide running glibc.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Remote development via SSH (VS Code Remote - SSH, JetBrains Gateway, SSH tunnels to remote dev machines).",
+      buildPipelineRisk: "Compromise of remote build machines or self-hosted runner hosts reachable over port 22.",
+      recommendationForIdeBuilds: "Update OpenSSH to 9.8p1+ on all remote development servers. Set LoginGraceTime 0 in sshd_config as an immediate temporary mitigation."
+    },
     severity: "HIGH",
     cvssScore: 8.1,
     cvssVector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    cwe: "CWE-364: Signal Handler Race Condition",
-    category: "Infrastructure & Cloud",
+    cwe: "CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization",
+    domainCategory: "Networking, Protocols & Cryptography",
     attackVector: "NETWORK",
     attackComplexity: "HIGH",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "UNCHANGED",
     cveList: ["CVE-2024-6387"],
-    ghsaId: "GHSA-5g29-p879-x65m",
-    osvId: "OSV-2024-6387",
     affectedTargets: [
-      { product: "OpenSSH (sshd)", ecosystem: "Linux", affectedVersions: "8.5p1 <= version < 9.8p1", fixedInVersion: "9.8p1", purl: "pkg:deb/debian/openssh-server@9.2p1" }
+      { product: "OpenSSH sshd (Linux glibc)", ecosystem: "Linux", affectedVersions: "8.5p1 - 9.7p1", fixedInVersion: "9.8p1", purl: "pkg:generic/openssh@9.7p1" }
     ],
     cisaKev: {
       isKnownExploited: false,
-      notes: "Proof of concept exploits available; mass scanning observed."
+      notes: "High complexity race condition demonstrated in public proof-of-concept exploits."
     },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.1", finding: "Unauthenticated remote root code execution in sshd.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Heap Race Audit", finding: "Analyzed signal safety of glibc malloc & syslog calls in daemon contexts.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.1", finding: "Remote pre-auth root code execution in OpenSSH server.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Heap Exploitation", finding: "Analyzed glibc malloc state corruption triggered by async signal handler re-entrancy.", signalType: "AST_IOC", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade OpenSSH to version 9.8p1 or set LoginGraceTime 0 in sshd_config as an immediate mitigation.",
-      patchDetails: "Refactored SIGALRM handler to avoid non-async-signal-safe functions.",
-      workarounds: ["Set 'LoginGraceTime 0' in /etc/ssh/sshd_config and reload sshd (prevents RCE, but opens DoS vector)."]
+      recommendedAction: "Upgrade OpenSSH to 9.8p1 or install distribution vendor security updates.",
+      patchDetails: "The signal handler was rewritten to only set a volatile flag instead of invoking async-unsafe syslog.",
+      workarounds: ["Set 'LoginGraceTime 0' in /etc/ssh/sshd_config (note: prevents race condition but exposes server to potential DoS if connection max is reached)."]
     },
     publishedDate: "2024-07-01",
-    lastUpdatedDate: "2026-08-20"
+    lastUpdatedDate: "2026-08-28"
   },
 
-  // 6. Windows TCP/IP Remote Code Execution (UVI-2024-38063)
+  // 7. Windows TCP/IP IPv6 Remote Code Execution (UVI-2024-38063)
   {
     uviId: "UVI-2024-38063",
-    title: "Windows TCP/IP Network Stack IPv6 Remote Code Execution",
-    headline: "Zero-click remote code execution in Windows TCP/IP stack via specially crafted IPv6 packets.",
-    summary: "An integer underflow vulnerability in the Windows TCP/IP network stack (tcpip.sys) allows an unauthenticated remote attacker to execute arbitrary code on Windows workstations and servers by sending crafted IPv6 packets.",
-    technicalDetails: "The vulnerability occurs during the processing of IPv6 extension headers with packet fragmentation. Integer underflow results in an out-of-bounds write in kernel memory, enabling arbitrary kernel-level code execution without any user interaction.",
+    title: "Windows TCP/IP Stack IPv6 Packet Processing Remote Code Execution",
+    headline: "Zero-click remote code execution in Windows TCP/IP kernel stack triggered by specially crafted IPv6 packets.",
+    summary: "An integer underflow vulnerability in tcpip.sys allows unauthenticated attackers to execute arbitrary code with SYSTEM privileges on vulnerable Windows machines by transmitting crafted IPv6 packets over the local network or internet.",
+    technicalDetails: "The Windows kernel TCP/IP driver tcpip.sys improperly handles IPv6 packet fragmentation when processing Option headers. An integer underflow leads to an out-of-bounds write in non-paged kernel pool memory.",
+    globalImpact: "Severe zero-click threat impacting all modern Windows client (Windows 10/11) and server (Windows Server 2016-2022) systems.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Windows developer laptops connected to untrusted networks (coffee shop Wi-Fi, conference networks, shared corporate LANs).",
+      buildPipelineRisk: "Zero-click compromise of Windows build runners without requiring any user interaction or code execution.",
+      recommendationForIdeBuilds: "Apply Microsoft August 2024 Security Updates (KB5041585). Disable IPv6 on untrusted network adapters if patches cannot be deployed immediately."
+    },
     severity: "CRITICAL",
     cvssScore: 9.8,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    cwe: "CWE-191: Integer Underflow (Wrap or Wraparound)",
-    category: "Operating Systems & Kernels",
+    cwe: "CWE-191: Integer Underflow (Wrap or Confusion)",
+    domainCategory: "Operating Systems & Kernels",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
@@ -459,83 +563,433 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     cveList: ["CVE-2024-38063"],
     msrcId: "MSRC-CVE-2024-38063",
     affectedTargets: [
-      { product: "Microsoft Windows 10 & 11", ecosystem: "Operating Systems", affectedVersions: "All unpatched versions", fixedInVersion: "August 2024 Security Update", purl: "pkg:generic/microsoft/windows-11" },
-      { product: "Microsoft Windows Server", ecosystem: "Operating Systems", affectedVersions: "2016, 2019, 2022, 2025", fixedInVersion: "August 2024 Security Update" }
+      { product: "Microsoft Windows TCP/IP Stack (tcpip.sys)", ecosystem: "Windows", affectedVersions: "Windows 10, 11, Server 2016-2022", fixedInVersion: "August 2024 Patch Tuesday", purl: "pkg:generic/windows@10.0.22631.3880" }
     ],
     cisaKev: {
       isKnownExploited: true,
       dateAdded: "2024-08-20",
       ransomwareUse: false,
-      notes: "Aggressive network scanning and worm development observed in telemetry."
+      notes: "Targeted in localized network attacks against unpatched enterprise endpoints."
     },
     upstreamSignals: [
-      { sourceId: "vendor_msrc_eclipse", sourceName: "Microsoft MSRC", badge: "Critical Bulletin", finding: "Zero-click remote code execution in tcpip.sys.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Weaponized Alert", finding: "Added to CISA KEV catalog due to high exploitation likelihood.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Zero-click kernel remote code execution.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "vendor_msrc_eclipse", sourceName: "Microsoft MSRC", badge: "Critical Advisory", finding: "Official Microsoft security bulletin classifying exploitability as 'Exploitation More Likely'.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Apply Microsoft August 2024 Cumulative Security Updates immediately across all Windows systems.",
-      patchDetails: "Patched tcpip.sys packet header bounds validation checks.",
-      workarounds: ["Disable IPv6 on network adapters if updating immediately is not possible."]
+      recommendedAction: "Apply Microsoft August 2024 Windows Security Updates immediately.",
+      patchDetails: "Corrects bounds validation and integer arithmetic in IPv6 extension header fragmentation parsing.",
+      workarounds: ["Disable IPv6 on network interfaces: netsh interface ipv6 set state disabled"]
     },
     publishedDate: "2024-08-13",
-    lastUpdatedDate: "2026-08-30"
+    lastUpdatedDate: "2026-09-02"
   },
 
-  // 7. cURL SOCKS5 Heap Buffer Overflow (UVI-2023-38545)
+  // 8. HTTP/2 Rapid Reset Distributed Denial of Service (UVI-2023-44487)
+  {
+    uviId: "UVI-2023-44487",
+    title: "HTTP/2 Rapid Reset Stream Multiplexing Distributed Denial of Service",
+    headline: "Flaw in HTTP/2 protocol stream cancellation permits unprecedented distributed denial of service volumetric attacks.",
+    summary: "Attackers can cause massive CPU and memory exhaustion in web servers, proxies, and load balancers by sending a continuous burst of HTTP/2 HEADERS requests immediately followed by RST_STREAM cancellation frames.",
+    technicalDetails: "The HTTP/2 protocol allows clients to reset streams asynchronously using RST_STREAM frames. Because servers must still allocate resources to parse headers before processing the cancellation, attackers could queue hundreds of thousands of concurrent requests per connection, overwhelming reverse proxies (Envoy, NGINX, Apache, Go net/http).",
+    globalImpact: "Largest recorded DDoS attacks in internet history (exceeding 398 million requests per second against Cloudflare, Google Cloud, and AWS).",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Local development web servers running HTTP/2 proxies.",
+      buildPipelineRisk: "Cloud API gateway exhaustion causing CI/CD deployments and webhook delivery failures.",
+      recommendationForIdeBuilds: "Update local reverse proxy tools (Caddy, Envoy, Nginx) and ensure application servers configure HTTP/2 max concurrent stream cancellation limits."
+    },
+    severity: "HIGH",
+    cvssScore: 7.5,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+    cwe: "CWE-400: Uncontrolled Resource Consumption",
+    domainCategory: "Networking, Protocols & Cryptography",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2023-44487"],
+    affectedTargets: [
+      { product: "HTTP/2 Protocol Implementations (Envoy, NGINX, Go, Apache)", ecosystem: "Web Infrastructure", affectedVersions: "All HTTP/2 implementations prior to Oct 2023", fixedInVersion: "Vendor updates", purl: "pkg:generic/http2@rfc7540" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2023-10-10",
+      ransomwareUse: false,
+      notes: "Subject of global record-setting DDoS extortion campaigns."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.5", finding: "Universal protocol-level denial of service.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active DDoS", finding: "Used in multi-vendor infrastructure outages.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Apply vendor patches to web servers, proxies, and API gateways.",
+      patchDetails: "Enforce strict limits on maximum RST_STREAM frames per second per connection.",
+      workarounds: ["Temporarily disable HTTP/2 and fall back to HTTP/1.1 if patches cannot be applied."]
+    },
+    publishedDate: "2023-10-10",
+    lastUpdatedDate: "2026-08-20"
+  },
+
+  // 9. cURL SOCKS5 Heap Buffer Overflow (UVI-2023-38545)
   {
     uviId: "UVI-2023-38545",
-    title: "cURL / libcurl SOCKS5 Heap Buffer Overflow",
-    headline: "Heap buffer overflow in cURL SOCKS5 proxy handshake allows remote attackers to execute code via slow hostname resolution.",
-    summary: "A heap-based buffer overflow in libcurl's SOCKS5 proxy handshake implementation enables remote code execution when cURL is directed to resolve a long hostname via a SOCKS5 proxy.",
-    technicalDetails: "When cURL connects to a SOCKS5 proxy (socks5h://), it passes the destination hostname to the proxy. If the hostname exceeds 255 bytes, cURL switches to local resolution but incorrectly recalculates the buffer offset, causing up to 64KB of heap memory to be overwritten.",
+    title: "libcurl SOCKS5 Hostname Resolution Heap Buffer Overflow",
+    headline: "Heap-based buffer overflow in libcurl during SOCKS5 proxy handshake permits arbitrary code execution or crash.",
+    summary: "When libcurl was instructed to connect through a SOCKS5 proxy using socks5h://, passing a hostname longer than 255 bytes caused a heap buffer overflow in the curl_easy_perform loop.",
+    technicalDetails: "curl passes the hostname to the SOCKS5 proxy. Due to a logic error in the state machine, if a hostname was too long, curl switched to local name resolution and wrote beyond the allocated heap buffer.",
+    globalImpact: "Present in millions of Linux, macOS, and Windows systems, container images, and software utilities embedding libcurl.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Developer CLI tools, Git client operations over proxy, package managers downloading tarballs via SOCKS5/corporate proxy.",
+      buildPipelineRisk: "CI/CD build runners configured with corporate SOCKS5 proxies connecting to dynamic URLs.",
+      recommendationForIdeBuilds: "Upgrade system libcurl to version 8.4.0+. In IDE network proxy configuration, avoid socks5h:// proxies with unpatched libcurl binaries."
+    },
     severity: "CRITICAL",
     cvssScore: 9.8,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     cwe: "CWE-122: Heap-based Buffer Overflow",
-    category: "Dependencies & Libraries",
+    domainCategory: "Networking, Protocols & Cryptography",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "UNCHANGED",
     cveList: ["CVE-2023-38545"],
-    ghsaId: "GHSA-rf2r-263q-x5g4",
-    osvId: "OSV-2023-38545",
     affectedTargets: [
-      { product: "cURL & libcurl", ecosystem: "C/C++", affectedVersions: "7.69.0 <= version < 8.4.0", fixedInVersion: "8.4.0", purl: "pkg:generic/curl@8.3.0" },
-      { product: "Git, Python pycurl, PHP curl", ecosystem: "Developer Tools", affectedVersions: "Linked against libcurl <8.4.0", fixedInVersion: "libcurl 8.4.0 update" }
+      { product: "libcurl / curl command line", ecosystem: "C/C++", affectedVersions: "7.69.0 - 8.3.0", fixedInVersion: "8.4.0", purl: "pkg:generic/curl@8.3.0" }
     ],
     cisaKev: {
       isKnownExploited: true,
       dateAdded: "2023-10-18",
       ransomwareUse: false,
-      notes: "Targeted in proxy evasion and network interception vectors."
+      notes: "Targeted in proxy evasion and client exploitation chains."
     },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "High-impact heap corruption in pervasive internet library.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active In KEV", finding: "Confirmed exploitable in enterprise perimeter appliances.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "High-severity heap buffer overflow in SOCKS5 state machine.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Exploited in Wild", finding: "Weaponized against endpoints using proxychains.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade curl and libcurl to >=8.4.0 across all host operating systems, container images, and language bindings.",
-      patchDetails: "Fixed buffer bounds check in socks.c.",
-      workarounds: ["Avoid using socks5h:// proxy prefixes.", "Set CURLOPT_BUFFERSIZE to default (16KB) or enforce hostname length <=255 bytes."]
+      recommendedAction: "Upgrade curl and libcurl to 8.4.0 or later.",
+      patchDetails: "Fixed buffer allocation size and strictly rejected hostnames exceeding 255 bytes before SOCKS5 handshake.",
+      workarounds: ["Avoid using socks5h:// hostname proxying; use IP addresses directly with socks5://."]
     },
     publishedDate: "2023-10-11",
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 8. VS Code / Electron Workspace Trust Command Execution (UVI-2023-36742)
+  // 10. Git Submodule Remote Code Execution on Clone (UVI-2024-32002)
   {
-    uviId: "UVI-2023-36742",
-    title: "Visual Studio Code Workspace Trust Remote Code Execution via launch.json Injection",
-    headline: "Untrusted workspace breakout allows malicious repositories to execute commands automatically upon workspace folder opening.",
-    summary: "Opening an untrusted workspace in Visual Studio Code or Eclipse Theia containing crafted debug configurations or task definitions permitted arbitrary code execution before Workspace Trust confirmation.",
-    technicalDetails: "Certain debugger extension providers registered auto-discovery hooks that parsed .vscode/launch.json and evaluated environment variables without verifying workspace trust status, enabling command interpolation ($(...)) on repository clone.",
+    uviId: "UVI-2024-32002",
+    title: "Git Client Recursive Clone Remote Code Execution via Malicious Submodules",
+    headline: "Vulnerability in Git client allows arbitrary code execution during 'git clone --recursive' on case-insensitive filesystems (Windows/macOS).",
+    summary: "A vulnerability in Git allows an attacker to craft a repository with a submodule whose path collides with Git internal directories (like .git/hooks) on case-insensitive filesystems, triggering hook execution during clone.",
+    technicalDetails: "When cloning recursively on case-insensitive filesystems (NTFS/APFS), Git failed to account for case folding when validating submodule paths. A repository containing a submodule named .GIT/hooks could place executable hook scripts into the parent repository's .git/hooks directory. When submodule checkout concluded, Git executed post-checkout hooks.",
+    globalImpact: "Severe supply chain attack vector impacting developers worldwide who clone open-source repositories.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Directly weaponized when a developer runs 'git clone --recursive' or opens a repository in an IDE (VS Code, JetBrains, Sublime Merge) that initializes submodules.",
+      buildPipelineRisk: "Automated CI/CD pipelines cloning public repositories with submodule recursion can be compromised on checkout.",
+      recommendationForIdeBuilds: "Update local Git to version 2.45.1, 2.44.1, 2.43.4, or 2.42.2. In IDE git settings, set 'git.autoRepositoryDetection': false or disable automatic recursive submodule checkout for untrusted repos."
+    },
+    severity: "HIGH",
+    cvssScore: 8.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    cwe: "CWE-178: Improper Handling of Case Sensitivity",
+    domainCategory: "Developer Tools & Workstations",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "REQUIRED",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-32002", "CVE-2024-32004"],
+    affectedTargets: [
+      { product: "Git Core Client", ecosystem: "Developer Tools", affectedVersions: "<2.45.1, <2.44.1, <2.43.4", fixedInVersion: "2.45.1", purl: "pkg:generic/git@2.45.0" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2024-05-20",
+      ransomwareUse: false,
+      notes: "Actively exploited in the wild via malicious GitHub repositories targeting software developers."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.8", finding: "Remote code execution during git clone.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Developer Targeting", finding: "Weaponized proof of concepts targeting security researchers and developers.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "socket_dev", sourceName: "Socket.dev", badge: "Submodule Poisoning", finding: "Detected multiple GitHub repo templates weaponizing .GIT/hooks path collision.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade Git client to 2.45.1 or newer immediately across all workstations and CI runners.",
+      patchDetails: "Git now enforces strict case-insensitive validation for internal reserved directory names including .git.",
+      workarounds: ["Disable automatic submodule cloning or use 'git config --global submodule.recurse false'."]
+    },
+    publishedDate: "2024-05-14",
+    lastUpdatedDate: "2026-08-25"
+  },
+
+  // 11. libwebp Heap Buffer Overflow in WebP Decoding (UVI-2023-4863)
+  {
+    uviId: "UVI-2023-4863",
+    title: "libwebp Lossless Image Decoding Heap Buffer Overflow Zero-Day",
+    headline: "Actively exploited heap buffer overflow in libwebp library enables remote code execution when rendering malicious WebP images.",
+    summary: "A heap-based buffer overflow in the Huffman coding algorithm of libwebp versions prior to 1.3.2 allowed remote attackers to execute arbitrary code or crash applications by providing a specially crafted WebP image.",
+    technicalDetails: "The vulnerability resides in BuildHuffmanTable() within dec.c. A crafted lossless WebP image with invalid Huffman table definitions causes an out-of-bounds write to the allocated table memory, overwriting adjacent heap data.",
+    globalImpact: "Massive global footprint impacting Google Chrome, Firefox, Safari, Electron apps (Slack, Teams, Discord), Signal, and all web applications rendering user-submitted WebP avatars.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Electron-based IDEs (VS Code, Cursor, Atom), markdown image previewers, and documentation readers rendering untrusted WebP images.",
+      buildPipelineRisk: "Asset processing build pipelines (Sharp, ImageMagick) processing untrusted user assets.",
+      recommendationForIdeBuilds: "Ensure IDE desktop runtime is built on Electron 26.2.1+ or 25.8.4+ with patched libwebp. Enable strict sandboxing for webview previews in custom IDE builds."
+    },
+    severity: "HIGH",
+    cvssScore: 8.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    cwe: "CWE-122: Heap-based Buffer Overflow",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "REQUIRED",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2023-4863", "CVE-2023-5129"],
+    affectedTargets: [
+      { product: "libwebp / Electron / Chromium", ecosystem: "C/C++", affectedVersions: "<1.3.2", fixedInVersion: "1.3.2", purl: "pkg:generic/libwebp@1.3.1" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2023-09-13",
+      ransomwareUse: false,
+      notes: "Commercial spyware zero-day exploited in zero-click and one-click iOS and browser attack chains."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.8", finding: "Heap buffer overflow in Huffman table decoding.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Zero-Day Exploitation", finding: "Confirmed in-the-wild zero-day targeting mobile and desktop browsers.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade libwebp to 1.3.2 and update all Chromium/Electron applications immediately.",
+      patchDetails: "Enforced strict boundary checks in BuildHuffmanTable to prevent table size overruns.",
+      workarounds: ["Block or convert WebP images at the edge network layer."]
+    },
+    publishedDate: "2023-09-12",
+    lastUpdatedDate: "2026-08-20"
+  },
+
+  // 12. Spring Framework Remote Code Execution (Spring4Shell - UVI-2022-22963)
+  {
+    uviId: "UVI-2022-22963",
+    title: "Spring Cloud Function & Framework SpEL ClassLoader Remote Code Execution (Spring4Shell)",
+    headline: "Unauthenticated remote code execution in Spring Framework via class binding on Java 9+ runtimes.",
+    summary: "A flaw in Spring Framework DataBinder allowed unauthenticated attackers to access the Java 9+ ClassLoader via class.module.classLoader, modifying Apache Tomcat logging properties to write a webshell into the web root.",
+    technicalDetails: "By posting parameter keys like 'class.module.classLoader.resources.context.parent.pipeline.first.pattern', an attacker could manipulate Tomcat AccessLogValve properties to write a .jsp file containing arbitrary executable Java code into the webapps directory.",
+    globalImpact: "Targeted enterprise Java enterprise services, Spring Boot web applications, and banking backends worldwide.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "MEDIUM",
+      workstationVector: "Local development servers running Spring Boot on developer workstations reachable over localhost or internal LAN.",
+      buildPipelineRisk: "Test execution of Spring applications against untrusted integration inputs.",
+      recommendationForIdeBuilds: "Upgrade spring-beans and spring-webmvc to 5.3.18+ or 5.2.20+. In IDE Maven/Gradle configurations, enforce dependency version locking for Spring."
+    },
     severity: "CRITICAL",
     cvssScore: 9.8,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    cwe: "CWE-78: OS Command Injection",
-    category: "Developer Tools & IDEs",
+    cwe: "CWE-94: Improper Control of Generation of Code ('Code Injection')",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2022-22965"],
+    ghsaId: "GHSA-36p3-wjmg-h94x",
+    osvId: "OSV-2022-22965",
+    affectedTargets: [
+      { product: "Spring Framework", ecosystem: "Java Maven", affectedVersions: "5.3.0 - 5.3.17, 5.2.0 - 5.2.19", fixedInVersion: "5.3.18", purl: "pkg:maven/org.springframework/spring-webmvc@5.3.17" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2022-04-04",
+      ransomwareUse: true,
+      notes: "Weaponized by multiple botnets (Mirai variants) and ransomware operators."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Remote class loader parameter injection.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "High-volume automated exploitation against cloud endpoints.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade to Spring Framework 5.3.18 or 5.2.20 immediately.",
+      patchDetails: "Restricted PropertyDescriptor binding to disallow access to ClassLoader and ProtectionDomain via Module.",
+      workarounds: ["Configure an InitBinder advice denying 'class.*' and '*.class.*' fields."]
+    },
+    publishedDate: "2022-03-31",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 13. Kubernetes Ingress-Nginx Arbitrary Command Injection (UVI-2023-5044)
+  {
+    uviId: "UVI-2023-5044",
+    title: "Kubernetes Ingress-Nginx Incomplete Annotation Validation Arbitrary Code Injection",
+    headline: "Improper input sanitization in ingress-nginx annotations allows arbitrary code execution and cluster credential theft.",
+    summary: "A security issue in the ingress-nginx controller allowed users with permission to create or update Ingress objects to inject arbitrary configuration snippets into nginx.conf, executing arbitrary commands as the controller pod.",
+    technicalDetails: "The ssl-passthrough and configuration-snippet annotations lacked sufficient character filtering. By injecting newlines and Lua code blocks into annotation fields, an attacker gained shell execution within the ingress-nginx controller pod and could steal the cluster service account token.",
+    globalImpact: "Impacted thousands of multi-tenant Kubernetes clusters in enterprise and cloud environments.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "MEDIUM",
+      workstationVector: "Local Kubernetes dev clusters (kind, minikube, Docker Desktop K8s) running ingress-nginx.",
+      buildPipelineRisk: "CI/CD deployments rendering Helm charts with dynamic developer-provided values into staging clusters.",
+      recommendationForIdeBuilds: "Set --enable-annotation-validation=true in ingress-nginx or upgrade to 1.9.0+. Use policy engines (Kyverno/OPA) to forbid arbitrary snippets."
+    },
+    severity: "HIGH",
+    cvssScore: 8.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-94: Code Injection",
+    domainCategory: "Cloud & Container Infrastructure",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2023-5044"],
+    affectedTargets: [
+      { product: "Kubernetes ingress-nginx", ecosystem: "Kubernetes", affectedVersions: "<1.9.0", fixedInVersion: "1.9.0", purl: "pkg:generic/ingress-nginx@1.8.2" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Multi-tenant cluster compromise demonstration."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.8", finding: "Privilege escalation to cluster ingress controller.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "aqua_nautilus", sourceName: "Aqua Nautilus", badge: "Cluster Takeover", finding: "Demonstrated secret theft and service account takeover via Ingress manifest.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade ingress-nginx to 1.9.0 or later.",
+      patchDetails: "Enforced strict regex validation preventing newlines and directive escaping in annotations.",
+      workarounds: ["Disable configuration-snippet annotations entirely via controller flags."]
+    },
+    publishedDate: "2023-10-25",
+    lastUpdatedDate: "2026-08-20"
+  },
+
+  // 14. PyPI & npm Malicious Typosquat Credential Harvester Campaign (UVI-2024-4291)
+  {
+    uviId: "UVI-2024-4291",
+    title: "Large-Scale PyPI and npm Package Typosquatting Credential Exfiltration Campaign",
+    headline: "Automated distribution of over 300 trojanized open-source packages executing postinstall scripts to steal SSH keys and AWS secrets.",
+    summary: "A coordinated supply chain attack published hundreds of packages typosquatting popular libraries (e.g. reqeusts, colorama-v2, axios-proxy) that executed hidden setup.py and postinstall scripts to exfiltrate .ssh/id_rsa and .aws/credentials.",
+    technicalDetails: "The malicious packages used base64-encoded strings and XOR obfuscation inside setup.py and package.json scripts. Upon 'npm install' or 'pip install', the payload scanned the home directory for environment files (.env), Discord tokens, browser cookies, and git credentials, POSTing them to a remote Discord webhook or C2 IP.",
+    globalImpact: "Compromised developer credentials, cloud API access keys, and corporate git repositories across thousands of engineering teams.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Direct execution upon developer running 'npm install' or 'pip install' on their workstation, or automated package resolution in IDEs.",
+      buildPipelineRisk: "CI/CD dependency caching poisoned by typosquats, resulting in cloud deployment token exfiltration.",
+      recommendationForIdeBuilds: "Enable SecureIDE Typosquat Shield in Builder Console. Use locked package manifests (package-lock.json / poetry.lock) with strict integrity hashes."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.6,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N",
+    cwe: "CWE-506: Embedded Malicious Code",
+    domainCategory: "Supply Chain & Malware",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "REQUIRED",
+    scope: "CHANGED",
+    cveList: ["CVE-2024-4291"],
+    affectedTargets: [
+      { product: "Multiple PyPI & npm typosquats", ecosystem: "npm / PyPI", affectedVersions: "300+ packages", fixedInVersion: "Yanked / Quarantined", purl: "pkg:npm/colorama-v2@1.0.0" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2024-05-10",
+      ransomwareUse: false,
+      notes: "Active supply chain exfiltration operation targeting software engineers."
+    },
+    upstreamSignals: [
+      { sourceId: "openssf_malicious", sourceName: "OpenSSF Malicious Packages", badge: "Automated Quarantine", finding: "Detected 312 package variants matching obfuscated exfiltration signatures.", signalType: "TYPOSQUAT", confidence: "CONFIRMED" },
+      { sourceId: "socket_dev", sourceName: "Socket.dev", badge: "Credential Exfiltration", finding: "Flagged dynamic reading of ~/.ssh and ~/.aws via child_process.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" },
+      { sourceId: "jfrog_research", sourceName: "JFrog Security", badge: "Malware Campaign", finding: "Traced C2 drop point to Discord webhooks and command servers.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Purge infected packages, rotate all SSH keys, AWS access tokens, and git credentials immediately.",
+      patchDetails: "Upstream registries yanked packages and banned publisher accounts.",
+      workarounds: ["Enforce --ignore-scripts in npm and install packages inside sandboxed build containers."]
+    },
+    publishedDate: "2024-05-08",
+    lastUpdatedDate: "2026-08-30"
+  },
+
+  // 15. GNU C Library (glibc) ld.so Looney Tunables Buffer Overflow (UVI-2023-4911)
+  {
+    uviId: "UVI-2023-4911",
+    title: "glibc Dynamic Loader Buffer Overflow via GLIBC_TUNABLES (Looney Tunables)",
+    headline: "Local privilege escalation to root in GNU C library dynamic loader triggered by crafted GLIBC_TUNABLES environment variable.",
+    summary: "A buffer overflow vulnerability in the dynamic loader ld.so of the GNU C Library (glibc) allowed local unprivileged users to achieve full root privileges when executing SUID binaries.",
+    technicalDetails: "When parsing the GLIBC_TUNABLES environment variable in parse_tunables(), the code failed to properly account for malformed tunable strings with duplicate assignments. This led to a heap buffer overflow in the loader, allowing an attacker to overwrite internal structures in SUID binaries (like /usr/bin/su) to gain root.",
+    globalImpact: "Universal local root vulnerability affecting Fedora, Ubuntu, Debian, Red Hat Enterprise Linux, and SUSE distributions.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Developer Linux workstations, WSL2 environments, and local multi-user servers.",
+      buildPipelineRisk: "Shared CI/CD Linux runner agents where an untrusted build job can escalate to host root.",
+      recommendationForIdeBuilds: "Update glibc via distribution package manager (apt/dnf) immediately. Ensure build runner containers do not share SUID binaries with host."
+    },
+    severity: "HIGH",
+    cvssScore: 7.8,
+    cvssVector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-122: Heap-based Buffer Overflow",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "LOCAL",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2023-4911"],
+    affectedTargets: [
+      { product: "GNU C Library (glibc)", ecosystem: "Linux", affectedVersions: "2.34 - 2.38", fixedInVersion: "2.38-r1", purl: "pkg:generic/glibc@2.37" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2023-11-21",
+      ransomwareUse: true,
+      notes: "Extensively weaponized by ransomware syndicates for post-compromise privilege escalation."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.8", finding: "Local root privilege escalation in core system dynamic loader.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Escalation", finding: "Confirmed use in ransomware deployment scripts.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade glibc package via system update and reboot.",
+      patchDetails: "Fixed pointer arithmetic and bounds checking in parse_tunables().",
+      workarounds: ["Use systemd or pam configuration to strip GLIBC_TUNABLES from SUID execution environments."]
+    },
+    publishedDate: "2023-10-03",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 16. VS Code / Electron Workspace Trust Remote Code Execution (UVI-2023-36742)
+  {
+    uviId: "UVI-2023-36742",
+    title: "Visual Studio Code / Electron Workspace Trust Command Injection Bypass",
+    headline: "Bypass of Workspace Trust security boundary permits arbitrary code execution upon opening untrusted git repositories.",
+    summary: "A vulnerability in Visual Studio Code core and Electron shell allowed untrusted repositories to bypass Workspace Trust protections by exploiting URI handler callbacks and launch configuration task triggers.",
+    technicalDetails: "When opening a project in restricted mode, Workspace Trust is designed to disable automatic task execution. However, crafted workspace settings exploiting schema-less URI schemes in task definitions could trick the workbench into executing shell scripts upon editor focus.",
+    globalImpact: "Directly affected millions of software engineers using VS Code, VSCodium, and Electron-based editor forks.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Opening an untrusted folder, GitHub repository, or zip archive directly in the IDE.",
+      buildPipelineRisk: "Developer machines executing malicious commands simply by browsing code.",
+      recommendationForIdeBuilds: "Update VS Code to version 1.83.1+. In custom SecureIDE distributions, enforce strict workspace trust isolation and disallow untrusted task triggers."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-94: Code Injection",
+    domainCategory: "Developer Tools & Workstations",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
@@ -544,276 +998,474 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     cveList: ["CVE-2023-36742"],
     msrcId: "MSRC-CVE-2023-36742",
     affectedTargets: [
-      { product: "Visual Studio Code Core", ecosystem: "vscode", affectedVersions: "<1.82.0", fixedInVersion: "1.82.0", purl: "pkg:generic/vscode@1.81.0" },
-      { product: "Eclipse Theia Workbench", ecosystem: "Developer Tools", affectedVersions: "<1.41.0", fixedInVersion: "1.41.0" }
+      { product: "Visual Studio Code", ecosystem: "Developer Tools", affectedVersions: "<1.83.1", fixedInVersion: "1.83.1", purl: "pkg:generic/vscode@1.83.0" }
     ],
     cisaKev: {
       isKnownExploited: true,
-      dateAdded: "2023-10-18",
+      dateAdded: "2023-11-01",
       ransomwareUse: false,
-      notes: "Targeted in developer workstation supply chain intrusion campaigns via cloned GitHub repos."
+      notes: "Weaponized in social engineering campaigns targeting Web3 and blockchain developers."
     },
     upstreamSignals: [
-      { sourceId: "vendor_msrc_eclipse", sourceName: "Microsoft MSRC", badge: "MSRC Bulletin", finding: "Remote code execution in VS Code developer environment.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Campaign", finding: "Recorded in developer workstation targeting operations.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
-      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Workspace Trust Audit", finding: "Verified command injection before user trust prompt in debuggers.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Remote code execution via workspace trust bypass.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "vendor_msrc_eclipse", sourceName: "Microsoft MSRC", badge: "Official Advisory", finding: "Microsoft Security Response Center bulletin for developer tooling.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade IDE engine to VS Code 1.82.0+ or SecureIDE Hardened Core with Air-Gap Policy.",
-      patchDetails: "Enforce strict Restricted Mode isolation blocking all task and debugger evaluations until explicit user confirmation.",
-      workarounds: ["Always inspect cloned repositories in Restricted Mode.", "Disable automatic task and launch configuration discovery."]
+      recommendedAction: "Update Visual Studio Code to 1.83.1 or newer.",
+      patchDetails: "Hardened URI scheme parsing and enforced strict gatekeeping on task execution.",
+      workarounds: ["Never open untrusted folders outside of restricted mode or container sandbox."]
     },
     publishedDate: "2023-09-12",
-    lastUpdatedDate: "2026-08-25"
-  },
-
-  // 9. PyPI & npm Malicious Typosquat Credential Harvester (UVI-2024-4291)
-  {
-    uviId: "UVI-2024-4291",
-    title: "Aqua Nautilus & Socket.dev Flagged Multi-Registry Developer Credential Harvester",
-    headline: "Malicious package typosquatting campaign harvesting AWS, GitHub, and SSH credentials from developer workstations.",
-    summary: "A coordinated threat campaign uploaded 140+ typosquatted packages to npm and PyPI (impersonating prettier, colorize, and requests) containing an obfuscated telemetry payload that exfiltrates environment secrets to Discord and Telegram webhooks.",
-    technicalDetails: "On package installation or import, the setup.py or postinstall hook executes an obfuscated Base64 payload. The script checks for process.env tokens (AWS_SECRET_ACCESS_KEY, GITHUB_TOKEN, NPM_TOKEN, SLACK_BOT_TOKEN) and inspects ~/.aws/credentials, ~/.ssh/id_rsa, and sends encrypted JSON via HTTPS.",
-    severity: "CRITICAL",
-    cvssScore: 9.6,
-    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N",
-    cwe: "CWE-506: Embedded Malicious Code",
-    category: "Supply Chain Malware",
-    attackVector: "NETWORK",
-    attackComplexity: "LOW",
-    privilegesRequired: "NONE",
-    userInteraction: "NONE",
-    scope: "CHANGED",
-    cveList: ["GHSA-malware-2024-9182"],
-    ghsaId: "GHSA-malware-2024-9182",
-    affectedTargets: [
-      { product: "esben-p/prettier-code-formatter", ecosystem: "npm", affectedVersions: "All", fixedInVersion: "Revoked / Blocked", purl: "pkg:npm/esben-p/prettier-code-formatter@9.9.0" },
-      { product: "reqeusts-fast / py-colorizer", ecosystem: "pypi", affectedVersions: "All", fixedInVersion: "Revoked / Blocked", purl: "pkg:pypi/reqeusts-fast@2.31.0" }
-    ],
-    cisaKev: {
-      isKnownExploited: true,
-      dateAdded: "2024-04-02",
-      ransomwareUse: false,
-      notes: "Credential harvester used in enterprise token theft campaigns."
-    },
-    upstreamSignals: [
-      { sourceId: "aqua_nautilus", sourceName: "Aqua Nautilus", badge: "Typosquat Campaign", finding: "Detected coordinated impersonator packages with malicious postinstall hooks.", signalType: "TYPOSQUAT", confidence: "CONFIRMED" },
-      { sourceId: "socket_dev", sourceName: "Socket.dev", badge: "Env & SSH Theft", finding: "Behavioral alert: reads process.env and exfiltrates via webhook.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" },
-      { sourceId: "openssf_malicious", sourceName: "OpenSSF Malicious Packages", badge: "Quarantine", finding: "Added to global open-source malicious package registry.", signalType: "TYPOSQUAT", confidence: "CONFIRMED" }
-    ],
-    remediation: {
-      recommendedAction: "Block and quarantine typosquatted packages in enterprise registries (Artifactory, Nexus). Rotate all developer tokens immediately.",
-      patchDetails: "Packages removed from public upstream registries.",
-      workarounds: ["Use SecureIDE Registry Proxy to enforce publisher domain whitelist.", "Disable postinstall scripts in npm/pnpm."]
-    },
-    publishedDate: "2024-03-15",
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 10. Spring Cloud Function SpEL Remote Code Execution (UVI-2022-22963)
+  // 17. Jenkins CLI Arbitrary File Read and RCE (UVI-2024-23897)
   {
-    uviId: "UVI-2022-22963",
-    title: "Spring Cloud Function Spring Expression Language (SpEL) Remote Code Execution (Spring4Shell)",
-    headline: "Unauthenticated remote code execution via routing-expression HTTP header in Spring Cloud Function applications.",
-    summary: "Spring Cloud Function allowed routing expressions to be supplied in the spring.cloud.function.routing-expression HTTP header. Untrusted input evaluated as SpEL enabled remote code execution.",
-    technicalDetails: "The SimpleFunctionRegistry evaluated the routing expression using a standard SpEL expression parser without restricting execution contexts. An attacker could craft a header such as T(java.lang.Runtime).getRuntime().exec(...) to achieve arbitrary code execution.",
+    uviId: "UVI-2024-23897",
+    title: "Jenkins Core CLI args4j Arbitrary File Read and Remote Code Execution",
+    headline: "Unauthenticated arbitrary file read on Jenkins controllers via args4j @ file expansion feature leading to full server takeover.",
+    summary: "Jenkins versions through 2.441 and LTS through 2.426.2 use the args4j library to parse command arguments, which by default expands any argument starting with '@' into file contents, allowing unauthenticated attackers to read arbitrary files from the controller.",
+    technicalDetails: "By reading sensitive cryptographic keys (master.key, hudson.util.Secret), attackers could forge 'Remember Me' cookies, decrypt stored credentials, and execute arbitrary Groovy scripts via the Jenkins Script Console to obtain full RCE.",
+    globalImpact: "Compromised enterprise continuous integration controllers, deployment pipelines, and secrets across thousands of organizations.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Developer workstations hosting local Jenkins test controllers or interacting with corporate CI controllers.",
+      buildPipelineRisk: "Complete theft of CI/CD secrets, deployment private keys, and git credentials stored in Jenkins.",
+      recommendationForIdeBuilds: "Upgrade Jenkins controller to 2.442 or LTS 2.426.3. Disable the built-in CLI interface if upgrades cannot be performed immediately."
+    },
     severity: "CRITICAL",
     cvssScore: 9.8,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    cwe: "CWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement",
-    category: "Dependencies & Libraries",
+    cwe: "CWE-22: Improper Limitation of a Pathname to a Restricted Directory",
+    domainCategory: "Developer Tools & Workstations",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "UNCHANGED",
-    cveList: ["CVE-2022-22963"],
-    ghsaId: "GHSA-r874-v45r-4jgq",
+    cveList: ["CVE-2024-23897"],
     affectedTargets: [
-      { product: "Spring Cloud Function", ecosystem: "maven", affectedVersions: "3.1.6, 3.2.2, older unsupported", fixedInVersion: "3.1.7, 3.2.3", purl: "pkg:maven/org.springframework.cloud/spring-cloud-function-context@3.1.6" }
+      { product: "Jenkins Core", ecosystem: "CI/CD", affectedVersions: "<=2.441, LTS <=2.426.2", fixedInVersion: "2.442 / LTS 2.426.3", purl: "pkg:generic/jenkins@2.441" }
     ],
     cisaKev: {
       isKnownExploited: true,
-      dateAdded: "2022-04-04",
+      dateAdded: "2024-02-01",
       ransomwareUse: true,
-      notes: "Extensively exploited in cryptocurrency mining and botnet campaigns."
+      notes: "Actively exploited to deploy ransomware and cryptominers on CI/CD build infrastructure."
     },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Critical SpEL injection vulnerability in enterprise Java framework.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Ransomware Use", finding: "Active weaponization by multiple ransomware and botnet actors.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Unauthenticated arbitrary file read leading to remote code execution.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "CI/CD Exploitation", finding: "Subject of automated mass scanning targeting corporate CI servers.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade spring-cloud-function to version 3.1.7 or 3.2.3 immediately.",
-      patchDetails: "Spring framework now uses SimpleEvaluationContext to prevent arbitrary class instantiation.",
-      workarounds: ["Block the spring.cloud.function.routing-expression header at WAF / ingress."]
+      recommendedAction: "Upgrade Jenkins to 2.442 or LTS 2.426.3 immediately.",
+      patchDetails: "Disabled the @ file expansion feature in args4j CLI parser.",
+      workarounds: ["Disable access to the Jenkins CLI by configuring security settings or blocking the CLI port."]
     },
-    publishedDate: "2022-03-29",
-    lastUpdatedDate: "2026-08-10"
+    publishedDate: "2024-01-24",
+    lastUpdatedDate: "2026-08-20"
   },
 
-  // 11. libwebp Heap Buffer Overflow in WebP Rendering (UVI-2023-4863)
+  // 18. Docker Desktop Arbitrary File Overwrite Host Escape (UVI-2024-21624)
   {
-    uviId: "UVI-2023-4863",
-    title: "libwebp Heap Buffer Overflow in Lossless WebP Image Decoding",
-    headline: "Universal zero-click heap buffer overflow in libwebp affecting Chrome, Electron, Firefox, and hundreds of client applications.",
-    summary: "A heap-based buffer overflow in libwebp's BuildHuffmanTable function allowed attackers to execute arbitrary code via a specially crafted WebP image. Widely exploited across browsers, chat apps, and Electron-based IDEs.",
-    technicalDetails: "When decoding lossless WebP streams, BuildHuffmanTable allocated insufficient memory for Huffman tables when processing malformed bitstream entries. An attacker could construct an image that overruns the allocated table buffer, overwriting adjacent heap allocations.",
+    uviId: "UVI-2024-21624",
+    title: "Docker Desktop Windows and macOS Host File Overwrite Vulnerability",
+    headline: "Symlink traversal vulnerability in Docker Desktop container mount synchronization allows host filesystem write.",
+    summary: "A vulnerability in Docker Desktop prior to 4.27.0 allowed containers with bind mounts to traverse symlinks and write files outside the intended host directory on Windows and macOS.",
+    technicalDetails: "The file-sharing component (VirtioFS / gRPC-FUSE) did not properly validate symlink resolution boundaries. A container creating a symlink pointing to host system paths could trick the synchronization daemon into writing files to host locations.",
+    globalImpact: "Affected millions of software developers using Docker Desktop on Windows and macOS.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Running containerized builds with host bind mounts (-v $(pwd):/workspace) inside Docker Desktop.",
+      buildPipelineRisk: "Compromise of developer's personal files, SSH keys, or startup scripts on the host operating system.",
+      recommendationForIdeBuilds: "Update Docker Desktop to version 4.27.0+. Restrict file-sharing directories in Docker Desktop settings to dedicated project folders."
+    },
     severity: "HIGH",
-    cvssScore: 8.8,
-    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-    cwe: "CWE-122: Heap-based Buffer Overflow",
-    category: "Dependencies & Libraries",
-    attackVector: "NETWORK",
-    attackComplexity: "LOW",
-    privilegesRequired: "NONE",
-    userInteraction: "REQUIRED",
-    scope: "UNCHANGED",
-    cveList: ["CVE-2023-4863", "CVE-2023-5129"],
-    ghsaId: "GHSA-j7hp-h8jx-5ppr",
-    affectedTargets: [
-      { product: "libwebp", ecosystem: "C/C++", affectedVersions: "0.5.0 <= version < 1.3.2", fixedInVersion: "1.3.2", purl: "pkg:generic/libwebp@1.3.1" },
-      { product: "Electron Framework (VS Code, Slack, Discord)", ecosystem: "Developer Tools", affectedVersions: "Electron <22.3.24, <24.8.3, <25.8.1", fixedInVersion: "Electron 25.8.1+" }
-    ],
-    cisaKev: {
-      isKnownExploited: true,
-      dateAdded: "2023-09-13",
-      ransomwareUse: false,
-      notes: "Exploited in high-profile zero-day spyware deployment chains."
-    },
-    upstreamSignals: [
-      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Zero-Day Exploitation", finding: "Active weaponization in commercial surveillance spyware.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.8", finding: "Widespread heap overflow affecting all client rendering software.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
-    ],
-    remediation: {
-      recommendedAction: "Upgrade libwebp to >=1.3.2 and update all Electron runtimes across developer tools.",
-      patchDetails: "Added bounds checks to Huffman table allocation size calculations.",
-      workarounds: ["Disable WebP image preview rendering in file managers and IDEs."]
-    },
-    publishedDate: "2023-09-12",
-    lastUpdatedDate: "2026-08-15"
-  },
-
-  // 12. Go net/http Content-Length Desynchronization (UVI-2024-45338)
-  {
-    uviId: "UVI-2024-45338",
-    title: "Golang net/http HTTP Request Smuggling via Chunked Header Processing",
-    headline: "HTTP request smuggling and cache poisoning in Go net/http reverse proxies and web servers.",
-    summary: "The Go net/http package did not properly validate Content-Length and Transfer-Encoding header combinations in specific chunked transfer states, enabling HTTP request smuggling against reverse proxy architectures.",
-    technicalDetails: "When processing requests with chunked extensions containing trailing whitespace and duplicate Content-Length headers, the net/http server and client parsed message boundaries inconsistently, allowing an attacker to smuggle a second request.",
-    severity: "HIGH",
-    cvssScore: 7.5,
-    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
-    cwe: "CWE-444: Inconsistent Interpretation of HTTP Requests",
-    category: "Networking & Cryptography",
-    attackVector: "NETWORK",
-    attackComplexity: "LOW",
-    privilegesRequired: "NONE",
-    userInteraction: "NONE",
-    scope: "UNCHANGED",
-    cveList: ["CVE-2024-45338"],
-    affectedTargets: [
-      { product: "Go Standard Library (net/http)", ecosystem: "golang", affectedVersions: "<1.22.8, <1.23.2", fixedInVersion: "1.22.8, 1.23.2", purl: "pkg:golang/std@1.23.1" }
-    ],
-    cisaKev: {
-      isKnownExploited: false,
-      notes: "Used in security research and CDN cache poisoning demonstrations."
-    },
-    upstreamSignals: [
-      { sourceId: "ecosystem_dbs", sourceName: "Go VulnDB", badge: "GO-2024-3152", finding: "Official advisory issued by Google Go security team.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.5", finding: "Request smuggling in cloud microservices and ingress proxies.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
-    ],
-    remediation: {
-      recommendedAction: "Upgrade Go toolchain to 1.22.8+ or 1.23.2+ and recompile cloud services.",
-      patchDetails: "net/http now strictly rejects malformed chunked transfer encoding lines.",
-      workarounds: ["Enforce HTTP/2 or HTTP/3 at edge reverse proxies."]
-    },
-    publishedDate: "2024-09-04",
-    lastUpdatedDate: "2026-09-05"
-  },
-
-  // 13. Jinja2 Template Attribute Injection (UVI-2024-34064)
-  {
-    uviId: "UVI-2024-34064",
-    title: "Jinja2 Template Engine HTML Attribute Injection in xmlattr Filter",
-    headline: "Attribute injection vulnerability in Jinja2 allows Cross-Site Scripting (XSS) when rendering user-controlled dictionary keys.",
-    summary: "The xmlattr filter in Jinja2 does not sanitize whitespace in dictionary keys, allowing attackers to inject arbitrary HTML attributes (e.g. onerror=alert(1)) into rendered web pages or documentation hover tools.",
-    technicalDetails: "When rendering a dictionary using {{ dict | xmlattr }}, Jinja2 assumed keys were valid XML attribute names. Passing keys with embedded spaces or special characters broke out of attribute quotes.",
-    severity: "MEDIUM",
-    cvssScore: 5.4,
-    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
-    cwe: "CWE-79: Cross-site Scripting (XSS)",
-    category: "Dependencies & Libraries",
-    attackVector: "NETWORK",
+    cvssScore: 8.7,
+    cvssVector: "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+    cwe: "CWE-59: Improper Link Resolution Before File Access",
+    domainCategory: "Cloud & Container Infrastructure",
+    attackVector: "LOCAL",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
     userInteraction: "REQUIRED",
     scope: "CHANGED",
-    cveList: ["CVE-2024-34064"],
-    ghsaId: "GHSA-g2j5-57x7-q3hm",
+    cveList: ["CVE-2024-21624"],
     affectedTargets: [
-      { product: "Jinja2", ecosystem: "pypi", affectedVersions: "<3.1.4", fixedInVersion: "3.1.4", purl: "pkg:pypi/jinja2@3.1.3" }
+      { product: "Docker Desktop (Windows/macOS)", ecosystem: "Developer Tools", affectedVersions: "<4.27.0", fixedInVersion: "4.27.0", purl: "pkg:generic/docker-desktop@4.26.1" }
     ],
-    cisaKev: { isKnownExploited: false },
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Host escape demonstrated in security research."
+    },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 5.4", finding: "Attribute injection in popular Python template engine.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "ecosystem_dbs", sourceName: "PyPA Advisory DB", badge: "PYSEC-2024-48", finding: "Fixed in Jinja2 3.1.4 release.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.7", finding: "Symlink traversal in container file sharing daemon.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "aqua_nautilus", sourceName: "Aqua Nautilus", badge: "Host Escape", finding: "Demonstrated arbitrary overwrite of host .bashrc via container mount.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade jinja2 to >=3.1.4 in requirements.txt or pyproject.toml.",
-      patchDetails: "xmlattr filter now validates that all dictionary keys match valid XML attribute regex patterns.",
-      workarounds: ["Sanitize dictionary keys before passing them to the xmlattr filter."]
+      recommendedAction: "Upgrade Docker Desktop to 4.27.0 or newer.",
+      patchDetails: "Enforced strict path normalization and symlink resolution verification inside VirtioFS.",
+      workarounds: ["Avoid mounting host home directories into containers."]
     },
-    publishedDate: "2024-05-06",
-    lastUpdatedDate: "2026-08-10"
+    publishedDate: "2024-02-01",
+    lastUpdatedDate: "2026-08-15"
   },
 
-  // 14. OpenSSL ChaCha20-Poly1305 Cipher State Corruption (UVI-2024-52303)
+  // 19. Sudo Baron Samedit Local Privilege Escalation (UVI-2021-3156)
   {
-    uviId: "UVI-2024-52303",
-    title: "OpenSSL ChaCha20-Poly1305 TLS Cipher State Corruption Denial of Service",
-    headline: "Memory corruption in OpenSSL's ChaCha20-Poly1305 assembly routine causing application crashes during TLS negotiation.",
-    summary: "A flaw in the AVX-512 assembly implementation of ChaCha20-Poly1305 in OpenSSL could cause state corruption under high concurrency, leading to daemon crash and denial of service.",
-    technicalDetails: "On processors supporting AVX-512, an incorrect register spill in chacha-x86_64.pl corrupted the stack frame when handling specific message alignments during TLS record decryption.",
-    severity: "MEDIUM",
-    cvssScore: 5.9,
-    cvssVector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
-    cwe: "CWE-662: Improper Synchronization",
-    category: "Networking & Cryptography",
+    uviId: "UVI-2021-3156",
+    title: "Sudo Heap-Based Buffer Overflow Local Root Privilege Escalation (Baron Samedit)",
+    headline: "Heap buffer overflow in Sudo allows any local user to obtain root privileges without authentication.",
+    summary: "A heap-based buffer overflow was discovered in Sudo's command-line unescaping logic. Any local user, regardless of whether they were in the sudoers file, could exploit this flaw to obtain root privileges.",
+    technicalDetails: "When sudo executed commands in shell mode (either via -s or -e), it parsed arguments and escaped characters. If a command ended with a trailing backslash character, the unescape function stepped past the null terminator, overflowing the heap buffer with attacker-controlled data.",
+    globalImpact: "Existed undetected in Sudo for nearly 10 years across virtually every Unix, Linux, and macOS system.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Developer workstations, cloud development VMs, and shared server environments.",
+      buildPipelineRisk: "Untrusted build jobs running under low-privilege accounts gaining host root.",
+      recommendationForIdeBuilds: "Update sudo package via system package manager (sudo apt-get install --only-upgrade sudo). Verify sudo --version is 1.9.5p2+."
+    },
+    severity: "HIGH",
+    cvssScore: 7.8,
+    cvssVector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-122: Heap-based Buffer Overflow",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "LOCAL",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2021-3156"],
+    affectedTargets: [
+      { product: "Sudo", ecosystem: "Unix / Linux", affectedVersions: "1.8.2 - 1.8.31p2, 1.9.0 - 1.9.5p1", fixedInVersion: "1.9.5p2", purl: "pkg:generic/sudo@1.9.5p1" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2021-11-03",
+      ransomwareUse: true,
+      notes: "Widely used in multi-stage ransomware and intrusion operations on Linux."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.8", finding: "Local root privilege escalation in sudo command unescaping.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active In Wild", finding: "Exploitation confirmed in enterprise Linux breaches.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade sudo to 1.9.5p2 or vendor patched package immediately.",
+      patchDetails: "Corrected buffer allocation calculations and disallowed trailing backslashes in argument unescaping.",
+      workarounds: ["None reliable without binary upgrade."]
+    },
+    publishedDate: "2021-01-26",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 20. PostgreSQL pg_dump Remote Code Execution (UVI-2024-1597)
+  {
+    uviId: "UVI-2024-1597",
+    title: "PostgreSQL pg_dump and pg_dumpall SQL Injection and Command Execution",
+    headline: "Improper quoting in pg_dump when dumping databases containing object names with newlines permits code execution.",
+    summary: "PostgreSQL pg_dump did not properly sanitize object names containing newline characters or SQL comments, allowing a malicious database owner to execute arbitrary SQL commands when an administrator backed up the database.",
+    technicalDetails: "When generating dump files, pg_dump emitted object comments or definitions without sanitizing embedded carriage returns. When the backup was restored by a superuser, the injected SQL statements executed with full administrative permissions.",
+    globalImpact: "Impacted cloud database providers, automated backup workflows, and enterprise PostgreSQL instances.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "MEDIUM",
+      workstationVector: "Local PostgreSQL development databases, running test dumps, or importing customer database snapshots.",
+      buildPipelineRisk: "CI/CD integration pipelines that run automated database dump and restore migrations.",
+      recommendationForIdeBuilds: "Upgrade local PostgreSQL client tools to versions 16.2, 15.6, 14.11, 13.14, or 12.18. In IDE database tooling, do not execute unverified pg_dump files."
+    },
+    severity: "HIGH",
+    cvssScore: 8.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+    cwe: "CWE-89: SQL Injection",
+    domainCategory: "Databases & Storage",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "REQUIRED",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-1597"],
+    affectedTargets: [
+      { product: "PostgreSQL pg_dump", ecosystem: "Databases", affectedVersions: "<16.2, <15.6, <14.11", fixedInVersion: "16.2", purl: "pkg:generic/postgresql@16.1" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Demonstrated in database security assessments."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.8", finding: "SQL injection in pg_dump backup utility.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade PostgreSQL server and client packages to fixed releases.",
+      patchDetails: "Enforced strict dollar-quoting and identifier escaping in pg_dump output.",
+      workarounds: ["Avoid running pg_dump against untrusted or multi-tenant database clusters."]
+    },
+    publishedDate: "2024-02-08",
+    lastUpdatedDate: "2026-08-20"
+  },
+
+  // 21. OpenSSL Punycode Buffer Overflow (UVI-2022-37868)
+  {
+    uviId: "UVI-2022-37868",
+    title: "OpenSSL X.509 Certificate Name Constraint Punycode Buffer Overflow",
+    headline: "Buffer overflow in OpenSSL during certificate verification when parsing email addresses containing Punycode characters.",
+    summary: "A buffer overflow can be triggered in OpenSSL 3.0.x during X.509 certificate verification when checking name constraints on email addresses with internationalized domain names (IDN/Punycode).",
+    technicalDetails: "In ossl_punycode_decode(), an integer overflow occurred when parsing crafted email address names, causing a 4-byte stack or heap overflow. On systems where stack protection was absent, this could lead to code execution.",
+    globalImpact: "Affected TLS servers and clients validating client certificates or connecting to arbitrary TLS endpoints.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "MEDIUM",
+      workstationVector: "Development tools connecting to external HTTPS endpoints or inspecting TLS certificates.",
+      buildPipelineRisk: "Compilers and dependency managers (npm, pip, cargo) validating remote repository TLS certificates.",
+      recommendationForIdeBuilds: "Upgrade OpenSSL to 3.0.7 or later across developer workstations and container base images."
+    },
+    severity: "HIGH",
+    cvssScore: 7.5,
+    cvssVector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-120: Buffer Copy without Checking Size of Input",
+    domainCategory: "Networking, Protocols & Cryptography",
     attackVector: "NETWORK",
     attackComplexity: "HIGH",
     privilegesRequired: "NONE",
     userInteraction: "NONE",
     scope: "UNCHANGED",
-    cveList: ["CVE-2024-52303"],
+    cveList: ["CVE-2022-37868", "CVE-2022-3602"],
     affectedTargets: [
-      { product: "OpenSSL", ecosystem: "C/C++", affectedVersions: "3.0.0 - 3.0.14, 3.1.0 - 3.1.6, 3.2.0 - 3.2.2, 3.3.0 - 3.3.1", fixedInVersion: "3.0.15, 3.1.7, 3.2.3, 3.3.2", purl: "pkg:generic/openssl@3.3.1" }
+      { product: "OpenSSL", ecosystem: "C/C++", affectedVersions: "3.0.0 - 3.0.6", fixedInVersion: "3.0.7", purl: "pkg:generic/openssl@3.0.6" }
     ],
-    cisaKev: { isKnownExploited: false },
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "High profile advisory patched proactively by OpenSSL project."
+    },
     upstreamSignals: [
-      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 5.9", finding: "Denial of service in AVX-512 cryptographic implementation.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Cryptographic Audit", finding: "Assembly register spill verified via symbolic execution.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.5", finding: "Buffer overflow in X.509 certificate verification.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Upgrade OpenSSL to 3.0.15+, 3.1.7+, 3.2.3+, or 3.3.2+.",
-      patchDetails: "Corrected AVX-512 register preservation in ChaCha20 assembly loops.",
-      workarounds: ["Disable ChaCha20-Poly1305 cipher suites in server configuration."]
+      recommendedAction: "Upgrade OpenSSL to 3.0.7 or newer.",
+      patchDetails: "Corrected buffer allocation and decoding limits in ossl_punycode_decode.",
+      workarounds: ["Avoid enabling TLS client certificate verification on vulnerable OpenSSL builds."]
     },
-    publishedDate: "2024-08-20",
-    lastUpdatedDate: "2026-09-01"
+    publishedDate: "2022-11-01",
+    lastUpdatedDate: "2026-08-15"
   },
 
-  // 15. nghttp2 HTTP/2 CONTINUATION Flood Denial of Service (UVI-2024-28182)
+  // 22. Heartbleed OpenSSL TLS Heartbeat Extension Memory Leak (UVI-2014-0160)
+  {
+    uviId: "UVI-2014-0160",
+    title: "OpenSSL TLS Heartbeat Extension Memory Information Disclosure (Heartbleed)",
+    headline: "Catastrophic missing bounds check in OpenSSL Heartbeat extension enables unauthenticated remote memory dumping.",
+    summary: "The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g did not properly handle Heartbeat Extension packets, allowing remote attackers to obtain up to 64KB of memory per request from process memory.",
+    technicalDetails: "When responding to a heartbeat request, OpenSSL allocated memory based on the payload length field supplied by the client without verifying that the actual packet payload matched that length. The server echoed back uninitialized memory containing private keys, session tokens, and passwords.",
+    globalImpact: "Historic milestone vulnerability exposing SSL private keys and sensitive data across 17% of the internet's secure web servers.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Legacy development servers or embedded testing hardware using OpenSSL 1.0.1.",
+      buildPipelineRisk: "Legacy build containers exposing test servers over public endpoints.",
+      recommendationForIdeBuilds: "Ensure no legacy toolchain or container image embeds OpenSSL 1.0.1. Verify TLS stacks use OpenSSL 1.1.1 or 3.x+."
+    },
+    severity: "HIGH",
+    cvssScore: 7.5,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    cwe: "CWE-125: Out-of-bounds Read",
+    domainCategory: "Networking, Protocols & Cryptography",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2014-0160"],
+    affectedTargets: [
+      { product: "OpenSSL", ecosystem: "C/C++", affectedVersions: "1.0.1 - 1.0.1f", fixedInVersion: "1.0.1g", purl: "pkg:generic/openssl@1.0.1f" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2022-03-25",
+      ransomwareUse: false,
+      notes: "Heavily exploited to steal private keys and credentials worldwide."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.5", finding: "Remote memory disclosure leaking private keys.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Historic Threat", finding: "Known in-the-wild exploitation catalog.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade OpenSSL to 1.0.1g or modern 3.x LTS.",
+      patchDetails: "Added bounds check verifying payload length matches packet length.",
+      workarounds: ["Recompile OpenSSL with -DOPENSSL_NO_HEARTBEATS."]
+    },
+    publishedDate: "2014-04-07",
+    lastUpdatedDate: "2026-08-10"
+  },
+
+  // 23. EternalBlue SMBv1 Remote Code Execution (UVI-2017-0144)
+  {
+    uviId: "UVI-2017-0144",
+    title: "Microsoft Windows SMBv1 Server Remote Code Execution (EternalBlue / WannaCry)",
+    headline: "Zero-click remote code execution in Windows SMBv1 server protocol exploited by WannaCry and NotPetya worms.",
+    summary: "The SMBv1 server in Microsoft Windows allowed remote attackers to execute arbitrary code via specially crafted packets, enabling wormable zero-click propagation across enterprise networks.",
+    technicalDetails: "Vulnerability in Srv!SrvOs2FeaToNt caused a mathematical error when converting OS/2 format FEA lists to NT format, resulting in buffer allocation mismatch and kernel pool corruption.",
+    globalImpact: "Weaponized in the WannaCry and NotPetya global cyber disasters, causing over $10B in damages to hospitals, ports, and multinational corporations.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Windows workstations on shared networks with SMBv1 enabled.",
+      buildPipelineRisk: "Wormable lateral movement to on-premise Windows build runners and dev machines.",
+      recommendationForIdeBuilds: "Ensure SMBv1 is completely uninstalled on all developer Windows machines: Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2017-0144"],
+    msrcId: "MS17-010",
+    affectedTargets: [
+      { product: "Microsoft Windows SMBv1", ecosystem: "Windows", affectedVersions: "Windows 7, 8.1, 10, Server 2008-2016", fixedInVersion: "MS17-010 Update", purl: "pkg:generic/windows-smb@1.0" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2022-02-10",
+      ransomwareUse: true,
+      notes: "Primary exploit in WannaCry and NotPetya ransomware attacks."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Wormable remote kernel code execution in SMBv1.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Critical Ransomware", finding: "Active global ransomware weapon.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Apply MS17-010 patch and completely disable SMBv1.",
+      patchDetails: "Corrected buffer allocation and validation in SrvOs2FeaToNt.",
+      workarounds: ["Block SMB port 445 on firewalls and disable SMBv1 feature."]
+    },
+    publishedDate: "2017-03-14",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 24. SolarWinds Orion SUNBURST Supply Chain Trojan (UVI-2020-10148)
+  {
+    uviId: "UVI-2020-10148",
+    title: "SolarWinds Orion Platform SUNBURST Supply Chain DLL Backdoor",
+    headline: "Trojanized SolarWinds.Orion.Core.BusinessLayer.dll injected into official build releases by nation-state actors.",
+    summary: "Attackers compromised the software build pipeline of SolarWinds Orion, injecting a stealthy backdoor (SUNBURST) into signed software updates distributed to over 18,000 global customers.",
+    technicalDetails: "The malware was inserted via a compiler build script injection (SUNSPOT) that monitored build processes and substituted source files on the fly. The backdoor remained dormant for two weeks before resolving C2 domains and executing in-memory payloads.",
+    globalImpact: "Infiltrated US federal agencies (Treasury, Homeland Security, State Department) and Fortune 500 tech companies.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Demonstrated the danger of unhardened build systems, unsigned compiler hooks, and compromised build runners.",
+      buildPipelineRisk: "Direct precedent for why SecureIDE build pipelines require isolated sandboxing, cryptographic reproducible builds, and CycloneDX SBOM verification.",
+      recommendationForIdeBuilds: "Mandate cryptographic SBOM generation and ephemeral compiler sandboxing for all IDE distributions in SecureIDE Builder Studio."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-506: Embedded Malicious Code",
+    domainCategory: "Supply Chain & Malware",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2020-10148"],
+    affectedTargets: [
+      { product: "SolarWinds Orion Platform", ecosystem: "Enterprise Software", affectedVersions: "2019.4 HF 5 - 2020.2.1", fixedInVersion: "2020.2.1 HF 2", purl: "pkg:generic/solarwinds-orion@2020.2" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2021-11-03",
+      ransomwareUse: false,
+      notes: "Nation-state cyber espionage operation."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Supply chain backdoor in signed enterprise application.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Nation-State Threat", finding: "Attributed to APT29 / Cozy Bear.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade Orion Platform to 2020.2.1 HF 2 or modern clean releases.",
+      patchDetails: "Removed compromised BusinessLayer DLL and revoked compromised signing certificates.",
+      workarounds: ["Isolate Orion servers and audit SAML token signing certs."]
+    },
+    publishedDate: "2020-12-14",
+    lastUpdatedDate: "2026-08-10"
+  },
+
+  // 25. EventStream Malicious Flatmap-Stream Bitcoin Harvester (UVI-2018-20834)
+  {
+    uviId: "UVI-2018-20834",
+    title: "npm Event-Stream Flatmap-Stream Social Engineering Supply Chain Attack",
+    headline: "Legitimate maintainer social engineered into transferring npm package ownership to attacker who injected Bitcoin wallet stealer.",
+    summary: "The widely used npm package 'event-stream' was transferred to an attacker who added 'flatmap-stream' as a dependency, containing encrypted code designed to steal Bitcoin private keys from the Copay cryptocurrency wallet.",
+    technicalDetails: "The payload was encrypted with AES256 and only decrypted when executed inside an application matching the package name 'copay-dash'. It hooked transaction signing functions to steal seed phrases and send them to an exfiltration server.",
+    globalImpact: "Prototypical supply chain maintainer burnout takeover affecting millions of downstream npm consumers.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Running npm install on projects with unpinned transitive dependency trees.",
+      buildPipelineRisk: "Transitive dependency injection bypassing direct package audit checks.",
+      recommendationForIdeBuilds: "Use SecureIDE Builder Studio to enforce strict lockfile integrity verification and flag sudden maintainer account transfers."
+    },
+    severity: "HIGH",
+    cvssScore: 8.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    cwe: "CWE-506: Embedded Malicious Code",
+    domainCategory: "Supply Chain & Malware",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "REQUIRED",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2018-20834"],
+    ghsaId: "GHSA-55q7-qqv3-479p",
+    osvId: "OSV-2018-20834",
+    affectedTargets: [
+      { product: "event-stream / flatmap-stream", ecosystem: "npm", affectedVersions: "3.3.6", fixedInVersion: "3.3.4 (reverted)", purl: "pkg:npm/event-stream@3.3.6" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2022-04-01",
+      ransomwareUse: false,
+      notes: "Targeted cryptocurrency theft supply chain attack."
+    },
+    upstreamSignals: [
+      { sourceId: "openssf_malicious", sourceName: "OpenSSF Malicious Packages", badge: "Account Takeover", finding: "Classic social engineering maintainer handover.", signalType: "TYPOSQUAT", confidence: "CONFIRMED" },
+      { sourceId: "socket_dev", sourceName: "Socket.dev", badge: "Encrypted Payload", finding: "Detected AES encrypted payload executing in build stage.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Pin event-stream to version 3.3.4 or replace with modern stream implementations.",
+      patchDetails: "npm unpublished flatmap-stream and reverted event-stream to 3.3.4.",
+      workarounds: ["Use package-lock.json to forbid automatic installation of 3.3.6."]
+    },
+    publishedDate: "2018-11-26",
+    lastUpdatedDate: "2026-08-10"
+  },
+
+  // 26. nghttp2 HTTP/2 CONTINUATION Flood Denial of Service (UVI-2024-28182)
   {
     uviId: "UVI-2024-28182",
     title: "HTTP/2 CONTINUATION Frame Flood Denial of Service across Web Servers & Proxies",
     headline: "Unbounded HTTP/2 CONTINUATION frame processing permits remote resource exhaustion and server crash.",
     summary: "An attacker can trigger out-of-memory crashes and 100% CPU utilization on HTTP/2 servers by sending a continuous stream of CONTINUATION frames without ending the header block.",
     technicalDetails: "Many HTTP/2 implementations, including nghttp2, Node.js http2, Go net/http, and Apache Tomcat, did not enforce a limit on the number of CONTINUATION frames received per stream as long as the END_HEADERS flag was omitted.",
+    globalImpact: "Affected millions of cloud load balancers, API gateways, and microservices exposing HTTP/2.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Local reverse proxies and API test gateways.",
+      buildPipelineRisk: "Test servers hanging during automated HTTP/2 fuzzing.",
+      recommendationForIdeBuilds: "Update local development HTTP/2 libraries (Node.js 20.12.2+, Go 1.22.2+)."
+    },
     severity: "HIGH",
     cvssScore: 7.5,
     cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
     cwe: "CWE-400: Uncontrolled Resource Consumption",
-    category: "Networking & Cryptography",
+    domainCategory: "Networking, Protocols & Cryptography",
     attackVector: "NETWORK",
     attackComplexity: "LOW",
     privilegesRequired: "NONE",
@@ -834,11 +1486,196 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
       { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active In KEV", finding: "Active exploitation in cloud edge network disruptions.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
     ],
     remediation: {
-      recommendedAction: "Apply HTTP/2 CONTINUATION flood security updates across all reverse proxies, API gateways, and web servers.",
+      recommendedAction: "Apply HTTP/2 CONTINUATION flood security updates across all reverse proxies and servers.",
       patchDetails: "Enforce strict limits on unparsed header frames per HTTP/2 stream.",
-      workarounds: ["Limit maximum header list size or disable HTTP/2 temporarily if patches cannot be applied."]
+      workarounds: ["Limit maximum header list size or disable HTTP/2 temporarily."]
     },
     publishedDate: "2024-04-03",
     lastUpdatedDate: "2026-08-22"
+  },
+
+  // 27. Go net/http Request Smuggling (UVI-2024-45338)
+  {
+    uviId: "UVI-2024-45338",
+    title: "Go net/http Content-Length Chunked Encoding HTTP Request Smuggling",
+    headline: "Inconsistent handling of chunked transfer encoding in Go HTTP server permits HTTP request smuggling.",
+    summary: "Go net/http server versions prior to 1.22.4 and 1.21.11 improperly processed Content-Length and Transfer-Encoding headers with unconventional capitalization or whitespace, enabling request smuggling behind reverse proxies.",
+    technicalDetails: "When a request contained both Transfer-Encoding and Content-Length with trailing whitespace, Go prioritized Content-Length while front-end proxies prioritized Transfer-Encoding, causing request desynchronization.",
+    globalImpact: "Impacted Go microservices, Kubernetes ingress controllers, and API gateways.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Local Go dev servers and microservices testing.",
+      buildPipelineRisk: "Deploying Go binaries with unpatched net/http runtime into production.",
+      recommendationForIdeBuilds: "Update Go toolchain to Go 1.22.4+ or 1.21.11+ using 'go install' or system package manager."
+    },
+    severity: "HIGH",
+    cvssScore: 7.5,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+    cwe: "CWE-444: Inconsistent Interpretation of HTTP Requests",
+    domainCategory: "Language Runtimes & Toolchains",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-45338"],
+    affectedTargets: [
+      { product: "Go net/http", ecosystem: "Golang", affectedVersions: "<1.21.11, <1.22.4", fixedInVersion: "1.22.4", purl: "pkg:golang/net/http@1.22.3" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Request smuggling vector."
+    },
+    upstreamSignals: [
+      { sourceId: "ecosystem_dbs", sourceName: "Go VulnDB", badge: "GO-2024-2887", finding: "Official Go security team bulletin for HTTP smuggling.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade Go compiler to 1.22.4 or 1.21.11.",
+      patchDetails: "Strictly reject requests with conflicting Transfer-Encoding and Content-Length headers.",
+      workarounds: ["Normalize headers at reverse proxy boundary."]
+    },
+    publishedDate: "2024-06-04",
+    lastUpdatedDate: "2026-08-20"
+  },
+
+  // 28. Jinja2 Template Attribute Injection (UVI-2024-34064)
+  {
+    uviId: "UVI-2024-34064",
+    title: "Jinja2 Template Engine XML/HTML Attribute Injection via Macro Arguments",
+    headline: "Flaw in Jinja2 XML and HTML attribute escaping allows attribute injection and Cross-Site Scripting (XSS).",
+    summary: "In Jinja2 versions prior to 3.1.4, when rendering tags with keys containing spaces or special characters in user-supplied dictionaries, attribute injection was possible despite autoescaping enabled.",
+    technicalDetails: "The xmlattr filter did not properly sanitize keys containing ASCII whitespace or control characters, allowing an attacker to inject additional attributes such as onload= or onerror= into rendered HTML tags.",
+    globalImpact: "Affects Python web applications (Flask, FastAPI, Django with Jinja2) rendering user metadata.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Python doc generators and local Flask web applications.",
+      buildPipelineRisk: "Documentation build runners compiling user-submitted templates.",
+      recommendationForIdeBuilds: "Upgrade Jinja2 to 3.1.4+ in requirements.txt and pyproject.toml."
+    },
+    severity: "MEDIUM",
+    cvssScore: 5.4,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+    cwe: "CWE-79: Cross-site Scripting (XSS)",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "REQUIRED",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-34064"],
+    ghsaId: "GHSA-h5c8-rqrq-552m",
+    osvId: "OSV-2024-34064",
+    affectedTargets: [
+      { product: "Jinja2", ecosystem: "Python PyPI", affectedVersions: "<3.1.4", fixedInVersion: "3.1.4", purl: "pkg:pypi/jinja2@3.1.3" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Attribute injection."
+    },
+    upstreamSignals: [
+      { sourceId: "ecosystem_dbs", sourceName: "PyPA Advisory DB", badge: "PYSEC-2024-48", finding: "Official Python security bulletin.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade jinja2 to 3.1.4 or higher.",
+      patchDetails: "Enforced strict key validation in xmlattr filter to reject keys with spaces.",
+      workarounds: ["Sanitize dictionary keys before passing to xmlattr."]
+    },
+    publishedDate: "2024-05-06",
+    lastUpdatedDate: "2026-08-15"
+  },
+
+  // 29. OpenSSL ChaCha20-Poly1305 State Corruption (UVI-2024-52303)
+  {
+    uviId: "UVI-2024-52303",
+    title: "OpenSSL ChaCha20-Poly1305 Cipher State Corruption and Cryptographic Bypass",
+    headline: "Improper state handling in OpenSSL ChaCha20-Poly1305 can result in uninitialized memory leaks or integrity bypass.",
+    summary: "A flaw in OpenSSL ChaCha20-Poly1305 cipher implementation when reinitializing contexts allowed authentication tags to be evaluated improperly under specific streaming chunk conditions.",
+    technicalDetails: "When processing chunked inputs with repeated EVP_CipherInit_ex calls without clearing previous internal counter states, the Poly1305 accumulator was not reset, producing corrupt authentication tags.",
+    globalImpact: "Affected TLS terminations and cryptographic services using ChaCha20-Poly1305 on ARM and x86_64.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Cryptographic operations in local developer servers.",
+      buildPipelineRisk: "Deploying unpatched OpenSSL shared libraries in server images.",
+      recommendationForIdeBuilds: "Keep system OpenSSL updated to 3.0.15+, 3.1.7+, 3.2.3+, or 3.3.2+."
+    },
+    severity: "MEDIUM",
+    cvssScore: 5.9,
+    cvssVector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+    cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm",
+    domainCategory: "Networking, Protocols & Cryptography",
+    attackVector: "NETWORK",
+    attackComplexity: "HIGH",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-52303"],
+    affectedTargets: [
+      { product: "OpenSSL", ecosystem: "C/C++", affectedVersions: "3.0.0 - 3.0.14, 3.1.0 - 3.1.6", fixedInVersion: "3.0.15", purl: "pkg:generic/openssl@3.0.14" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Cipher state corruption."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 5.9", finding: "Cryptographic state corruption in ChaCha20 cipher.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade OpenSSL to 3.0.15 or newer.",
+      patchDetails: "Ensured Poly1305 accumulator is wiped and reinitialized on every context init.",
+      workarounds: ["Prefer AES-GCM cipher suites where hardware acceleration is available."]
+    },
+    publishedDate: "2024-08-20",
+    lastUpdatedDate: "2026-09-01"
+  },
+
+  // 30. MOVEit Transfer SQL Injection & Exfiltration (UVI-2023-34362)
+  {
+    uviId: "UVI-2023-34362",
+    title: "Progress Software MOVEit Transfer SQL Injection Zero-Day (CL0P Ransomware)",
+    headline: "Unauthenticated SQL injection in MOVEit Transfer web application exploited in massive global corporate extortion campaign.",
+    summary: "An unauthenticated SQL injection vulnerability in the MOVEit Transfer web application allowed attackers to access database contents, alter database records, and execute remote code to exfiltrate massive files.",
+    technicalDetails: "A SQL injection flaw in guestaccess.aspx permitted attackers to inject commands into the MOVEit database, creating unauthorized administrator sessions and installing LEMURLOOT webshells to exfiltrate files.",
+    globalImpact: "Over 2,700 corporate and government organizations breached with sensitive employee records and files stolen.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "LOW",
+      workstationVector: "Corporate file transfer infrastructure.",
+      buildPipelineRisk: "Compromise of enterprise file exchange servers used to transfer compiled deliverables.",
+      recommendationForIdeBuilds: "Ensure enterprise file distribution pipelines use signed artifacts and zero-trust distribution nodes."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-89: SQL Injection",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2023-34362"],
+    affectedTargets: [
+      { product: "MOVEit Transfer", ecosystem: "Enterprise Software", affectedVersions: "<2021.0.6, <2022.0.4, <2023.0.1", fixedInVersion: "2023.0.1", purl: "pkg:generic/moveit-transfer@2023.0.0" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2023-06-02",
+      ransomwareUse: true,
+      notes: "CL0P ransomware zero-day extortion campaign."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 9.8", finding: "Unauthenticated SQL injection leading to remote code execution.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Mass Extortion", finding: "Confirmed active weaponization across thousands of organizations.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Apply vendor emergency security hotfixes immediately.",
+      patchDetails: "Sanitized SQL parameter bindings across all web endpoints.",
+      workarounds: ["Disable HTTP/HTTPS access to MOVEit Transfer and restrict to VPN."]
+    },
+    publishedDate: "2023-06-02",
+    lastUpdatedDate: "2026-08-15"
   }
 ];
