@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { 
-  CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES,
   UviAdvisoryRecord,
   PublicFeedSource,
@@ -8,6 +7,7 @@ import {
   DomainCategory,
   IdeBuildImpactAssessment
 } from '@/lib/threat-feed-data';
+import { getAggregatedUviAdvisories } from '@/lib/feed-aggregator';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +24,16 @@ export async function GET(request: Request) {
   const scope = searchParams.get('scope')?.toLowerCase() || 'all'; // 'all' | 'build-impact'
   const kevOnly = searchParams.get('kevOnly') === 'true';
 
-  let filtered = [...CONSOLIDATED_UVI_ADVISORIES];
+  // Pagination parameters
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+  const limitParam = searchParams.get('limit') || 'all'; // default 'all' or integer
+  const isLimitAll = limitParam.toLowerCase() === 'all';
+  const limit = isLimitAll ? 5000 : (parseInt(limitParam, 10) || 50);
+
+  // Fetch live aggregated dataset (curated + CISA KEV + OSV)
+  const allAdvisories = await getAggregatedUviAdvisories();
+  let filtered = [...allAdvisories];
 
   // Specific UVI ID lookup (e.g., ?id=UVI-2021-44228)
   if (id) {
@@ -92,6 +101,11 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => f.cisaKev.isKnownExploited);
   }
 
+  const totalMatched = filtered.length;
+  const totalPages = isLimitAll ? 1 : Math.ceil(totalMatched / limit);
+  const startIndex = (page - 1) * limit;
+  const paginatedRecords = isLimitAll ? filtered : filtered.slice(startIndex, startIndex + limit);
+
   const responsePayload = {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
     feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
@@ -107,20 +121,25 @@ export async function GET(request: Request) {
       severity: severity || "ALL",
       domain: domain || "all",
       source: source || "all",
-      kevOnly
+      kevOnly,
+      page,
+      limit: isLimitAll ? "all" : limit
     },
-    totalConsolidatedCount: CONSOLIDATED_UVI_ADVISORIES.length,
-    directBuildImpactCount: CONSOLIDATED_UVI_ADVISORIES.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
-    matchedAdvisoriesCount: filtered.length,
+    totalConsolidatedCount: allAdvisories.length,
+    directBuildImpactCount: allAdvisories.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
+    matchedAdvisoriesCount: totalMatched,
+    page,
+    totalPages,
+    returnedCount: paginatedRecords.length,
     publicFeedSources: UVI_PUBLIC_FEED_SOURCES,
-    advisories: filtered
+    advisories: paginatedRecords
   };
 
   return NextResponse.json(responsePayload, {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=300, stale-while-revalidate=600'
+      'Cache-Control': 'public, max-age=180, stale-while-revalidate=360'
     }
   });
 }
