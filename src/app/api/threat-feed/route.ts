@@ -118,7 +118,13 @@ export async function GET(request: Request) {
 
   // Behavioral Observational Filters (Universal across CVEs and Informational Disclosures)
   if (action && action !== "ALL") {
-    filtered = filtered.filter(f => getRecordObservationalAssessment(f).actionDirective === action);
+    filtered = filtered.filter(f => {
+      const act = getRecordObservationalAssessment(f).actionDirective;
+      if (action === "INTERVENE_NOW") {
+        return act === "INTERVENE_NOW" || act === "QUARANTINE_AND_REVOKE";
+      }
+      return act === action;
+    });
   }
   if (stage && stage !== "ALL") {
     filtered = filtered.filter(f => getRecordObservationalAssessment(f).weaponizationStage === stage);

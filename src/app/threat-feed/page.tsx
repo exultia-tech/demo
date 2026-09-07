@@ -104,10 +104,17 @@ export default function ThreatFeedPage() {
             const sorted = [...data.advisories].sort((a: UviAdvisoryRecord, b: UviAdvisoryRecord) => {
               if (ratingMode === "observational" && sortBy === "cvss_desc") {
                 const priorityWeights: Record<ActionDirective, number> = {
-                  INTERVENE_NOW: 4,
-                  HARDEN_WORKSTATION: 3,
+                  QUARANTINE_AND_REVOKE: 10,
+                  EXPEDITE_HOTFIX: 9,
+                  ROTATE_SECRETS: 8,
+                  LOCKDOWN_PIPELINE: 7,
+                  HARDEN_WORKSTATION: 6,
+                  PIN_DEPENDENCY: 5,
+                  SEGREGATE_NETWORK: 4,
+                  CONSTRAIN_AGENTS: 3,
                   AUDIT_CONFIG: 2,
-                  SITUATIONAL_AWARENESS: 1
+                  SITUATIONAL_AWARENESS: 1,
+                  INTERVENE_NOW: 10
                 };
                 const obsA = getRecordObservationalAssessment(a);
                 const obsB = getRecordObservationalAssessment(b);
@@ -690,10 +697,16 @@ export default function ThreatFeedPage() {
                   width: "100%"
                 }}
               >
-                <option value="ALL">All Directives</option>
-                <option value="INTERVENE_NOW">🚨 Immediate Intervention</option>
+                <option value="ALL">All Directives (10 Operational Actions)</option>
+                <option value="QUARANTINE_AND_REVOKE">🚨 Quarantine & Revoke</option>
+                <option value="EXPEDITE_HOTFIX">⚡ Expedite Hotfix</option>
                 <option value="HARDEN_WORKSTATION">🛡️ Harden Workstation</option>
-                <option value="AUDIT_CONFIG">📋 Audit Repositories</option>
+                <option value="ROTATE_SECRETS">🔐 Rotate Secrets & Tokens</option>
+                <option value="LOCKDOWN_PIPELINE">🔒 Lockdown Pipeline</option>
+                <option value="PIN_DEPENDENCY">📦 Pin & Audit Dependency</option>
+                <option value="SEGREGATE_NETWORK">🧱 Segregate Network</option>
+                <option value="CONSTRAIN_AGENTS">🤖 Constrain AI & Agents</option>
+                <option value="AUDIT_CONFIG">📋 Audit Configuration</option>
                 <option value="SITUATIONAL_AWARENESS">💡 Situational Awareness</option>
               </select>
             </div>
