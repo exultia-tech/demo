@@ -888,22 +888,22 @@ export default function ThreatFeedPage() {
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "185px" }}>
                     UVI Identifier
                   </th>
-                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "175px" }}>
-                    {ratingMode === "observational" ? "Domain & Reality" : "Severity & CVSS"}
-                  </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat Scope & Headline
                   </th>
-                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "200px" }}>
-                    {ratingMode === "observational" ? "Exposure Horizon" : "Impact Scope"}
+                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "160px" }}>
+                    {ratingMode === "observational" ? "Operational Domain" : "Severity & CVSS"}
                   </th>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "220px" }}>
+                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "200px" }}>
+                    {ratingMode === "observational" ? "Exposure & Reality" : "Impact Scope"}
+                  </th>
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "230px" }}>
                     Affected Target(s)
                   </th>
-                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "200px" }}>
+                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "190px" }}>
                     Upstream Signals
                   </th>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "110px", textAlign: "right" }}>
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "105px", textAlign: "right" }}>
                     Action
                   </th>
                 </tr>
@@ -1066,95 +1066,7 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 2: Severity & CVSS / Action Directive & Reality */}
-                        <td style={{ padding: "1.1rem 1rem", width: "175px", verticalAlign: "top" }}>
-                          {ratingMode === "observational" ? (
-                            (() => {
-                              const obs = getRecordObservationalAssessment(record);
-                              const actionBadge = getActionDirectiveBadge(obs.actionDirective);
-                              return (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                                  <div style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "0.35rem",
-                                    padding: "0.22rem 0.55rem",
-                                    borderRadius: "6px",
-                                    background: actionBadge.bg,
-                                    border: `1px solid ${actionBadge.border}`,
-                                    width: "fit-content"
-                                  }}>
-                                    <span style={{ fontSize: "0.72rem", fontWeight: 800, color: actionBadge.text }}>
-                                      {actionBadge.label}
-                                    </span>
-                                  </div>
-
-                                  <div style={{ fontSize: "0.72rem", color: "#E2E8F0", fontWeight: 600, lineHeight: 1.3 }}>
-                                    {getWeaponizationStageLabel(obs.weaponizationStage)}
-                                  </div>
-
-                                  <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
-                                    <span style={{
-                                      fontSize: "0.65rem",
-                                      fontWeight: 700,
-                                      color: obs.chatterVelocity === "VIRAL" ? "#F87171" : "#A5B4FC",
-                                      background: obs.chatterVelocity === "VIRAL" ? "rgba(239, 68, 68, 0.15)" : "rgba(129, 140, 248, 0.15)",
-                                      padding: "0.1rem 0.4rem",
-                                      borderRadius: "3px"
-                                    }}>
-                                      {obs.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : "⚡ " + obs.chatterVelocity}
-                                    </span>
-                                    <span style={{ fontSize: "0.65rem", color: "#94A3B8" }}>
-                                      {obs.consensusLevel.replace(/_/g, " ")}
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                              <div style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "0.4rem",
-                                padding: "0.25rem 0.55rem",
-                                borderRadius: "6px",
-                                background: sevStyle.bg,
-                                border: `1px solid ${sevStyle.border}`,
-                                width: "fit-content"
-                              }}>
-                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
-                                <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
-                                  {record.severity}
-                                </span>
-                              </div>
-
-                              <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
-                                <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#F8FAFC" }}>
-                                  {record.cvssScore.toFixed(1)}
-                                </span>
-                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
-                              </div>
-
-                              {record.cisaKev.isKnownExploited && (
-                                <span style={{
-                                  fontSize: "0.65rem",
-                                  fontWeight: 800,
-                                  color: "#EF4444",
-                                  background: "rgba(239, 68, 68, 0.15)",
-                                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                                  padding: "0.15rem 0.4rem",
-                                  borderRadius: "4px",
-                                  width: "fit-content"
-                                }}>
-                                  🚨 CISA KEV
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* Column 3: Threat Scope & Headline */}
+                        {/* Column 2: Threat Scope & Headline */}
                         <td style={{ padding: "1.1rem 1.25rem", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                             <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#F8FAFC", lineHeight: 1.3 }}>
@@ -1220,18 +1132,85 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 4: Impact Classification (Global vs Dev Workstation) */}
+                        {/* Column 3: Operational Domain (or Severity & CVSS in classic mode) */}
+                        <td style={{ padding: "1.1rem 1rem", width: "160px", verticalAlign: "top" }}>
+                          {ratingMode === "observational" ? (
+                            (() => {
+                              const obs = getRecordObservationalAssessment(record);
+                              const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                              return (
+                                <div style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.35rem",
+                                  padding: "0.28rem 0.65rem",
+                                  borderRadius: "6px",
+                                  background: actionBadge.bg,
+                                  border: `1px solid ${actionBadge.border}`,
+                                  width: "fit-content",
+                                  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)"
+                                }}>
+                                  <span style={{ fontSize: "0.76rem", fontWeight: 800, color: actionBadge.text, letterSpacing: "0.03em" }}>
+                                    {actionBadge.label}
+                                  </span>
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                              <div style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                                padding: "0.25rem 0.55rem",
+                                borderRadius: "6px",
+                                background: sevStyle.bg,
+                                border: `1px solid ${sevStyle.border}`,
+                                width: "fit-content"
+                              }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
+                                <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
+                                  {record.severity}
+                                </span>
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
+                                <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#F8FAFC" }}>
+                                  {record.cvssScore.toFixed(1)}
+                                </span>
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
+                              </div>
+
+                              {record.cisaKev.isKnownExploited && (
+                                <span style={{
+                                  fontSize: "0.65rem",
+                                  fontWeight: 800,
+                                  color: "#EF4444",
+                                  background: "rgba(239, 68, 68, 0.15)",
+                                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                                  padding: "0.15rem 0.4rem",
+                                  borderRadius: "4px",
+                                  width: "fit-content"
+                                }}>
+                                  🚨 CISA KEV
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Column 4: Exposure & Reality / Impact Scope */}
                         <td style={{ padding: "1.1rem 1rem", width: "200px", verticalAlign: "top" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
                             {ratingMode === "observational" ? (
                               (() => {
                                 const obs = getRecordObservationalAssessment(record);
                                 return (
                                   <>
                                     <span style={{
-                                      fontSize: "0.7rem",
+                                      fontSize: "0.72rem",
                                       fontWeight: 700,
-                                      padding: "0.2rem 0.5rem",
+                                      padding: "0.22rem 0.55rem",
                                       borderRadius: "4px",
                                       background: "rgba(59, 130, 246, 0.12)",
                                       border: "1px solid rgba(59, 130, 246, 0.25)",
@@ -1240,9 +1219,26 @@ export default function ThreatFeedPage() {
                                     }}>
                                       🎯 {getExposureHorizonLabel(obs.exposureHorizon)}
                                     </span>
-                                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", lineHeight: 1.4 }}>
-                                      Surfaces: {obs.potentialVictimSurface.slice(0, 2).join(", ")}
-                                    </span>
+
+                                    <div style={{ fontSize: "0.72rem", color: "#E2E8F0", fontWeight: 600, lineHeight: 1.3 }}>
+                                      {getWeaponizationStageLabel(obs.weaponizationStage)}
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
+                                      <span style={{
+                                        fontSize: "0.65rem",
+                                        fontWeight: 700,
+                                        color: obs.chatterVelocity === "VIRAL" ? "#F87171" : "#A5B4FC",
+                                        background: obs.chatterVelocity === "VIRAL" ? "rgba(239, 68, 68, 0.15)" : "rgba(129, 140, 248, 0.15)",
+                                        padding: "0.1rem 0.4rem",
+                                        borderRadius: "3px"
+                                      }}>
+                                        {obs.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : "⚡ " + obs.chatterVelocity}
+                                      </span>
+                                      <span style={{ fontSize: "0.65rem", color: "#94A3B8" }}>
+                                        {obs.consensusLevel.replace(/_/g, " ")}
+                                      </span>
+                                    </div>
                                   </>
                                 );
                               })()
@@ -1289,7 +1285,7 @@ export default function ThreatFeedPage() {
                         </td>
 
                         {/* Column 5: Affected Target(s) */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "220px", verticalAlign: "top" }}>
+                        <td style={{ padding: "1.1rem 1.25rem", width: "230px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
                             {record.affectedTargets.map((tgt, idx) => (
                               <div key={idx} style={{ 
@@ -1311,11 +1307,46 @@ export default function ThreatFeedPage() {
                                 )}
                               </div>
                             ))}
+
+                            {/* Potential Victim Surfaces */}
+                            {(() => {
+                              const obs = getRecordObservationalAssessment(record);
+                              if (!obs.potentialVictimSurface || obs.potentialVictimSurface.length === 0) return null;
+                              return (
+                                <div style={{ marginTop: "0.15rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                  <span style={{ 
+                                    fontSize: "0.66rem", 
+                                    fontWeight: 700, 
+                                    textTransform: "uppercase", 
+                                    letterSpacing: "0.06em", 
+                                    color: "#64748B" 
+                                  }}>
+                                    Surfaces
+                                  </span>
+                                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+                                    {obs.potentialVictimSurface.map((surf, sIdx) => (
+                                      <span key={sIdx} style={{
+                                        fontSize: "0.68rem",
+                                        fontWeight: 500,
+                                        color: "#93C5FD",
+                                        background: "rgba(59, 130, 246, 0.08)",
+                                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                                        padding: "0.15rem 0.45rem",
+                                        borderRadius: "4px",
+                                        lineHeight: 1.3
+                                      }}>
+                                        {surf}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </div>
                         </td>
 
                         {/* Column 6: Upstream Signals */}
-                        <td style={{ padding: "1.1rem 1rem", width: "200px", verticalAlign: "top" }}>
+                        <td style={{ padding: "1.1rem 1rem", width: "190px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
                             {record.upstreamSignals.map((sig, sIdx) => (
                               <span
@@ -1337,7 +1368,7 @@ export default function ThreatFeedPage() {
                         </td>
 
                         {/* Column 7: Action */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "110px", verticalAlign: "top", textAlign: "right" }}>
+                        <td style={{ padding: "1.1rem 1.25rem", width: "105px", verticalAlign: "top", textAlign: "right" }}>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
