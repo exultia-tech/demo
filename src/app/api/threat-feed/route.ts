@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   const source = searchParams.get('source');
   const scope = searchParams.get('scope')?.toLowerCase() || 'all'; // 'all' | 'build-impact'
   const kevOnly = searchParams.get('kevOnly') === 'true';
-  const action = searchParams.get('action')?.toUpperCase();
+  const action = (searchParams.get('action') || searchParams.get('opDomain') || searchParams.get('domain_op'))?.toUpperCase();
   const stage = searchParams.get('stage')?.toUpperCase();
   const horizon = searchParams.get('horizon')?.toUpperCase();
 
@@ -119,11 +119,32 @@ export async function GET(request: Request) {
   // Behavioral Observational Filters (Universal across CVEs and Informational Disclosures)
   if (action && action !== "ALL") {
     filtered = filtered.filter(f => {
-      const act = getRecordObservationalAssessment(f).actionDirective;
-      if (action === "INTERVENE_NOW") {
-        return act === "INTERVENE_NOW" || act === "QUARANTINE_AND_REVOKE";
-      }
-      return act === action;
+      const obs = getRecordObservationalAssessment(f);
+      const dom = obs.operationalDomain;
+      const act = obs.actionDirective;
+
+      if (action === dom || action === act) return true;
+
+      // Single-word operational domain aliases
+      if (action === "PATCH" && (act === "EXPEDITE_HOTFIX" || act === "INTERVENE_NOW")) return true;
+      if (action === "ENDPOINT" && (act === "QUARANTINE_AND_REVOKE" || act === "HARDEN_WORKSTATION" || act === "INTERVENE_NOW")) return true;
+      if (action === "IDENTITY" && act === "ROTATE_SECRETS") return true;
+      if (action === "SUPPLY" && act === "PIN_DEPENDENCY") return true;
+      if (action === "PIPELINE" && (act === "LOCKDOWN_PIPELINE" || act === "AUDIT_CONFIG")) return true;
+      if (action === "AGENT" && act === "CONSTRAIN_AGENTS") return true;
+      if (action === "NETWORK" && (act === "SEGREGATE_NETWORK" || act === "SITUATIONAL_AWARENESS")) return true;
+
+      // Legacy parameter aliases
+      if (action === "INTERVENE_NOW") return dom === "PATCH" || dom === "ENDPOINT";
+      if (action === "EXPEDITE_HOTFIX") return dom === "PATCH";
+      if (action === "QUARANTINE_AND_REVOKE" || action === "HARDEN_WORKSTATION") return dom === "ENDPOINT";
+      if (action === "ROTATE_SECRETS") return dom === "IDENTITY";
+      if (action === "LOCKDOWN_PIPELINE" || action === "AUDIT_CONFIG") return dom === "PIPELINE";
+      if (action === "PIN_DEPENDENCY") return dom === "SUPPLY";
+      if (action === "CONSTRAIN_AGENTS") return dom === "AGENT";
+      if (action === "SEGREGATE_NETWORK" || action === "SITUATIONAL_AWARENESS") return dom === "NETWORK";
+
+      return false;
     });
   }
   if (stage && stage !== "ALL") {

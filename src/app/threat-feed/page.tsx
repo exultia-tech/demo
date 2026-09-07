@@ -103,23 +103,33 @@ export default function ThreatFeedPage() {
             // Sort records according to sortBy state (Prioritize Action Directive in Observational mode)
             const sorted = [...data.advisories].sort((a: UviAdvisoryRecord, b: UviAdvisoryRecord) => {
               if (ratingMode === "observational" && sortBy === "cvss_desc") {
-                const priorityWeights: Record<ActionDirective, number> = {
-                  QUARANTINE_AND_REVOKE: 10,
-                  EXPEDITE_HOTFIX: 9,
-                  ROTATE_SECRETS: 8,
-                  LOCKDOWN_PIPELINE: 7,
-                  HARDEN_WORKSTATION: 6,
-                  PIN_DEPENDENCY: 5,
-                  SEGREGATE_NETWORK: 4,
-                  CONSTRAIN_AGENTS: 3,
-                  AUDIT_CONFIG: 2,
+                const priorityWeights: Record<string, number> = {
+                  ENDPOINT: 7,
+                  PATCH: 6,
+                  IDENTITY: 5,
+                  SUPPLY: 4,
+                  PIPELINE: 3,
+                  AGENT: 2,
+                  NETWORK: 1,
+                  // aliases
+                  QUARANTINE_AND_REVOKE: 7,
+                  EXPEDITE_HOTFIX: 6,
+                  ROTATE_SECRETS: 5,
+                  PIN_DEPENDENCY: 4,
+                  LOCKDOWN_PIPELINE: 3,
+                  CONSTRAIN_AGENTS: 2,
+                  SEGREGATE_NETWORK: 1,
+                  HARDEN_WORKSTATION: 7,
+                  AUDIT_CONFIG: 3,
                   SITUATIONAL_AWARENESS: 1,
-                  INTERVENE_NOW: 10
+                  INTERVENE_NOW: 7
                 };
                 const obsA = getRecordObservationalAssessment(a);
                 const obsB = getRecordObservationalAssessment(b);
-                const wA = priorityWeights[obsA.actionDirective] || 0;
-                const wB = priorityWeights[obsB.actionDirective] || 0;
+                const domA = obsA.operationalDomain || obsA.actionDirective;
+                const domB = obsB.operationalDomain || obsB.actionDirective;
+                const wA = priorityWeights[domA] || 0;
+                const wB = priorityWeights[domB] || 0;
                 if (wA !== wB) return wB - wA;
                 return b.cvssScore - a.cvssScore;
               }
@@ -426,7 +436,7 @@ export default function ThreatFeedPage() {
                 cursor: "pointer",
                 transition: "all 0.15s ease"
               }}
-              title="Assess all threats (CVEs, non-CVE malware, informational disclosures) through qualitative Action Directives, Weaponization Stages, and Exposure Horizons without misleading numbers"
+              title="Assess all threats (CVEs, non-CVE malware, informational disclosures) through qualitative Operational Domains, Weaponization Stages, and Exposure Horizons without misleading numbers"
             >
               <span>🛡️</span>
               <span>Behavioral Observational Ratings</span>
@@ -676,11 +686,11 @@ export default function ThreatFeedPage() {
             </select>
           </div>
 
-          {/* Action Directive or Severity Dropdown */}
+          {/* Operational Domain or Severity Dropdown */}
           {ratingMode === "observational" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "190px" }}>
               <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-                Action Directive
+                Operational Domain
               </label>
               <select
                 value={selectedActionDirective}
@@ -697,17 +707,14 @@ export default function ThreatFeedPage() {
                   width: "100%"
                 }}
               >
-                <option value="ALL">All Directives (10 Operational Actions)</option>
-                <option value="QUARANTINE_AND_REVOKE">🚨 Quarantine & Revoke</option>
-                <option value="EXPEDITE_HOTFIX">⚡ Expedite Hotfix</option>
-                <option value="HARDEN_WORKSTATION">🛡️ Harden Workstation</option>
-                <option value="ROTATE_SECRETS">🔐 Rotate Secrets & Tokens</option>
-                <option value="LOCKDOWN_PIPELINE">🔒 Lockdown Pipeline</option>
-                <option value="PIN_DEPENDENCY">📦 Pin & Audit Dependency</option>
-                <option value="SEGREGATE_NETWORK">🧱 Segregate Network</option>
-                <option value="CONSTRAIN_AGENTS">🤖 Constrain AI & Agents</option>
-                <option value="AUDIT_CONFIG">📋 Audit Configuration</option>
-                <option value="SITUATIONAL_AWARENESS">💡 Situational Awareness</option>
+                <option value="ALL">All Domains (7 Security Domains)</option>
+                <option value="PATCH">⚡ Patch</option>
+                <option value="ENDPOINT">🛡️ Endpoint</option>
+                <option value="IDENTITY">🔐 Identity</option>
+                <option value="SUPPLY">📦 Supply</option>
+                <option value="PIPELINE">🔒 Pipeline</option>
+                <option value="AGENT">🤖 Agent</option>
+                <option value="NETWORK">🧱 Network</option>
               </select>
             </div>
           ) : (
@@ -761,7 +768,7 @@ export default function ThreatFeedPage() {
             >
               {ratingMode === "observational" ? (
                 <>
-                  <option value="cvss_desc">Directive Urgency (Highest First)</option>
+                  <option value="cvss_desc">Domain Priority (Highest First)</option>
                   <option value="published_desc">Date (Newest First)</option>
                   <option value="uvi_desc">UVI ID (Descending)</option>
                   <option value="uvi_asc">UVI ID (Ascending)</option>
@@ -882,7 +889,7 @@ export default function ThreatFeedPage() {
                     UVI Identifier
                   </th>
                   <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "175px" }}>
-                    {ratingMode === "observational" ? "Triage Directive & Reality" : "Severity & CVSS"}
+                    {ratingMode === "observational" ? "Domain & Reality" : "Severity & CVSS"}
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat Scope & Headline
@@ -1953,12 +1960,12 @@ export default function ThreatFeedPage() {
                           gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
                           gap: "0.75rem"
                         }}>
-                          {/* Pillar 1: Action Directive */}
+                          {/* Pillar 1: Operational Domain */}
                           {(() => {
-                            const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                            const actionBadge = getActionDirectiveBadge(obs.operationalDomain || obs.actionDirective);
                             return (
                               <div style={{ background: "rgba(255, 255, 255, 0.025)", border: `1px solid ${actionBadge.border}`, borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                                <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Action Directive</div>
+                                <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Operational Domain</div>
                                 <div style={{ fontSize: "0.8rem", fontWeight: 700, color: actionBadge.text, marginTop: "0.25rem" }}>
                                   {actionBadge.label}
                                 </div>

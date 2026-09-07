@@ -51,18 +51,16 @@ export type ExposureHorizon =
   | "IDENTITY_AND_HUMAN"
   | "SUPPLY_CHAIN_NETWORK";
 
-export type ActionDirective =
-  | "QUARANTINE_AND_REVOKE"
-  | "EXPEDITE_HOTFIX"
-  | "HARDEN_WORKSTATION"
-  | "ROTATE_SECRETS"
-  | "LOCKDOWN_PIPELINE"
-  | "PIN_DEPENDENCY"
-  | "SEGREGATE_NETWORK"
-  | "CONSTRAIN_AGENTS"
-  | "AUDIT_CONFIG"
-  | "SITUATIONAL_AWARENESS"
-  | "INTERVENE_NOW";
+export type OperationalDomain =
+  | "PATCH"
+  | "ENDPOINT"
+  | "IDENTITY"
+  | "SUPPLY"
+  | "PIPELINE"
+  | "AGENT"
+  | "NETWORK";
+
+export type ActionDirective = OperationalDomain | string;
 
 export interface InformationalSynthesis {
   chatterVelocity: "VIRAL" | "HIGH" | "MODERATE" | "EMERGING";
@@ -74,6 +72,7 @@ export interface InformationalSynthesis {
     | "UNDERGROUND_SIGNAL";
   weaponizationStage: WeaponizationStage;
   exposureHorizon: ExposureHorizon;
+  operationalDomain: OperationalDomain;
   actionDirective: ActionDirective;
   vectorCategory: string;
   executiveBrief: string;
@@ -131,6 +130,7 @@ export interface UviAdvisoryRecord {
 }
 
 export interface ObservationalAssessment {
+  operationalDomain: OperationalDomain;
   actionDirective: ActionDirective;
   weaponizationStage: WeaponizationStage;
   exposureHorizon: ExposureHorizon;
@@ -145,95 +145,86 @@ export interface ObservationalAssessment {
   vectorCategory: string;
 }
 
-export function getActionDirectiveBadge(action?: string) {
-  switch (action) {
-    case "QUARANTINE_AND_REVOKE":
-    case "INTERVENE_NOW":
-      return {
-        label: "🚨 QUARANTINE & REVOKE",
-        shortLabel: "🚨 QUARANTINE",
-        bg: "rgba(239, 68, 68, 0.15)",
-        border: "rgba(239, 68, 68, 0.35)",
-        text: "#FCA5A5",
-        dot: "#EF4444"
-      };
+export function getOperationalDomainBadge(domain?: string) {
+  switch (domain) {
+    case "PATCH":
     case "EXPEDITE_HOTFIX":
       return {
-        label: "⚡ EXPEDITE HOTFIX",
-        shortLabel: "⚡ HOTFIX",
+        label: "⚡ PATCH",
+        shortLabel: "⚡ PATCH",
         bg: "rgba(249, 115, 22, 0.15)",
         border: "rgba(249, 115, 22, 0.35)",
         text: "#FDBA74",
         dot: "#F97316"
       };
+    case "ENDPOINT":
+    case "QUARANTINE_AND_REVOKE":
     case "HARDEN_WORKSTATION":
+    case "INTERVENE_NOW":
       return {
-        label: "🛡️ HARDEN WORKSTATION",
-        shortLabel: "🛡️ HARDEN",
-        bg: "rgba(245, 158, 11, 0.15)",
-        border: "rgba(245, 158, 11, 0.35)",
-        text: "#FCD34D",
-        dot: "#F59E0B"
+        label: "🛡️ ENDPOINT",
+        shortLabel: "🛡️ ENDPOINT",
+        bg: "rgba(239, 68, 68, 0.15)",
+        border: "rgba(239, 68, 68, 0.35)",
+        text: "#FCA5A5",
+        dot: "#EF4444"
       };
+    case "IDENTITY":
     case "ROTATE_SECRETS":
       return {
-        label: "🔐 ROTATE SECRETS",
-        shortLabel: "🔐 ROTATE",
+        label: "🔐 IDENTITY",
+        shortLabel: "🔐 IDENTITY",
         bg: "rgba(236, 72, 153, 0.15)",
         border: "rgba(236, 72, 153, 0.35)",
         text: "#F472B6",
         dot: "#EC4899"
       };
-    case "LOCKDOWN_PIPELINE":
+    case "SUPPLY":
+    case "PIN_DEPENDENCY":
       return {
-        label: "🔒 LOCKDOWN PIPELINE",
+        label: "📦 SUPPLY",
+        shortLabel: "📦 SUPPLY",
+        bg: "rgba(14, 165, 233, 0.15)",
+        border: "rgba(14, 165, 233, 0.35)",
+        text: "#38BDF8",
+        dot: "#0EA5E9"
+      };
+    case "PIPELINE":
+    case "LOCKDOWN_PIPELINE":
+    case "AUDIT_CONFIG":
+      return {
+        label: "🔒 PIPELINE",
         shortLabel: "🔒 PIPELINE",
         bg: "rgba(168, 85, 247, 0.15)",
         border: "rgba(168, 85, 247, 0.35)",
         text: "#C084FC",
         dot: "#A855F7"
       };
-    case "PIN_DEPENDENCY":
+    case "AGENT":
+    case "CONSTRAIN_AGENTS":
       return {
-        label: "📦 PIN DEPENDENCY",
-        shortLabel: "📦 PIN PKG",
-        bg: "rgba(14, 165, 233, 0.15)",
-        border: "rgba(14, 165, 233, 0.35)",
-        text: "#38BDF8",
-        dot: "#0EA5E9"
+        label: "🤖 AGENT",
+        shortLabel: "🤖 AGENT",
+        bg: "rgba(16, 185, 129, 0.15)",
+        border: "rgba(16, 185, 129, 0.35)",
+        text: "#34D399",
+        dot: "#10B981"
       };
+    case "NETWORK":
     case "SEGREGATE_NETWORK":
+    case "SITUATIONAL_AWARENESS":
       return {
-        label: "🧱 SEGREGATE NETWORK",
+        label: "🧱 NETWORK",
         shortLabel: "🧱 NETWORK",
         bg: "rgba(99, 102, 241, 0.15)",
         border: "rgba(99, 102, 241, 0.35)",
         text: "#818CF8",
         dot: "#6366F1"
       };
-    case "CONSTRAIN_AGENTS":
-      return {
-        label: "🤖 CONSTRAIN AGENTS",
-        shortLabel: "🤖 AGENT GUARD",
-        bg: "rgba(16, 185, 129, 0.15)",
-        border: "rgba(16, 185, 129, 0.35)",
-        text: "#34D399",
-        dot: "#10B981"
-      };
-    case "AUDIT_CONFIG":
-      return {
-        label: "📋 AUDIT CONFIG",
-        shortLabel: "📋 AUDIT",
-        bg: "rgba(59, 130, 246, 0.15)",
-        border: "rgba(59, 130, 246, 0.35)",
-        text: "#93C5FD",
-        dot: "#3B82F6"
-      };
-    case "SITUATIONAL_AWARENESS":
     default:
       return {
-        label: "💡 SITUATIONAL AWARENESS",
-        shortLabel: "💡 AWARENESS",
+        label: "🌐 SECURITY",
+        shortLabel: "🌐 SECURITY",
         bg: "rgba(148, 163, 184, 0.15)",
         border: "rgba(148, 163, 184, 0.3)",
         text: "#CBD5E1",
@@ -241,6 +232,8 @@ export function getActionDirectiveBadge(action?: string) {
       };
   }
 }
+
+export const getActionDirectiveBadge = getOperationalDomainBadge;
 
 export function getWeaponizationStageLabel(stage?: string): string {
   switch (stage) {
@@ -274,8 +267,10 @@ export function getExposureHorizonLabel(horizon?: string): string {
 
 export function getRecordObservationalAssessment(record: UviAdvisoryRecord): ObservationalAssessment {
   if (record.informationalSynthesis) {
+    const domain = record.informationalSynthesis.operationalDomain || (record.informationalSynthesis.actionDirective as any) || "ENDPOINT";
     return {
-      actionDirective: record.informationalSynthesis.actionDirective,
+      operationalDomain: domain,
+      actionDirective: domain,
       weaponizationStage: record.informationalSynthesis.weaponizationStage,
       exposureHorizon: record.informationalSynthesis.exposureHorizon,
       signalVelocity: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : `⚡ ${record.informationalSynthesis.chatterVelocity}`,
@@ -353,29 +348,29 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
                               titleAndDesc.includes("safetensors") ||
                               titleAndDesc.includes("package");
 
-  // 1. Action Directive (10 Diverse Operational Postures)
-  let actionDirective: ActionDirective;
-  if (isMalware || titleAndDesc.includes("malicious code") || titleAndDesc.includes("backdoor") || titleAndDesc.includes("trojan")) {
-    actionDirective = "QUARANTINE_AND_REVOKE";
-  } else if (isAiAgentTarget) {
-    actionDirective = "CONSTRAIN_AGENTS";
-  } else if (isCisaKev || (isCritical && record.attackVector === "NETWORK" && record.attackComplexity === "LOW")) {
-    actionDirective = "EXPEDITE_HOTFIX";
+  // 1. Operational Security Domain (Single-Word SecOps Posture)
+  let operationalDomain: OperationalDomain;
+  if (isAiAgentTarget) {
+    operationalDomain = "AGENT";
+  } else if (isMalware || (isIdeTarget && hasBuildImpact && (devSev === "CRITICAL" || devSev === "HIGH"))) {
+    operationalDomain = "ENDPOINT";
   } else if (isSecretTarget && (isCritical || isHigh || hasBuildImpact)) {
-    actionDirective = "ROTATE_SECRETS";
-  } else if (isCiTarget && (hasBuildImpact || isCritical || isHigh)) {
-    actionDirective = "LOCKDOWN_PIPELINE";
-  } else if (isIdeTarget && hasBuildImpact && (devSev === "CRITICAL" || devSev === "HIGH")) {
-    actionDirective = "HARDEN_WORKSTATION";
+    operationalDomain = "IDENTITY";
   } else if (isSupplyChainTarget && (isHigh || isCritical)) {
-    actionDirective = "PIN_DEPENDENCY";
+    operationalDomain = "SUPPLY";
+  } else if ((isCiTarget && (hasBuildImpact || isCritical || isHigh)) || record.domainCategory === "Cloud & Container Infrastructure") {
+    operationalDomain = "PIPELINE";
   } else if (isNetworkTarget && (isHigh || isCritical)) {
-    actionDirective = "SEGREGATE_NETWORK";
-  } else if (isCritical || isHigh || record.domainCategory === "Cloud & Container Infrastructure") {
-    actionDirective = "AUDIT_CONFIG";
+    operationalDomain = "NETWORK";
+  } else if (isCisaKev || (isCritical && record.attackVector === "NETWORK")) {
+    operationalDomain = "PATCH";
+  } else if (isCritical || isHigh) {
+    operationalDomain = "PATCH";
   } else {
-    actionDirective = "SITUATIONAL_AWARENESS";
+    operationalDomain = "ENDPOINT";
   }
+
+  const actionDirective = operationalDomain;
 
   // 2. Weaponization Stage
   let weaponizationStage: WeaponizationStage;
@@ -429,49 +424,39 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
     isCisaKev || isMalware ? "VIRAL" : isCritical ? "HIGH" : isHigh ? "MODERATE" : "EMERGING";
 
   const executiveBrief = `${record.summary} Operational Mandate: ${
-    actionDirective === "QUARANTINE_AND_REVOKE"
-      ? "Immediate endpoint containment required. Kill suspicious processes, quarantine workstation extension/package, and revoke affected credentials."
-      : actionDirective === "EXPEDITE_HOTFIX"
-      ? "Emergency vendor hotfix required. Deploy out-of-band security patch to mitigate confirmed active in-the-wild exploitation."
-      : actionDirective === "ROTATE_SECRETS"
-      ? "Secrets invalidation required. Rotate compromised API keys, developer tokens, and session credentials across identity providers."
-      : actionDirective === "LOCKDOWN_PIPELINE"
-      ? "CI/CD hardening required. Pin build actions to immutable commit hashes, isolate runners, and enforce restricted cache policies."
-      : actionDirective === "HARDEN_WORKSTATION"
-      ? "Developer endpoint lockdown required. Enforce IDE Workspace Trust, restrict devcontainer sockets, and isolate local debugging listeners."
-      : actionDirective === "PIN_DEPENDENCY"
-      ? "Supply chain pinning required. Lock package versions to verified cryptographic hashes and audit upstream namespace authenticity."
-      : actionDirective === "SEGREGATE_NETWORK"
-      ? "Network perimeter defense required. Enforce strict outbound egress rules, segment development VLANs, and filter unauthenticated traffic."
-      : actionDirective === "CONSTRAIN_AGENTS"
-      ? "AI agent guardrails required. Enforce human-in-the-loop confirmation for agent tool execution and restrict autonomous workspace write permissions."
-      : actionDirective === "AUDIT_CONFIG"
-      ? "Configuration audit required. Review Infrastructure-as-Code definitions, IAM role permissions, and repository access boundaries."
-      : "Incorporate into ongoing architectural monitoring, research roadmaps, and routine dependency hygiene cycles."
+    operationalDomain === "ENDPOINT"
+      ? "Immediate endpoint containment. Quarantine suspicious processes, isolate host, and enforce IDE trust."
+      : operationalDomain === "PATCH"
+      ? "Deploy vendor security patch or upgrade package to eliminate active remote exploit path."
+      : operationalDomain === "IDENTITY"
+      ? "Rotate compromised API keys, session tokens, and developer credentials across identity providers."
+      : operationalDomain === "SUPPLY"
+      ? "Pin package versions to cryptographic hashes, audit upstream sources, and disable remote code execution."
+      : operationalDomain === "PIPELINE"
+      ? "Harden CI/CD runners, enforce immutable cache keys, and lock workflow action versions."
+      : operationalDomain === "AGENT"
+      ? "Enforce human-in-the-loop authorization for AI tools, restrict agent workspace write permissions, and sandbox egress."
+      : "Enforce strict network egress boundaries, segment development subnets, and monitor for routing anomalies."
   }`;
 
   const inferredMechanism = record.technicalDetails || `${record.cwe} attack vector executed via ${record.attackVector.toLowerCase()} channel with ${record.attackComplexity.toLowerCase()} complexity.`;
 
   const precautionaryPosture = record.remediation?.recommendedAction || record.ideBuildImpact?.recommendationForIdeBuilds || (
-    actionDirective === "QUARANTINE_AND_REVOKE"
-      ? "Immediately remove malicious extension or package, terminate child processes, and rotate all developer secrets."
-      : actionDirective === "EXPEDITE_HOTFIX"
+    operationalDomain === "ENDPOINT"
+      ? "Immediately remove malicious extension or package, terminate suspicious processes, and enforce IDE Workspace Trust."
+      : operationalDomain === "PATCH"
       ? "Apply latest vendor security patch or upgrade to fixed version immediately."
-      : actionDirective === "ROTATE_SECRETS"
+      : operationalDomain === "IDENTITY"
       ? "Revoke active session tokens, invalidate stored developer credentials, and enable hardware-backed MFA."
-      : actionDirective === "LOCKDOWN_PIPELINE"
-      ? "Pin CI/CD actions to full commit SHAs and restrict runner environment variables."
-      : actionDirective === "HARDEN_WORKSTATION"
-      ? "Enable IDE Workspace Trust and disallow unverified extension execution."
-      : actionDirective === "PIN_DEPENDENCY"
-      ? "Pin exact dependency versions in lockfiles and configure registry mirrors."
-      : actionDirective === "SEGREGATE_NETWORK"
-      ? "Block suspicious egress ports and isolate developer networks from unauthenticated listeners."
-      : actionDirective === "CONSTRAIN_AGENTS"
-      ? "Disable automated background tool-calling in AI assistant settings."
-      : actionDirective === "AUDIT_CONFIG"
-      ? "Audit repository permissions and verify least-privilege cloud IAM roles."
-      : "Review vulnerability details and incorporate into regular maintenance cycles."
+      : operationalDomain === "PIPELINE"
+      ? "Pin CI/CD actions to full commit SHAs, restrict runner environment variables, and isolate build caches."
+      : operationalDomain === "SUPPLY"
+      ? "Pin exact dependency versions in lockfiles, audit companion scripts, and disable remote code execution."
+      : operationalDomain === "NETWORK"
+      ? "Block suspicious egress ports, audit BGP routing, and isolate developer networks from unauthenticated listeners."
+      : operationalDomain === "AGENT"
+      ? "Disable automated background tool-calling in AI assistant settings and enforce human-in-the-loop approval."
+      : "Review vulnerability details and incorporate into regular security maintenance cycles."
   );
 
   const potentialVictimSurface = record.affectedTargets && record.affectedTargets.length > 0
@@ -479,6 +464,7 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
     : [record.domainCategory];
 
   return {
+    operationalDomain,
     actionDirective,
     weaponizationStage,
     exposureHorizon,
@@ -2183,7 +2169,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "INVESTIGATIVE_REPORT",
       weaponizationStage: "ACTIVE_CAMPAIGNS",
       exposureHorizon: "IDENTITY_AND_HUMAN",
-      actionDirective: "ROTATE_SECRETS",
+      operationalDomain: "IDENTITY",
+      actionDirective: "IDENTITY",
       vectorCategory: "Authentication & SSO Bypass Chatter",
       executiveBrief: "Coordinated botnets are leasing residential internet connections to rotate IP addresses with every login attempt, conducting stealthy credential-stuffing against corporate Git repositories without triggering IP-based rate limiting.",
       inferredMechanism: "Automated distributed replay of compromised developer password dumps over rotating residential proxy gateways, probing OAuth/SAML endpoints and Git HTTP Basic Auth.",
@@ -2272,7 +2259,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "RESEARCHER_DISCLOSURE",
       weaponizationStage: "UNDERGROUND_TOOLING",
       exposureHorizon: "DEVELOPER_WORKSTATION",
-      actionDirective: "CONSTRAIN_AGENTS",
+      operationalDomain: "AGENT",
+      actionDirective: "AGENT",
       vectorCategory: "AI & Agent Exfiltration Vectors",
       executiveBrief: "AI assistants inside code editors can be tricked by malicious instructions hidden in README files or code comments into reading your private files (.env, AWS keys) and sending them to an external server.",
       inferredMechanism: "Indirect prompt injection manipulating LLM tool-calling APIs to invoke file-reading routines and format exfiltration payloads as markdown image embeds or web fetch commands.",
@@ -2361,7 +2349,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "ACADEMIC_PREPRINT",
       weaponizationStage: "ACADEMIC_RESEARCH",
       exposureHorizon: "DEVELOPER_WORKSTATION",
-      actionDirective: "SITUATIONAL_AWARENESS",
+      operationalDomain: "NETWORK",
+      actionDirective: "NETWORK",
       vectorCategory: "Network Protocol & Cryptography",
       executiveBrief: "As internet servers begin testing post-quantum encryption, the larger encryption keys cause network packets to split. Flawed enterprise firewalls are dropping these packets or forcing connections to downgrade to weaker encryption.",
       inferredMechanism: "TLS 1.3 ClientHello record fragmentation across TCP segments triggering middlebox packet rejection or inducing silent fallback to classic elliptic curves.",
@@ -2450,7 +2439,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "INVESTIGATIVE_REPORT",
       weaponizationStage: "UNDERGROUND_TOOLING",
       exposureHorizon: "SUPPLY_CHAIN_NETWORK",
-      actionDirective: "LOCKDOWN_PIPELINE",
+      operationalDomain: "PIPELINE",
+      actionDirective: "PIPELINE",
       vectorCategory: "Cloud Identity & Token Hijacking",
       executiveBrief: "Hackers are scanning public GitHub repositories for old download links that point to deleted Amazon S3 or Azure storage buckets. They register the deleted bucket name and serve malicious code to anyone running the installer script.",
       inferredMechanism: "Dangling DNS CNAME pointing to deregistered cloud storage namespace; attacker claims bucket name and uploads trojanized binaries.",
@@ -2539,7 +2529,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "UNDERGROUND_SIGNAL",
       weaponizationStage: "UNDERGROUND_TOOLING",
       exposureHorizon: "CI_CD_PIPELINE",
-      actionDirective: "HARDEN_WORKSTATION",
+      operationalDomain: "ENDPOINT",
+      actionDirective: "ENDPOINT",
       vectorCategory: "Kernel & Container Infrastructure",
       executiveBrief: "Hacker groups are circulating proof-of-concept rootkits that abuse Linux eBPF features. If an attacker gets root in a privileged container, they can alter what your security software sees, making malware completely invisible.",
       inferredMechanism: "Attaching eBPF filter programs to kernel VFS probes to rewrite process tables, network sockets, and file listings before returning to monitoring tools.",
@@ -2627,7 +2618,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       consensusLevel: "INVESTIGATIVE_REPORT",
       weaponizationStage: "ACTIVE_CAMPAIGNS",
       exposureHorizon: "DEVELOPER_WORKSTATION",
-      actionDirective: "ROTATE_SECRETS",
+      operationalDomain: "IDENTITY",
+      actionDirective: "IDENTITY",
       vectorCategory: "Developer Supply Chain Reconnaissance",
       executiveBrief: "New infostealer malware variants are quietly modifying local configuration files that link your browser extensions to desktop apps. This allows them to eavesdrop on password managers and developer tokens passing between the browser and local software.",
       inferredMechanism: "User-space registry key modification pointing extension NativeMessagingHosts to malicious intermediary wrapper scripts.",
