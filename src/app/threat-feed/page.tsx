@@ -13,9 +13,10 @@ import {
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
-  // Tri-Perspective Scope State: "ALL" (Universal Software & Systems) vs "DEV_BUILD" (Developer & Build System Exposure) vs "NON_CVE" (Pure Non-CVE Threats & Malware)
-  const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE">("ALL");
+  // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
+  const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
   const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(35);
+  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(6);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,6 +70,7 @@ export default function ThreatFeedPage() {
         if (searchQuery.trim()) params.set("query", searchQuery.trim());
         if (feedScope === "DEV_BUILD") params.set("scope", "build-impact");
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
+        if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
         if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
         if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
@@ -93,6 +95,7 @@ export default function ThreatFeedPage() {
             setTotalUniversalCount(data.totalConsolidatedCount || 1787);
             setDirectBuildImpactCount(data.directBuildImpactCount || 385);
             setNonCveThreatsCount(data.nonCveThreatsCount || 35);
+            setInformationalDisclosuresCount(data.informationalDisclosuresCount || 6);
             setMatchedCount(data.matchedAdvisoriesCount ?? sorted.length);
             setTotalPages(data.totalPages || Math.ceil((data.matchedAdvisoriesCount || sorted.length) / pageSize));
             setHasLiveSynced(true);
@@ -264,6 +267,8 @@ export default function ThreatFeedPage() {
             <span>💻 <strong style={{ color: "#10B981" }}>{directBuildImpactCount.toLocaleString()}</strong> Workstation</span>
             <span>•</span>
             <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE</span>
+            <span>•</span>
+            <span>📡 <strong style={{ color: "#818CF8" }}>{informationalDisclosuresCount.toLocaleString()}</strong> Informational</span>
           </div>
         </div>
       </div>
@@ -293,7 +298,7 @@ export default function ThreatFeedPage() {
             color: "#34D399",
             border: "1px solid rgba(16, 185, 129, 0.3)"
           }}>
-            12 Feeds
+            {UVI_PUBLIC_FEED_SOURCES.length} Feeds
           </span>
         </div>
 
@@ -419,7 +424,7 @@ export default function ThreatFeedPage() {
                 width: "100%"
               }}
             >
-              <option value="ALL">All Feeds (12 Sources)</option>
+              <option value="ALL">All Feeds ({UVI_PUBLIC_FEED_SOURCES.length} Sources)</option>
               {UVI_PUBLIC_FEED_SOURCES.map((feed) => (
                 <option key={feed.id} value={feed.id}>
                   {feed.icon} {feed.name}
@@ -478,7 +483,8 @@ export default function ThreatFeedPage() {
             >
               <option value="ALL">🌐 All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
               <option value="DEV_BUILD">💻 Developer & Build Exposure ({directBuildImpactCount.toLocaleString()})</option>
-              <option value="NON_CVE">🛡️ Pure Non-CVE Threats Only ({nonCveThreatsCount.toLocaleString()})</option>
+              <option value="NON_CVE">🛡️ Pure Non-CVE Threats ({nonCveThreatsCount.toLocaleString()})</option>
+              <option value="INFORMATIONAL">📡 Informational Disclosures & Vector Research ({informationalDisclosuresCount.toLocaleString()})</option>
             </select>
           </div>
 
@@ -762,6 +768,21 @@ export default function ThreatFeedPage() {
                                     {cve}
                                   </span>
                                 ))
+                              ) : record.disclosureType === "INFORMATIONAL_DISCLOSURE" ? (
+                                <span
+                                  style={{
+                                    fontSize: "0.68rem",
+                                    fontFamily: "monospace",
+                                    fontWeight: 700,
+                                    background: "rgba(129, 140, 248, 0.2)",
+                                    color: "#A5B4FC",
+                                    border: "1px solid rgba(129, 140, 248, 0.4)",
+                                    padding: "0.1rem 0.4rem",
+                                    borderRadius: "4px"
+                                  }}
+                                >
+                                  📡 INFORMATIONAL DISCLOSURE
+                                </span>
                               ) : (
                                 <span
                                   style={{
@@ -802,7 +823,7 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 2: Severity & CVSS */}
+                        {/* Column 2: Severity & CVSS / Chatter Velocity */}
                         <td style={{ padding: "1.1rem 1rem", width: "140px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                             <div style={{
@@ -821,12 +842,32 @@ export default function ThreatFeedPage() {
                               </span>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
-                              <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#F8FAFC" }}>
-                                {record.cvssScore.toFixed(1)}
-                              </span>
-                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
-                            </div>
+                            {record.informationalSynthesis ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                <span style={{
+                                  fontSize: "0.68rem",
+                                  fontWeight: 800,
+                                  color: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "#F43F5E" : "#818CF8",
+                                  background: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "rgba(244, 63, 94, 0.15)" : "rgba(129, 140, 248, 0.15)",
+                                  border: `1px solid ${record.informationalSynthesis.chatterVelocity === "VIRAL" ? "rgba(244, 63, 94, 0.3)" : "rgba(129, 140, 248, 0.3)"}`,
+                                  padding: "0.15rem 0.45rem",
+                                  borderRadius: "4px",
+                                  width: "fit-content"
+                                }}>
+                                  {record.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : "⚡ CHATTER"}
+                                </span>
+                                <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>
+                                  {record.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
+                                </span>
+                              </div>
+                            ) : (
+                              <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
+                                <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#F8FAFC" }}>
+                                  {record.cvssScore.toFixed(1)}
+                                </span>
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
+                              </div>
+                            )}
 
                             {record.cisaKev.isKnownExploited && (
                               <span style={{
@@ -854,6 +895,22 @@ export default function ThreatFeedPage() {
                             <div style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5 }}>
                               {record.headline}
                             </div>
+
+                            {record.informationalSynthesis && (
+                              <div style={{ 
+                                fontSize: "0.78rem", 
+                                color: "#C7D2FE", 
+                                background: "rgba(99, 102, 241, 0.1)", 
+                                padding: "0.4rem 0.65rem", 
+                                borderRadius: "6px", 
+                                borderLeft: "3px solid #818CF8",
+                                marginTop: "0.2rem",
+                                lineHeight: 1.5
+                              }}>
+                                💡 <strong>Executive Digest:</strong> {record.informationalSynthesis.executiveBrief}
+                              </div>
+                            )}
+
                             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", marginTop: "0.2rem" }}>
                               <span style={{
                                 fontSize: "0.72rem",
@@ -878,40 +935,62 @@ export default function ThreatFeedPage() {
                         {/* Column 4: Impact Classification (Global vs Dev Workstation) */}
                         <td style={{ padding: "1.1rem 1rem", width: "200px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                            <span style={{
-                              fontSize: "0.7rem",
-                              fontWeight: 600,
-                              padding: "0.2rem 0.5rem",
-                              borderRadius: "4px",
-                              background: "rgba(59, 130, 246, 0.12)",
-                              border: "1px solid rgba(59, 130, 246, 0.25)",
-                              color: "#93C5FD",
-                              width: "fit-content"
-                            }}>
-                              🌐 Global Infrastructure
-                            </span>
-
-                            {hasDevImpact ? (
-                              <span style={{
-                                fontSize: "0.7rem",
-                                fontWeight: 700,
-                                padding: "0.2rem 0.5rem",
-                                borderRadius: "4px",
-                                background: "rgba(16, 185, 129, 0.15)",
-                                border: "1px solid rgba(16, 185, 129, 0.35)",
-                                color: "#34D399",
-                                width: "fit-content",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "0.3rem"
-                              }}>
-                                <span>💻 Dev & Build:</span>
-                                <strong>{record.ideBuildImpact.severityOnDeveloperEnv}</strong>
-                              </span>
+                            {record.informationalSynthesis ? (
+                              <>
+                                <span style={{
+                                  fontSize: "0.7rem",
+                                  fontWeight: 700,
+                                  padding: "0.2rem 0.5rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(129, 140, 248, 0.15)",
+                                  border: "1px solid rgba(129, 140, 248, 0.3)",
+                                  color: "#C7D2FE",
+                                  width: "fit-content"
+                                }}>
+                                  📡 {record.informationalSynthesis.vectorCategory}
+                                </span>
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", lineHeight: 1.4 }}>
+                                  Target: {record.informationalSynthesis.potentialVictimSurface.slice(0, 2).join(", ")}
+                                </span>
+                              </>
                             ) : (
-                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                                Server / Enterprise Scope
-                              </span>
+                              <>
+                                <span style={{
+                                  fontSize: "0.7rem",
+                                  fontWeight: 600,
+                                  padding: "0.2rem 0.5rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(59, 130, 246, 0.12)",
+                                  border: "1px solid rgba(59, 130, 246, 0.25)",
+                                  color: "#93C5FD",
+                                  width: "fit-content"
+                                }}>
+                                  🌐 Global Infrastructure
+                                </span>
+
+                                {hasDevImpact ? (
+                                  <span style={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: 700,
+                                    padding: "0.2rem 0.5rem",
+                                    borderRadius: "4px",
+                                    background: "rgba(16, 185, 129, 0.15)",
+                                    border: "1px solid rgba(16, 185, 129, 0.35)",
+                                    color: "#34D399",
+                                    width: "fit-content",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.3rem"
+                                  }}>
+                                    <span>💻 Dev & Build:</span>
+                                    <strong>{record.ideBuildImpact.severityOnDeveloperEnv}</strong>
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                                    Server / Enterprise Scope
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                         </td>
@@ -1370,6 +1449,21 @@ export default function ThreatFeedPage() {
                         {cve}
                       </span>
                     ))
+                  ) : selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" ? (
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        background: "rgba(245, 158, 11, 0.2)",
+                        color: "#FCD34D",
+                        border: "1px solid rgba(245, 158, 11, 0.45)",
+                        padding: "0.2rem 0.55rem",
+                        borderRadius: "4px"
+                      }}
+                    >
+                      📡 INFORMATIONAL DISCLOSURE: VECTOR CHATTER
+                    </span>
                   ) : (
                     <span
                       style={{
@@ -1517,130 +1611,391 @@ export default function ThreatFeedPage() {
             }}>
               {/* TAB 1: Global Threat & Technical Analysis */}
               {dossierTab === "global" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                  {/* Non-CVE Supply Chain Intelligence Banner if applicable */}
-                  {selectedAdvisory.cveList.length === 0 && (
+                selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" && selectedAdvisory.informationalSynthesis ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {/* Informational Disclosure Banner */}
                     <div style={{
-                      background: "rgba(236, 72, 153, 0.12)",
-                      border: "1px solid rgba(236, 72, 153, 0.35)",
+                      background: "rgba(245, 158, 11, 0.12)",
+                      border: "1px solid rgba(245, 158, 11, 0.4)",
                       borderRadius: "10px",
-                      padding: "0.85rem 1.25rem",
+                      padding: "1rem 1.25rem",
                       display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                      color: "#F472B6",
+                      alignItems: "flex-start",
+                      gap: "0.85rem",
+                      color: "#FDE68A",
                       fontSize: "0.85rem",
-                      lineHeight: 1.5
+                      lineHeight: 1.55
                     }}>
-                      <span style={{ fontSize: "1.3rem" }}>🛡️</span>
+                      <span style={{ fontSize: "1.4rem", lineHeight: 1 }}>📡</span>
                       <div>
-                        <strong>Pure Supply Chain Threat (Non-CVE):</strong> This advisory represents intentional malicious code, an extension back-door, or a CI/CD workflow exploit tracked by OpenSSF, OSV, and Socket.dev. It does not receive a traditional CVE/NVD identifier because NVD exclusively catalogs unintended software bugs, but is normalized here under the unified UVI threat schema.
+                        <strong style={{ color: "#FBBF24", display: "block", marginBottom: "0.2rem" }}>
+                          Inferential Threat Vector Intelligence (Informational Disclosure)
+                        </strong>
+                        Aggregated and synthesized from public chatter, security journalism (e.g. Brian Krebs, Bruce Schneier), security RSS feeds (BleepingComputer), and academic/practitioner preprints. This advisory tracks an emergent attack methodology and threat vector dynamics before formal CVE/NVD enumeration.
                       </div>
                     </div>
-                  )}
 
-                  {/* CVSS & Vector Breakdown */}
-                  <div style={{
-                    background: "rgba(15, 23, 42, 0.6)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: "12px",
-                    padding: "1.25rem",
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-                    gap: "1rem",
-                    textAlign: "center"
-                  }}>
-                    <div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>CVSS v3.1</div>
-                      <div style={{ fontSize: "1.75rem", fontWeight: 800, color: selectedAdvisory.cvssScore >= 9 ? "#EF4444" : "#F97316" }}>
-                        {selectedAdvisory.cvssScore.toFixed(1)}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Attack Vector</div>
-                      <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
-                        {selectedAdvisory.attackVector}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Complexity</div>
-                      <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
-                        {selectedAdvisory.attackComplexity}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Privileges</div>
-                      <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
-                        {selectedAdvisory.privilegesRequired}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Interaction</div>
-                      <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
-                        {selectedAdvisory.userInteraction}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Summary */}
-                  <div>
-                    <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
-                      Executive Threat Summary
-                    </h4>
-                    <p style={{ color: "#E2E8F0", lineHeight: 1.6, fontSize: "0.95rem" }}>
-                      {selectedAdvisory.summary}
-                    </p>
-                  </div>
-
-                  {/* Global Enterprise & Infrastructure Impact (General Awareness) */}
-                  <div>
-                    <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#38BDF8", fontWeight: 700, marginBottom: "0.4rem" }}>
-                      🌐 Global Software & Infrastructure Impact (General Awareness)
-                    </h4>
+                    {/* Threat Vector Synthesis Cards */}
                     <div style={{
-                      background: "rgba(14, 165, 233, 0.08)",
-                      border: "1px solid rgba(14, 165, 233, 0.2)",
-                      borderRadius: "8px",
-                      padding: "1rem 1.25rem",
-                      color: "#E0F2FE",
-                      fontSize: "0.9rem",
-                      lineHeight: 1.6
+                      background: "rgba(15, 23, 42, 0.7)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "12px",
+                      padding: "1.25rem",
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+                      gap: "1rem"
                     }}>
-                      {selectedAdvisory.globalImpact}
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Vector Category
+                        </div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.3rem" }}>
+                          {selectedAdvisory.informationalSynthesis.vectorCategory}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Public Chatter Velocity
+                        </div>
+                        <div style={{ marginTop: "0.3rem" }}>
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.3rem",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            padding: "0.2rem 0.55rem",
+                            borderRadius: "4px",
+                            background: selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL"
+                              ? "rgba(239, 68, 68, 0.25)"
+                              : selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH"
+                              ? "rgba(249, 115, 22, 0.25)"
+                              : "rgba(245, 158, 11, 0.25)",
+                            color: selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL"
+                              ? "#FCA5A5"
+                              : selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH"
+                              ? "#FDBA74"
+                              : "#FCD34D",
+                            border: "1px solid rgba(245, 158, 11, 0.4)"
+                          }}>
+                            {selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL VELOCITY" :
+                             selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH" ? "⚡ HIGH CHATTER" :
+                             selectedAdvisory.informationalSynthesis.chatterVelocity === "MODERATE" ? "📈 MODERATE CHATTER" : "🌱 EMERGING SIGNAL"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Intelligence Consensus
+                        </div>
+                        <div style={{ marginTop: "0.3rem" }}>
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            padding: "0.2rem 0.55rem",
+                            borderRadius: "4px",
+                            background: "rgba(139, 92, 246, 0.2)",
+                            color: "#C4B5FD",
+                            border: "1px solid rgba(139, 92, 246, 0.4)"
+                          }}>
+                            {selectedAdvisory.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          CVSS Base Assessment
+                        </div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: 800, color: selectedAdvisory.cvssScore >= 9 ? "#EF4444" : "#F97316", marginTop: "0.2rem" }}>
+                          {selectedAdvisory.cvssScore.toFixed(1)} <span style={{ fontSize: "0.75rem", fontWeight: 500, color: "var(--text-muted)" }}>({selectedAdvisory.attackVector})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Executive Brief */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#FBBF24", fontWeight: 700, marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span>💡</span> Executive Digest & Contextual Significance
+                      </h4>
+                      <div style={{
+                        background: "rgba(245, 158, 11, 0.08)",
+                        border: "1px solid rgba(245, 158, 11, 0.25)",
+                        borderRadius: "8px",
+                        padding: "1rem 1.25rem",
+                        color: "#FEF3C7",
+                        fontSize: "0.95rem",
+                        lineHeight: 1.6
+                      }}>
+                        {selectedAdvisory.informationalSynthesis.executiveBrief}
+                      </div>
+                    </div>
+
+                    {/* Inferred Threat Vector & Mechanism */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span>⚙️</span> Inferred Attack Mechanism & Vector Execution
+                      </h4>
+                      <div style={{
+                        background: "rgba(10, 14, 23, 0.8)",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: "8px",
+                        padding: "1rem 1.25rem",
+                        color: "#CBD5E1",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.65
+                      }}>
+                        {selectedAdvisory.informationalSynthesis.inferredMechanism}
+                      </div>
+                    </div>
+
+                    {/* Potential Victim Surface */}
+                    {selectedAdvisory.informationalSynthesis.potentialVictimSurface && selectedAdvisory.informationalSynthesis.potentialVictimSurface.length > 0 && (
+                      <div>
+                        <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#38BDF8", fontWeight: 700, marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <span>🎯</span> Inferred Target & Surface Exposure
+                        </h4>
+                        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                          {selectedAdvisory.informationalSynthesis.potentialVictimSurface.map((target, tIdx) => (
+                            <span
+                              key={tIdx}
+                              style={{
+                                fontSize: "0.78rem",
+                                padding: "0.25rem 0.65rem",
+                                borderRadius: "6px",
+                                background: "rgba(56, 189, 248, 0.12)",
+                                border: "1px solid rgba(56, 189, 248, 0.25)",
+                                color: "#BAE6FD"
+                              }}
+                            >
+                              {target}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Precautionary Posture (Pre-Patch / Pre-CVE Guidance) */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#34D399", fontWeight: 700, marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span>🛡️</span> Precautionary Posture & Early Defensive Hygiene (Pre-CVE)
+                      </h4>
+                      <div style={{
+                        background: "rgba(16, 185, 129, 0.08)",
+                        border: "1px solid rgba(16, 185, 129, 0.25)",
+                        borderRadius: "8px",
+                        padding: "1rem 1.25rem",
+                        color: "#D1FAE5",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.6
+                      }}>
+                        {selectedAdvisory.informationalSynthesis.precautionaryPosture}
+                      </div>
+                    </div>
+
+                    {/* Primary Sources & Chatter Citations */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#C084FC", fontWeight: 700, marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span>📰</span> Primary Sources, Security Journalism & Research Dispatches ({selectedAdvisory.informationalSynthesis.primarySources.length})
+                      </h4>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        {selectedAdvisory.informationalSynthesis.primarySources.map((source, sIdx) => (
+                          <div
+                            key={sIdx}
+                            style={{
+                              background: "rgba(255, 255, 255, 0.03)",
+                              border: "1px solid rgba(255, 255, 255, 0.07)",
+                              borderRadius: "8px",
+                              padding: "0.9rem 1.1rem"
+                            }}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.4rem" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                                <span style={{ fontWeight: 700, color: "#F8FAFC", fontSize: "0.9rem" }}>
+                                  {source.sourceName}
+                                </span>
+                                {source.authorOrHandle && (
+                                  <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                                    by <strong style={{ color: "#E2E8F0" }}>{source.authorOrHandle}</strong>
+                                  </span>
+                                )}
+                                <span style={{
+                                  fontSize: "0.72rem",
+                                  color: "#93C5FD",
+                                  fontWeight: 500
+                                }}>
+                                  • {source.headline}
+                                </span>
+                              </div>
+
+                              <a
+                                href={source.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: "0.75rem",
+                                  color: "#60A5FA",
+                                  textDecoration: "none",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
+                                  fontWeight: 600
+                                }}
+                              >
+                                View Original Dispatch ↗
+                              </a>
+                            </div>
+
+                            <blockquote style={{
+                              margin: 0,
+                              paddingLeft: "0.75rem",
+                              borderLeft: "2px solid rgba(192, 132, 252, 0.5)",
+                              color: "#CBD5E1",
+                              fontSize: "0.82rem",
+                              lineHeight: 1.55,
+                              fontStyle: "italic"
+                            }}>
+                              &ldquo;{source.signalQuote}&rdquo;
+                            </blockquote>
+
+                            <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.4rem" }}>
+                              Published: {source.publishedAt}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {/* Non-CVE Supply Chain Intelligence Banner if applicable */}
+                    {selectedAdvisory.cveList.length === 0 && (
+                      <div style={{
+                        background: "rgba(236, 72, 153, 0.12)",
+                        border: "1px solid rgba(236, 72, 153, 0.35)",
+                        borderRadius: "10px",
+                        padding: "0.85rem 1.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        color: "#F472B6",
+                        fontSize: "0.85rem",
+                        lineHeight: 1.5
+                      }}>
+                        <span style={{ fontSize: "1.3rem" }}>🛡️</span>
+                        <div>
+                          <strong>Pure Supply Chain Threat (Non-CVE):</strong> This advisory represents intentional malicious code, an extension back-door, or a CI/CD workflow exploit tracked by OpenSSF, OSV, and Socket.dev. It does not receive a traditional CVE/NVD identifier because NVD exclusively catalogs unintended software bugs, but is normalized here under the unified UVI threat schema.
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Technical Root Cause */}
-                  <div>
-                    <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
-                      In-Depth Technical Root Cause
-                    </h4>
+                    {/* CVSS & Vector Breakdown */}
                     <div style={{
-                      background: "rgba(10, 14, 23, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.06)",
-                      borderRadius: "8px",
-                      padding: "1rem 1.25rem",
-                      color: "#CBD5E1",
-                      fontSize: "0.9rem",
-                      lineHeight: 1.65
+                      background: "rgba(15, 23, 42, 0.6)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "12px",
+                      padding: "1.25rem",
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+                      gap: "1rem",
+                      textAlign: "center"
                     }}>
-                      {selectedAdvisory.technicalDetails}
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>CVSS v3.1</div>
+                        <div style={{ fontSize: "1.75rem", fontWeight: 800, color: selectedAdvisory.cvssScore >= 9 ? "#EF4444" : "#F97316" }}>
+                          {selectedAdvisory.cvssScore.toFixed(1)}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Attack Vector</div>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
+                          {selectedAdvisory.attackVector}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Complexity</div>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
+                          {selectedAdvisory.attackComplexity}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Privileges</div>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
+                          {selectedAdvisory.privilegesRequired}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Interaction</div>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.4rem" }}>
+                          {selectedAdvisory.userInteraction}
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Weakness Taxonomy */}
-                  <div>
-                    <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
-                      Weakness Taxonomy & CVSS Vector
-                    </h4>
-                    <div style={{ fontFamily: "monospace", fontSize: "0.85rem", color: "#FBBF24" }}>
-                      {selectedAdvisory.cwe}
+                    {/* Summary */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
+                        Executive Threat Summary
+                      </h4>
+                      <p style={{ color: "#E2E8F0", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                        {selectedAdvisory.summary}
+                      </p>
                     </div>
-                    <div style={{ fontFamily: "monospace", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
-                      Vector: {selectedAdvisory.cvssVector}
+
+                    {/* Global Enterprise & Infrastructure Impact (General Awareness) */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#38BDF8", fontWeight: 700, marginBottom: "0.4rem" }}>
+                        🌐 Global Software & Infrastructure Impact (General Awareness)
+                      </h4>
+                      <div style={{
+                        background: "rgba(14, 165, 233, 0.08)",
+                        border: "1px solid rgba(14, 165, 233, 0.2)",
+                        borderRadius: "8px",
+                        padding: "1rem 1.25rem",
+                        color: "#E0F2FE",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.6
+                      }}>
+                        {selectedAdvisory.globalImpact}
+                      </div>
+                    </div>
+
+                    {/* Technical Root Cause */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
+                        In-Depth Technical Root Cause
+                      </h4>
+                      <div style={{
+                        background: "rgba(10, 14, 23, 0.8)",
+                        border: "1px solid rgba(255, 255, 255, 0.06)",
+                        borderRadius: "8px",
+                        padding: "1rem 1.25rem",
+                        color: "#CBD5E1",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.65
+                      }}>
+                        {selectedAdvisory.technicalDetails}
+                      </div>
+                    </div>
+
+                    {/* Weakness Taxonomy */}
+                    <div>
+                      <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#60A5FA", fontWeight: 700, marginBottom: "0.4rem" }}>
+                        Weakness Taxonomy & CVSS Vector
+                      </h4>
+                      <div style={{ fontFamily: "monospace", fontSize: "0.85rem", color: "#FBBF24" }}>
+                        {selectedAdvisory.cwe}
+                      </div>
+                      <div style={{ fontFamily: "monospace", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                        Vector: {selectedAdvisory.cvssVector}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
               )}
 
               {/* TAB 2: Developer & Build System Exposure */}

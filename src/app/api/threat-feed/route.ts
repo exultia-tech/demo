@@ -45,11 +45,13 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => f.cveList.some(c => c.toUpperCase() === cve));
   }
 
-  // Scope filter: Full Universal Feed vs Direct Developer / Build Impact Focus vs Pure Non-CVE Threats
+  // Scope filter: Full Universal Feed vs Direct Developer / Build Impact Focus vs Pure Non-CVE Threats vs Informational Disclosures
   if (scope === 'build-impact' || scope === 'dev') {
     filtered = filtered.filter(f => f.ideBuildImpact.hasDirectBuildImpact);
   } else if (scope === 'non-cve' || scope === 'malware') {
-    filtered = filtered.filter(f => f.cveList.length === 0);
+    filtered = filtered.filter(f => f.cveList.length === 0 && f.disclosureType !== 'INFORMATIONAL_DISCLOSURE');
+  } else if (scope === 'informational' || scope === 'chatter' || scope === 'research' || scope === 'info') {
+    filtered = filtered.filter(f => f.disclosureType === 'INFORMATIONAL_DISCLOSURE');
   }
 
   // Free-form Search Query across UVI ID, CVEs, Title, Headline, Summary, Impact, Targets, CWE, and Upstream findings
@@ -69,6 +71,13 @@ export async function GET(request: Request) {
       f.ideBuildImpact.recommendationForIdeBuilds.toLowerCase().includes(query) ||
       f.cwe.toLowerCase().includes(query) ||
       f.domainCategory.toLowerCase().includes(query) ||
+      (f.informationalSynthesis && (
+        f.informationalSynthesis.vectorCategory.toLowerCase().includes(query) ||
+        f.informationalSynthesis.executiveBrief.toLowerCase().includes(query) ||
+        f.informationalSynthesis.inferredMechanism.toLowerCase().includes(query) ||
+        f.informationalSynthesis.precautionaryPosture.toLowerCase().includes(query) ||
+        f.informationalSynthesis.primarySources.some(ps => ps.sourceName.toLowerCase().includes(query) || ps.headline.toLowerCase().includes(query))
+      )) ||
       f.affectedTargets.some(t => 
         t.product.toLowerCase().includes(query) || 
         t.ecosystem.toLowerCase().includes(query) ||
@@ -129,7 +138,8 @@ export async function GET(request: Request) {
     },
     totalConsolidatedCount: allAdvisories.length,
     directBuildImpactCount: allAdvisories.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
-    nonCveThreatsCount: allAdvisories.filter(a => a.cveList.length === 0).length,
+    nonCveThreatsCount: allAdvisories.filter(a => a.cveList.length === 0 && a.disclosureType !== 'INFORMATIONAL_DISCLOSURE').length,
+    informationalDisclosuresCount: allAdvisories.filter(a => a.disclosureType === 'INFORMATIONAL_DISCLOSURE').length,
     matchedAdvisoriesCount: totalMatched,
     page,
     totalPages,
