@@ -123,6 +123,244 @@ export interface UviAdvisoryRecord {
   informationalSynthesis?: InformationalSynthesis;
 }
 
+export interface ObservationalAssessment {
+  actionDirective: ActionDirective;
+  weaponizationStage: WeaponizationStage;
+  exposureHorizon: ExposureHorizon;
+  signalVelocity: string;
+  signalConsensus: string;
+  chatterVelocity: "VIRAL" | "HIGH" | "MODERATE" | "EMERGING";
+  consensusLevel: string;
+  executiveBrief: string;
+  inferredMechanism: string;
+  precautionaryPosture: string;
+  potentialVictimSurface: string[];
+  vectorCategory: string;
+}
+
+export function getActionDirectiveBadge(action?: string) {
+  switch (action) {
+    case "INTERVENE_NOW":
+      return {
+        label: "🚨 IMMEDIATE INTERVENTION",
+        shortLabel: "🚨 INTERVENE",
+        bg: "rgba(239, 68, 68, 0.15)",
+        border: "rgba(239, 68, 68, 0.35)",
+        text: "#FCA5A5",
+        dot: "#EF4444"
+      };
+    case "HARDEN_WORKSTATION":
+      return {
+        label: "🛡️ HARDEN WORKSTATION",
+        shortLabel: "🛡️ HARDEN",
+        bg: "rgba(245, 158, 11, 0.15)",
+        border: "rgba(245, 158, 11, 0.35)",
+        text: "#FCD34D",
+        dot: "#F59E0B"
+      };
+    case "AUDIT_CONFIG":
+      return {
+        label: "📋 AUDIT REPOSITORIES",
+        shortLabel: "📋 AUDIT",
+        bg: "rgba(59, 130, 246, 0.15)",
+        border: "rgba(59, 130, 246, 0.35)",
+        text: "#93C5FD",
+        dot: "#3B82F6"
+      };
+    case "SITUATIONAL_AWARENESS":
+    default:
+      return {
+        label: "💡 SITUATIONAL AWARENESS",
+        shortLabel: "💡 AWARENESS",
+        bg: "rgba(148, 163, 184, 0.15)",
+        border: "rgba(148, 163, 184, 0.3)",
+        text: "#CBD5E1",
+        dot: "#94A3B8"
+      };
+  }
+}
+
+export function getWeaponizationStageLabel(stage?: string): string {
+  switch (stage) {
+    case "ACTIVE_CAMPAIGNS":
+      return "Active Campaigns in Wild";
+    case "UNDERGROUND_TOOLING":
+      return "Tooling in Underground Channels";
+    case "ACADEMIC_RESEARCH":
+      return "Academic & Lab Demonstration";
+    case "THEORETICAL_VECTOR":
+      return "Theoretical / Pre-Exploit Vector";
+    default:
+      return "Observational Signal";
+  }
+}
+
+export function getExposureHorizonLabel(horizon?: string): string {
+  switch (horizon) {
+    case "DEVELOPER_WORKSTATION":
+      return "Developer Workstation & Local Tools";
+    case "CI_CD_PIPELINE":
+      return "CI/CD Runners & Build Pipeline";
+    case "IDENTITY_AND_HUMAN":
+      return "Identity, SSO & IT Helpdesk";
+    case "SUPPLY_CHAIN_NETWORK":
+      return "Package Registry & Network Routing";
+    default:
+      return "Developer Ecosystem";
+  }
+}
+
+export function getRecordObservationalAssessment(record: UviAdvisoryRecord): ObservationalAssessment {
+  if (record.informationalSynthesis) {
+    return {
+      actionDirective: record.informationalSynthesis.actionDirective,
+      weaponizationStage: record.informationalSynthesis.weaponizationStage,
+      exposureHorizon: record.informationalSynthesis.exposureHorizon,
+      signalVelocity: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : `⚡ ${record.informationalSynthesis.chatterVelocity}`,
+      signalConsensus: record.informationalSynthesis.consensusLevel.replace(/_/g, " "),
+      chatterVelocity: record.informationalSynthesis.chatterVelocity,
+      consensusLevel: record.informationalSynthesis.consensusLevel,
+      executiveBrief: record.informationalSynthesis.executiveBrief,
+      inferredMechanism: record.informationalSynthesis.inferredMechanism,
+      precautionaryPosture: record.informationalSynthesis.precautionaryPosture,
+      potentialVictimSurface: record.informationalSynthesis.potentialVictimSurface || [],
+      vectorCategory: record.informationalSynthesis.vectorCategory
+    };
+  }
+
+  const isCisaKev = Boolean(record.cisaKev?.isKnownExploited);
+  const isMalware = record.uviId.startsWith("UVI-MAL-");
+  const hasBuildImpact = Boolean(record.ideBuildImpact?.hasDirectBuildImpact);
+  const devSev = record.ideBuildImpact?.severityOnDeveloperEnv;
+  const isCritical = record.severity === "CRITICAL";
+  const isHigh = record.severity === "HIGH";
+
+  const targetProducts = record.affectedTargets ? record.affectedTargets.map(t => (t.product + " " + t.ecosystem).toLowerCase()).join(" ") : "";
+  const isIdeTarget = targetProducts.includes("vs code") || 
+                      targetProducts.includes("visual studio") || 
+                      targetProducts.includes("intellij") || 
+                      targetProducts.includes("jetbrains") || 
+                      targetProducts.includes("extension") || 
+                      targetProducts.includes("editor") ||
+                      targetProducts.includes("compiler") ||
+                      targetProducts.includes("debugger");
+
+  const isCiTarget = targetProducts.includes("github actions") || 
+                     targetProducts.includes("gitlab ci") || 
+                     targetProducts.includes("runner") || 
+                     targetProducts.includes("docker") || 
+                     targetProducts.includes("kubernetes") || 
+                     targetProducts.includes("jenkins") || 
+                     targetProducts.includes("terraform");
+
+  const isIdentityTarget = record.cwe.toLowerCase().includes("authentication") || 
+                           record.cwe.toLowerCase().includes("credential") || 
+                           targetProducts.includes("sso") || 
+                           targetProducts.includes("oauth") || 
+                           targetProducts.includes("saml") || 
+                           targetProducts.includes("kerberos");
+
+  const isSupplyChainTarget = record.domainCategory === "Supply Chain & Malware" || 
+                              isMalware ||
+                              (record.affectedTargets && record.affectedTargets.some(t => ["npm", "pypi", "maven", "go", "crates.io", "packagist", "rubygems"].includes(t.ecosystem.toLowerCase())));
+
+  // 1. Action Directive
+  let actionDirective: ActionDirective;
+  if (isCisaKev || (isCritical && hasBuildImpact) || isMalware) {
+    actionDirective = "INTERVENE_NOW";
+  } else if (hasBuildImpact && (devSev === "CRITICAL" || devSev === "HIGH" || isIdeTarget)) {
+    actionDirective = "HARDEN_WORKSTATION";
+  } else if (isCiTarget || isSupplyChainTarget || isIdentityTarget || isCritical || isHigh) {
+    actionDirective = "AUDIT_CONFIG";
+  } else {
+    actionDirective = "SITUATIONAL_AWARENESS";
+  }
+
+  // 2. Weaponization Stage
+  let weaponizationStage: WeaponizationStage;
+  const knownActiveCves = ["CVE-2024-38063", "CVE-2024-4577", "CVE-2021-44228", "CVE-2023-4863", "CVE-2024-6387", "CVE-2024-21626", "CVE-2024-3094"];
+  if (isCisaKev || isMalware || (record.cveList && record.cveList.some(c => knownActiveCves.includes(c)))) {
+    weaponizationStage = "ACTIVE_CAMPAIGNS";
+  } else if (isCritical || (record.upstreamSignals && record.upstreamSignals.some(s => s.signalType === "ACTIVE_EXPLOITATION" || s.finding.toLowerCase().includes("poc") || s.finding.toLowerCase().includes("weaponized") || s.finding.toLowerCase().includes("exploit")))) {
+    weaponizationStage = "UNDERGROUND_TOOLING";
+  } else if (record.attackComplexity === "LOW") {
+    weaponizationStage = "UNDERGROUND_TOOLING";
+  } else if (record.attackComplexity === "HIGH") {
+    weaponizationStage = "ACADEMIC_RESEARCH";
+  } else {
+    weaponizationStage = "THEORETICAL_VECTOR";
+  }
+
+  // 3. Exposure Horizon
+  let exposureHorizon: ExposureHorizon;
+  if (isIdeTarget || (hasBuildImpact && (devSev === "CRITICAL" || devSev === "HIGH"))) {
+    exposureHorizon = "DEVELOPER_WORKSTATION";
+  } else if (isCiTarget || (hasBuildImpact && record.ideBuildImpact?.buildPipelineRisk && record.ideBuildImpact.buildPipelineRisk.length > 30)) {
+    exposureHorizon = "CI_CD_PIPELINE";
+  } else if (isIdentityTarget) {
+    exposureHorizon = "IDENTITY_AND_HUMAN";
+  } else if (isSupplyChainTarget) {
+    exposureHorizon = "SUPPLY_CHAIN_NETWORK";
+  } else if (hasBuildImpact) {
+    exposureHorizon = "DEVELOPER_WORKSTATION";
+  } else {
+    exposureHorizon = "SUPPLY_CHAIN_NETWORK";
+  }
+
+  // 4. Signal & Corroboration
+  let signalVelocity: string;
+  let signalConsensus: string;
+  if (isCisaKev) {
+    signalVelocity = "🔥 IN THE WILD";
+    signalConsensus = "CISA KEV Mandatory Remediation";
+  } else if (isMalware) {
+    signalVelocity = "🔥 LIVE MALWARE";
+    signalConsensus = "OpenSSF & Socket.dev Threat Lab";
+  } else if (record.upstreamSignals && record.upstreamSignals.length >= 3) {
+    signalVelocity = "⚡ MULTI-FEED";
+    signalConsensus = record.upstreamSignals.map(s => s.sourceName.replace(" Database", "").replace(" (NVD)", "").replace(" Security", "")).slice(0, 2).join(" & ") + " Verified";
+  } else {
+    signalVelocity = isCritical ? "⚡ HIGH CHATTER" : "⚡ VERIFIED";
+    signalConsensus = (record.upstreamSignals && record.upstreamSignals[0]?.sourceName ? record.upstreamSignals[0].sourceName : "Standard Feed").replace(" Database", "").replace(" (NVD)", "") + " Advisory";
+  }
+
+  const chatterVelocity: "VIRAL" | "HIGH" | "MODERATE" | "EMERGING" =
+    isCisaKev || isMalware ? "VIRAL" : isCritical ? "HIGH" : isHigh ? "MODERATE" : "EMERGING";
+
+  const executiveBrief = `${record.summary} Focus: ${
+    actionDirective === "INTERVENE_NOW"
+      ? "Immediate mitigation required. Active in-the-wild exploitation or live malicious payload confirmed."
+      : actionDirective === "HARDEN_WORKSTATION"
+      ? "Developer workstation quarantine or compiler toolchain hardening recommended."
+      : actionDirective === "AUDIT_CONFIG"
+      ? "Audit repository build dependencies, access boundaries, and CI/CD pipelines."
+      : "Incorporate into routine dependency review and architectural hygiene."
+  }`;
+
+  const inferredMechanism = record.technicalDetails || `${record.cwe} attack vector executed via ${record.attackVector.toLowerCase()} channel with ${record.attackComplexity.toLowerCase()} complexity.`;
+
+  const precautionaryPosture = record.remediation?.recommendedAction || record.ideBuildImpact?.recommendationForIdeBuilds || "Apply vendor security patches and review workstation permissions.";
+
+  const potentialVictimSurface = record.affectedTargets && record.affectedTargets.length > 0
+    ? record.affectedTargets.map(t => `${t.product} (${t.ecosystem})`)
+    : [record.domainCategory];
+
+  return {
+    actionDirective,
+    weaponizationStage,
+    exposureHorizon,
+    signalVelocity,
+    signalConsensus,
+    chatterVelocity,
+    consensusLevel: signalConsensus,
+    executiveBrief,
+    inferredMechanism,
+    precautionaryPosture,
+    potentialVictimSurface,
+    vectorCategory: record.domainCategory
+  };
+}
+
 export interface PublicFeedSource {
   id: string;
   name: string;

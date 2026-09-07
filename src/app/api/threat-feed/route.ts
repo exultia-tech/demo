@@ -5,7 +5,8 @@ import {
   PublicFeedSource,
   ThreatSeverity,
   DomainCategory,
-  IdeBuildImpactAssessment
+  IdeBuildImpactAssessment,
+  getRecordObservationalAssessment
 } from '@/lib/threat-feed-data';
 import { getAggregatedUviAdvisories } from '@/lib/feed-aggregator';
 
@@ -115,15 +116,15 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => f.cisaKev.isKnownExploited);
   }
 
-  // Behavioral Observational Filters for Informational Disclosures
+  // Behavioral Observational Filters (Universal across CVEs and Informational Disclosures)
   if (action && action !== "ALL") {
-    filtered = filtered.filter(f => f.informationalSynthesis?.actionDirective === action);
+    filtered = filtered.filter(f => getRecordObservationalAssessment(f).actionDirective === action);
   }
   if (stage && stage !== "ALL") {
-    filtered = filtered.filter(f => f.informationalSynthesis?.weaponizationStage === stage);
+    filtered = filtered.filter(f => getRecordObservationalAssessment(f).weaponizationStage === stage);
   }
   if (horizon && horizon !== "ALL") {
-    filtered = filtered.filter(f => f.informationalSynthesis?.exposureHorizon === horizon);
+    filtered = filtered.filter(f => getRecordObservationalAssessment(f).exposureHorizon === horizon);
   }
 
   const totalMatched = filtered.length;
