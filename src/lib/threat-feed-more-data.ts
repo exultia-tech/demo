@@ -31,6 +31,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "VIRAL",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "AI Agent & MCP Tool Execution Chatter",
       executiveBrief: "Emerging research demonstrates that the new Model Context Protocol (MCP) standard allows untrusted project files to silently register background tools. Malicious prompts hidden in tool descriptions trick the AI into running shell commands on the developer's laptop.",
       inferredMechanism: "Indirect prompt injection embedded in MCP tool metadata (JSON schemas) forcing autonomous agent tool-calling loops without human authorization barriers.",
@@ -117,6 +120,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "AUDIT_CONFIG",
       vectorCategory: "AI/ML Supply Chain & Weights Poisoning",
       executiveBrief: "Developers believed that using SafeTensors format made downloading AI models completely safe. New research reveals attackers are hiding malicious code in the custom preprocessing scripts packaged alongside safe weight files.",
       inferredMechanism: "Trojanized companion Python files (`tokenization_*.py`) executed when `transformers` loads model weights with remote code execution enabled.",
@@ -203,6 +209,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "SUPPLY_CHAIN_NETWORK",
+      actionDirective: "AUDIT_CONFIG",
       vectorCategory: "Network Infrastructure & BGP Routing Chatter",
       executiveBrief: "BGP routing manipulation was used to temporarily divert traffic intended for developer package download servers. If a developer's computer does not verify package checksum hashes, it could receive a tampered version of an open-source library.",
       inferredMechanism: "BGP prefix injection diverting unencrypted or improperly verified package manager requests to an intercepting caching proxy.",
@@ -289,6 +298,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "IDE Marketplace & Publisher Hijacking Chatter",
       executiveBrief: "Hackers are buying expired website domains previously owned by developers of popular VS Code extensions. By resetting the account password, they upload infected updates that automatically download onto thousands of developer laptops.",
       inferredMechanism: "Maintainer domain expiration leading to publisher account takeover and silent auto-update delivery of malicious extension VSIX payloads.",
@@ -375,6 +387,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "VIRAL",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "IDENTITY_AND_HUMAN",
+      actionDirective: "INTERVENE_NOW",
       vectorCategory: "Social Engineering & AI Voice Vishing Chatter",
       executiveBrief: "Criminal hackers are using AI tools to clone the voices of engineering directors from public YouTube videos. They call IT support desks, convincingly pose as the engineer, and persuade technicians to reset their multi-factor authentication tokens.",
       inferredMechanism: "Real-time generative AI voice synthesis combined with pre-gathered OSINT to bypass telephone identity verification protocols at IT support desks.",
@@ -461,6 +476,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "ACADEMIC_PREPRINT",
+      weaponizationStage: "ACADEMIC_RESEARCH",
+      exposureHorizon: "CI_CD_PIPELINE",
+      actionDirective: "AUDIT_CONFIG",
       vectorCategory: "CI/CD & Pipeline Cache Tampering Chatter",
       executiveBrief: "New security research demonstrates that automated build systems like GitHub Actions can have their temporary file caches poisoned by pull requests. A bad actor can submit a harmless-looking PR that poisons the cache used when building the official release software.",
       inferredMechanism: "Cross-branch cache key collision exploiting permissive fallback prefixes in CI build definitions.",
@@ -546,6 +564,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "ACADEMIC_PREPRINT",
+      weaponizationStage: "ACADEMIC_RESEARCH",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "SITUATIONAL_AWARENESS",
       vectorCategory: "Runtime Sandbox Escapes & Wasm Chatter",
       executiveBrief: "WebAssembly is marketed as a safe, isolated container for running untrusted code inside browsers and servers. New academic research shows that advanced math instructions (SIMD) can trick the engine's just-in-time compiler into breaking out of the memory sandbox.",
       inferredMechanism: "Sign-extension integer truncation error in JIT register allocation during 128-bit SIMD vector code generation.",
@@ -632,6 +653,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Mobile Development & Hardware Debugging Chatter",
       executiveBrief: "Developers often turn on wireless debugging to test Android apps without a USB cable. Malware on the same Wi-Fi network scans for these open ports to silently download internal test apps, dump memory logs, and steal application signing keys.",
       inferredMechanism: "Automated network sweeps for TCP port 5555 on local subnets followed by automated ADB shell execution.",
@@ -717,6 +741,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "SUPPLY_CHAIN_NETWORK",
+      actionDirective: "AUDIT_CONFIG",
       vectorCategory: "DNS Infrastructure & Subdomain Takeover Chatter",
       executiveBrief: "When tech companies delete old project documentation hosted on cloud services, they frequently forget to remove the web address pointing to it. Hackers take over the abandoned service and set up fake internal sites to steal developer login cookies.",
       inferredMechanism: "Dangling CNAME record pointing to de-allocated cloud resource allowing adversary to claim resource and serve malicious content under trusted domain.",
@@ -803,6 +830,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "THEORETICAL_VECTOR",
+      exposureHorizon: "CI_CD_PIPELINE",
+      actionDirective: "SITUATIONAL_AWARENESS",
       vectorCategory: "Memory Safety & Language Migration Chatter",
       executiveBrief: "Companies are using AI and automated tools to rewrite old C programs into Rust to make them secure. However, these tools often wrap complex pointer operations in 'unsafe' blocks that violate Rust's strict rules, creating hidden memory bugs that are harder to find.",
       inferredMechanism: "LLVM optimization violations caused by aliasing assumptions in automated Rust transpilation of legacy C pointer arithmetic.",
@@ -889,6 +919,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Container Escapes & Devcontainer Security Chatter",
       executiveBrief: "Developers often run their coding environment inside a Docker container for consistency. To let developers build other containers, teams frequently share the host Docker socket—which gives any program inside the container complete root control over the entire computer.",
       inferredMechanism: "UNIX socket communication with host Docker daemon allowing creation of privileged sibling containers mounting host root filesystem.",
@@ -974,6 +1007,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "UNDERGROUND_SIGNAL",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Git Protocol & Version Control Exploits",
       executiveBrief: "Exploit discussions show hackers crafting malicious Git repositories with specially designed submodules. Simply downloading the repository using 'git clone --recursive' can secretly install and run unauthorized programs on the developer's computer.",
       inferredMechanism: "Relative directory traversal in `.gitmodules` mapping submodule checkout paths over the parent `.git/hooks` folder.",
@@ -1059,6 +1095,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Supply Chain Malware & Process Evasion Chatter",
       executiveBrief: "Malicious npm packages are using operating system tricks to launch stealthy background programs during installation. Even when you close your terminal or the install finishes, the malicious program keeps running silently on your computer forever.",
       inferredMechanism: "POSIX double-forking and Node.js process detachment (`child_process.spawn(..., { detached: true })`) during package lifecycle execution.",
@@ -1145,6 +1184,9 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "ACADEMIC_PREPRINT",
+      weaponizationStage: "ACADEMIC_RESEARCH",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "SITUATIONAL_AWARENESS",
       vectorCategory: "Cryptography & Post-Quantum (PQC) Research",
       executiveBrief: "As companies start upgrading their encryption to post-quantum standards that quantum computers cannot crack, researchers are finding that early software implementations leak secret keys through tiny timing differences in computer processor caches.",
       inferredMechanism: "Microarchitectural cache-timing side-channel (Prime+Probe) leaking lattice polynomial coefficients during rejection sampling in software implementations.",

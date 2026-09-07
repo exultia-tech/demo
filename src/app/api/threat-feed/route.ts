@@ -23,6 +23,9 @@ export async function GET(request: Request) {
   const source = searchParams.get('source');
   const scope = searchParams.get('scope')?.toLowerCase() || 'all'; // 'all' | 'build-impact'
   const kevOnly = searchParams.get('kevOnly') === 'true';
+  const action = searchParams.get('action')?.toUpperCase();
+  const stage = searchParams.get('stage')?.toUpperCase();
+  const horizon = searchParams.get('horizon')?.toUpperCase();
 
   // Pagination parameters
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
@@ -110,6 +113,17 @@ export async function GET(request: Request) {
   // CISA KEV Known Exploited Vulnerability filter
   if (kevOnly) {
     filtered = filtered.filter(f => f.cisaKev.isKnownExploited);
+  }
+
+  // Behavioral Observational Filters for Informational Disclosures
+  if (action && action !== "ALL") {
+    filtered = filtered.filter(f => f.informationalSynthesis?.actionDirective === action);
+  }
+  if (stage && stage !== "ALL") {
+    filtered = filtered.filter(f => f.informationalSynthesis?.weaponizationStage === stage);
+  }
+  if (horizon && horizon !== "ALL") {
+    filtered = filtered.filter(f => f.informationalSynthesis?.exposureHorizon === horizon);
   }
 
   const totalMatched = filtered.length;

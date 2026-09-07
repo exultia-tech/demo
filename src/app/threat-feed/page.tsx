@@ -9,7 +9,10 @@ import {
   PublicFeedSource,
   ThreatSeverity,
   DomainCategory,
-  IdeBuildImpactAssessment
+  IdeBuildImpactAssessment,
+  ActionDirective,
+  WeaponizationStage,
+  ExposureHorizon
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
@@ -21,6 +24,7 @@ export default function ThreatFeedPage() {
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
+  const [selectedActionDirective, setSelectedActionDirective] = useState<string>("ALL");
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedSourceFeed, setSelectedSourceFeed] = useState<string>("ALL");
   const [kevOnly, setKevOnly] = useState(false);
@@ -71,8 +75,12 @@ export default function ThreatFeedPage() {
         if (searchQuery.trim()) params.set("query", searchQuery.trim());
         if (feedScope === "DEV_BUILD") params.set("scope", "build-impact");
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
-        if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
-        if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
+        if (feedScope === "INFORMATIONAL") {
+          params.set("scope", "informational");
+          if (selectedActionDirective !== "ALL") params.set("action", selectedActionDirective);
+        } else {
+          if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
+        }
         if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
         if (kevOnly) params.set("kevOnly", "true");
@@ -83,9 +91,22 @@ export default function ThreatFeedPage() {
         if (res.ok && !isCancelled) {
           const data = await res.json();
           if (data && Array.isArray(data.advisories)) {
-            // Sort records according to sortBy state
+            // Sort records according to sortBy state (Prioritize Action Directive for Informational Disclosures)
             const sorted = [...data.advisories].sort((a: UviAdvisoryRecord, b: UviAdvisoryRecord) => {
-              if (sortBy === "cvss_desc") return b.cvssScore - a.cvssScore;
+              if (feedScope === "INFORMATIONAL" || sortBy === "cvss_desc") {
+                if (feedScope === "INFORMATIONAL") {
+                  const priorityWeights: Record<string, number> = {
+                    INTERVENE_NOW: 4,
+                    HARDEN_WORKSTATION: 3,
+                    AUDIT_CONFIG: 2,
+                    SITUATIONAL_AWARENESS: 1
+                  };
+                  const wA = a.informationalSynthesis ? priorityWeights[a.informationalSynthesis.actionDirective] || 0 : 0;
+                  const wB = b.informationalSynthesis ? priorityWeights[b.informationalSynthesis.actionDirective] || 0 : 0;
+                  if (wA !== wB) return wB - wA;
+                }
+                return b.cvssScore - a.cvssScore;
+              }
               if (sortBy === "uvi_desc") return b.uviId.localeCompare(a.uviId);
               if (sortBy === "uvi_asc") return a.uviId.localeCompare(b.uviId);
               if (sortBy === "published_desc") return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
@@ -93,10 +114,10 @@ export default function ThreatFeedPage() {
             });
 
             setAdvisories(sorted);
-            setTotalUniversalCount(data.totalConsolidatedCount || 1787);
-            setDirectBuildImpactCount(data.directBuildImpactCount || 385);
-            setNonCveThreatsCount(data.nonCveThreatsCount || 35);
-            setInformationalDisclosuresCount(data.informationalDisclosuresCount || 6);
+            setTotalUniversalCount(data.totalConsolidatedCount || 1820);
+            setDirectBuildImpactCount(data.directBuildImpactCount || 414);
+            setNonCveThreatsCount(data.nonCveThreatsCount || 46);
+            setInformationalDisclosuresCount(data.informationalDisclosuresCount || 20);
             setMatchedCount(data.matchedAdvisoriesCount ?? sorted.length);
             setTotalPages(data.totalPages || Math.ceil((data.matchedAdvisoriesCount || sorted.length) / pageSize));
             setHasLiveSynced(true);
@@ -113,7 +134,7 @@ export default function ThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
+  }, [searchQuery, feedScope, selectedSeverity, selectedActionDirective, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
 
   // Reset page to 1 when filters change
   const handleFilterChange = (setter: () => void) => {
@@ -172,6 +193,74 @@ export default function ThreatFeedPage() {
           text: "#34D399",
           dot: "#10B981"
         };
+    }
+  };
+
+  const getActionDirectiveBadge = (action?: string) => {
+    switch (action) {
+      case "INTERVENE_NOW":
+        return {
+          label: "🚨 IMMEDIATE INTERVENTION",
+          bg: "rgba(239, 68, 68, 0.15)",
+          border: "rgba(239, 68, 68, 0.35)",
+          text: "#FCA5A5",
+          dot: "#EF4444"
+        };
+      case "HARDEN_WORKSTATION":
+        return {
+          label: "🛡️ HARDEN WORKSTATION",
+          bg: "rgba(245, 158, 11, 0.15)",
+          border: "rgba(245, 158, 11, 0.35)",
+          text: "#FCD34D",
+          dot: "#F59E0B"
+        };
+      case "AUDIT_CONFIG":
+        return {
+          label: "📋 AUDIT REPOSITORIES",
+          bg: "rgba(59, 130, 246, 0.15)",
+          border: "rgba(59, 130, 246, 0.35)",
+          text: "#93C5FD",
+          dot: "#3B82F6"
+        };
+      case "SITUATIONAL_AWARENESS":
+      default:
+        return {
+          label: "💡 SITUATIONAL AWARENESS",
+          bg: "rgba(148, 163, 184, 0.15)",
+          border: "rgba(148, 163, 184, 0.3)",
+          text: "#CBD5E1",
+          dot: "#94A3B8"
+        };
+    }
+  };
+
+  const getWeaponizationStageLabel = (stage?: string) => {
+    switch (stage) {
+      case "ACTIVE_CAMPAIGNS":
+        return "Active Campaigns in Wild";
+      case "UNDERGROUND_TOOLING":
+        return "Tooling in Underground Channels";
+      case "ACADEMIC_RESEARCH":
+        return "Academic & Lab Demonstration";
+      case "THEORETICAL_VECTOR":
+        return "Theoretical / Pre-Exploit Vector";
+      default:
+        return "Observational Signal";
+    }
+  };
+
+  const getExposureHorizonLabel = (horizon?: string) => {
+    switch (horizon) {
+      case "DEVELOPER_WORKSTATION":
+        return "Developer Workstation & Local Tools";
+      case "CI_CD_PIPELINE":
+        return "CI/CD Runners & Build Pipeline";
+      case "IDENTITY_AND_HUMAN":
+        return "Identity, SSO & IT Helpdesk";
+      case "SUPPLY_CHAIN_NETWORK":
+        return "Package Registry & Network Routing";
+      default:
+        return "Developer Ecosystem";
     }
   };
 
@@ -495,36 +584,65 @@ export default function ThreatFeedPage() {
             </select>
           </div>
 
-          {/* Severity Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Severity
-            </label>
-            <select
-              value={selectedSeverity}
-              onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              <option value="ALL">All Severities</option>
-              <option value="CRITICAL">Critical (9.0 - 10.0)</option>
-              <option value="HIGH">High (7.0 - 8.9)</option>
-              <option value="MEDIUM">Medium (4.0 - 6.9)</option>
-              <option value="LOW">Low (0.1 - 3.9)</option>
-            </select>
-          </div>
+          {/* Action Directive or Severity Dropdown */}
+          {feedScope === "INFORMATIONAL" ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "190px" }}>
+              <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+                Action Directive
+              </label>
+              <select
+                value={selectedActionDirective}
+                onChange={(e) => handleFilterChange(() => setSelectedActionDirective(e.target.value))}
+                style={{
+                  padding: "0.65rem 0.9rem",
+                  background: "rgba(10, 14, 23, 0.95)",
+                  border: "1px solid rgba(255, 255, 255, 0.14)",
+                  borderRadius: "8px",
+                  color: "#F8FAFC",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  cursor: "pointer",
+                  width: "100%"
+                }}
+              >
+                <option value="ALL">All Directives</option>
+                <option value="INTERVENE_NOW">🚨 Immediate Intervention</option>
+                <option value="HARDEN_WORKSTATION">🛡️ Harden Workstation</option>
+                <option value="AUDIT_CONFIG">📋 Audit Repositories</option>
+                <option value="SITUATIONAL_AWARENESS">💡 Situational Awareness</option>
+              </select>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
+              <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+                Severity
+              </label>
+              <select
+                value={selectedSeverity}
+                onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
+                style={{
+                  padding: "0.65rem 0.9rem",
+                  background: "rgba(10, 14, 23, 0.95)",
+                  border: "1px solid rgba(255, 255, 255, 0.14)",
+                  borderRadius: "8px",
+                  color: "#F8FAFC",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  cursor: "pointer",
+                  width: "100%"
+                }}
+              >
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical (9.0 - 10.0)</option>
+                <option value="HIGH">High (7.0 - 8.9)</option>
+                <option value="MEDIUM">Medium (4.0 - 6.9)</option>
+                <option value="LOW">Low (0.1 - 3.9)</option>
+              </select>
+            </div>
+          )}
 
           {/* Sort Order Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "150px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "165px" }}>
             <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
               Sort By
             </label>
@@ -543,20 +661,32 @@ export default function ThreatFeedPage() {
                 width: "100%"
               }}
             >
-              <option value="cvss_desc">CVSS (Highest First)</option>
-              <option value="uvi_desc">UVI ID (Descending)</option>
-              <option value="uvi_asc">UVI ID (Ascending)</option>
-              <option value="published_desc">Date (Newest First)</option>
+              {feedScope === "INFORMATIONAL" ? (
+                <>
+                  <option value="cvss_desc">Directive Urgency (Highest First)</option>
+                  <option value="published_desc">Date (Newest First)</option>
+                  <option value="uvi_desc">UVI ID (Descending)</option>
+                  <option value="uvi_asc">UVI ID (Ascending)</option>
+                </>
+              ) : (
+                <>
+                  <option value="cvss_desc">CVSS (Highest First)</option>
+                  <option value="uvi_desc">UVI ID (Descending)</option>
+                  <option value="uvi_asc">UVI ID (Ascending)</option>
+                  <option value="published_desc">Date (Newest First)</option>
+                </>
+              )}
             </select>
           </div>
 
           {/* Reset Filters button if any filter is active */}
-          {(searchQuery || selectedSeverity !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
+          {(searchQuery || selectedSeverity !== "ALL" || selectedActionDirective !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
             <button
               onClick={() => {
                 setFeedScope("ALL");
                 setSearchQuery("");
                 setSelectedSeverity("ALL");
+                setSelectedActionDirective("ALL");
                 setSelectedDomain("ALL");
                 setSelectedSourceFeed("ALL");
                 setKevOnly(false);
@@ -601,12 +731,13 @@ export default function ThreatFeedPage() {
           )}
         </div>
 
-        {(searchQuery || selectedSeverity !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || kevOnly || feedScope !== "ALL") && (
+        {(searchQuery || selectedSeverity !== "ALL" || selectedActionDirective !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || kevOnly || feedScope !== "ALL") && (
           <button
             onClick={() => {
               setFeedScope("ALL");
               setSearchQuery("");
               setSelectedSeverity("ALL");
+              setSelectedActionDirective("ALL");
               setSelectedDomain("ALL");
               setSelectedSourceFeed("ALL");
               setKevOnly(false);
@@ -652,14 +783,14 @@ export default function ThreatFeedPage() {
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "185px" }}>
                     UVI Identifier
                   </th>
-                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "140px" }}>
-                    Severity & CVSS
+                  <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "175px" }}>
+                    {feedScope === "INFORMATIONAL" ? "Triage Directive & Reality" : "Severity & CVSS"}
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat Scope & Headline
                   </th>
                   <th style={{ padding: "1.1rem 1rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "200px" }}>
-                    Impact Scope
+                    {feedScope === "INFORMATIONAL" ? "Exposure Horizon" : "Impact Scope"}
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "220px" }}>
                     Affected Target(s)
@@ -830,67 +961,91 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 2: Severity & CVSS / Chatter Velocity */}
-                        <td style={{ padding: "1.1rem 1rem", width: "140px", verticalAlign: "top" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                            <div style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "0.4rem",
-                              padding: "0.25rem 0.55rem",
-                              borderRadius: "6px",
-                              background: sevStyle.bg,
-                              border: `1px solid ${sevStyle.border}`,
-                              width: "fit-content"
-                            }}>
-                              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
-                              <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
-                                {record.severity}
-                              </span>
-                            </div>
+                        {/* Column 2: Severity & CVSS / Action Directive & Reality */}
+                        <td style={{ padding: "1.1rem 1rem", width: "175px", verticalAlign: "top" }}>
+                          {record.informationalSynthesis ? (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                              {(() => {
+                                const actionBadge = getActionDirectiveBadge(record.informationalSynthesis.actionDirective);
+                                return (
+                                  <div style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.35rem",
+                                    padding: "0.22rem 0.55rem",
+                                    borderRadius: "6px",
+                                    background: actionBadge.bg,
+                                    border: `1px solid ${actionBadge.border}`,
+                                    width: "fit-content"
+                                  }}>
+                                    <span style={{ fontSize: "0.72rem", fontWeight: 800, color: actionBadge.text }}>
+                                      {actionBadge.label}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
 
-                            {record.informationalSynthesis ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                              <div style={{ fontSize: "0.72rem", color: "#E2E8F0", fontWeight: 600, lineHeight: 1.3 }}>
+                                {getWeaponizationStageLabel(record.informationalSynthesis.weaponizationStage)}
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
                                 <span style={{
-                                  fontSize: "0.68rem",
-                                  fontWeight: 800,
-                                  color: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "#F43F5E" : "#818CF8",
-                                  background: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "rgba(244, 63, 94, 0.15)" : "rgba(129, 140, 248, 0.15)",
-                                  border: `1px solid ${record.informationalSynthesis.chatterVelocity === "VIRAL" ? "rgba(244, 63, 94, 0.3)" : "rgba(129, 140, 248, 0.3)"}`,
-                                  padding: "0.15rem 0.45rem",
-                                  borderRadius: "4px",
-                                  width: "fit-content"
+                                  fontSize: "0.65rem",
+                                  fontWeight: 700,
+                                  color: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "#F87171" : "#A5B4FC",
+                                  background: record.informationalSynthesis.chatterVelocity === "VIRAL" ? "rgba(239, 68, 68, 0.15)" : "rgba(129, 140, 248, 0.15)",
+                                  padding: "0.1rem 0.4rem",
+                                  borderRadius: "3px"
                                 }}>
-                                  {record.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : "⚡ CHATTER"}
+                                  {record.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 VIRAL" : "⚡ " + record.informationalSynthesis.chatterVelocity}
                                 </span>
-                                <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>
+                                <span style={{ fontSize: "0.65rem", color: "#94A3B8" }}>
                                   {record.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
                                 </span>
                               </div>
-                            ) : (
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                              <div style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                                padding: "0.25rem 0.55rem",
+                                borderRadius: "6px",
+                                background: sevStyle.bg,
+                                border: `1px solid ${sevStyle.border}`,
+                                width: "fit-content"
+                              }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
+                                <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
+                                  {record.severity}
+                                </span>
+                              </div>
+
                               <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
                                 <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#F8FAFC" }}>
                                   {record.cvssScore.toFixed(1)}
                                 </span>
                                 <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
                               </div>
-                            )}
 
-                            {record.cisaKev.isKnownExploited && (
-                              <span style={{
-                                fontSize: "0.65rem",
-                                fontWeight: 800,
-                                color: "#EF4444",
-                                background: "rgba(239, 68, 68, 0.15)",
-                                border: "1px solid rgba(239, 68, 68, 0.3)",
-                                padding: "0.15rem 0.4rem",
-                                borderRadius: "4px",
-                                width: "fit-content"
-                              }}>
-                                🚨 CISA KEV
-                              </span>
-                            )}
-                          </div>
+                              {record.cisaKev.isKnownExploited && (
+                                <span style={{
+                                  fontSize: "0.65rem",
+                                  fontWeight: 800,
+                                  color: "#EF4444",
+                                  background: "rgba(239, 68, 68, 0.15)",
+                                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                                  padding: "0.15rem 0.4rem",
+                                  borderRadius: "4px",
+                                  width: "fit-content"
+                                }}>
+                                  🚨 CISA KEV
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </td>
 
                         {/* Column 3: Threat Scope & Headline */}
@@ -949,15 +1104,15 @@ export default function ThreatFeedPage() {
                                   fontWeight: 700,
                                   padding: "0.2rem 0.5rem",
                                   borderRadius: "4px",
-                                  background: "rgba(129, 140, 248, 0.15)",
-                                  border: "1px solid rgba(129, 140, 248, 0.3)",
-                                  color: "#C7D2FE",
+                                  background: "rgba(59, 130, 246, 0.12)",
+                                  border: "1px solid rgba(59, 130, 246, 0.25)",
+                                  color: "#93C5FD",
                                   width: "fit-content"
                                 }}>
-                                  📡 {record.informationalSynthesis.vectorCategory}
+                                  🎯 {getExposureHorizonLabel(record.informationalSynthesis.exposureHorizon)}
                                 </span>
                                 <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", lineHeight: 1.4 }}>
-                                  Target: {record.informationalSynthesis.potentialVictimSurface.slice(0, 2).join(", ")}
+                                  Surfaces: {record.informationalSynthesis.potentialVictimSurface.slice(0, 2).join(", ")}
                                 </span>
                               </>
                             ) : (
@@ -1153,20 +1308,41 @@ export default function ThreatFeedPage() {
                         </button>
                       </div>
 
-                      <div style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.35rem",
-                        padding: "0.2rem 0.5rem",
-                        borderRadius: "6px",
-                        background: sevStyle.bg,
-                        border: `1px solid ${sevStyle.border}`
-                      }}>
-                        <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
-                          {record.severity} {record.cvssScore.toFixed(1)}
-                        </span>
-                      </div>
+                      {record.informationalSynthesis ? (
+                        (() => {
+                          const actionBadge = getActionDirectiveBadge(record.informationalSynthesis.actionDirective);
+                          return (
+                            <div style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.35rem",
+                              padding: "0.2rem 0.55rem",
+                              borderRadius: "6px",
+                              background: actionBadge.bg,
+                              border: `1px solid ${actionBadge.border}`
+                            }}>
+                              <span style={{ fontSize: "0.72rem", fontWeight: 800, color: actionBadge.text }}>
+                                {actionBadge.label}
+                              </span>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <div style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
+                          padding: "0.2rem 0.5rem",
+                          borderRadius: "6px",
+                          background: sevStyle.bg,
+                          border: `1px solid ${sevStyle.border}`
+                        }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
+                          <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
+                            {record.severity} {record.cvssScore.toFixed(1)}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Title & Headline */}
@@ -1177,23 +1353,44 @@ export default function ThreatFeedPage() {
                       {record.headline}
                     </p>
 
-                    {/* Dev Impact Badge */}
-                    {hasDevImpact && (
+                    {/* Informational Reality & Horizon Banner vs Standard Dev Impact */}
+                    {record.informationalSynthesis ? (
                       <div style={{
                         marginBottom: "0.75rem",
-                        padding: "0.4rem 0.65rem",
+                        padding: "0.45rem 0.7rem",
                         borderRadius: "6px",
-                        background: "rgba(16, 185, 129, 0.12)",
-                        border: "1px solid rgba(16, 185, 129, 0.25)",
+                        background: "rgba(59, 130, 246, 0.1)",
+                        border: "1px solid rgba(59, 130, 246, 0.2)",
                         display: "flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontSize: "0.75rem",
-                        color: "#6EE7B7"
+                        flexDirection: "column",
+                        gap: "0.25rem",
+                        fontSize: "0.75rem"
                       }}>
-                        <span>💻</span>
-                        <span><strong>Dev Workstation Risk:</strong> {record.ideBuildImpact.severityOnDeveloperEnv}</span>
+                        <div style={{ color: "#93C5FD", fontWeight: 600 }}>
+                          📍 {getWeaponizationStageLabel(record.informationalSynthesis.weaponizationStage)}
+                        </div>
+                        <div style={{ color: "#94A3B8", fontSize: "0.72rem" }}>
+                          🎯 {getExposureHorizonLabel(record.informationalSynthesis.exposureHorizon)}
+                        </div>
                       </div>
+                    ) : (
+                      hasDevImpact && (
+                        <div style={{
+                          marginBottom: "0.75rem",
+                          padding: "0.4rem 0.65rem",
+                          borderRadius: "6px",
+                          background: "rgba(16, 185, 129, 0.12)",
+                          border: "1px solid rgba(16, 185, 129, 0.25)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
+                          fontSize: "0.75rem",
+                          color: "#6EE7B7"
+                        }}>
+                          <span>💻</span>
+                          <span><strong>Dev Workstation Risk:</strong> {record.ideBuildImpact.severityOnDeveloperEnv}</span>
+                        </div>
+                      )
                     )}
 
                     {/* CISA KEV Banner if exploited */}
@@ -1422,21 +1619,40 @@ export default function ThreatFeedPage() {
                     {selectedAdvisory.uviId}
                   </span>
 
-                  {/* Severity Pill - Clean & understated */}
-                  <span style={{
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    padding: "0.2rem 0.5rem",
-                    borderRadius: "4px",
-                    background: selectedAdvisory.severity === "CRITICAL" ? "rgba(239, 68, 68, 0.15)" :
-                               selectedAdvisory.severity === "HIGH" ? "rgba(249, 115, 22, 0.15)" :
-                               "rgba(255, 255, 255, 0.06)",
-                    color: selectedAdvisory.severity === "CRITICAL" ? "#FCA5A5" :
-                           selectedAdvisory.severity === "HIGH" ? "#FDBA74" : "#CBD5E1",
-                    border: "1px solid rgba(255, 255, 255, 0.08)"
-                  }}>
-                    {selectedAdvisory.severity} {selectedAdvisory.cvssScore.toFixed(1)}
-                  </span>
+                  {/* Severity Pill or Action Directive Pill */}
+                  {selectedAdvisory.informationalSynthesis ? (
+                    (() => {
+                      const actionBadge = getActionDirectiveBadge(selectedAdvisory.informationalSynthesis.actionDirective);
+                      return (
+                        <span style={{
+                          fontSize: "0.72rem",
+                          fontWeight: 800,
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "4px",
+                          background: actionBadge.bg,
+                          color: actionBadge.text,
+                          border: `1px solid ${actionBadge.border}`
+                        }}>
+                          {actionBadge.label}
+                        </span>
+                      );
+                    })()
+                  ) : (
+                    <span style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      padding: "0.2rem 0.5rem",
+                      borderRadius: "4px",
+                      background: selectedAdvisory.severity === "CRITICAL" ? "rgba(239, 68, 68, 0.15)" :
+                                 selectedAdvisory.severity === "HIGH" ? "rgba(249, 115, 22, 0.15)" :
+                                 "rgba(255, 255, 255, 0.06)",
+                      color: selectedAdvisory.severity === "CRITICAL" ? "#FCA5A5" :
+                             selectedAdvisory.severity === "HIGH" ? "#FDBA74" : "#CBD5E1",
+                      border: "1px solid rgba(255, 255, 255, 0.08)"
+                    }}>
+                      {selectedAdvisory.severity} {selectedAdvisory.cvssScore.toFixed(1)}
+                    </span>
+                  )}
 
                   {/* Context / Scope Badge - Clean neutral pill */}
                   <span style={{
@@ -1517,15 +1733,27 @@ export default function ThreatFeedPage() {
               </h2>
 
               {/* Metadata Subtitle - Fully normalized, no rainbow colors */}
-              <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
-                <span>Domain: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.domainCategory}</strong></span>
-                <span>•</span>
-                <span>Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.upstreamSignals[0]?.sourceName || "Standardized Feed"}</strong></span>
-                <span>•</span>
-                <span>Published: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.publishedDate}</strong></span>
-                <span>•</span>
-                <span>Workstation Exposure: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv}</strong></span>
-              </div>
+              {selectedAdvisory.informationalSynthesis ? (
+                <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
+                  <span>Vector: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.informationalSynthesis.vectorCategory}</strong></span>
+                  <span>•</span>
+                  <span>Research Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.informationalSynthesis.primarySources[0]?.sourceName || "Informational Synthesis"}</strong></span>
+                  <span>•</span>
+                  <span>Horizon: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{getExposureHorizonLabel(selectedAdvisory.informationalSynthesis.exposureHorizon)}</strong></span>
+                  <span>•</span>
+                  <span>Published: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.publishedDate}</strong></span>
+                </div>
+              ) : (
+                <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
+                  <span>Domain: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.domainCategory}</strong></span>
+                  <span>•</span>
+                  <span>Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.upstreamSignals[0]?.sourceName || "Standardized Feed"}</strong></span>
+                  <span>•</span>
+                  <span>Published: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.publishedDate}</strong></span>
+                  <span>•</span>
+                  <span>Workstation Exposure: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv}</strong></span>
+                </div>
+              )}
             </div>
 
             {/* Streamlined Tabs Navigation (3 Clean Tabs) */}
@@ -1580,38 +1808,46 @@ export default function ThreatFeedPage() {
               {dossierTab === "overview" && (
                 selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" && selectedAdvisory.informationalSynthesis ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    {/* Key Metrics Strip - Normalized neutral tiles */}
+                    {/* 4-Pillar Observational Assessment Strip (Zero numeric scores) */}
                     <div style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
                       gap: "0.75rem"
                     }}>
+                      {/* Pillar 1: Action Directive */}
+                      {(() => {
+                        const actionBadge = getActionDirectiveBadge(selectedAdvisory.informationalSynthesis.actionDirective);
+                        return (
+                          <div style={{ background: "rgba(255, 255, 255, 0.025)", border: `1px solid ${actionBadge.border}`, borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                            <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Action Directive</div>
+                            <div style={{ fontSize: "0.8rem", fontWeight: 700, color: actionBadge.text, marginTop: "0.25rem" }}>
+                              {actionBadge.label}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Pillar 2: Weaponization Reality */}
                       <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Vector Category</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.informationalSynthesis.vectorCategory}
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Weaponization Stage</div>
+                        <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.25rem" }}>
+                          {getWeaponizationStageLabel(selectedAdvisory.informationalSynthesis.weaponizationStage)}
                         </div>
                       </div>
 
+                      {/* Pillar 3: Exposure Horizon */}
                       <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Chatter Velocity</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "Viral Velocity" :
-                           selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH" ? "High Velocity" : "Moderate Velocity"}
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Exposure Horizon</div>
+                        <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#93C5FD", marginTop: "0.25rem" }}>
+                          {getExposureHorizonLabel(selectedAdvisory.informationalSynthesis.exposureHorizon)}
                         </div>
                       </div>
 
+                      {/* Pillar 4: Signal & Corroboration */}
                       <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Consensus Level</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
-                        </div>
-                      </div>
-
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Estimated CVSS</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.cvssScore.toFixed(1)} <span style={{ fontSize: "0.72rem", fontWeight: 400, color: "#94A3B8" }}>({selectedAdvisory.attackVector})</span>
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Signal & Corroboration</div>
+                        <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.25rem" }}>
+                          {selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 Viral" : "⚡ " + selectedAdvisory.informationalSynthesis.chatterVelocity} • {selectedAdvisory.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
                         </div>
                       </div>
                     </div>
@@ -1801,10 +2037,16 @@ export default function ThreatFeedPage() {
                   }}>
                     <div>
                       <div style={{ fontSize: "0.7rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.04em" }}>
-                        Developer Workstation Exposure Assessment
+                        {selectedAdvisory.informationalSynthesis ? "Observational Exposure Assessment" : "Developer Workstation Exposure Assessment"}
                       </div>
                       <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                        {selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv} EXPOSURE
+                        {selectedAdvisory.informationalSynthesis ? (
+                          <span style={{ color: getActionDirectiveBadge(selectedAdvisory.informationalSynthesis.actionDirective).text }}>
+                            {getActionDirectiveBadge(selectedAdvisory.informationalSynthesis.actionDirective).label}
+                          </span>
+                        ) : (
+                          `${selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv} EXPOSURE`
+                        )}
                       </div>
                     </div>
                     <span style={{ fontSize: "1.5rem", opacity: 0.8 }}>💻</span>

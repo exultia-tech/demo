@@ -39,6 +39,24 @@ export interface InformationalSourceSignal {
   signalQuote: string;
 }
 
+export type WeaponizationStage = 
+  | "ACTIVE_CAMPAIGNS"
+  | "UNDERGROUND_TOOLING"
+  | "ACADEMIC_RESEARCH"
+  | "THEORETICAL_VECTOR";
+
+export type ExposureHorizon =
+  | "DEVELOPER_WORKSTATION"
+  | "CI_CD_PIPELINE"
+  | "IDENTITY_AND_HUMAN"
+  | "SUPPLY_CHAIN_NETWORK";
+
+export type ActionDirective =
+  | "INTERVENE_NOW"
+  | "HARDEN_WORKSTATION"
+  | "AUDIT_CONFIG"
+  | "SITUATIONAL_AWARENESS";
+
 export interface InformationalSynthesis {
   chatterVelocity: "VIRAL" | "HIGH" | "MODERATE" | "EMERGING";
   consensusLevel: 
@@ -47,6 +65,9 @@ export interface InformationalSynthesis {
     | "RESEARCHER_DISCLOSURE"
     | "COMMUNITY_CHATTER"
     | "UNDERGROUND_SIGNAL";
+  weaponizationStage: WeaponizationStage;
+  exposureHorizon: ExposureHorizon;
+  actionDirective: ActionDirective;
   vectorCategory: string;
   executiveBrief: string;
   inferredMechanism: string;
@@ -1789,6 +1810,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "VIRAL",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "IDENTITY_AND_HUMAN",
+      actionDirective: "INTERVENE_NOW",
       vectorCategory: "Authentication & SSO Bypass Chatter",
       executiveBrief: "Coordinated botnets are leasing residential internet connections to rotate IP addresses with every login attempt, conducting stealthy credential-stuffing against corporate Git repositories without triggering IP-based rate limiting.",
       inferredMechanism: "Automated distributed replay of compromised developer password dumps over rotating residential proxy gateways, probing OAuth/SAML endpoints and Git HTTP Basic Auth.",
@@ -1875,6 +1899,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "AI & Agent Exfiltration Vectors",
       executiveBrief: "AI assistants inside code editors can be tricked by malicious instructions hidden in README files or code comments into reading your private files (.env, AWS keys) and sending them to an external server.",
       inferredMechanism: "Indirect prompt injection manipulating LLM tool-calling APIs to invoke file-reading routines and format exfiltration payloads as markdown image embeds or web fetch commands.",
@@ -1961,6 +1988,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "MODERATE",
       consensusLevel: "ACADEMIC_PREPRINT",
+      weaponizationStage: "ACADEMIC_RESEARCH",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "SITUATIONAL_AWARENESS",
       vectorCategory: "Network Protocol & Cryptography",
       executiveBrief: "As internet servers begin testing post-quantum encryption, the larger encryption keys cause network packets to split. Flawed enterprise firewalls are dropping these packets or forcing connections to downgrade to weaker encryption.",
       inferredMechanism: "TLS 1.3 ClientHello record fragmentation across TCP segments triggering middlebox packet rejection or inducing silent fallback to classic elliptic curves.",
@@ -2047,6 +2077,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "SUPPLY_CHAIN_NETWORK",
+      actionDirective: "AUDIT_CONFIG",
       vectorCategory: "Cloud Identity & Token Hijacking",
       executiveBrief: "Hackers are scanning public GitHub repositories for old download links that point to deleted Amazon S3 or Azure storage buckets. They register the deleted bucket name and serve malicious code to anyone running the installer script.",
       inferredMechanism: "Dangling DNS CNAME pointing to deregistered cloud storage namespace; attacker claims bucket name and uploads trojanized binaries.",
@@ -2133,6 +2166,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "HIGH",
       consensusLevel: "UNDERGROUND_SIGNAL",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "CI_CD_PIPELINE",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Kernel & Container Infrastructure",
       executiveBrief: "Hacker groups are circulating proof-of-concept rootkits that abuse Linux eBPF features. If an attacker gets root in a privileged container, they can alter what your security software sees, making malware completely invisible.",
       inferredMechanism: "Attaching eBPF filter programs to kernel VFS probes to rewrite process tables, network sockets, and file listings before returning to monitoring tools.",
@@ -2218,6 +2254,9 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     informationalSynthesis: {
       chatterVelocity: "VIRAL",
       consensusLevel: "INVESTIGATIVE_REPORT",
+      weaponizationStage: "ACTIVE_CAMPAIGNS",
+      exposureHorizon: "DEVELOPER_WORKSTATION",
+      actionDirective: "HARDEN_WORKSTATION",
       vectorCategory: "Developer Supply Chain Reconnaissance",
       executiveBrief: "New infostealer malware variants are quietly modifying local configuration files that link your browser extensions to desktop apps. This allows them to eavesdrop on password managers and developer tokens passing between the browser and local software.",
       inferredMechanism: "User-space registry key modification pointing extension NativeMessagingHosts to malicious intermediary wrapper scripts.",
