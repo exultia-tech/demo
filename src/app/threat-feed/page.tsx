@@ -1414,75 +1414,45 @@ export default function ThreatFeedPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
                   <span style={{
                     fontFamily: "monospace",
-                    fontSize: "1.15rem",
+                    fontSize: "1.1rem",
                     fontWeight: 800,
-                    color: "#60A5FA",
+                    color: "#F8FAFC",
                     letterSpacing: "-0.01em"
                   }}>
                     {selectedAdvisory.uviId}
                   </span>
 
-                  {/* Severity Pill */}
+                  {/* Severity Pill - Clean & understated */}
                   <span style={{
                     fontSize: "0.72rem",
                     fontWeight: 700,
-                    padding: "0.2rem 0.55rem",
+                    padding: "0.2rem 0.5rem",
                     borderRadius: "4px",
-                    background: selectedAdvisory.severity === "CRITICAL" ? "rgba(239, 68, 68, 0.2)" :
-                               selectedAdvisory.severity === "HIGH" ? "rgba(249, 115, 22, 0.2)" :
-                               selectedAdvisory.severity === "MEDIUM" ? "rgba(245, 158, 11, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                    background: selectedAdvisory.severity === "CRITICAL" ? "rgba(239, 68, 68, 0.15)" :
+                               selectedAdvisory.severity === "HIGH" ? "rgba(249, 115, 22, 0.15)" :
+                               "rgba(255, 255, 255, 0.06)",
                     color: selectedAdvisory.severity === "CRITICAL" ? "#FCA5A5" :
-                           selectedAdvisory.severity === "HIGH" ? "#FDBA74" :
-                           selectedAdvisory.severity === "MEDIUM" ? "#FCD34D" : "#93C5FD",
-                    border: `1px solid ${selectedAdvisory.severity === "CRITICAL" ? "rgba(239, 68, 68, 0.4)" : "rgba(255, 255, 255, 0.1)"}`
+                           selectedAdvisory.severity === "HIGH" ? "#FDBA74" : "#CBD5E1",
+                    border: "1px solid rgba(255, 255, 255, 0.08)"
                   }}>
                     {selectedAdvisory.severity} {selectedAdvisory.cvssScore.toFixed(1)}
                   </span>
 
-                  {/* Context / Scope Badge */}
-                  {selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" ? (
-                    <span style={{
-                      fontSize: "0.72rem",
-                      fontWeight: 700,
-                      padding: "0.2rem 0.55rem",
-                      borderRadius: "4px",
-                      background: "rgba(245, 158, 11, 0.18)",
-                      color: "#FCD34D",
-                      border: "1px solid rgba(245, 158, 11, 0.35)"
-                    }}>
-                      📡 INFORMATIONAL DISCLOSURE
-                    </span>
-                  ) : selectedAdvisory.cisaKev.isKnownExploited ? (
-                    <span style={{
-                      fontSize: "0.72rem",
-                      fontWeight: 700,
-                      padding: "0.2rem 0.55rem",
-                      borderRadius: "4px",
-                      background: "rgba(239, 68, 68, 0.18)",
-                      color: "#FCA5A5",
-                      border: "1px solid rgba(239, 68, 68, 0.35)"
-                    }}>
-                      🚨 CISA KEV (ACTIVE EXPLOIT)
-                    </span>
-                  ) : selectedAdvisory.cveList.length === 0 ? (
-                    <span style={{
-                      fontSize: "0.72rem",
-                      fontWeight: 700,
-                      padding: "0.2rem 0.55rem",
-                      borderRadius: "4px",
-                      background: "rgba(236, 72, 153, 0.18)",
-                      color: "#F472B6",
-                      border: "1px solid rgba(236, 72, 153, 0.35)"
-                    }}>
-                      🛡️ SUPPLY CHAIN MALWARE
-                    </span>
-                  ) : (
-                    selectedAdvisory.cveList.slice(0, 2).map((cve) => (
-                      <span key={cve} style={{ fontFamily: "monospace", fontSize: "0.72rem", background: "rgba(255, 255, 255, 0.08)", padding: "0.2rem 0.45rem", borderRadius: "4px", color: "#CBD5E1" }}>
-                        {cve}
-                      </span>
-                    ))
-                  )}
+                  {/* Context / Scope Badge - Clean neutral pill */}
+                  <span style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 600,
+                    padding: "0.2rem 0.5rem",
+                    borderRadius: "4px",
+                    background: "rgba(255, 255, 255, 0.04)",
+                    color: "#94A3B8",
+                    border: "1px solid rgba(255, 255, 255, 0.08)"
+                  }}>
+                    {selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" ? "Informational Disclosure" :
+                     selectedAdvisory.cisaKev.isKnownExploited ? "CISA KEV Active Exploit" :
+                     selectedAdvisory.cveList.length === 0 ? "Supply Chain Finding" :
+                     selectedAdvisory.cveList[0] || "CVE Advisory"}
+                  </span>
                 </div>
 
                 {/* Header Actions */}
@@ -1490,14 +1460,14 @@ export default function ThreatFeedPage() {
                   <button
                     onClick={() => handleCopyUviId(selectedAdvisory.uviId)}
                     style={{
-                      background: "rgba(59, 130, 246, 0.12)",
-                      border: "1px solid rgba(59, 130, 246, 0.25)",
-                      color: copiedUviId === selectedAdvisory.uviId ? "#34D399" : "#93C5FD",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: copiedUviId === selectedAdvisory.uviId ? "#34D399" : "#CBD5E1",
                       padding: "0.25rem 0.6rem",
                       borderRadius: "6px",
                       fontSize: "0.75rem",
                       cursor: "pointer",
-                      fontWeight: 600
+                      fontWeight: 500
                     }}
                   >
                     {copiedUviId === selectedAdvisory.uviId ? "Copied ID!" : "Copy ID"}
@@ -1506,14 +1476,14 @@ export default function ThreatFeedPage() {
                   <button
                     onClick={() => handleCopyJson(selectedAdvisory)}
                     style={{
-                      background: "rgba(255, 255, 255, 0.06)",
-                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
                       color: copiedJson ? "#34D399" : "#CBD5E1",
                       padding: "0.25rem 0.6rem",
                       borderRadius: "6px",
                       fontSize: "0.75rem",
                       cursor: "pointer",
-                      fontWeight: 600
+                      fontWeight: 500
                     }}
                   >
                     {copiedJson ? "Copied JSON!" : "Copy JSON"}
@@ -1542,19 +1512,19 @@ export default function ThreatFeedPage() {
               </div>
 
               {/* Advisory Title */}
-              <h2 style={{ fontSize: "1.12rem", fontWeight: 700, color: "#F8FAFC", lineHeight: 1.35, margin: "0.5rem 0 0.35rem 0" }}>
+              <h2 style={{ fontSize: "1.08rem", fontWeight: 700, color: "#F8FAFC", lineHeight: 1.4, margin: "0.55rem 0 0.35rem 0" }}>
                 {selectedAdvisory.title}
               </h2>
 
-              {/* Metadata Subtitle */}
-              <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "var(--text-muted)", flexWrap: "wrap", alignItems: "center" }}>
-                <span>Domain: <strong style={{ color: "#C4B5FD" }}>{selectedAdvisory.domainCategory}</strong></span>
+              {/* Metadata Subtitle - Fully normalized, no rainbow colors */}
+              <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
+                <span>Domain: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.domainCategory}</strong></span>
                 <span>•</span>
-                <span>Source: <strong style={{ color: "#93C5FD" }}>{selectedAdvisory.upstreamSignals[0]?.sourceName || "Standardized Feed"}</strong></span>
+                <span>Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.upstreamSignals[0]?.sourceName || "Standardized Feed"}</strong></span>
                 <span>•</span>
-                <span>Published: <strong style={{ color: "#E2E8F0" }}>{selectedAdvisory.publishedDate}</strong></span>
+                <span>Published: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.publishedDate}</strong></span>
                 <span>•</span>
-                <span>Workstation Risk: <strong style={{ color: selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv === "CRITICAL" ? "#F87171" : selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv === "HIGH" ? "#FDBA74" : "#6EE7B7" }}>{selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv}</strong></span>
+                <span>Workstation Exposure: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv}</strong></span>
               </div>
             </div>
 
@@ -1567,13 +1537,13 @@ export default function ThreatFeedPage() {
               overflowX: "auto"
             }}>
               {[
-                { id: "overview", label: "📋 Threat Overview & Mechanism" },
-                { id: "workstation", label: "💻 Developer & Workstation Impact" },
+                { id: "overview", label: "Overview & Mechanism" },
+                { id: "workstation", label: "Workstation & Build Impact" },
                 { 
                   id: "sources", 
                   label: selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE"
-                    ? `📰 Journalism & Citations (${selectedAdvisory.informationalSynthesis?.primarySources.length || 0})`
-                    : `📡 Intelligence Feeds (${selectedAdvisory.upstreamSignals.length})` 
+                    ? `Sources & Citations (${selectedAdvisory.informationalSynthesis?.primarySources.length || 0})`
+                    : `Feed Signals (${selectedAdvisory.upstreamSignals.length})` 
                 }
               ].map((tab) => (
                 <button
@@ -1583,9 +1553,9 @@ export default function ThreatFeedPage() {
                     padding: "0.85rem 1.15rem",
                     background: "none",
                     border: "none",
-                    borderBottom: dossierTab === tab.id ? "2px solid #3B82F6" : "2px solid transparent",
-                    color: dossierTab === tab.id ? "#93C5FD" : "var(--text-muted)",
-                    fontWeight: dossierTab === tab.id ? 700 : 500,
+                    borderBottom: dossierTab === tab.id ? "2px solid #60A5FA" : "2px solid transparent",
+                    color: dossierTab === tab.id ? "#F8FAFC" : "#94A3B8",
+                    fontWeight: dossierTab === tab.id ? 600 : 500,
                     fontSize: "0.82rem",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
@@ -1597,7 +1567,7 @@ export default function ThreatFeedPage() {
               ))}
             </div>
 
-            {/* Modal Body (Scrollable, Clean spacing) */}
+            {/* Modal Body (Scrollable, Normalized calm aesthetics) */}
             <div style={{
               padding: "1.5rem 1.75rem",
               overflowY: "auto",
@@ -1610,96 +1580,91 @@ export default function ThreatFeedPage() {
               {dossierTab === "overview" && (
                 selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" && selectedAdvisory.informationalSynthesis ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    {/* Key Metrics Strip */}
+                    {/* Key Metrics Strip - Normalized neutral tiles */}
                     <div style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
                       gap: "0.75rem"
                     }}>
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Vector Category</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Vector Category</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.informationalSynthesis.vectorCategory}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Chatter Velocity</div>
-                        <div style={{ marginTop: "0.2rem", fontSize: "0.82rem", fontWeight: 700, color: selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "#FCA5A5" : "#FDBA74" }}>
-                          {selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "🔥 Viral Chatter" :
-                           selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH" ? "⚡ High Velocity" : "📈 Moderate"}
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Chatter Velocity</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
+                          {selectedAdvisory.informationalSynthesis.chatterVelocity === "VIRAL" ? "Viral Velocity" :
+                           selectedAdvisory.informationalSynthesis.chatterVelocity === "HIGH" ? "High Velocity" : "Moderate Velocity"}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Consensus Level</div>
-                        <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#C4B5FD", marginTop: "0.2rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Consensus Level</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.informationalSynthesis.consensusLevel.replace(/_/g, " ")}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                        <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Estimated CVSS</div>
-                        <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#F97316", marginTop: "0.15rem" }}>
-                          {selectedAdvisory.cvssScore.toFixed(1)} <span style={{ fontSize: "0.7rem", fontWeight: 500, color: "var(--text-muted)" }}>({selectedAdvisory.attackVector})</span>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                        <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Estimated CVSS</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
+                          {selectedAdvisory.cvssScore.toFixed(1)} <span style={{ fontSize: "0.72rem", fontWeight: 400, color: "#94A3B8" }}>({selectedAdvisory.attackVector})</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Executive Digest Card */}
+                    {/* Executive Digest - Unified neutral card */}
                     <div style={{
-                      background: "rgba(245, 158, 11, 0.04)",
-                      border: "1px solid rgba(245, 158, 11, 0.2)",
-                      borderLeft: "3px solid #F59E0B",
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
                       borderRadius: "8px",
-                      padding: "0.9rem 1.15rem"
+                      padding: "1rem 1.2rem"
                     }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#FBBF24", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
-                        💡 Executive Digest
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
+                        Executive Digest
                       </div>
-                      <p style={{ color: "#FEF3C7", fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
                         {selectedAdvisory.informationalSynthesis.executiveBrief}
                       </p>
                     </div>
 
-                    {/* Inferred Threat Vector & Mechanism */}
-                    <div>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#60A5FA", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
-                        ⚙️ Inferred Attack Mechanism & Vector Execution
+                    {/* Inferred Threat Vector & Mechanism - Unified neutral card */}
+                    <div style={{
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
+                      borderRadius: "8px",
+                      padding: "1rem 1.2rem"
+                    }}>
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
+                        Inferred Attack Mechanism & Vector Execution
                       </div>
-                      <div style={{
-                        background: "rgba(255, 255, 255, 0.02)",
-                        border: "1px solid rgba(255, 255, 255, 0.06)",
-                        borderRadius: "8px",
-                        padding: "0.9rem 1.15rem",
-                        color: "#CBD5E1",
-                        fontSize: "0.85rem",
-                        lineHeight: 1.65
-                      }}>
+                      <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
                         {selectedAdvisory.informationalSynthesis.inferredMechanism}
-                      </div>
+                      </p>
                     </div>
 
-                    {/* Precautionary Posture & Actionable Hygiene */}
+                    {/* Precautionary Posture - Unified neutral card */}
                     <div style={{
-                      background: "rgba(16, 185, 129, 0.04)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      borderLeft: "3px solid #10B981",
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
                       borderRadius: "8px",
-                      padding: "0.9rem 1.15rem"
+                      padding: "1rem 1.2rem"
                     }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#34D399", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
-                        🛡️ Precautionary Defensive Posture (Pre-Patch Guidance)
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
+                        Precautionary Defensive Posture (Pre-Patch Guidance)
                       </div>
-                      <p style={{ color: "#D1FAE5", fontSize: "0.86rem", lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
                         {selectedAdvisory.informationalSynthesis.precautionaryPosture}
                       </p>
                     </div>
 
-                    {/* Potential Victim Surface */}
+                    {/* Potential Victim Surface - Normalized neutral tags */}
                     {selectedAdvisory.informationalSynthesis.potentialVictimSurface && (
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", paddingTop: "0.25rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", paddingTop: "0.1rem" }}>
+                        <span style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>
                           Target Surfaces:
                         </span>
                         {selectedAdvisory.informationalSynthesis.potentialVictimSurface.map((surf, sIdx) => (
@@ -1709,9 +1674,9 @@ export default function ThreatFeedPage() {
                               fontSize: "0.72rem",
                               padding: "0.15rem 0.5rem",
                               borderRadius: "4px",
-                              background: "rgba(56, 189, 248, 0.1)",
-                              border: "1px solid rgba(56, 189, 248, 0.2)",
-                              color: "#BAE6FD"
+                              background: "rgba(255, 255, 255, 0.05)",
+                              border: "1px solid rgba(255, 255, 255, 0.08)",
+                              color: "#CBD5E1"
                             }}
                           >
                             {surf}
@@ -1722,103 +1687,98 @@ export default function ThreatFeedPage() {
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    {/* CVSS & Vector Breakdown */}
+                    {/* CVSS & Vector Breakdown - Normalized neutral tiles */}
                     <div style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
                       gap: "0.6rem"
                     }}>
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase" }}>CVSS v3.1</div>
-                        <div style={{ fontSize: "1.35rem", fontWeight: 800, color: selectedAdvisory.cvssScore >= 9 ? "#EF4444" : "#F97316" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>CVSS v3.1</div>
+                        <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.cvssScore.toFixed(1)}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Attack Vector</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.3rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Attack Vector</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.attackVector}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Complexity</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.3rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Complexity</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.attackComplexity}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Privileges</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.3rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Privileges</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.privilegesRequired}
                         </div>
                       </div>
 
-                      <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase" }}>User Interaction</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.3rem" }}>
+                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Interaction</div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
                           {selectedAdvisory.userInteraction}
                         </div>
                       </div>
                     </div>
 
-                    {/* Executive Threat Summary */}
+                    {/* Executive Threat Summary - Unified neutral card */}
                     <div style={{
-                      background: "rgba(59, 130, 246, 0.04)",
-                      border: "1px solid rgba(59, 130, 246, 0.2)",
-                      borderLeft: "3px solid #3B82F6",
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
                       borderRadius: "8px",
-                      padding: "0.9rem 1.15rem"
+                      padding: "1rem 1.2rem"
                     }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#60A5FA", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
                         Executive Threat Summary
                       </div>
-                      <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
                         {selectedAdvisory.summary}
                       </p>
                     </div>
 
-                    {/* Technical Root Cause & Weakness */}
-                    <div>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#93C5FD", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
-                        In-Depth Technical Root Cause
+                    {/* Technical Root Cause & Weakness - Unified neutral card */}
+                    <div style={{
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
+                      borderRadius: "8px",
+                      padding: "1rem 1.2rem"
+                    }}>
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
+                        Technical Root Cause & Weakness
                       </div>
-                      <div style={{
-                        background: "rgba(255, 255, 255, 0.02)",
-                        border: "1px solid rgba(255, 255, 255, 0.06)",
-                        borderRadius: "8px",
-                        padding: "0.9rem 1.15rem",
-                        color: "#CBD5E1",
-                        fontSize: "0.85rem",
-                        lineHeight: 1.6
-                      }}>
-                        <p style={{ margin: "0 0 0.5rem 0" }}>{selectedAdvisory.technicalDetails}</p>
-                        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.75rem", color: "var(--text-muted)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.5rem" }}>
-                          <span>Taxonomy: <strong style={{ color: "#FBBF24" }}>{selectedAdvisory.cwe}</strong></span>
-                          <span>CVSS Vector: <code style={{ color: "#93C5FD" }}>{selectedAdvisory.cvssVector}</code></span>
-                        </div>
+                      <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: "0 0 0.5rem 0" }}>
+                        {selectedAdvisory.technicalDetails}
+                      </p>
+                      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.75rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.5rem" }}>
+                        <span>Taxonomy: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.cwe}</strong></span>
+                        <span>Vector: <code style={{ color: "#CBD5E1" }}>{selectedAdvisory.cvssVector}</code></span>
                       </div>
                     </div>
 
-                    {/* Remediation & Actionable Fix */}
+                    {/* Remediation & Actionable Fix - Unified neutral card */}
                     <div style={{
-                      background: "rgba(16, 185, 129, 0.04)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      borderLeft: "3px solid #10B981",
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
                       borderRadius: "8px",
-                      padding: "0.9rem 1.15rem"
+                      padding: "1rem 1.2rem"
                     }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#34D399", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
-                        Recommended Remediation & Fix
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
+                        Remediation & Fix Details
                       </div>
-                      <p style={{ color: "#D1FAE5", fontSize: "0.86rem", lineHeight: 1.6, margin: "0 0 0.4rem 0" }}>
+                      <p style={{ color: "#E2E8F0", fontSize: "0.86rem", lineHeight: 1.65, margin: "0 0 0.35rem 0" }}>
                         {selectedAdvisory.remediation.recommendedAction}
                       </p>
                       {selectedAdvisory.remediation.patchDetails && (
-                        <div style={{ fontSize: "0.78rem", color: "#A7F3D0", opacity: 0.9 }}>
-                          <strong>Patch:</strong> {selectedAdvisory.remediation.patchDetails}
+                        <div style={{ fontSize: "0.8rem", color: "#94A3B8" }}>
+                          Patch: <span style={{ color: "#CBD5E1" }}>{selectedAdvisory.remediation.patchDetails}</span>
                         </div>
                       )}
                     </div>
@@ -1829,104 +1789,91 @@ export default function ThreatFeedPage() {
               {/* TAB 2: Workstation & Pipeline Impact */}
               {dossierTab === "workstation" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                  {/* Workstation Rating Banner */}
+                  {/* Workstation Exposure Summary Card */}
                   <div style={{
-                    background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: "10px",
-                    padding: "1rem 1.25rem",
+                    background: "rgba(255, 255, 255, 0.025)",
+                    border: "1px solid rgba(255, 255, 255, 0.07)",
+                    borderRadius: "8px",
+                    padding: "1rem 1.2rem",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center"
                   }}>
                     <div>
-                      <div style={{ fontSize: "0.7rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700 }}>
-                        Developer Workstation & Build Impact Level
+                      <div style={{ fontSize: "0.7rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.04em" }}>
+                        Developer Workstation Exposure Assessment
                       </div>
-                      <div style={{
-                        fontSize: "1.15rem",
-                        fontWeight: 800,
-                        color: selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv === "CRITICAL" ? "#F87171" :
-                               selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv === "HIGH" ? "#FDBA74" : "#34D399",
-                        marginTop: "0.2rem"
-                      }}>
-                        {selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv} WORKSTATION EXPOSURE
+                      <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
+                        {selectedAdvisory.ideBuildImpact.severityOnDeveloperEnv} EXPOSURE
                       </div>
                     </div>
-                    <span style={{ fontSize: "1.8rem" }}>💻</span>
+                    <span style={{ fontSize: "1.5rem", opacity: 0.8 }}>💻</span>
                   </div>
 
-                  {/* Workstation Vector */}
-                  <div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#F59E0B", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
+                  {/* Workstation Attack Vector */}
+                  <div style={{
+                    background: "rgba(255, 255, 255, 0.025)",
+                    border: "1px solid rgba(255, 255, 255, 0.07)",
+                    borderRadius: "8px",
+                    padding: "1rem 1.2rem"
+                  }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
                       Workstation Attack Vector
                     </div>
-                    <div style={{
-                      background: "rgba(255, 255, 255, 0.02)",
-                      border: "1px solid rgba(255, 255, 255, 0.06)",
-                      borderRadius: "8px",
-                      padding: "0.85rem 1.1rem",
-                      color: "#FDE68A",
-                      fontSize: "0.85rem",
-                      lineHeight: 1.6
-                    }}>
+                    <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
                       {selectedAdvisory.ideBuildImpact.workstationVector}
-                    </div>
+                    </p>
                   </div>
 
                   {/* Build Pipeline Risk */}
-                  <div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#F87171", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
+                  <div style={{
+                    background: "rgba(255, 255, 255, 0.025)",
+                    border: "1px solid rgba(255, 255, 255, 0.07)",
+                    borderRadius: "8px",
+                    padding: "1rem 1.2rem"
+                  }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
                       CI/CD & Compiler Pipeline Risk
                     </div>
-                    <div style={{
-                      background: "rgba(255, 255, 255, 0.02)",
-                      border: "1px solid rgba(255, 255, 255, 0.06)",
-                      borderRadius: "8px",
-                      padding: "0.85rem 1.1rem",
-                      color: "#FECACA",
-                      fontSize: "0.85rem",
-                      lineHeight: 1.6
-                    }}>
+                    <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
                       {selectedAdvisory.ideBuildImpact.buildPipelineRisk}
-                    </div>
+                    </p>
                   </div>
 
                   {/* IDE Recommendation */}
                   <div style={{
-                    background: "rgba(16, 185, 129, 0.04)",
-                    border: "1px solid rgba(16, 185, 129, 0.2)",
-                    borderLeft: "3px solid #10B981",
+                    background: "rgba(255, 255, 255, 0.025)",
+                    border: "1px solid rgba(255, 255, 255, 0.07)",
                     borderRadius: "8px",
-                    padding: "0.9rem 1.15rem"
+                    padding: "1rem 1.2rem"
                   }}>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#34D399", marginBottom: "0.35rem", letterSpacing: "0.04em" }}>
-                      Recommendation for IDE Builds & Workstations
+                    <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
+                      Recommendation for Workstations & Builds
                     </div>
-                    <p style={{ color: "#D1FAE5", fontSize: "0.86rem", lineHeight: 1.6, margin: 0 }}>
+                    <p style={{ color: "#E2E8F0", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
                       {selectedAdvisory.ideBuildImpact.recommendationForIdeBuilds}
                     </p>
                   </div>
 
                   {/* Affected Targets Table (if present) */}
                   {selectedAdvisory.affectedTargets && selectedAdvisory.affectedTargets.length > 0 && (
-                    <div>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#60A5FA", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
+                    <div style={{
+                      background: "rgba(255, 255, 255, 0.025)",
+                      border: "1px solid rgba(255, 255, 255, 0.07)",
+                      borderRadius: "8px",
+                      padding: "1rem 1.2rem"
+                    }}>
+                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.6rem", letterSpacing: "0.04em" }}>
                         Affected Software Components ({selectedAdvisory.affectedTargets.length})
                       </div>
-                      <div style={{
-                        background: "rgba(255, 255, 255, 0.02)",
-                        border: "1px solid rgba(255, 255, 255, 0.06)",
-                        borderRadius: "8px",
-                        overflow: "hidden"
-                      }}>
+                      <div style={{ borderRadius: "6px", overflow: "hidden", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.8rem" }}>
                           <thead>
-                            <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                              <th style={{ padding: "0.55rem 0.85rem", color: "var(--text-muted)" }}>Product</th>
-                              <th style={{ padding: "0.55rem 0.85rem", color: "var(--text-muted)" }}>Ecosystem</th>
-                              <th style={{ padding: "0.55rem 0.85rem", color: "var(--text-muted)" }}>Affected Versions</th>
-                              <th style={{ padding: "0.55rem 0.85rem", color: "var(--text-muted)" }}>Fixed Version</th>
+                            <tr style={{ background: "rgba(255, 255, 255, 0.04)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                              <th style={{ padding: "0.55rem 0.85rem", color: "#94A3B8", fontWeight: 600 }}>Product</th>
+                              <th style={{ padding: "0.55rem 0.85rem", color: "#94A3B8", fontWeight: 600 }}>Ecosystem</th>
+                              <th style={{ padding: "0.55rem 0.85rem", color: "#94A3B8", fontWeight: 600 }}>Affected Versions</th>
+                              <th style={{ padding: "0.55rem 0.85rem", color: "#94A3B8", fontWeight: 600 }}>Fixed Version</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1934,8 +1881,8 @@ export default function ThreatFeedPage() {
                               <tr key={tIdx} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.03)" }}>
                                 <td style={{ padding: "0.55rem 0.85rem", fontWeight: 600, color: "#F8FAFC" }}>{tgt.product}</td>
                                 <td style={{ padding: "0.55rem 0.85rem", color: "#CBD5E1" }}>{tgt.ecosystem}</td>
-                                <td style={{ padding: "0.55rem 0.85rem", color: "#F87171", fontFamily: "monospace" }}>{tgt.affectedVersions}</td>
-                                <td style={{ padding: "0.55rem 0.85rem", color: "#34D399", fontFamily: "monospace", fontWeight: 600 }}>{tgt.fixedInVersion || "None / Isolation"}</td>
+                                <td style={{ padding: "0.55rem 0.85rem", color: "#CBD5E1", fontFamily: "monospace" }}>{tgt.affectedVersions}</td>
+                                <td style={{ padding: "0.55rem 0.85rem", color: "#E2E8F0", fontFamily: "monospace", fontWeight: 600 }}>{tgt.fixedInVersion || "None"}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -1948,33 +1895,33 @@ export default function ThreatFeedPage() {
 
               {/* TAB 3: Sources & Intelligence Signals */}
               {dossierTab === "sources" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                   {selectedAdvisory.disclosureType === "INFORMATIONAL_DISCLOSURE" && selectedAdvisory.informationalSynthesis ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                        Primary sources, investigative journalism, and research dispatches tracking this threat vector:
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                        Primary sources and investigative research tracking this threat vector:
                       </div>
                       {selectedAdvisory.informationalSynthesis.primarySources.map((source, sIdx) => (
                         <div
                           key={sIdx}
                           style={{
-                            background: "rgba(255, 255, 255, 0.03)",
+                            background: "rgba(255, 255, 255, 0.025)",
                             border: "1px solid rgba(255, 255, 255, 0.07)",
                             borderRadius: "8px",
-                            padding: "0.85rem 1.1rem"
+                            padding: "0.9rem 1.15rem"
                           }}
                         >
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.35rem" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.4rem" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                              <span style={{ fontWeight: 700, color: "#F8FAFC", fontSize: "0.88rem" }}>
+                              <span style={{ fontWeight: 600, color: "#F8FAFC", fontSize: "0.88rem" }}>
                                 {source.sourceName}
                               </span>
                               {source.authorOrHandle && (
                                 <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
-                                  by <strong style={{ color: "#E2E8F0" }}>{source.authorOrHandle}</strong>
+                                  by <strong style={{ color: "#CBD5E1", fontWeight: 600 }}>{source.authorOrHandle}</strong>
                                 </span>
                               )}
-                              <span style={{ fontSize: "0.72rem", color: "#93C5FD" }}>
+                              <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
                                 • {source.headline}
                               </span>
                             </div>
@@ -1990,7 +1937,7 @@ export default function ThreatFeedPage() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.25rem",
-                                fontWeight: 600
+                                fontWeight: 500
                               }}
                             >
                               View Dispatch ↗
@@ -2000,16 +1947,16 @@ export default function ThreatFeedPage() {
                           <blockquote style={{
                             margin: "0 0 0.35rem 0",
                             paddingLeft: "0.65rem",
-                            borderLeft: "2px solid rgba(192, 132, 252, 0.5)",
+                            borderLeft: "2px solid rgba(255, 255, 255, 0.2)",
                             color: "#CBD5E1",
                             fontSize: "0.82rem",
-                            lineHeight: 1.5,
+                            lineHeight: 1.55,
                             fontStyle: "italic"
                           }}>
                             &ldquo;{source.signalQuote}&rdquo;
                           </blockquote>
 
-                          <div style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
+                          <div style={{ fontSize: "0.68rem", color: "#64748B" }}>
                             Published: {source.publishedAt}
                           </div>
                         </div>
@@ -2017,17 +1964,17 @@ export default function ThreatFeedPage() {
                     </div>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                        Consolidated threat intelligence signals ingested for this advisory:
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                        Threat intelligence signals consolidated for this advisory:
                       </div>
                       {selectedAdvisory.upstreamSignals.map((signal, sIdx) => (
                         <div
                           key={sIdx}
                           style={{
-                            background: "rgba(255, 255, 255, 0.03)",
+                            background: "rgba(255, 255, 255, 0.025)",
                             border: "1px solid rgba(255, 255, 255, 0.07)",
                             borderRadius: "8px",
-                            padding: "0.85rem 1.1rem",
+                            padding: "0.9rem 1.15rem",
                             display: "flex",
                             flexDirection: "column",
                             gap: "0.35rem"
@@ -2040,16 +1987,16 @@ export default function ThreatFeedPage() {
                                 fontSize: "0.68rem",
                                 padding: "0.15rem 0.4rem",
                                 borderRadius: "4px",
-                                background: "rgba(59, 130, 246, 0.15)",
-                                color: "#93C5FD"
+                                background: "rgba(255, 255, 255, 0.05)",
+                                color: "#CBD5E1"
                               }}>
                                 {signal.badge}
                               </span>
                             </div>
                             <span style={{
                               fontSize: "0.68rem",
-                              fontWeight: 700,
-                              color: signal.confidence === "CONFIRMED" ? "#34D399" : "#FBBF24"
+                              fontWeight: 600,
+                              color: "#94A3B8"
                             }}>
                               {signal.confidence} CONFIDENCE
                             </span>
@@ -2075,7 +2022,7 @@ export default function ThreatFeedPage() {
               alignItems: "center"
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+                <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
                   Standardized under UVI Ordering Schema v3.0
                 </span>
                 <button
@@ -2099,8 +2046,8 @@ export default function ThreatFeedPage() {
                 style={{
                   padding: "0.4rem 1.1rem",
                   borderRadius: "6px",
-                  background: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
                   color: "#F8FAFC",
                   fontSize: "0.8rem",
                   cursor: "pointer",
