@@ -169,145 +169,166 @@ export default function ThreatFeedPage() {
 
   return (
     <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "2.5rem 2rem 5rem", width: "100%" }}>
-      {/* Top Banner Tag */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-        <span style={{ 
-          fontSize: "0.75rem", 
-          fontWeight: 700, 
-          letterSpacing: "0.08em", 
-          textTransform: "uppercase", 
-          padding: "0.3rem 0.75rem", 
-          borderRadius: "6px", 
-          background: "rgba(59, 130, 246, 0.15)", 
-          color: "#60A5FA",
-          border: "1px solid rgba(59, 130, 246, 0.3)"
-        }}>
-          Standalone Vulnerability Registry
-        </span>
-        <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
-        <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
-          Unified Vulnerability Intelligence (UVI) Encyclopedia
-        </span>
-        <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
-        <span style={{ 
-          fontSize: "0.75rem", 
-          fontWeight: 600, 
-          color: "#34D399", 
-          display: "inline-flex", 
-          alignItems: "center", 
-          gap: "0.35rem" 
-        }}>
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
-          {hasLiveSynced ? `Live Ingestion Active (${totalUniversalCount.toLocaleString()} Records Streamed)` : "12 Synchronized Upstream Public Feeds"}
-        </span>
-      </div>
-
-      {/* Page Title Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h1 style={{ 
-          fontSize: "2.4rem", 
-          fontWeight: 800, 
-          letterSpacing: "-0.03em", 
-          color: "#F8FAFC",
-          marginBottom: "0.5rem" 
-        }}>
-          Universal Vulnerability Intelligence (UVI) Threat Feed
-        </h1>
-        <p style={{ fontSize: "1.05rem", color: "var(--text-muted)", maxWidth: "900px", lineHeight: 1.6 }}>
-          Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-NNNN</code> records.
-        </p>
-      </div>
-
-      {/* Two Summary Tiles */}
+      {/* Top Header Row: Title & Subtitle (Left) + Threat Total Tile (Right) */}
       <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
-        gap: "1.5rem", 
-        marginBottom: "2rem" 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "stretch", 
+        gap: "2rem", 
+        marginBottom: "1.5rem",
+        flexWrap: "wrap"
       }}>
-        {/* Tile 1: Total Threats Mention */}
+        {/* Left Column: Banner, Title & Subtitle */}
+        <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          {/* Top Banner Tag */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+            <span style={{ 
+              fontSize: "0.72rem", 
+              fontWeight: 700, 
+              letterSpacing: "0.08em", 
+              textTransform: "uppercase", 
+              padding: "0.25rem 0.65rem", 
+              borderRadius: "6px", 
+              background: "rgba(59, 130, 246, 0.15)", 
+              color: "#60A5FA",
+              border: "1px solid rgba(59, 130, 246, 0.3)"
+            }}>
+              Standalone Vulnerability Registry
+            </span>
+            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
+            <span style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
+              Unified Vulnerability Intelligence (UVI) Encyclopedia
+            </span>
+            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
+            <span style={{ 
+              fontSize: "0.75rem", 
+              fontWeight: 600, 
+              color: "#34D399", 
+              display: "inline-flex", 
+              alignItems: "center", 
+              gap: "0.35rem" 
+            }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
+              {hasLiveSynced ? `Live Ingestion Active (${totalUniversalCount.toLocaleString()} Records Streamed)` : "12 Synchronized Upstream Public Feeds"}
+            </span>
+          </div>
+
+          <h1 style={{ 
+            fontSize: "2.35rem", 
+            fontWeight: 800, 
+            letterSpacing: "-0.03em", 
+            color: "#F8FAFC",
+            marginBottom: "0.5rem",
+            lineHeight: 1.2
+          }}>
+            Universal Vulnerability Intelligence (UVI) Threat Feed
+          </h1>
+          <p style={{ fontSize: "1rem", color: "var(--text-muted)", maxWidth: "720px", lineHeight: 1.6, margin: 0 }}>
+            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-NNNN</code> records.
+          </p>
+        </div>
+
+        {/* Right Column: Threat Total Summary Tile */}
         <div style={{
-          background: "rgba(15, 23, 42, 0.7)",
+          background: "rgba(15, 23, 42, 0.75)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
           borderRadius: "16px",
-          padding: "1.75rem",
+          padding: "1.4rem 1.65rem",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          gap: "1.25rem",
+          gap: "1rem",
+          minWidth: "320px",
+          flex: "0 1 360px",
           boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
         }}>
           <div>
-            <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginBottom: "0.5rem" }}>
+            <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginBottom: "0.35rem" }}>
               Total Consolidated Threats
             </div>
-            <div style={{ fontSize: "3.25rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
+            <div style={{ fontSize: "3rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
               {totalUniversalCount.toLocaleString()}
             </div>
           </div>
           <div style={{ 
             display: "flex", 
             flexWrap: "wrap", 
-            gap: "0.75rem", 
-            fontSize: "0.85rem", 
+            gap: "0.6rem", 
+            fontSize: "0.8rem", 
             color: "var(--text-muted)", 
             borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
-            paddingTop: "0.9rem" 
+            paddingTop: "0.75rem" 
           }}>
-            <span>🚨 <strong style={{ color: "#EF4444" }}>1,695+</strong> In-the-Wild Zero-Days</span>
+            <span>🚨 <strong style={{ color: "#EF4444" }}>1,695+</strong> Zero-Days</span>
             <span>•</span>
-            <span>💻 <strong style={{ color: "#10B981" }}>{directBuildImpactCount.toLocaleString()}</strong> Workstation Risks</span>
+            <span>💻 <strong style={{ color: "#10B981" }}>{directBuildImpactCount.toLocaleString()}</strong> Workstation</span>
             <span>•</span>
-            <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE Malware</span>
+            <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE</span>
           </div>
         </div>
+      </div>
 
-        {/* Tile 2: Listing Feed Sources & Number of Feeds */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.7)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "16px",
-          padding: "1.75rem",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "1rem",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
+      {/* Simplified Feed Sources Strip (Compact listing, not tall) */}
+      <div style={{
+        background: "rgba(15, 23, 42, 0.55)",
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        borderRadius: "12px",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        flexWrap: "wrap"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
+            Feed Sources:
+          </span>
+          <span style={{
+            fontSize: "0.75rem",
+            fontWeight: 700,
+            padding: "0.15rem 0.5rem",
+            borderRadius: "4px",
+            background: "rgba(16, 185, 129, 0.15)",
+            color: "#34D399",
+            border: "1px solid rgba(16, 185, 129, 0.3)"
+          }}>
+            12 Feeds
+          </span>
+        </div>
+
+        {/* Compact inline feed list */}
+        <div style={{ 
+          display: "flex", 
+          flexWrap: "wrap", 
+          gap: "0.35rem 0.5rem", 
+          alignItems: "center", 
+          flex: 1 
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-              Ingested Threat Feed Sources
-            </div>
-            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#34D399" }}>
-              12 Active Feeds
-            </div>
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
-            {UVI_PUBLIC_FEED_SOURCES.map((feed) => (
+          {UVI_PUBLIC_FEED_SOURCES.map((feed) => {
+            const isSelected = selectedSourceFeed === feed.id;
+            return (
               <span
                 key={feed.id}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.35rem",
-                  padding: "0.3rem 0.6rem",
-                  borderRadius: "6px",
-                  background: selectedSourceFeed === feed.id ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.05)",
-                  border: selectedSourceFeed === feed.id ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
-                  color: selectedSourceFeed === feed.id ? "#93C5FD" : "#CBD5E1",
-                  fontSize: "0.78rem",
+                  gap: "0.3rem",
+                  padding: "0.2rem 0.55rem",
+                  borderRadius: "5px",
+                  background: isSelected ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
+                  border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.07)",
+                  color: isSelected ? "#93C5FD" : "#CBD5E1",
+                  fontSize: "0.76rem",
                   fontWeight: 500
                 }}
-                title={feed.scope}
+                title={`${feed.name}: ${feed.scope} (${feed.recordsIngested.toLocaleString()} records)`}
               >
-                <span>{feed.icon}</span>
-                <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "")}</span>
+                <span style={{ fontSize: "0.85rem" }}>{feed.icon}</span>
+                <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "").replace(" Advisories", "")}</span>
               </span>
-            ))}
-          </div>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-            Synchronized cross-correlation across NVD, CISA KEV, GitHub, OSV, OpenSSF, MSRC, Trail of Bits, Socket.dev, JFrog, Aqua, Snyk, and Ecosystem DBs.
-          </div>
+            );
+          })}
         </div>
       </div>
 
