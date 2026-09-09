@@ -10,6 +10,7 @@ import {
   ThreatSeverity,
   DomainCategory,
   IdeBuildImpactAssessment,
+  OperationalDomain,
   ActionDirective,
   WeaponizationStage,
   ExposureHorizon,
@@ -32,7 +33,6 @@ export default function ThreatFeedPage() {
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
-  const [selectedActionDirective, setSelectedActionDirective] = useState<string>("ALL");
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedSourceFeed, setSelectedSourceFeed] = useState<string>("ALL");
   const [kevOnly, setKevOnly] = useState(false);
@@ -59,17 +59,16 @@ export default function ThreatFeedPage() {
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
 
-  // Available domain categories list
-  const domainCategories: ("ALL" | DomainCategory)[] = [
+  // Available operational domains list
+  const operationalDomains: ("ALL" | OperationalDomain)[] = [
     "ALL",
-    "Operating Systems & Kernels",
-    "Cloud & Container Infrastructure",
-    "Enterprise & Web Frameworks",
-    "Networking, Protocols & Cryptography",
-    "Language Runtimes & Toolchains",
-    "Databases & Storage",
-    "Supply Chain & Malware",
-    "Developer Tools & Workstations"
+    "PATCH",
+    "ENDPOINT",
+    "IDENTITY",
+    "SUPPLY",
+    "PIPELINE",
+    "AGENT",
+    "NETWORK"
   ];
 
   // Fetch from Aggregator API whenever filters, search, or pagination changes
@@ -85,12 +84,13 @@ export default function ThreatFeedPage() {
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
         if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
 
-        if (ratingMode === "observational") {
-          if (selectedActionDirective !== "ALL") params.set("action", selectedActionDirective);
-        } else {
-          if (selectedSeverity !== "ALL") params.set("severity", selectedSeverity);
+        if (selectedDomain !== "ALL") {
+          params.set("domain", selectedDomain);
+          params.set("action", selectedDomain);
         }
-        if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
+        if (ratingMode === "classic" && selectedSeverity !== "ALL") {
+          params.set("severity", selectedSeverity);
+        }
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
         if (kevOnly) params.set("kevOnly", "true");
         params.set("page", page.toString());
@@ -161,7 +161,7 @@ export default function ThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedActionDirective, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
+  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
 
   // Reset page to 1 when filters change
   const handleFilterChange = (setter: () => void) => {
@@ -631,10 +631,10 @@ export default function ThreatFeedPage() {
             </select>
           </div>
 
-          {/* Event Type / Domain Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "210px" }}>
+          {/* Unified Operational Domain Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "200px" }}>
             <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Event Type / Domain
+              Operational Domain
             </label>
             <select
               value={selectedDomain}
@@ -651,11 +651,14 @@ export default function ThreatFeedPage() {
                 width: "100%"
               }}
             >
-              {domainCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat === "ALL" ? "All Event Types & Domains" : cat}
-                </option>
-              ))}
+              <option value="ALL">All Operational Domains (7 Domains)</option>
+              <option value="PATCH">⚡ Patch</option>
+              <option value="ENDPOINT">🛡️ Endpoint</option>
+              <option value="IDENTITY">🔐 Identity</option>
+              <option value="SUPPLY">📦 Supply</option>
+              <option value="PIPELINE">🔒 Pipeline</option>
+              <option value="AGENT">🤖 Agent</option>
+              <option value="NETWORK">🧱 Network</option>
             </select>
           </div>
 
@@ -686,38 +689,8 @@ export default function ThreatFeedPage() {
             </select>
           </div>
 
-          {/* Operational Domain or Severity Dropdown */}
-          {ratingMode === "observational" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "190px" }}>
-              <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-                Operational Domain
-              </label>
-              <select
-                value={selectedActionDirective}
-                onChange={(e) => handleFilterChange(() => setSelectedActionDirective(e.target.value))}
-                style={{
-                  padding: "0.65rem 0.9rem",
-                  background: "rgba(10, 14, 23, 0.95)",
-                  border: "1px solid rgba(255, 255, 255, 0.14)",
-                  borderRadius: "8px",
-                  color: "#F8FAFC",
-                  fontSize: "0.85rem",
-                  outline: "none",
-                  cursor: "pointer",
-                  width: "100%"
-                }}
-              >
-                <option value="ALL">All Domains (7 Security Domains)</option>
-                <option value="PATCH">⚡ Patch</option>
-                <option value="ENDPOINT">🛡️ Endpoint</option>
-                <option value="IDENTITY">🔐 Identity</option>
-                <option value="SUPPLY">📦 Supply</option>
-                <option value="PIPELINE">🔒 Pipeline</option>
-                <option value="AGENT">🤖 Agent</option>
-                <option value="NETWORK">🧱 Network</option>
-              </select>
-            </div>
-          ) : (
+          {/* Severity Dropdown (Only in Classic CVSS Mode) */}
+          {ratingMode === "classic" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
               <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
                 Severity
@@ -768,14 +741,14 @@ export default function ThreatFeedPage() {
             >
               {ratingMode === "observational" ? (
                 <>
-                  <option value="cvss_desc">Domain Priority (Highest First)</option>
+                  <option value="cvss_desc">Domain Urgency & Reality</option>
                   <option value="published_desc">Date (Newest First)</option>
                   <option value="uvi_desc">UVI ID (Descending)</option>
                   <option value="uvi_asc">UVI ID (Ascending)</option>
                 </>
               ) : (
                 <>
-                  <option value="cvss_desc">CVSS (Highest First)</option>
+                  <option value="cvss_desc">CVSS Score (Highest First)</option>
                   <option value="uvi_desc">UVI ID (Descending)</option>
                   <option value="uvi_asc">UVI ID (Ascending)</option>
                   <option value="published_desc">Date (Newest First)</option>
@@ -785,13 +758,12 @@ export default function ThreatFeedPage() {
           </div>
 
           {/* Reset Filters button if any filter is active */}
-          {(searchQuery || selectedSeverity !== "ALL" || selectedActionDirective !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
+          {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
             <button
               onClick={() => {
                 setFeedScope("ALL");
                 setSearchQuery("");
                 setSelectedSeverity("ALL");
-                setSelectedActionDirective("ALL");
                 setSelectedDomain("ALL");
                 setSelectedSourceFeed("ALL");
                 setKevOnly(false);
@@ -836,13 +808,12 @@ export default function ThreatFeedPage() {
           )}
         </div>
 
-        {(searchQuery || selectedSeverity !== "ALL" || selectedActionDirective !== "ALL" || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || kevOnly || feedScope !== "ALL") && (
+        {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || kevOnly || feedScope !== "ALL") && (
           <button
             onClick={() => {
               setFeedScope("ALL");
               setSearchQuery("");
               setSelectedSeverity("ALL");
-              setSelectedActionDirective("ALL");
               setSelectedDomain("ALL");
               setSelectedSourceFeed("ALL");
               setKevOnly(false);
@@ -1112,16 +1083,25 @@ export default function ThreatFeedPage() {
                             )}
 
                             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", marginTop: "0.2rem" }}>
-                              <span style={{
-                                fontSize: "0.72rem",
-                                fontWeight: 600,
-                                color: "#A78BFA",
-                                background: "rgba(139, 92, 246, 0.15)",
-                                padding: "0.15rem 0.5rem",
-                                borderRadius: "4px"
-                              }}>
-                                {record.domainCategory}
-                              </span>
+                              {ratingMode === "classic" && (
+                                (() => {
+                                  const obs = getRecordObservationalAssessment(record);
+                                  const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                                  return (
+                                    <span style={{
+                                      fontSize: "0.72rem",
+                                      fontWeight: 700,
+                                      color: actionBadge.text,
+                                      background: actionBadge.bg,
+                                      border: `1px solid ${actionBadge.border}`,
+                                      padding: "0.15rem 0.5rem",
+                                      borderRadius: "4px"
+                                    }}>
+                                      {actionBadge.label}
+                                    </span>
+                                  );
+                                })()
+                              )}
                               <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "monospace" }}>
                                 {record.cwe}
                               </span>
@@ -1603,9 +1583,23 @@ export default function ThreatFeedPage() {
 
                   {/* Card Footer */}
                   <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", color: "#A78BFA", fontWeight: 600 }}>
-                      {record.domainCategory}
-                    </span>
+                    {(() => {
+                      const obs = getRecordObservationalAssessment(record);
+                      const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                      return (
+                        <span style={{
+                          fontSize: "0.72rem",
+                          fontWeight: 700,
+                          color: actionBadge.text,
+                          background: actionBadge.bg,
+                          border: `1px solid ${actionBadge.border}`,
+                          padding: "0.15rem 0.5rem",
+                          borderRadius: "4px"
+                        }}>
+                          {actionBadge.label}
+                        </span>
+                      );
+                    })()}
 
                     <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 600 }}>
                       View Dossier →
@@ -1919,7 +1913,7 @@ export default function ThreatFeedPage() {
                 })()
               ) : (
                 <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
-                  <span>Domain: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.domainCategory}</strong></span>
+                  <span>Domain: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{getRecordObservationalAssessment(selectedAdvisory).operationalDomain}</strong></span>
                   <span>•</span>
                   <span>Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.upstreamSignals[0]?.sourceName || "Standardized Feed"}</strong></span>
                   <span>•</span>

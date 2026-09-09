@@ -476,7 +476,7 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
     inferredMechanism,
     precautionaryPosture,
     potentialVictimSurface,
-    vectorCategory: record.domainCategory
+    vectorCategory: operationalDomain
   };
 }
 
