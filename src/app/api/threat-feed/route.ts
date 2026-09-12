@@ -176,6 +176,25 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => getRecordObservationalAssessment(f).exposureHorizon === horizon);
   }
 
+  // Sorting parameter (supports date/age, CVSS score, UVI ID)
+  const sortByParam = searchParams.get('sortBy') || searchParams.get('sort') || 'cvss_desc';
+  filtered.sort((a, b) => {
+    if (sortByParam === "published_desc" || sortByParam === "date_desc" || sortByParam === "newest") {
+      return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
+    }
+    if (sortByParam === "published_asc" || sortByParam === "date_asc" || sortByParam === "oldest") {
+      return new Date(a.publishedDate).getTime() - new Date(b.publishedDate).getTime();
+    }
+    if (sortByParam === "uvi_desc") {
+      return b.uviId.localeCompare(a.uviId);
+    }
+    if (sortByParam === "uvi_asc") {
+      return a.uviId.localeCompare(b.uviId);
+    }
+    // Default: CVSS score descending
+    return b.cvssScore - a.cvssScore;
+  });
+
   const totalMatched = filtered.length;
   const totalPages = isLimitAll ? 1 : Math.ceil(totalMatched / limit);
   const startIndex = (page - 1) * limit;

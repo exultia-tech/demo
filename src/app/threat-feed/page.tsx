@@ -20,7 +20,8 @@ import {
   getWeaponizationStageLabel,
   getExposureHorizonLabel,
   getRecordObservationalAssessment,
-  getExploitationRealityBadge
+  getExploitationRealityBadge,
+  formatRelativeAge
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
@@ -67,7 +68,17 @@ export default function ThreatFeedPage() {
   const [selectedSourceFeed, setSelectedSourceFeed] = useState<string>("ALL");
   const [kevOnly, setKevOnly] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
-  const [sortBy, setSortBy] = useState<"cvss_desc" | "uvi_desc" | "uvi_asc" | "published_desc">("cvss_desc");
+  const [sortBy, setSortBy] = useState<"cvss_desc" | "uvi_desc" | "uvi_asc" | "published_desc" | "published_asc">("cvss_desc");
+
+  // Toggle date/age sort (Newest -> Oldest -> Newest)
+  const handleToggleDateSort = () => {
+    setPage(1);
+    if (sortBy === "published_desc") {
+      setSortBy("published_asc");
+    } else {
+      setSortBy("published_desc");
+    }
+  };
 
   // Pagination State
   const [page, setPage] = useState<number>(1);
@@ -123,6 +134,7 @@ export default function ThreatFeedPage() {
         }
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
         if (kevOnly) params.set("kevOnly", "true");
+        params.set("sortBy", sortBy);
         params.set("page", page.toString());
         params.set("limit", pageSize.toString());
 
@@ -167,6 +179,7 @@ export default function ThreatFeedPage() {
               if (sortBy === "uvi_desc") return b.uviId.localeCompare(a.uviId);
               if (sortBy === "uvi_asc") return a.uviId.localeCompare(b.uviId);
               if (sortBy === "published_desc") return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
+              if (sortBy === "published_asc") return new Date(a.publishedDate).getTime() - new Date(b.publishedDate).getTime();
               return 0;
             });
 
@@ -1168,7 +1181,10 @@ export default function ThreatFeedPage() {
             </label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => {
+                setPage(1);
+                setSortBy(e.target.value as any);
+              }}
               style={{
                 padding: "0.65rem 0.9rem",
                 background: "rgba(10, 14, 23, 0.95)",
@@ -1185,15 +1201,17 @@ export default function ThreatFeedPage() {
                 <>
                   <option value="cvss_desc">Domain Urgency & Reality</option>
                   <option value="published_desc">Date (Newest First)</option>
+                  <option value="published_asc">Date (Oldest First)</option>
                   <option value="uvi_desc">UVI ID (Descending)</option>
                   <option value="uvi_asc">UVI ID (Ascending)</option>
                 </>
               ) : (
                 <>
                   <option value="cvss_desc">CVSS Score (Highest First)</option>
+                  <option value="published_desc">Date (Newest First)</option>
+                  <option value="published_asc">Date (Oldest First)</option>
                   <option value="uvi_desc">UVI ID (Descending)</option>
                   <option value="uvi_asc">UVI ID (Ascending)</option>
-                  <option value="published_desc">Date (Newest First)</option>
                 </>
               )}
             </select>
@@ -1307,11 +1325,37 @@ export default function ThreatFeedPage() {
                 borderBottom: "2px solid rgba(59, 130, 246, 0.3)"
               }}>
                 <tr>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "220px" }}>
-                    Identifier & Date
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "180px" }}>
+                    Identifier
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat & Target Summary
+                  </th>
+                  <th 
+                    onClick={handleToggleDateSort}
+                    style={{ 
+                      padding: "1.1rem 1.1rem", 
+                      fontSize: "0.75rem", 
+                      textTransform: "uppercase", 
+                      letterSpacing: "0.08em", 
+                      color: (sortBy === "published_desc" || sortBy === "published_asc") ? "#60A5FA" : "#94A3B8", 
+                      width: "135px",
+                      cursor: "pointer",
+                      userSelect: "none",
+                      transition: "color 0.15s ease"
+                    }}
+                    title="Click to sort by date / age (toggle newest/oldest)"
+                  >
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                      <span>Date / Age</span>
+                      <span style={{ 
+                        fontSize: "0.85rem",
+                        color: (sortBy === "published_desc" || sortBy === "published_asc") ? "#60A5FA" : "#64748B",
+                        fontWeight: 700
+                      }}>
+                        {sortBy === "published_desc" ? "↓" : sortBy === "published_asc" ? "↑" : "↕"}
+                      </span>
+                    </div>
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "195px", textAlign: "right" }}>
                     {ratingMode === "observational" ? "Exploitation Reality" : "Severity & Score"}
@@ -1321,7 +1365,7 @@ export default function ThreatFeedPage() {
               <tbody>
                 {advisories.length === 0 ? (
                   <tr>
-                    <td colSpan={3} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
+                    <td colSpan={4} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
                       <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
                       <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC", marginBottom: "0.5rem" }}>
                         No matching advisories found
@@ -1355,8 +1399,8 @@ export default function ThreatFeedPage() {
                           e.currentTarget.style.background = "transparent";
                         }}
                       >
-                        {/* Column 1: Identifier & Date */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "220px", verticalAlign: "top" }}>
+                        {/* Column 1: Identifier */}
+                        <td style={{ padding: "1.1rem 1.25rem", width: "180px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                               <span style={{
@@ -1454,10 +1498,6 @@ export default function ThreatFeedPage() {
                                 </span>
                               )}
                             </div>
-
-                            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
-                              {record.publishedDate}
-                            </span>
                           </div>
                         </td>
 
@@ -1553,7 +1593,36 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 3: Exploitation Reality (or Severity & Score in classic mode) */}
+                        {/* Column 3: Date & Age (Clickable sort in header) */}
+                        <td style={{ padding: "1.1rem 1.1rem", width: "135px", verticalAlign: "top", whiteSpace: "nowrap" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <span style={{ fontFamily: "monospace", fontSize: "0.82rem", fontWeight: 700, color: "#E2E8F0" }}>
+                              {record.publishedDate}
+                            </span>
+                            {(() => {
+                              const age = formatRelativeAge(record.publishedDate);
+                              return age ? (
+                                <span style={{
+                                  fontSize: "0.68rem",
+                                  color: "#94A3B8",
+                                  background: "rgba(255, 255, 255, 0.04)",
+                                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                                  padding: "0.1rem 0.4rem",
+                                  borderRadius: "4px",
+                                  width: "fit-content",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem"
+                                }}>
+                                  <span>⏱️</span>
+                                  <span>{age}</span>
+                                </span>
+                              ) : null;
+                            })()}
+                          </div>
+                        </td>
+
+                        {/* Column 4: Exploitation Reality (or Severity & Score in classic mode) */}
                         <td style={{ padding: "1.1rem 1.25rem", width: "195px", verticalAlign: "top", textAlign: "right" }}>
                           <div style={{ display: "flex", justifyContent: "flex-end" }}>
                             {ratingMode === "observational" ? (

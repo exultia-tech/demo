@@ -427,6 +427,32 @@ export function getExploitationRealityBadge(record: UviAdvisoryRecord): Exploita
   };
 }
 
+export function formatRelativeAge(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const pubDate = new Date(dateStr);
+    if (isNaN(pubDate.getTime())) return "";
+    const now = new Date();
+    const diffMs = now.getTime() - pubDate.getTime();
+    if (diffMs < 0) return "Recent";
+
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "1d ago";
+    if (diffDays < 30) return `${diffDays}d ago`;
+
+    const diffMonths = Math.floor(diffDays / 30.4375);
+    if (diffMonths < 12) return `${diffMonths}mo ago`;
+
+    const diffYears = Math.floor(diffDays / 365.25);
+    const remMonths = diffMonths % 12;
+    if (diffYears < 2 && remMonths > 0) return `${diffYears}y ${remMonths}m ago`;
+    return `${diffYears}y ago`;
+  } catch {
+    return "";
+  }
+}
+
 export function getRecordObservationalAssessment(record: UviAdvisoryRecord): ObservationalAssessment {
   if (record.informationalSynthesis) {
     const domain = record.informationalSynthesis.operationalDomain || (record.informationalSynthesis.actionDirective as any) || "ENDPOINT";
