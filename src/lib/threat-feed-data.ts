@@ -1157,42 +1157,16 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   },
   {
     id: "trail_of_bits_vsix",
-    name: "Trail of Bits Security Research & IoCs",
+    name: "Trail of Bits VSIX Audit Heuristics",
     category: "Multi-Indicator Hubs & Aggregators",
-    scope: "Static AST Analysis, Obfuscation & Binary Auditing",
-    access: "Public Open Source",
+    scope: "AST Heuristics & Unsafe VSCode Extension Patterns",
+    access: "Public Open-Source AST Rules",
     status: "Active",
     refreshRate: "Continuous",
     coverage: "Deep AST inspection heuristics, command injection vectors, and indicators of compromise (IoCs).",
     homepageUrl: "https://github.com/trailofbits/vsix-audit",
     icon: "🔬",
     recordsIngested: 8400
-  },
-  {
-    id: "krebs_security",
-    name: "Krebs on Security (Brian Krebs)",
-    category: "Multi-Indicator Hubs & Aggregators",
-    scope: "Investigative Cybercrime, Account Takeover & Threat Actors",
-    access: "Public RSS / Journalism",
-    status: "Active",
-    refreshRate: "Continuous",
-    coverage: "In-depth investigative journalism uncovering active underground fraud botnets, residential proxy abuses, and corporate breach patterns.",
-    homepageUrl: "https://krebsonsecurity.com",
-    icon: "🕵️‍♂️",
-    recordsIngested: 2100
-  },
-  {
-    id: "schneier_security",
-    name: "Schneier on Security (Bruce Schneier)",
-    category: "Multi-Indicator Hubs & Aggregators",
-    scope: "Cryptographic Analysis, AI Policy & Systemic Vectors",
-    access: "Public RSS / Essays",
-    status: "Active",
-    refreshRate: "Continuous",
-    coverage: "Authoritative expert essays dissecting cryptographic transitions, AI agent exfiltration dynamics, and policy vulnerabilities.",
-    homepageUrl: "https://www.schneier.com",
-    icon: "🔐",
-    recordsIngested: 4800
   },
   {
     id: "bleeping_computer",
@@ -1328,17 +1302,17 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 21000
   },
   {
-    id: "reddit_bugbounty",
-    name: "r/bugbounty (Reddit)",
+    id: "reddit",
+    name: "Reddit",
     category: "Research, Bug Bounty & Community Disclosures",
-    scope: "Hunter Methodologies, Program Nuances, Scope Analysis & Reconnaissance",
+    scope: "Community Disclosures, Exploits, Bug Bounty & Threat Detections (r/netsec, r/cybersecurity, r/bugbounty, r/blueteamsec)",
     access: "Public Reddit Community API",
     status: "Active",
     refreshRate: "Hourly",
-    coverage: "Practitioner community sharing active recon workflows, program scope analysis, triage etiquette, and emerging web exploit vectors.",
-    homepageUrl: "https://www.reddit.com/r/bugbounty/",
+    coverage: "Aggregated Reddit cybersecurity communities spanning technical zero-day PoCs on r/netsec, enterprise SecOps on r/cybersecurity, triage methods on r/bugbounty, and Sigma/YARA hunting on r/blueteamsec.",
+    homepageUrl: "https://www.reddit.com/r/netsec/",
     icon: "🤖",
-    recordsIngested: 75000
+    recordsIngested: 345000
   },
   {
     id: "bugcrowd_discord",
@@ -1365,45 +1339,6 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     homepageUrl: "https://discord.gg/bugbounty",
     icon: "🌍",
     recordsIngested: 12000
-  },
-  {
-    id: "reddit_netsec",
-    name: "r/netsec (Reddit Technical)",
-    category: "Research, Bug Bounty & Community Disclosures",
-    scope: "Peer-Reviewed Exploits, PoCs, Kernel Flaws & Academic Security",
-    access: "Public Reddit Community API",
-    status: "Active",
-    refreshRate: "Hourly",
-    coverage: "Rigorous technical forum featuring peer-reviewed zero-day advisories, reverse engineering teardowns, exploit PoCs, and binary exploitation whitepapers.",
-    homepageUrl: "https://www.reddit.com/r/netsec/",
-    icon: "🔬",
-    recordsIngested: 92000
-  },
-  {
-    id: "reddit_cybersecurity",
-    name: "r/cybersecurity (Reddit)",
-    category: "Research, Bug Bounty & Community Disclosures",
-    scope: "Enterprise SecOps, Incident Response & Threat Landscape Discussions",
-    access: "Public Reddit Community API",
-    status: "Active",
-    refreshRate: "Hourly",
-    coverage: "Industry forum discussing enterprise breach investigations, threat actor tradecraft, identity architecture, and SOC engineering.",
-    homepageUrl: "https://www.reddit.com/r/cybersecurity/",
-    icon: "🛡️",
-    recordsIngested: 140000
-  },
-  {
-    id: "reddit_blueteamsec",
-    name: "r/blueteamsec (Reddit)",
-    category: "Research, Bug Bounty & Community Disclosures",
-    scope: "Defensive Engineering, Sigma Rules, YARA Detections & Forensic Artifacts",
-    access: "Public Reddit Community API",
-    status: "Active",
-    refreshRate: "Daily",
-    coverage: "Curated defensive repository of Sigma detection rules, YARA hunting signatures, forensic artifacts, and mitigation playbooks.",
-    homepageUrl: "https://www.reddit.com/r/blueteamsec/",
-    icon: "🟦",
-    recordsIngested: 38000
   },
   {
     id: "sec_stackexchange",
@@ -1445,8 +1380,8 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 165000
   },
   {
-    id: "krebs_on_security",
-    name: "Krebs on Security",
+    id: "krebs_security",
+    name: "Brian Krebs",
     category: "Research, Bug Bounty & Community Disclosures",
     scope: "Cybercrime Syndicates, Access Brokers & Critical Infrastructure Breaches",
     access: "Public Investigative Reporting / RSS",
@@ -1458,8 +1393,8 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 8500
   },
   {
-    id: "schneier_on_security",
-    name: "Schneier on Security",
+    id: "schneier_security",
+    name: "Bruce Schneier",
     category: "Research, Bug Bounty & Community Disclosures",
     scope: "Cryptography, Systemic Trust, Security Economics & Threat Modeling",
     access: "Public Essays / Blog / RSS",
@@ -3002,7 +2937,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "Residential Proxy Networks Fueling Account Takeover Waves Against Tech Orgs",
           url: "https://krebsonsecurity.com",
@@ -3026,7 +2961,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Investigation",
         finding: "Investigative report detailing commercial residential proxy botnets executing distributed developer credential-stuffing.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -3092,7 +3027,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "Indirect Prompt Injection in AI Developer Workflows",
           url: "https://www.schneier.com",
@@ -3116,7 +3051,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Analysis",
         finding: "Architectural analysis highlighting agentic prompt injection as the fundamental software weakness of the AI coding era.",
         signalType: "RESEARCH_DISCLOSURE",
@@ -3182,7 +3117,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "The PQC Transition: What Breaks When Keys Get Large",
           url: "https://www.schneier.com",
@@ -3206,7 +3141,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Essay",
         finding: "Analysis of operational hazards in post-quantum key exchange rollout across network infrastructure.",
         signalType: "RESEARCH_DISCLOSURE",
@@ -3280,7 +3215,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         },
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "Ghost CDNs: The Forgotten Subdomains Powering Silent Malware Distribution",
           url: "https://krebsonsecurity.com",
@@ -3304,7 +3239,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       },
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Investigation",
         finding: "Detailed case studies of corporate build pipelines hijacked via unmanaged cloud asset domains.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -3451,7 +3386,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "Infostealers Pivot to Hijacking Browser-to-Desktop Native Messaging Bridges",
           url: "https://krebsonsecurity.com",
@@ -3475,7 +3410,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Report",
         finding: "Detailed breakdown of infostealer campaigns intercepting password manager communications via native host configuration hijacking.",
         signalType: "INFORMATIONAL_CHATTER",

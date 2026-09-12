@@ -170,15 +170,12 @@ export async function GET(request: Request) {
         if ((srcLower === "pentester_land" || srcLower === "pentester_land_json") && (sId.includes("pentester") || sName.includes("pentester"))) return true;
         if (srcLower === "disclose_io" && (sId.includes("disclose") || sName.includes("disclose"))) return true;
         if (srcLower === "bugbounty_disclosed_reports" && (sId.includes("disclosed_reports") || sName.includes("disclosed reports"))) return true;
-        if ((srcLower === "reddit_bugbounty" || srcLower === "r_bugbounty") && (sId.includes("bugbounty") || sName.includes("bugbounty"))) return true;
-        if ((srcLower === "reddit_netsec" || srcLower === "r_netsec") && (sId.includes("netsec") || sName.includes("netsec"))) return true;
-        if ((srcLower === "reddit_blueteamsec" || srcLower === "r_blueteamsec") && (sId.includes("blueteamsec") || sName.includes("blueteamsec"))) return true;
-        if ((srcLower === "reddit_cybersecurity" || srcLower === "r_cybersecurity") && (sId.includes("cybersecurity") || sName.includes("cybersecurity"))) return true;
+        if ((srcLower === "reddit" || srcLower === "reddit_bugbounty" || srcLower === "r_bugbounty" || srcLower === "reddit_netsec" || srcLower === "r_netsec" || srcLower === "reddit_blueteamsec" || srcLower === "r_blueteamsec" || srcLower === "reddit_cybersecurity" || srcLower === "r_cybersecurity") && (sId.includes("reddit") || sName.toLowerCase().includes("reddit") || sId.includes("bugbounty") || sName.includes("bugbounty") || sId.includes("netsec") || sName.includes("netsec") || sId.includes("blueteamsec") || sName.includes("blueteamsec") || sId.includes("cybersecurity") || sName.includes("cybersecurity"))) return true;
         if (srcLower === "sec_stackexchange" && (sId.includes("stackexchange") || sName.includes("stack exchange"))) return true;
         if (srcLower === "wwhf_discord" && (sId.includes("wwhf") || sName.includes("wild west"))) return true;
         if (srcLower === "hacker_news_infosec" && (sId.includes("hacker_news") || sName.includes("hacker news"))) return true;
-        if (srcLower === "krebs_on_security" && (sId.includes("krebs") || sName.includes("krebs"))) return true;
-        if (srcLower === "schneier_on_security" && (sId.includes("schneier") || sName.includes("schneier"))) return true;
+        if ((srcLower === "brian_krebs" || srcLower === "krebs" || srcLower === "krebs_security" || srcLower === "krebs_on_security") && (sId.includes("krebs") || sName.toLowerCase().includes("krebs"))) return true;
+        if ((srcLower === "bruce_schneier" || srcLower === "schneier" || srcLower === "schneier_security" || srcLower === "schneier_on_security") && (sId.includes("schneier") || sName.toLowerCase().includes("schneier"))) return true;
         if (srcLower === "portswigger_research" && (sId.includes("portswigger") || sName.includes("portswigger"))) return true;
         if (srcLower === "unit42_research" && (sId.includes("unit42") || sId.includes("unit_42") || sName.includes("unit 42"))) return true;
         if (srcLower === "microsoft_threat_intel" && (sId.includes("microsoft") || sId.includes("msti") || sName.includes("microsoft"))) return true;
@@ -239,7 +236,7 @@ export async function GET(request: Request) {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
     feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
     identifierSystem: "UVI-YYYY-MM-000001",
-    mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, Multi-Indicator Hubs, and Research & Bug Bounty Disclosures (HackerOne, Bugcrowd, Immunefi, Pentester Land, disclose.io, r/netsec, r/cybersecurity, r/blueteamsec, PortSwigger Research, Krebs on Security, Schneier, Google Project Zero, Unit 42, Microsoft MSTI, URLhaus, ThreatFox, CISA KEV, FIRST EPSS, CIRCL MISP, NVD, GHSA, OSV.dev, OpenSSF, Snyk, and more). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, bug bounty writeups, and practitioner disclosures into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
+    mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, Multi-Indicator Hubs, and Research & Bug Bounty Disclosures (HackerOne, Bugcrowd, Immunefi, Pentester Land, disclose.io, Reddit, Brian Krebs, Bruce Schneier, PortSwigger Research, Google Project Zero, Unit 42, Microsoft MSTI, URLhaus, ThreatFox, CISA KEV, FIRST EPSS, CIRCL MISP, NVD, GHSA, OSV.dev, OpenSSF, Snyk, and more). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, bug bounty writeups, and practitioner disclosures into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
     license: "CC-BY-4.0 (Open Access for All Developers and Systems)",
     generatedAt: new Date().toISOString(),
     queryParameters: {

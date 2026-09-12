@@ -43,7 +43,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "Agent Autonomy and the Tool-Execution Trap: The Attack Surface of MCP",
           url: "https://www.schneier.com",
@@ -67,7 +67,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Analysis",
         finding: "Comprehensive analysis of agentic tool-calling protocols and uncontrolled command execution vectors.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -133,7 +133,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "AI Model Repositories Emerge as Next Malicious Package Playground",
           url: "https://krebsonsecurity.com",
@@ -157,7 +157,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Investigation",
         finding: "Detailed report documenting credential theft campaigns exploiting open model hub uploads.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -231,7 +231,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         },
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "When Internet Routing Flaws Collide with Software Supply Chains",
           url: "https://krebsonsecurity.com",
@@ -255,7 +255,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       },
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Report",
         finding: "In-depth investigation on ISP routing security and impact on developer workstation downloads.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -313,7 +313,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "Abandoned Domain Takeovers Fuel Silent VS Code Extension Takeovers",
           url: "https://krebsonsecurity.com",
@@ -337,7 +337,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Report",
         finding: "Detailed case studies of domain squatting leading to verified publisher account takeovers on extension registries.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -403,7 +403,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "AI Voice Cloning Accelerates Helpdesk Social Engineering Against Tech Giants",
           url: "https://krebsonsecurity.com",
@@ -427,7 +427,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Report",
         finding: "Detailed investigative breakdown of AI voice cloning tools used against major technology helpdesks.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -590,7 +590,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         },
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "The Limits of Sandboxing: Why WebAssembly JITs Keep Leaking",
           url: "https://www.schneier.com",
@@ -614,7 +614,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       },
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Essay",
         finding: "Analysis of sandboxing paradigms and language runtime boundaries.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -761,7 +761,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "The Forgotten Subdomains Haunting Tech Companies",
           url: "https://krebsonsecurity.com",
@@ -785,7 +785,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Investigation",
         finding: "Comprehensive report on orphaned cloud endpoints and corporate cookie exfiltration.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -851,7 +851,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "The Mirage of Automated Memory-Safety Transpilation",
           url: "https://www.schneier.com",
@@ -875,7 +875,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Essay",
         finding: "Dissection of software migration dynamics and memory-safety guarantees in enterprise refactoring.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1127,7 +1127,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         },
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "When npm Packages Leave Ghosts in Your Developer Machine",
           url: "https://krebsonsecurity.com",
@@ -1151,7 +1151,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       },
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Report",
         finding: "Investigation of persistent malware campaigns infecting developer workstations via npm dependency lifecycles.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1209,7 +1209,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "Side-Channels in Early Post-Quantum Implementations: The Real Transition Challenge",
           url: "https://www.schneier.com",
@@ -1233,7 +1233,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Bruce Schneier Essay",
         finding: "Analysis of post-quantum implementation realities and side-channel threats.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1298,7 +1298,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "The Shadow AI Pipeline: How Unofficial Code Assistants Bleed Corporate Secrets",
           url: "https://krebsonsecurity.com",
@@ -1322,7 +1322,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Brian Krebs Investigation",
         finding: "Comprehensive CTI report detailing telemetry harvesting in community AI code assistants.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1452,7 +1452,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Bruce Schneier",
           headline: "Localhost Isn't Safe: Browser Debugging Ports as an Attack Vector",
           url: "https://www.schneier.com",
@@ -1468,7 +1468,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Security Analysis",
         finding: "Disclosures detailing drive-by exploitation of open Chromium debugging ports.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1597,7 +1597,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Security Research Collective",
           headline: "Weaponizing Developer Workspaces: The Pitfalls of Automatic IDE Tasks",
           url: "https://krebsonsecurity.com",
@@ -1613,7 +1613,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "Security Advisory",
         finding: "Technical breakdown of Workspace Trust bypass vectors using auto-executing tasks.json.",
         signalType: "RESEARCH_DISCLOSURE",
@@ -1742,7 +1742,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "How Scanners Weaponize Developer Webhook Tunnels into Cloud Breaches",
           url: "https://krebsonsecurity.com",
@@ -1758,7 +1758,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "CTI Investigation",
         finding: "Detailed analysis of botnet infrastructure scraping public developer tunnels for cloud metadata.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -1961,7 +1961,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Security Research Group",
           headline: "Git Submodule Parsing: The Danger of Treating URLs as Safe",
           url: "https://www.schneier.com",
@@ -1977,7 +1977,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Technical Advisory",
         finding: "Analysis of argument injection vulnerabilities in recursive git submodule cloning.",
         signalType: "RESEARCH_DISCLOSURE",
@@ -2107,7 +2107,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "krebs_security",
-          sourceName: "Krebs on Security",
+          sourceName: "Brian Krebs",
           authorOrHandle: "Brian Krebs",
           headline: "The Ghost Maintainers: How Expired Domains Threaten the Open-Source Ecosystem",
           url: "https://krebsonsecurity.com",
@@ -2123,7 +2123,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "krebs_security",
-        sourceName: "Krebs on Security",
+        sourceName: "Brian Krebs",
         badge: "CTI Investigation",
         finding: "Extensive investigation tracking automated domain re-registration campaigns targeting package maintainers.",
         signalType: "INFORMATIONAL_CHATTER",
@@ -2252,7 +2252,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       primarySources: [
         {
           sourceId: "schneier_security",
-          sourceName: "Schneier on Security",
+          sourceName: "Bruce Schneier",
           authorOrHandle: "Cloud Security Researchers",
           headline: "The Hidden Danger of Port-Forwarding in Cloud-Native Development",
           url: "https://www.schneier.com",
@@ -2268,7 +2268,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     upstreamSignals: [
       {
         sourceId: "schneier_security",
-        sourceName: "Schneier on Security",
+        sourceName: "Bruce Schneier",
         badge: "Cloud Security Writeup",
         finding: "Penetration test findings detailing lateral movement via developer port-forward connections.",
         signalType: "RESEARCH_DISCLOSURE",

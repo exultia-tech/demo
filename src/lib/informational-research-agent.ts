@@ -266,36 +266,36 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
   },
   {
     id: "DISP-2025-111",
-    sourceName: "r/bugbounty (Reddit)",
+    sourceName: "Reddit",
     author: "u/bounty_hunter_99",
     sourceUrl: "https://www.reddit.com/r/bugbounty/",
     rawHeadline: "Bypassing Webhook Payload Validation via DNS Rebinding Against Developer Localhost Listeners",
     rawText: "Technical methodology shared on r/bugbounty detailing how to bypass webhook IP blocklists using dual A-record DNS rebinding. By alternating TTLs, external webhook triggers initially resolve to public IPs during validation, but resolve to 127.0.0.1 during delivery, dumping developer test payloads into local services.",
     publishedDate: "2025-03-23",
     confidenceScore: 91,
-    signalTags: ["r/bugbounty", "DNS Rebinding", "Webhook Bypass", "Localhost Exploitation", "Developer Tools"]
+    signalTags: ["Reddit", "r/bugbounty", "DNS Rebinding", "Webhook Bypass", "Localhost Exploitation", "Developer Tools"]
   },
   {
     id: "DISP-2025-112",
-    sourceName: "r/netsec (Reddit Technical)",
+    sourceName: "Reddit",
     author: "u/kernel_sec_researcher",
     sourceUrl: "https://www.reddit.com/r/netsec/",
     rawHeadline: "Linux Kernel eBPF Verifier Type Confusion Leading to Local Privilege Escalation on Dev Workstations",
     rawText: "Detailed technical advisory posted to r/netsec analyzing an eBPF verifier flaw in modern Linux kernels. Inaccurate branch pruning during scalar-to-pointer verification allows unprivileged processes to execute arbitrary read/write memory primitives, bypassing KASLR and obtaining root on developer Linux workstations.",
     publishedDate: "2025-03-24",
     confidenceScore: 97,
-    signalTags: ["r/netsec", "Linux Kernel", "eBPF Verifier", "Local Privilege Escalation", "Developer Workstation"]
+    signalTags: ["Reddit", "r/netsec", "Linux Kernel", "eBPF Verifier", "Local Privilege Escalation", "Developer Workstation"]
   },
   {
     id: "DISP-2025-113",
-    sourceName: "r/blueteamsec (Reddit)",
+    sourceName: "Reddit",
     author: "u/blue_detection_eng",
     sourceUrl: "https://www.reddit.com/r/blueteamsec/",
     rawHeadline: "Sigma Rule Detections for Suspicious IDE Child Processes and Compiler Shell Spawns",
     rawText: "Detection engineering release on r/blueteamsec providing Sigma and YARA rules to detect adversary tradecraft abusing IDE process trees. Focuses on vscode.exe or idea64.exe spawning cmd.exe or bash.exe executing base64-encoded curl or PowerShell download cradles during project load.",
     publishedDate: "2025-03-25",
     confidenceScore: 93,
-    signalTags: ["r/blueteamsec", "Sigma Rules", "IDE Process Trees", "Workstation Defense", "Detection Engineering"]
+    signalTags: ["Reddit", "r/blueteamsec", "Sigma Rules", "IDE Process Trees", "Workstation Defense", "Detection Engineering"]
   },
   {
     id: "DISP-2025-114",
@@ -321,25 +321,25 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
   },
   {
     id: "DISP-2025-116",
-    sourceName: "Krebs on Security",
+    sourceName: "Brian Krebs",
     author: "Brian Krebs",
     sourceUrl: "https://krebsonsecurity.com/",
     rawHeadline: "Bulletproof Hosting Syndicates Laundering Stolen Code-Signing Certificates to Sign Malware",
     rawText: "Investigative report by Brian Krebs revealing how cybercrime brokers acquire compromised corporate code-signing certificates to sign weaponized npm package installers and developer utilities, allowing malware to execute without SmartScreen or antivirus alerts on enterprise developer laptops.",
     publishedDate: "2025-03-28",
     confidenceScore: 98,
-    signalTags: ["Krebs on Security", "Code Signing Certificates", "Bulletproof Hosting", "Developer Workstation", "Supply Chain"]
+    signalTags: ["Brian Krebs", "Krebs on Security", "Code Signing Certificates", "Bulletproof Hosting", "Developer Workstation", "Supply Chain"]
   },
   {
     id: "DISP-2025-117",
-    sourceName: "Schneier on Security",
+    sourceName: "Bruce Schneier",
     author: "Bruce Schneier",
     sourceUrl: "https://www.schneier.com/",
     rawHeadline: "Systemic Fragility in Ephemeral CI/CD Cryptographic Key Generation and PRNG Seeding",
     rawText: "Essay and threat modeling breakdown by Bruce Schneier on PRNG state exhaustion in rapidly scaled cloud container runners. Ephemeral VMs launched with cloned initial memory snapshots generate colliding cryptographic keys and SSH host pairs due to identical early-boot entropy pools.",
     publishedDate: "2025-03-29",
     confidenceScore: 94,
-    signalTags: ["Schneier on Security", "Applied Cryptography", "PRNG Entropy", "CI/CD Runners", "Systemic Trust"]
+    signalTags: ["Bruce Schneier", "Schneier on Security", "Applied Cryptography", "PRNG Entropy", "CI/CD Runners", "Systemic Trust"]
   },
   {
     id: "DISP-2025-118",
@@ -398,14 +398,14 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
   },
   {
     id: "DISP-2025-123",
-    sourceName: "r/cybersecurity (Reddit)",
+    sourceName: "Reddit",
     author: "u/incident_lead_ciso",
     sourceUrl: "https://www.reddit.com/r/cybersecurity/",
     rawHeadline: "Widespread Compromise of Developer GitHub Personal Access Tokens via Malicious Coding Challenge Repos",
     rawText: "Incident response breakdown shared on r/cybersecurity warning of fake recruitment technical evaluations. Adversaries send candidates coding challenge repositories containing obfuscated postinstall npm hooks that extract saved SSH keys, AWS credentials, and GitHub PATs from developer workstations.",
     publishedDate: "2025-04-04",
     confidenceScore: 94,
-    signalTags: ["r/cybersecurity", "Fake Interview Repos", "Supply Chain", "Credential Theft", "Developer Laptops"]
+    signalTags: ["Reddit", "r/cybersecurity", "Fake Interview Repos", "Supply Chain", "Credential Theft", "Developer Laptops"]
   },
   {
     id: "DISP-2025-124",
@@ -591,15 +591,12 @@ export class InformationalResearchAgent {
     else if (canonicalSourceId.includes("pentester")) canonicalSourceId = "pentester_land";
     else if (canonicalSourceId.includes("disclose")) canonicalSourceId = "disclose_io";
     else if (canonicalSourceId.includes("disclosed_reports") || (canonicalSourceId.includes("bug") && canonicalSourceId.includes("bounty") && canonicalSourceId.includes("report"))) canonicalSourceId = "bugbounty_disclosed_reports";
-    else if (canonicalSourceId.includes("reddit_bugbounty") || (canonicalSourceId.includes("reddit") && canonicalSourceId.includes("bugbounty"))) canonicalSourceId = "reddit_bugbounty";
-    else if (canonicalSourceId.includes("netsec")) canonicalSourceId = "reddit_netsec";
-    else if (canonicalSourceId.includes("blueteamsec")) canonicalSourceId = "reddit_blueteamsec";
-    else if (canonicalSourceId.includes("cybersecurity")) canonicalSourceId = "reddit_cybersecurity";
+    else if (canonicalSourceId.includes("reddit") || canonicalSourceId.includes("netsec") || canonicalSourceId.includes("blueteamsec") || canonicalSourceId.includes("cybersecurity") || canonicalSourceId.includes("bugbounty")) canonicalSourceId = "reddit";
     else if (canonicalSourceId.includes("stackexchange") || canonicalSourceId.includes("stack_exchange")) canonicalSourceId = "sec_stackexchange";
     else if (canonicalSourceId.includes("wwhf") || canonicalSourceId.includes("wild_west")) canonicalSourceId = "wwhf_discord";
     else if (canonicalSourceId.includes("hacker_news") || canonicalSourceId.includes("ycombinator")) canonicalSourceId = "hacker_news_infosec";
-    else if (canonicalSourceId.includes("krebs")) canonicalSourceId = "krebs_on_security";
-    else if (canonicalSourceId.includes("schneier")) canonicalSourceId = "schneier_on_security";
+    else if (canonicalSourceId.includes("krebs")) canonicalSourceId = "krebs_security";
+    else if (canonicalSourceId.includes("schneier")) canonicalSourceId = "schneier_security";
     else if (canonicalSourceId.includes("portswigger")) canonicalSourceId = "portswigger_research";
     else if (canonicalSourceId.includes("unit42") || canonicalSourceId.includes("unit_42")) canonicalSourceId = "unit42_research";
     else if (canonicalSourceId.includes("microsoft") || canonicalSourceId.includes("msti")) canonicalSourceId = "microsoft_threat_intel";
@@ -766,16 +763,13 @@ export class InformationalResearchAgent {
         "Pentester Land Writeups (https://pentester.land/writeups/)",
         "disclose.io diodb (https://github.com/disclose/diodb)",
         "Bug Bounty Disclosed Reports (https://github.com/bugbountywithmarco/bugbounty-disclosed-reports)",
-        "r/bugbounty (https://www.reddit.com/r/bugbounty/)",
+        "Reddit (r/netsec, r/cybersecurity, r/bugbounty, r/blueteamsec)",
         "Bugcrowd & Bounty World Discords",
-        "r/netsec Technical Vulnerabilities (https://www.reddit.com/r/netsec/)",
-        "r/cybersecurity Discussions (https://www.reddit.com/r/cybersecurity/)",
-        "r/blueteamsec Detections (https://www.reddit.com/r/blueteamsec/)",
         "Information Security Stack Exchange (https://security.stackexchange.com/)",
         "Wild West Hackin' Fest Discord (https://discord.gg/wwhf)",
         "Hacker News InfoSec Stream (https://news.ycombinator.com/)",
-        "Krebs on Security (https://krebsonsecurity.com/)",
-        "Schneier on Security (https://www.schneier.com/)",
+        "Brian Krebs (https://krebsonsecurity.com/)",
+        "Bruce Schneier (https://www.schneier.com/)",
         "Google Project Zero Blog (https://googleprojectzero.blogspot.com/)",
         "PortSwigger Research (https://portswigger.net/research)",
         "Unit 42 Threat Research (https://unit42.paloaltonetworks.com/)",
