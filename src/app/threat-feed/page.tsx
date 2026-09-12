@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import VirtualCisoModal from "@/components/VirtualCisoModal";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -101,6 +102,16 @@ export default function ThreatFeedPage() {
   const [copiedUviId, setCopiedUviId] = useState<string | null>(null);
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
+
+  // Virtual CISO AI Explanation Modal State
+  const [virtualCisoAdvisory, setVirtualCisoAdvisory] = useState<UviAdvisoryRecord | null>(null);
+  const [isVirtualCisoOpen, setIsVirtualCisoOpen] = useState(false);
+
+  const handleOpenVirtualCiso = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setVirtualCisoAdvisory(record);
+    setIsVirtualCisoOpen(true);
+  };
 
   // Available operational domains list
   const operationalDomains: ("ALL" | OperationalDomain)[] = [
@@ -1588,6 +1599,40 @@ export default function ThreatFeedPage() {
                                   💻 Direct Build Impact
                                 </span>
                               )}
+
+                              {/* Virtual CISO "Explain with AI" button */}
+                              <button
+                                onClick={(e) => handleOpenVirtualCiso(record, e)}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.3rem",
+                                  padding: "0.14rem 0.55rem",
+                                  borderRadius: "5px",
+                                  background: "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)",
+                                  border: "1px solid rgba(167, 139, 250, 0.45)",
+                                  color: "#DDD6FE",
+                                  fontSize: "0.71rem",
+                                  fontWeight: 700,
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease",
+                                  boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)"
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(79, 70, 229, 0.4) 100%)";
+                                  e.currentTarget.style.borderColor = "#A78BFA";
+                                  e.currentTarget.style.color = "#FFFFFF";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)";
+                                  e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.45)";
+                                  e.currentTarget.style.color = "#DDD6FE";
+                                }}
+                                title="Virtual CISO: Plain-English explanation & technical code remediation"
+                              >
+                                <span>✨</span>
+                                <span>Explain with AI</span>
+                              </button>
                             </div>
                           </div>
                         </td>
@@ -1862,9 +1907,44 @@ export default function ThreatFeedPage() {
                       );
                     })()}
 
-                    <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 600 }}>
-                      View Dossier →
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                      <button
+                        onClick={(e) => handleOpenVirtualCiso(record, e)}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.22rem 0.65rem",
+                          borderRadius: "6px",
+                          background: "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(79, 70, 229, 0.25) 100%)",
+                          border: "1px solid rgba(167, 139, 250, 0.5)",
+                          color: "#DDD6FE",
+                          fontSize: "0.74rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.42) 0%, rgba(79, 70, 229, 0.42) 100%)";
+                          e.currentTarget.style.borderColor = "#C4B5FD";
+                          e.currentTarget.style.color = "#FFFFFF";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(79, 70, 229, 0.25) 100%)";
+                          e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.5)";
+                          e.currentTarget.style.color = "#DDD6FE";
+                        }}
+                        title="Virtual CISO: Plain-English explanation & code remediation"
+                      >
+                        <span>✨</span>
+                        <span>Explain with AI</span>
+                      </button>
+
+                      <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 600 }}>
+                        View Dossier →
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -2098,6 +2178,28 @@ export default function ThreatFeedPage() {
 
                 {/* Header Actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleOpenVirtualCiso(selectedAdvisory)}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                      background: "linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(79, 70, 229, 0.3) 100%)",
+                      border: "1px solid rgba(167, 139, 250, 0.55)",
+                      color: "#EDE9FE",
+                      padding: "0.26rem 0.7rem",
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      boxShadow: "0 0 10px rgba(139, 92, 246, 0.2)"
+                    }}
+                    title="Virtual CISO: Plain-English explanation and code remediation"
+                  >
+                    <span>✨</span>
+                    <span>Explain with AI</span>
+                  </button>
+
                   <button
                     onClick={() => handleCopyUviId(selectedAdvisory.uviId)}
                     style={{
@@ -3151,6 +3253,13 @@ export default function ThreatFeedPage() {
           </div>
         </div>
       )}
+
+      {/* VIRTUAL CISO AI EXPLANATION MODAL */}
+      <VirtualCisoModal
+        advisory={virtualCisoAdvisory}
+        isOpen={isVirtualCisoOpen}
+        onClose={() => setIsVirtualCisoOpen(false)}
+      />
     </div>
   );
 }
