@@ -1680,8 +1680,62 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
     console.warn("Live multi-feed ingestion failed or timed out, serving cached/curated advisories:", err);
   }
 
-  cachedAggregatedAdvisories = merged;
+  const standardized = standardizeUviAdvisories(merged);
+  cachedAggregatedAdvisories = standardized;
   lastCacheTime = now;
-  return merged;
+  return standardized;
 }
+
+/**
+ * Standardize all UVI advisories to the unified format: UVI-YYYY-MM-000001
+ * Deterministically buckets by publication year-month, prioritizes critical/milestone
+ * threats within each month, and assigns continuous zero-padded 6-digit sequences.
+ */
+export function standardizeUviAdvisories(advisories: UviAdvisoryRecord[]): UviAdvisoryRecord[] {
+  const ymBuckets = new Map<string, UviAdvisoryRecord[]>();
+
+  for (const item of advisories) {
+    const rawDate = item.publishedDate || item.lastUpdatedDate || "2026-09-01";
+    const match = rawDate.match(/^(\d{4})-(\d{2})/);
+    const ym = match ? `${match[1]}-${match[2]}` : "2026-09";
+    if (!ymBuckets.has(ym)) {
+      ymBuckets.set(ym, []);
+    }
+    ymBuckets.get(ym)!.push(item);
+  }
+
+  // Sort year-month buckets descending (newest months first)
+  const sortedMonths = Array.from(ymBuckets.keys()).sort((a, b) => b.localeCompare(a));
+  const standardized: UviAdvisoryRecord[] = [];
+
+  for (const ym of sortedMonths) {
+    const items = ymBuckets.get(ym)!;
+    items.sort((a, b) => {
+      // 1. Sort by CVSS score descending (highest criticality first)
+      if (b.cvssScore !== a.cvssScore) return b.cvssScore - a.cvssScore;
+      // 2. CVE presence
+      const cveA = (a.cveList && a.cveList[0]) || "";
+      const cveB = (b.cveList && b.cveList[0]) || "";
+      if (cveA && cveB) return cveA.localeCompare(cveB);
+      if (cveA) return -1;
+      if (cveB) return 1;
+      return (a.title || "").localeCompare(b.title || "");
+    });
+
+    items.forEach((item, index) => {
+      const seq = String(index + 1).padStart(6, "0");
+      const uviId = `UVI-${ym}-${seq}`;
+      const originalId = item.uviId;
+
+      standardized.push({
+        ...item,
+        uviId,
+        legacyUviId: originalId !== uviId ? originalId : undefined
+      });
+    });
+  }
+
+  return standardized;
+}
+
 

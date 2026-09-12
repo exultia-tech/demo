@@ -311,7 +311,7 @@ export default function ThreatFeedPage() {
             Universal Vulnerability Intelligence (UVI) Threat Feed
           </h1>
           <p style={{ fontSize: "1rem", color: "var(--text-muted)", maxWidth: "720px", lineHeight: 1.6, margin: 0 }}>
-            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-NNNN</code> records.
+            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-MM-000001</code> records.
           </p>
         </div>
 
@@ -1297,7 +1297,7 @@ export default function ThreatFeedPage() {
                 borderBottom: "2px solid rgba(59, 130, 246, 0.3)"
               }}>
                 <tr>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "185px" }}>
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "205px" }}>
                     UVI Identifier
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
@@ -1373,7 +1373,7 @@ export default function ThreatFeedPage() {
                         }}
                       >
                         {/* Column 1: UVI Identifier & Cross-References */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "185px", verticalAlign: "top" }}>
+                        <td style={{ padding: "1.1rem 1.25rem", width: "205px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                               <span style={{
@@ -1404,6 +1404,30 @@ export default function ThreatFeedPage() {
                                 )}
                               </button>
                             </div>
+
+                            {record.legacyUviId && (
+                              <div style={{ display: "flex", alignItems: "center" }}>
+                                <span 
+                                  style={{
+                                    fontSize: "0.68rem",
+                                    fontFamily: "monospace",
+                                    color: "#94A3B8",
+                                    background: "rgba(255, 255, 255, 0.04)",
+                                    padding: "0.1rem 0.35rem",
+                                    borderRadius: "3px",
+                                    border: "1px solid rgba(255, 255, 255, 0.07)",
+                                    display: "inline-block",
+                                    maxWidth: "185px",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap"
+                                  }} 
+                                  title={`Legacy Identifier / Upstream Reference: ${record.legacyUviId}`}
+                                >
+                                  Ref: {record.legacyUviId}
+                                </span>
+                              </div>
+                            )}
 
                             {/* CVE list tags or Non-CVE badge */}
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
@@ -1879,7 +1903,7 @@ export default function ThreatFeedPage() {
                   <div>
                     {/* Card Header: UVI ID + Severity */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
                         <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 800, color: "#60A5FA" }}>
                           {record.uviId}
                         </span>
@@ -1889,6 +1913,22 @@ export default function ThreatFeedPage() {
                         >
                           {copiedUviId === record.uviId ? "✓" : "📋"}
                         </button>
+                        {record.legacyUviId && (
+                          <span 
+                            style={{
+                              fontSize: "0.68rem",
+                              fontFamily: "monospace",
+                              color: "#94A3B8",
+                              background: "rgba(255, 255, 255, 0.04)",
+                              padding: "0.1rem 0.35rem",
+                              borderRadius: "3px",
+                              border: "1px solid rgba(255, 255, 255, 0.07)"
+                            }}
+                            title={`Legacy Identifier / Upstream Reference: ${record.legacyUviId}`}
+                          >
+                            Ref: {record.legacyUviId}
+                          </span>
+                        )}
                       </div>
 
                       {ratingMode === "observational" ? (
@@ -2275,6 +2315,21 @@ export default function ThreatFeedPage() {
                      selectedAdvisory.cveList.length === 0 ? "Supply Chain Finding" :
                      selectedAdvisory.cveList[0] || "CVE Advisory"}
                   </span>
+
+                  {selectedAdvisory.legacyUviId && (
+                    <span style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 600,
+                      padding: "0.2rem 0.5rem",
+                      borderRadius: "4px",
+                      background: "rgba(148, 163, 184, 0.12)",
+                      color: "#CBD5E1",
+                      border: "1px solid rgba(148, 163, 184, 0.25)",
+                      fontFamily: "monospace"
+                    }} title="Original cross-reference or legacy identifier">
+                      Ref: {selectedAdvisory.legacyUviId}
+                    </span>
+                  )}
                 </div>
 
                 {/* Header Actions */}
@@ -3310,7 +3365,7 @@ export default function ThreatFeedPage() {
               alignItems: "center"
             }}>
               <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
-                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-NNNN</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
+                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-MM-000001</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
               </span>
 
               <button

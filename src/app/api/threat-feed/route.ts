@@ -40,9 +40,9 @@ export async function GET(request: Request) {
   const allAdvisories = await getAggregatedUviAdvisories();
   let filtered = [...allAdvisories];
 
-  // Specific UVI ID lookup (e.g., ?id=UVI-2021-44228)
+  // Specific UVI ID lookup (e.g., ?id=UVI-2024-03-000001 or legacy ?id=UVI-2021-44228)
   if (id) {
-    filtered = filtered.filter(f => f.uviId.toUpperCase() === id);
+    filtered = filtered.filter(f => f.uviId.toUpperCase() === id || (f.legacyUviId && f.legacyUviId.toUpperCase() === id));
   }
 
   // Specific CVE lookup (e.g., ?cve=CVE-2024-3094)
@@ -59,10 +59,11 @@ export async function GET(request: Request) {
     filtered = filtered.filter(f => f.disclosureType === 'INFORMATIONAL_DISCLOSURE');
   }
 
-  // Free-form Search Query across UVI ID, CVEs, Title, Headline, Summary, Impact, Targets, CWE, and Upstream findings
+  // Free-form Search Query across UVI ID, Legacy ID, CVEs, Title, Headline, Summary, Impact, Targets, CWE, and Upstream findings
   if (query) {
     filtered = filtered.filter(f => 
       f.uviId.toLowerCase().includes(query) ||
+      (f.legacyUviId && f.legacyUviId.toLowerCase().includes(query)) ||
       f.cveList.some(c => c.toLowerCase().includes(query)) ||
       (f.ghsaId && f.ghsaId.toLowerCase().includes(query)) ||
       (f.osvId && f.osvId.toLowerCase().includes(query)) ||
@@ -183,7 +184,7 @@ export async function GET(request: Request) {
   const responsePayload = {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
     feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
-    identifierSystem: "UVI-YYYY-NNNN",
+    identifierSystem: "UVI-YYYY-MM-000001",
     mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, and Multi-Indicator Hubs (URLhaus, ThreatFox, Feodo Tracker, MalwareBazaar, MontySecurity C2-Tracker, Botvrij.eu, OpenPhish, PhishTank, SANS ISC DShield, Blocklist.de, IPSum, Tor Exit List, Cisco Talos, Emerging Threats, GreenSnow, GreyNoise, CISA KEV, FIRST EPSS, AlienVault OTX, CIRCL MISP, threatfeeds.io, Bert-JanP OTI, NVD, GHSA, OSV.dev, OpenSSF, MSRC, Snyk, and language advisory DBs). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, and protocol flaws into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
     license: "CC-BY-4.0 (Open Access for All Developers and Systems)",
     generatedAt: new Date().toISOString(),

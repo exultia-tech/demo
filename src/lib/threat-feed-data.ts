@@ -96,7 +96,8 @@ export interface InformationalSynthesis {
 }
 
 export interface UviAdvisoryRecord {
-  uviId: string; // Standardized: UVI-YYYY-NNNN or UVI-INFO-YYYY-NNNN
+  uviId: string; // Standardized: UVI-YYYY-MM-000001
+  legacyUviId?: string; // Original cross-reference or legacy identifier (e.g. UVI-2024-3094, UVI-MAL-2025-0104)
   title: string;
   headline: string;
   summary: string;
@@ -299,7 +300,10 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
   }
 
   const isCisaKev = Boolean(record.cisaKev?.isKnownExploited);
-  const isMalware = record.uviId.startsWith("UVI-MAL-");
+  const isMalware = record.domainCategory === "Supply Chain & Malware" || 
+                    record.cveList.length === 0 || 
+                    record.title.toLowerCase().includes("malware") || 
+                    record.uviId.includes("-MAL-");
   const hasBuildImpact = Boolean(record.ideBuildImpact?.hasDirectBuildImpact);
   const devSev = record.ideBuildImpact?.severityOnDeveloperEnv;
   const isCritical = record.severity === "CRITICAL";
