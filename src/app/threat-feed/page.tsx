@@ -48,20 +48,11 @@ export default function ThreatFeedPage() {
   const [isFeedDirectoryOpen, setIsFeedDirectoryOpen] = useState(false);
   const [feedDirectorySearch, setFeedDirectorySearch] = useState("");
   const [feedDirectoryCategory, setFeedDirectoryCategory] = useState<string>("ALL");
-  const [activeStripCategory, setActiveStripCategory] = useState<string>("ALL");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [sidebarFeedSearch, setSidebarFeedSearch] = useState("");
-
-  const filteredSidebarFeeds = useMemo(() => {
-    return UVI_PUBLIC_FEED_SOURCES.filter(f => {
-      const matchesCat = activeStripCategory === "ALL" || f.category === activeStripCategory;
-      const matchesSearch = !sidebarFeedSearch.trim() || 
-        f.name.toLowerCase().includes(sidebarFeedSearch.toLowerCase()) || 
-        f.scope.toLowerCase().includes(sidebarFeedSearch.toLowerCase()) ||
-        f.category.toLowerCase().includes(sidebarFeedSearch.toLowerCase());
-      return matchesCat && matchesSearch;
-    });
-  }, [activeStripCategory, sidebarFeedSearch]);
+  // Alphabetized feeds list for sidebar
+  const alphabetizedFeeds = useMemo(() => {
+    return [...UVI_PUBLIC_FEED_SOURCES].sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
 
   const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
     { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
@@ -472,29 +463,24 @@ export default function ThreatFeedPage() {
                 margin: "auto 0",
                 alignItems: "center"
               }}>
-                {FEED_CATEGORIES.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => {
-                      setActiveStripCategory(c.id);
-                      setIsSidebarCollapsed(false);
-                    }}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "6px",
-                      background: activeStripCategory === c.id ? "rgba(59, 130, 246, 0.3)" : "rgba(255, 255, 255, 0.04)",
-                      border: activeStripCategory === c.id ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.06)",
-                      display: "grid",
-                      placeItems: "center",
-                      fontSize: "0.9rem",
-                      cursor: "pointer"
-                    }}
-                    title={`${c.label} (${c.count} feeds)`}
-                  >
-                    {c.icon}
-                  </button>
-                ))}
+                <button
+                  onClick={() => setIsSidebarCollapsed(false)}
+                  style={{
+                    width: "34px",
+                    height: "34px",
+                    borderRadius: "7px",
+                    background: searchQuery ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.05)",
+                    border: searchQuery ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
+                    color: searchQuery ? "#93C5FD" : "#CBD5E1",
+                    display: "grid",
+                    placeItems: "center",
+                    cursor: "pointer",
+                    fontSize: "0.95rem"
+                  }}
+                  title={searchQuery ? `Searching: "${searchQuery}" (Click to expand)` : "Search Threats in Sidebar"}
+                >
+                  🔍
+                </button>
               </div>
 
               <button
@@ -573,28 +559,32 @@ export default function ThreatFeedPage() {
                 </div>
               </div>
 
-              {/* Search Within Feeds */}
-              <div style={{ padding: "0.65rem 0.85rem 0.4rem" }}>
+              {/* Main Threat & Target Search (Controls Center Feed) */}
+              <div style={{ padding: "0.75rem 0.85rem 0.65rem", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
                 <div style={{ position: "relative" }}>
                   <input
                     type="text"
-                    value={sidebarFeedSearch}
-                    onChange={(e) => setSidebarFeedSearch(e.target.value)}
-                    placeholder={`Search ${UVI_PUBLIC_FEED_SOURCES.length} feeds (e.g. urlhaus, ghsl)...`}
+                    id="sidebar-main-search-input"
+                    value={searchQuery}
+                    onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
+                    placeholder="Search threats, CVEs, targets..."
                     style={{
                       width: "100%",
-                      padding: "0.38rem 0.65rem 0.38rem 1.75rem",
-                      background: "rgba(10, 14, 23, 0.75)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "6px",
+                      padding: "0.45rem 1.85rem 0.45rem 1.85rem",
+                      background: "rgba(10, 14, 23, 0.85)",
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      borderRadius: "7px",
                       color: "#F8FAFC",
-                      fontSize: "0.76rem",
-                      outline: "none"
+                      fontSize: "0.8rem",
+                      outline: "none",
+                      transition: "border-color 0.15s ease"
                     }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = "#3B82F6"}
+                    onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)"}
                   />
                   <span style={{
                     position: "absolute",
-                    left: "0.55rem",
+                    left: "0.6rem",
                     top: "50%",
                     transform: "translateY(-50%)",
                     color: "#64748B",
@@ -603,9 +593,9 @@ export default function ThreatFeedPage() {
                   }}>
                     🔍
                   </span>
-                  {sidebarFeedSearch && (
+                  {searchQuery && (
                     <button
-                      onClick={() => setSidebarFeedSearch("")}
+                      onClick={() => handleFilterChange(() => setSearchQuery(""))}
                       style={{
                         position: "absolute",
                         right: "0.45rem",
@@ -615,52 +605,15 @@ export default function ThreatFeedPage() {
                         border: "none",
                         color: "#94A3B8",
                         cursor: "pointer",
-                        fontSize: "0.75rem"
+                        fontSize: "0.75rem",
+                        padding: "2px"
                       }}
+                      title="Clear search"
                     >
                       ✕
                     </button>
                   )}
                 </div>
-              </div>
-
-              {/* Category Pills (Horizontal scrolling compact tags) */}
-              <div style={{
-                padding: "0 0.85rem 0.5rem",
-                display: "flex",
-                gap: "0.25rem",
-                overflowX: "auto",
-                borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-                paddingBottom: "0.5rem"
-              }}>
-                {FEED_CATEGORIES.map(cat => {
-                  const isActive = activeStripCategory === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveStripCategory(cat.id)}
-                      style={{
-                        padding: "0.2rem 0.45rem",
-                        borderRadius: "5px",
-                        background: isActive ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.03)",
-                        border: isActive ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.07)",
-                        color: isActive ? "#93C5FD" : "#94A3B8",
-                        fontSize: "0.7rem",
-                        fontWeight: isActive ? 700 : 500,
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.25rem"
-                      }}
-                      title={`${cat.label} (${cat.count})`}
-                    >
-                      <span>{cat.icon}</span>
-                      <span>{cat.id === "ALL" ? "All" : cat.id.split("&")[0].trim()}</span>
-                      <span style={{ fontSize: "0.62rem", opacity: 0.8 }}>({cat.count})</span>
-                    </button>
-                  );
-                })}
               </div>
 
               {/* Active Feed Filter Reset Banner (If a specific feed is active) */}
@@ -739,8 +692,8 @@ export default function ThreatFeedPage() {
                   </span>
                 </button>
 
-                {/* Filtered Feeds List */}
-                {filteredSidebarFeeds.map(feed => {
+                {/* Alphabetized Feeds List (A to Z) */}
+                {alphabetizedFeeds.map(feed => {
                   const isSelected = selectedSourceFeed === feed.id;
                   const recFormatted = feed.recordsIngested >= 1000000 
                     ? `${(feed.recordsIngested / 1000000).toFixed(1)}M` 
@@ -798,12 +751,6 @@ export default function ThreatFeedPage() {
                     </button>
                   );
                 })}
-
-                {filteredSidebarFeeds.length === 0 && (
-                  <div style={{ padding: "1.5rem 0.5rem", textAlign: "center", color: "#64748B", fontSize: "0.75rem" }}>
-                    No feeds match &quot;{sidebarFeedSearch}&quot;
-                  </div>
-                )}
               </div>
 
               {/* Sidebar Footer: Directory Modal Trigger */}
@@ -1077,68 +1024,15 @@ export default function ThreatFeedPage() {
       <div style={{
         background: "rgba(15, 20, 32, 0.8)",
         border: "1px solid rgba(255, 255, 255, 0.1)",
-        borderRadius: "14px",
-        padding: "1.25rem 1.5rem",
-        marginBottom: "1.5rem",
+        borderRadius: "12px",
+        padding: "1rem 1.25rem",
+        marginBottom: "1.25rem",
         display: "flex",
         flexDirection: "column",
-        gap: "1rem",
+        gap: "0.85rem",
         boxShadow: "0 6px 24px rgba(0, 0, 0, 0.3)"
       }}>
-        {/* Row 1: Search Input */}
-        <div style={{ position: "relative", width: "100%" }}>
-          <span style={{
-            position: "absolute",
-            left: "1rem",
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "var(--text-muted)",
-            pointerEvents: "none"
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </span>
-          <input
-            type="text"
-            id="uvi-search-input"
-            value={searchQuery}
-            onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
-            placeholder="Search across all 1,780+ threats by UVI ID, CVE, product, vendor, protocol, or CWE..."
-            style={{
-              width: "100%",
-              padding: "0.85rem 2.8rem 0.85rem 2.85rem",
-              background: "rgba(10, 14, 23, 0.9)",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              borderRadius: "10px",
-              color: "#F8FAFC",
-              fontSize: "0.95rem",
-              outline: "none"
-            }}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => handleFilterChange(() => setSearchQuery(""))}
-              style={{
-                position: "absolute",
-                right: "1rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                color: "var(--text-muted)",
-                cursor: "pointer",
-                fontSize: "1rem"
-              }}
-              title="Clear search"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-
-        {/* Row 2: Clean Dropdown Filter Controls */}
+        {/* Dropdown Filter Controls */}
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
           {/* Feed Source Dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "180px" }}>
@@ -1161,14 +1055,10 @@ export default function ThreatFeedPage() {
               }}
             >
               <option value="ALL">All Feeds ({UVI_PUBLIC_FEED_SOURCES.length} Sources)</option>
-              {FEED_CATEGORIES.filter(c => c.id !== "ALL").map(category => (
-                <optgroup key={category.id} label={`${category.icon} ${category.id}`}>
-                  {UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === category.id).map(feed => (
-                    <option key={feed.id} value={feed.id}>
-                      {feed.icon} {feed.name}
-                    </option>
-                  ))}
-                </optgroup>
+              {alphabetizedFeeds.map(feed => (
+                <option key={feed.id} value={feed.id}>
+                  {feed.icon} {feed.name}
+                </option>
               ))}
             </select>
           </div>
