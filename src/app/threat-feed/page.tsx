@@ -680,7 +680,16 @@ export default function ThreatFeedPage() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
-                    <span>🌐</span>
+                    <span style={{
+                      fontSize: "0.85rem",
+                      flexShrink: 0,
+                      width: "1.25rem",
+                      minWidth: "1.25rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      lineHeight: 1
+                    }}>🌐</span>
                     <span>All Feeds Combined</span>
                   </div>
                   <span style={{
@@ -724,7 +733,18 @@ export default function ThreatFeedPage() {
                       title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter UVI advisories`}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", overflow: "hidden" }}>
-                        <span style={{ fontSize: "0.85rem", flexShrink: 0 }}>{feed.icon}</span>
+                        <span style={{
+                          fontSize: "0.85rem",
+                          flexShrink: 0,
+                          width: "1.25rem",
+                          minWidth: "1.25rem",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          lineHeight: 1
+                        }}>
+                          {feed.icon}
+                        </span>
                         <span style={{
                           overflow: "hidden",
                           textOverflow: "ellipsis",

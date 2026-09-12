@@ -1125,7 +1125,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     refreshRate: "Continuous",
     coverage: "European Computer Incident Response Center (CIRCL) open threat sharing feeds standardizing cross-border incident response attributes.",
     homepageUrl: "https://www.circl.lu/doc/misp/feed-osint/",
-    icon: "🇪🇺",
+    icon: "🔗",
     recordsIngested: 3200000
   },
   {
