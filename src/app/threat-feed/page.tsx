@@ -36,6 +36,19 @@ export default function ThreatFeedPage() {
   const [feedDirectorySearch, setFeedDirectorySearch] = useState("");
   const [feedDirectoryCategory, setFeedDirectoryCategory] = useState<string>("ALL");
   const [activeStripCategory, setActiveStripCategory] = useState<string>("ALL");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [sidebarFeedSearch, setSidebarFeedSearch] = useState("");
+
+  const filteredSidebarFeeds = useMemo(() => {
+    return UVI_PUBLIC_FEED_SOURCES.filter(f => {
+      const matchesCat = activeStripCategory === "ALL" || f.category === activeStripCategory;
+      const matchesSearch = !sidebarFeedSearch.trim() || 
+        f.name.toLowerCase().includes(sidebarFeedSearch.toLowerCase()) || 
+        f.scope.toLowerCase().includes(sidebarFeedSearch.toLowerCase()) ||
+        f.category.toLowerCase().includes(sidebarFeedSearch.toLowerCase());
+      return matchesCat && matchesSearch;
+    });
+  }, [activeStripCategory, sidebarFeedSearch]);
 
   const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
     { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
@@ -242,7 +255,7 @@ export default function ThreatFeedPage() {
   const totalUpstreamRecords = UVI_PUBLIC_FEED_SOURCES.reduce((acc, f) => acc + f.recordsIngested, 0);
 
   return (
-    <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "2.5rem 2rem 5rem", width: "100%" }}>
+    <div style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%" }}>
       {/* Top Header Row: Title & Subtitle (Left) + Threat Total Tile (Right) */}
       <div style={{ 
         display: "flex", 
@@ -344,316 +357,620 @@ export default function ThreatFeedPage() {
         </div>
       </div>
 
-      {/* Enhanced Threat Feed Sources Network Strip */}
+      {/* Main Two-Column Layout: Threat Feeds Sidebar (Left) + Advisories Content (Right) */}
       <div style={{
-        background: "rgba(15, 23, 42, 0.65)",
-        border: "1px solid rgba(255, 255, 255, 0.09)",
-        borderRadius: "14px",
-        padding: "0.95rem 1.35rem",
-        marginBottom: "1.5rem",
         display: "flex",
-        flexDirection: "column",
-        gap: "0.85rem",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
+        gap: "1.5rem",
+        alignItems: "flex-start",
+        position: "relative"
       }}>
-        {/* Top controls: Category Switcher + Directory Modal Trigger */}
-        <div style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "space-between", 
-          gap: "1rem", 
-          flexWrap: "wrap",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-          paddingBottom: "0.75rem"
+        {/* ========================================================================= */}
+        {/* LEFT SIDEBAR: Threat Feed Sources Navigation                              */}
+        {/* ========================================================================= */}
+        <aside style={{
+          width: isSidebarCollapsed ? "56px" : "310px",
+          minWidth: isSidebarCollapsed ? "56px" : "310px",
+          maxWidth: isSidebarCollapsed ? "56px" : "310px",
+          position: "sticky",
+          top: "1rem",
+          height: "calc(100vh - 2rem)",
+          maxHeight: "calc(100vh - 2rem)",
+          background: "rgba(13, 19, 33, 0.85)",
+          backdropFilter: "blur(18px)",
+          border: "1px solid rgba(255, 255, 255, 0.09)",
+          borderRadius: "14px",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.35)",
+          display: "flex",
+          flexDirection: "column",
+          transition: "width 0.2s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.2s, max-width 0.2s",
+          overflow: "hidden",
+          zIndex: 20
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
-              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-                Upstream Feeds:
-              </span>
-              <span style={{
-                fontSize: "0.74rem",
-                fontWeight: 700,
-                padding: "0.15rem 0.5rem",
-                borderRadius: "4px",
-                background: "rgba(16, 185, 129, 0.15)",
-                color: "#34D399",
-                border: "1px solid rgba(16, 185, 129, 0.3)"
-              }}>
-                {UVI_PUBLIC_FEED_SOURCES.length} Feeds ({((totalUpstreamRecords) / 1000000).toFixed(1)}M+ Records)
-              </span>
-            </div>
+          {isSidebarCollapsed ? (
+            /* Collapsed Rail View */
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "0.75rem 0.35rem",
+              gap: "0.75rem",
+              height: "100%"
+            }}>
+              <button
+                onClick={() => setIsSidebarCollapsed(false)}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(59, 130, 246, 0.15)",
+                  border: "1px solid rgba(59, 130, 246, 0.35)",
+                  color: "#93C5FD",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                  fontSize: "0.85rem"
+                }}
+                title="Expand Threat Feeds Sidebar"
+              >
+                ▶
+              </button>
 
-            {/* Category Filter Pills */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
-              {FEED_CATEGORIES.map(cat => {
-                const isActive = activeStripCategory === cat.id;
-                return (
+              <div style={{
+                fontSize: "0.68rem",
+                fontWeight: 800,
+                color: "#34D399",
+                background: "rgba(16, 185, 129, 0.15)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                padding: "0.15rem 0.35rem",
+                borderRadius: "4px"
+              }}>
+                37
+              </div>
+
+              {/* Stack of Category Icons */}
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.4rem",
+                margin: "auto 0",
+                alignItems: "center"
+              }}>
+                {FEED_CATEGORIES.map(c => (
                   <button
-                    key={cat.id}
-                    onClick={() => setActiveStripCategory(cat.id)}
+                    key={c.id}
+                    onClick={() => {
+                      setActiveStripCategory(c.id);
+                      setIsSidebarCollapsed(false);
+                    }}
                     style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.3rem",
-                      padding: "0.22rem 0.6rem",
+                      width: "32px",
+                      height: "32px",
                       borderRadius: "6px",
-                      background: isActive ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                      border: isActive ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
-                      color: isActive ? "#93C5FD" : "#94A3B8",
-                      fontSize: "0.73rem",
-                      fontWeight: isActive ? 700 : 500,
+                      background: activeStripCategory === c.id ? "rgba(59, 130, 246, 0.3)" : "rgba(255, 255, 255, 0.04)",
+                      border: activeStripCategory === c.id ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.06)",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: "0.9rem",
+                      cursor: "pointer"
+                    }}
+                    title={`${c.label} (${c.count} feeds)`}
+                  >
+                    {c.icon}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setIsFeedDirectoryOpen(true)}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#CBD5E1",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                  fontSize: "1rem"
+                }}
+                title="View All 37 Feeds Directory Modal"
+              >
+                🌐
+              </button>
+            </div>
+          ) : (
+            /* Expanded Full Sidebar View */
+            <>
+              {/* Sidebar Header */}
+              <div style={{
+                padding: "0.9rem 1rem 0.75rem",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.4rem",
+                background: "rgba(15, 23, 42, 0.6)"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                    <span style={{ fontSize: "1rem" }}>🌐</span>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "0.02em" }}>
+                      Threat Feeds
+                    </span>
+                    <span style={{
+                      fontSize: "0.68rem",
+                      fontWeight: 800,
+                      padding: "0.1rem 0.45rem",
+                      borderRadius: "4px",
+                      background: "rgba(16, 185, 129, 0.15)",
+                      color: "#34D399",
+                      border: "1px solid rgba(16, 185, 129, 0.3)"
+                    }}>
+                      37 Live
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => setIsSidebarCollapsed(true)}
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "6px",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "#94A3B8",
+                      display: "grid",
+                      placeItems: "center",
                       cursor: "pointer",
+                      fontSize: "0.75rem",
                       transition: "all 0.15s ease"
                     }}
+                    title="Collapse Sidebar"
                   >
-                    <span>{cat.icon}</span>
-                    <span>{cat.label}</span>
-                    <span style={{ 
-                      fontSize: "0.65rem", 
-                      padding: "0.05rem 0.3rem", 
-                      borderRadius: "10px", 
-                      background: isActive ? "rgba(59, 130, 246, 0.3)" : "rgba(255, 255, 255, 0.06)",
-                      color: isActive ? "#FFFFFF" : "#64748B"
-                    }}>
-                      {cat.count}
-                    </span>
+                    ◀
                   </button>
-                );
-              })}
-            </div>
-          </div>
+                </div>
 
-          {/* Directory Button */}
-          <button
-            onClick={() => setIsFeedDirectoryOpen(true)}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.45rem",
-              padding: "0.35rem 0.85rem",
-              borderRadius: "8px",
-              background: "linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(99, 102, 241, 0.18))",
-              border: "1px solid rgba(99, 102, 241, 0.35)",
-              color: "#A5B4FC",
-              fontSize: "0.78rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              transition: "all 0.2s ease"
-            }}
-          >
-            <span>🌐</span>
-            <span>View All {UVI_PUBLIC_FEED_SOURCES.length} Feeds Directory</span>
-            <span>↗</span>
-          </button>
-        </div>
+                <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                  {((totalUpstreamRecords) / 1000000).toFixed(1)}M+ Synchronized Upstream Records
+                </div>
+              </div>
 
-        {/* Bottom row: Interactive Feed Chips */}
-        <div style={{ 
-          display: "flex", 
-          flexWrap: "wrap", 
-          gap: "0.4rem 0.55rem", 
-          alignItems: "center"
-        }}>
-          {selectedSourceFeed !== "ALL" && (
-            <button
-              onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
-              style={{
+              {/* Search Within Feeds */}
+              <div style={{ padding: "0.65rem 0.85rem 0.4rem" }}>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="text"
+                    value={sidebarFeedSearch}
+                    onChange={(e) => setSidebarFeedSearch(e.target.value)}
+                    placeholder="Search 37 feeds (e.g. urlhaus, tor)..."
+                    style={{
+                      width: "100%",
+                      padding: "0.38rem 0.65rem 0.38rem 1.75rem",
+                      background: "rgba(10, 14, 23, 0.75)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "6px",
+                      color: "#F8FAFC",
+                      fontSize: "0.76rem",
+                      outline: "none"
+                    }}
+                  />
+                  <span style={{
+                    position: "absolute",
+                    left: "0.55rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#64748B",
+                    fontSize: "0.75rem",
+                    pointerEvents: "none"
+                  }}>
+                    🔍
+                  </span>
+                  {sidebarFeedSearch && (
+                    <button
+                      onClick={() => setSidebarFeedSearch("")}
+                      style={{
+                        position: "absolute",
+                        right: "0.45rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        color: "#94A3B8",
+                        cursor: "pointer",
+                        fontSize: "0.75rem"
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Category Pills (Horizontal scrolling compact tags) */}
+              <div style={{
+                padding: "0 0.85rem 0.5rem",
+                display: "flex",
+                gap: "0.25rem",
+                overflowX: "auto",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+                paddingBottom: "0.5rem"
+              }}>
+                {FEED_CATEGORIES.map(cat => {
+                  const isActive = activeStripCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveStripCategory(cat.id)}
+                      style={{
+                        padding: "0.2rem 0.45rem",
+                        borderRadius: "5px",
+                        background: isActive ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.03)",
+                        border: isActive ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.07)",
+                        color: isActive ? "#93C5FD" : "#94A3B8",
+                        fontSize: "0.7rem",
+                        fontWeight: isActive ? 700 : 500,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.25rem"
+                      }}
+                      title={`${cat.label} (${cat.count})`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.id === "ALL" ? "All" : cat.id.split("&")[0].trim()}</span>
+                      <span style={{ fontSize: "0.62rem", opacity: 0.8 }}>({cat.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active Feed Filter Reset Banner (If a specific feed is active) */}
+              {selectedSourceFeed !== "ALL" && (
+                <div style={{
+                  margin: "0.4rem 0.85rem 0",
+                  padding: "0.4rem 0.65rem",
+                  background: "rgba(239, 68, 68, 0.12)",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "0.5rem"
+                }}>
+                  <div style={{ fontSize: "0.72rem", color: "#FCA5A5", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    Filtered: {UVI_PUBLIC_FEED_SOURCES.find(f => f.id === selectedSourceFeed)?.name || selectedSourceFeed}
+                  </div>
+                  <button
+                    onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
+                    style={{
+                      background: "rgba(239, 68, 68, 0.2)",
+                      border: "none",
+                      borderRadius: "4px",
+                      color: "#FFFFFF",
+                      fontSize: "0.68rem",
+                      fontWeight: 700,
+                      padding: "0.15rem 0.4rem",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    Reset ✕
+                  </button>
+                </div>
+              )}
+
+              {/* Scrollable Feed List */}
+              <div style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: "0.4rem 0.65rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem"
+              }}>
+                {/* Master "All Feeds" Item */}
+                <button
+                  onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "0.42rem 0.65rem",
+                    borderRadius: "6px",
+                    background: selectedSourceFeed === "ALL" ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.02)",
+                    border: selectedSourceFeed === "ALL" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.05)",
+                    color: selectedSourceFeed === "ALL" ? "#93C5FD" : "#E2E8F0",
+                    fontSize: "0.78rem",
+                    fontWeight: selectedSourceFeed === "ALL" ? 700 : 500,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.12s ease"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                    <span>🌐</span>
+                    <span>All Feeds Combined</span>
+                  </div>
+                  <span style={{
+                    fontSize: "0.68rem",
+                    fontWeight: 600,
+                    color: selectedSourceFeed === "ALL" ? "#60A5FA" : "#64748B"
+                  }}>
+                    2,671 recs
+                  </span>
+                </button>
+
+                {/* Filtered Feeds List */}
+                {filteredSidebarFeeds.map(feed => {
+                  const isSelected = selectedSourceFeed === feed.id;
+                  const recFormatted = feed.recordsIngested >= 1000000 
+                    ? `${(feed.recordsIngested / 1000000).toFixed(1)}M` 
+                    : feed.recordsIngested >= 1000 
+                    ? `${Math.round(feed.recordsIngested / 1000)}k` 
+                    : `${feed.recordsIngested}`;
+
+                  return (
+                    <button
+                      key={feed.id}
+                      onClick={() => handleFilterChange(() => setSelectedSourceFeed(isSelected ? "ALL" : feed.id))}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "0.45rem",
+                        padding: "0.42rem 0.6rem",
+                        borderRadius: "6px",
+                        background: isSelected ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.025)",
+                        border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.05)",
+                        color: isSelected ? "#93C5FD" : "#CBD5E1",
+                        fontSize: "0.76rem",
+                        fontWeight: isSelected ? 700 : 500,
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "all 0.12s ease"
+                      }}
+                      title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter UVI advisories`}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", overflow: "hidden" }}>
+                        <span style={{ fontSize: "0.85rem", flexShrink: 0 }}>{feed.icon}</span>
+                        <span style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.75rem"
+                        }}>
+                          {feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "").replace(" Advisories", "")}
+                        </span>
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexShrink: 0 }}>
+                        <span style={{
+                          fontSize: "0.64rem",
+                          padding: "0.08rem 0.32rem",
+                          borderRadius: "4px",
+                          background: isSelected ? "rgba(59, 130, 246, 0.35)" : "rgba(255, 255, 255, 0.06)",
+                          color: isSelected ? "#FFFFFF" : "#64748B",
+                          fontWeight: 600
+                        }}>
+                          {recFormatted}
+                        </span>
+                        {isSelected && <span style={{ color: "#60A5FA", fontSize: "0.65rem" }}>●</span>}
+                      </div>
+                    </button>
+                  );
+                })}
+
+                {filteredSidebarFeeds.length === 0 && (
+                  <div style={{ padding: "1.5rem 0.5rem", textAlign: "center", color: "#64748B", fontSize: "0.75rem" }}>
+                    No feeds match &quot;{sidebarFeedSearch}&quot;
+                  </div>
+                )}
+              </div>
+
+              {/* Sidebar Footer: Directory Modal Trigger */}
+              <div style={{
+                padding: "0.65rem 0.85rem",
+                borderTop: "1px solid rgba(255, 255, 255, 0.07)",
+                background: "rgba(10, 14, 23, 0.6)"
+              }}>
+                <button
+                  onClick={() => setIsFeedDirectoryOpen(true)}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.4rem",
+                    padding: "0.45rem",
+                    borderRadius: "6px",
+                    background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15))",
+                    border: "1px solid rgba(99, 102, 241, 0.3)",
+                    color: "#A5B4FC",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span>🌐</span>
+                  <span>View All 37 Feeds Directory</span>
+                  <span>↗</span>
+                </button>
+              </div>
+            </>
+          )}
+        </aside>
+
+        {/* ========================================================================= */}
+        {/* RIGHT MAIN COLUMN: Triage Toolbar, Filters, Advisories Table/Cards        */}
+        {/* ========================================================================= */}
+        <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+          {/* Executive Rating System Mode Toggle & Quick View Toolbar */}
+          <div style={{
+            background: "rgba(15, 23, 42, 0.65)",
+            border: "1px solid rgba(255, 255, 255, 0.09)",
+            borderRadius: "14px",
+            padding: "0.85rem 1.25rem",
+            marginBottom: "1rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+            flexWrap: "wrap",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
+                Triage Methodology:
+              </span>
+
+              {/* Segmented Mode Switcher */}
+              <div style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.22rem 0.65rem",
-                borderRadius: "6px",
-                background: "rgba(239, 68, 68, 0.15)",
-                border: "1px solid rgba(239, 68, 68, 0.35)",
-                color: "#FCA5A5",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-              title="Clear active feed filter"
-            >
-              <span>✕</span>
-              <span>Reset to All Feeds</span>
-            </button>
-          )}
+                background: "rgba(10, 14, 23, 0.9)",
+                padding: "0.25rem",
+                borderRadius: "10px",
+                border: "1px solid rgba(255, 255, 255, 0.1)"
+              }}>
+                <button
+                  onClick={() => handleFilterChange(() => setRatingMode("observational"))}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    padding: "0.45rem 0.95rem",
+                    borderRadius: "8px",
+                    border: ratingMode === "observational" ? "1px solid #3B82F6" : "1px solid transparent",
+                    background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.25)" : "transparent",
+                    color: ratingMode === "observational" ? "#93C5FD" : "#94A3B8",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
+                  title="Assess all threats through qualitative Operational Domains, Weaponization Stages, and Exposure Horizons without misleading numbers"
+                >
+                  <span>🛡️</span>
+                  <span>Behavioral Observational Ratings</span>
+                  <span style={{
+                    fontSize: "0.65rem",
+                    background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.05)",
+                    color: ratingMode === "observational" ? "#FFFFFF" : "#64748B",
+                    padding: "0.1rem 0.35rem",
+                    borderRadius: "4px",
+                    fontWeight: 600
+                  }}>
+                    NON-QUANTITATIVE
+                  </span>
+                </button>
 
-          {(activeStripCategory === "ALL" 
-            ? UVI_PUBLIC_FEED_SOURCES 
-            : UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === activeStripCategory)
-          ).map((feed) => {
-            const isSelected = selectedSourceFeed === feed.id;
-            return (
+                <button
+                  onClick={() => handleFilterChange(() => setRatingMode("classic"))}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    padding: "0.45rem 0.95rem",
+                    borderRadius: "8px",
+                    border: ratingMode === "classic" ? "1px solid #F59E0B" : "1px solid transparent",
+                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
+                    color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
+                  title="Assess threats using conventional quantitative CVSS v3.1 base score, severity levels, and metric vectors"
+                >
+                  <span>📊</span>
+                  <span>Classic CVSS Scoring</span>
+                  <span style={{
+                    fontSize: "0.65rem",
+                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.35)" : "rgba(255, 255, 255, 0.05)",
+                    color: ratingMode === "classic" ? "#FFFFFF" : "#64748B",
+                    padding: "0.1rem 0.35rem",
+                    borderRadius: "4px",
+                    fontWeight: 600
+                  }}>
+                    CVSS 3.1
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* View Mode Switcher: Table vs Cards + Feeds Sidebar Toggle */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
               <button
-                key={feed.id}
-                onClick={() => handleFilterChange(() => setSelectedSourceFeed(isSelected ? "ALL" : feed.id))}
+                onClick={() => setIsSidebarCollapsed(prev => !prev)}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.35rem",
-                  padding: "0.22rem 0.6rem",
-                  borderRadius: "6px",
-                  background: isSelected ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                  border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
-                  color: isSelected ? "#93C5FD" : "#CBD5E1",
-                  fontSize: "0.76rem",
-                  fontWeight: isSelected ? 700 : 500,
+                  gap: "0.4rem",
+                  padding: "0.38rem 0.75rem",
+                  borderRadius: "8px",
+                  background: isSidebarCollapsed ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.04)",
+                  border: isSidebarCollapsed ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
+                  color: isSidebarCollapsed ? "#93C5FD" : "#CBD5E1",
+                  fontSize: "0.78rem",
+                  fontWeight: 600,
                   cursor: "pointer",
                   transition: "all 0.15s ease"
                 }}
-                title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter UVI by this source`}
+                title={isSidebarCollapsed ? "Expand Threat Feeds Sidebar" : "Collapse Threat Feeds Sidebar to Maximize Table Width"}
               >
-                <span style={{ fontSize: "0.85rem" }}>{feed.icon}</span>
-                <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "").replace(" Advisories", "")}</span>
-                {isSelected && <span style={{ fontSize: "0.7rem", color: "#60A5FA" }}>●</span>}
+                <span>{isSidebarCollapsed ? "⚡" : "◀"}</span>
+                <span>{isSidebarCollapsed ? "Show Feeds (37)" : "Hide Sidebar"}</span>
               </button>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Executive Rating System Mode Toggle & Quick View Toolbar */}
-      <div style={{
-        background: "rgba(15, 23, 42, 0.65)",
-        border: "1px solid rgba(255, 255, 255, 0.09)",
-        borderRadius: "14px",
-        padding: "0.85rem 1.25rem",
-        marginBottom: "1rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "1rem",
-        flexWrap: "wrap",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-            Triage Methodology:
-          </span>
-
-          {/* Segmented Mode Switcher */}
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            background: "rgba(10, 14, 23, 0.9)",
-            padding: "0.25rem",
-            borderRadius: "10px",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
-            <button
-              onClick={() => handleFilterChange(() => setRatingMode("observational"))}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.45rem",
-                padding: "0.45rem 0.95rem",
-                borderRadius: "8px",
-                border: ratingMode === "observational" ? "1px solid #3B82F6" : "1px solid transparent",
-                background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.25)" : "transparent",
-                color: ratingMode === "observational" ? "#93C5FD" : "#94A3B8",
-                fontSize: "0.82rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.15s ease"
-              }}
-              title="Assess all threats (CVEs, non-CVE malware, informational disclosures) through qualitative Operational Domains, Weaponization Stages, and Exposure Horizons without misleading numbers"
-            >
-              <span>🛡️</span>
-              <span>Behavioral Observational Ratings</span>
-              <span style={{
-                fontSize: "0.65rem",
-                background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.05)",
-                color: ratingMode === "observational" ? "#FFFFFF" : "#64748B",
-                padding: "0.1rem 0.35rem",
-                borderRadius: "4px",
-                fontWeight: 600
-              }}>
-                NON-QUANTITATIVE
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
+                Layout:
               </span>
-            </button>
-
-            <button
-              onClick={() => handleFilterChange(() => setRatingMode("classic"))}
-              style={{
-                display: "flex",
+              <div style={{
+                display: "inline-flex",
                 alignItems: "center",
-                gap: "0.45rem",
-                padding: "0.45rem 0.95rem",
+                background: "rgba(10, 14, 23, 0.9)",
+                padding: "0.2rem",
                 borderRadius: "8px",
-                border: ratingMode === "classic" ? "1px solid #F59E0B" : "1px solid transparent",
-                background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
-                color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
-                fontSize: "0.82rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.15s ease"
-              }}
-              title="Assess threats using conventional quantitative CVSS v3.1 base score, severity levels, and metric vectors"
-            >
-              <span>📊</span>
-              <span>Classic CVSS Scoring</span>
-              <span style={{
-                fontSize: "0.65rem",
-                background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.35)" : "rgba(255, 255, 255, 0.05)",
-                color: ratingMode === "classic" ? "#FFFFFF" : "#64748B",
-                padding: "0.1rem 0.35rem",
-                borderRadius: "4px",
-                fontWeight: 600
+                border: "1px solid rgba(255, 255, 255, 0.1)"
               }}>
-                CVSS 3.1
-              </span>
-            </button>
+                <button
+                  onClick={() => setViewMode("table")}
+                  style={{
+                    padding: "0.35rem 0.7rem",
+                    borderRadius: "6px",
+                    border: viewMode === "table" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                    background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                    color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    cursor: "pointer"
+                  }}
+                  title="Consolidated Table View with locked sticky header"
+                >
+                  📋 Table
+                </button>
+                <button
+                  onClick={() => setViewMode("cards")}
+                  style={{
+                    padding: "0.35rem 0.7rem",
+                    borderRadius: "6px",
+                    border: viewMode === "cards" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                    background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                    color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    cursor: "pointer"
+                  }}
+                  title="Wiki Card Grid View"
+                >
+                  🎴 Cards
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* View Mode Switcher: Table vs Cards */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-            Layout:
-          </span>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            background: "rgba(10, 14, 23, 0.9)",
-            padding: "0.2rem",
-            borderRadius: "8px",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
-            <button
-              onClick={() => setViewMode("table")}
-              style={{
-                padding: "0.35rem 0.7rem",
-                borderRadius: "6px",
-                border: viewMode === "table" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-              title="Consolidated Table View with locked sticky header"
-            >
-              📋 Table
-            </button>
-            <button
-              onClick={() => setViewMode("cards")}
-              style={{
-                padding: "0.35rem 0.7rem",
-                borderRadius: "6px",
-                border: viewMode === "cards" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-              title="Wiki Card Grid View"
-            >
-              🎴 Cards
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Unified Filter Control Bar */}
       <div style={{
@@ -1852,6 +2169,8 @@ export default function ThreatFeedPage() {
             Last »
           </button>
         </div>
+      </div>
+        </main>
       </div>
 
 
