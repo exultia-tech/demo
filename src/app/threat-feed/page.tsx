@@ -1388,30 +1388,6 @@ export default function ThreatFeedPage() {
                               </button>
                             </div>
 
-                            {record.legacyUviId && (
-                              <div style={{ display: "flex", alignItems: "center" }}>
-                                <span 
-                                  style={{
-                                    fontSize: "0.68rem",
-                                    fontFamily: "monospace",
-                                    color: "#94A3B8",
-                                    background: "rgba(255, 255, 255, 0.04)",
-                                    padding: "0.1rem 0.35rem",
-                                    borderRadius: "3px",
-                                    border: "1px solid rgba(255, 255, 255, 0.07)",
-                                    display: "inline-block",
-                                    maxWidth: "195px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }} 
-                                  title={`Legacy Reference: ${record.legacyUviId}`}
-                                >
-                                  Ref: {record.legacyUviId}
-                                </span>
-                              </div>
-                            )}
-
                             {/* CVE list tags or Non-CVE badge */}
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
                               {record.cveList.length > 0 ? (
@@ -1691,22 +1667,6 @@ export default function ThreatFeedPage() {
                         >
                           {copiedUviId === record.uviId ? "✓" : "📋"}
                         </button>
-                        {record.legacyUviId && (
-                          <span 
-                            style={{
-                              fontSize: "0.68rem",
-                              fontFamily: "monospace",
-                              color: "#94A3B8",
-                              background: "rgba(255, 255, 255, 0.04)",
-                              padding: "0.1rem 0.35rem",
-                              borderRadius: "3px",
-                              border: "1px solid rgba(255, 255, 255, 0.07)"
-                            }}
-                            title={`Legacy Identifier / Upstream Reference: ${record.legacyUviId}`}
-                          >
-                            Ref: {record.legacyUviId}
-                          </span>
-                        )}
                       </div>
 
                       {ratingMode === "observational" ? (
@@ -2066,21 +2026,6 @@ export default function ThreatFeedPage() {
                      selectedAdvisory.cveList.length === 0 ? "Supply Chain Finding" :
                      selectedAdvisory.cveList[0] || "CVE Advisory"}
                   </span>
-
-                  {selectedAdvisory.legacyUviId && (
-                    <span style={{
-                      fontSize: "0.72rem",
-                      fontWeight: 600,
-                      padding: "0.2rem 0.5rem",
-                      borderRadius: "4px",
-                      background: "rgba(148, 163, 184, 0.12)",
-                      color: "#CBD5E1",
-                      border: "1px solid rgba(148, 163, 184, 0.25)",
-                      fontFamily: "monospace"
-                    }} title="Original cross-reference or legacy identifier">
-                      Ref: {selectedAdvisory.legacyUviId}
-                    </span>
-                  )}
                 </div>
 
                 {/* Header Actions */}
