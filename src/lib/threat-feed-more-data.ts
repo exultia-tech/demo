@@ -1691,7 +1691,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 11. QakBot & Cobalt Strike Multi-C2 Infiltration Campaign (URLhaus, ThreatFox, Feodo, MontySecurity C2, GreyNoise, OTX)
   {
-    uviId: "UVI-MAL-2025-0104",
+    uviId: "UVI-MAL-2025-0111",
     title: "QakBot & Cobalt Strike Multi-Feed C2 Infiltration & Stage 2 Beaconing Campaign",
     headline: "Coordinated malware delivery campaign using weaponized ZIP attachments and DLL sideloading to establish resilient Cobalt Strike and QakBot C2 beacon channels.",
     summary: "Multi-feed intelligence from URLhaus, ThreatFox, Feodo Tracker, and MontySecurity C2-Tracker identified active QakBot and Cobalt Strike payload distribution networks deploying DLL sideloading against developer workstation utilities and CI/CD environments.",
