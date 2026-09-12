@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import VirtualCisoModal from "@/components/VirtualCisoModal";
+import VirtualCisoView from "@/components/VirtualCisoView";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -97,21 +97,18 @@ export default function ThreatFeedPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLiveSynced, setHasLiveSynced] = useState<boolean>(false);
 
-  // Inspection Dossier Modal State
+  // Inspection Dossier Modal State (Unified Threat Dossier & AI Explain Dialog)
   const [selectedAdvisory, setSelectedAdvisory] = useState<UviAdvisoryRecord | null>(null);
-  const [dossierTab, setDossierTab] = useState<"overview" | "workstation" | "sources">("overview");
+  const [dossierTab, setDossierTab] = useState<"overview" | "explain" | "workstation" | "sources">("overview");
   const [copiedUviId, setCopiedUviId] = useState<string | null>(null);
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
 
-  // Virtual CISO AI Explanation Modal State
-  const [virtualCisoAdvisory, setVirtualCisoAdvisory] = useState<UviAdvisoryRecord | null>(null);
-  const [isVirtualCisoOpen, setIsVirtualCisoOpen] = useState(false);
-
-  const handleOpenVirtualCiso = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
+  // Single unified handler for opening the dossier modal directly into the Explain tab
+  const handleOpenExplain = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setVirtualCisoAdvisory(record);
-    setIsVirtualCisoOpen(true);
+    setSelectedAdvisory(record);
+    setDossierTab("explain");
   };
 
   // Available operational domains list
@@ -1450,10 +1447,10 @@ export default function ThreatFeedPage() {
                               )}
                             </div>
 
-                            {/* Virtual CISO "Explain with AI" button underneath identifiers */}
+                            {/* Explain trigger button underneath identifiers */}
                             <div style={{ marginTop: "0.35rem" }}>
                               <button
-                                onClick={(e) => handleOpenVirtualCiso(record, e)}
+                                onClick={(e) => handleOpenExplain(record, e)}
                                 style={{
                                   display: "inline-flex",
                                   alignItems: "center",
@@ -1482,10 +1479,10 @@ export default function ThreatFeedPage() {
                                   e.currentTarget.style.color = "#DDD6FE";
                                   e.currentTarget.style.boxShadow = "0 0 10px rgba(139, 92, 246, 0.15)";
                                 }}
-                                title="Virtual CISO: Plain-English explanation & technical code remediation"
+                                title="Explain: Plain-English explanation, analogy & code remediation"
                               >
                                 <span>✨</span>
-                                <span>Explain with AI</span>
+                                <span>Explain</span>
                               </button>
                             </div>
                           </div>
@@ -1855,7 +1852,7 @@ export default function ThreatFeedPage() {
 
                     <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                       <button
-                        onClick={(e) => handleOpenVirtualCiso(record, e)}
+                        onClick={(e) => handleOpenExplain(record, e)}
                         style={{
                           display: "inline-flex",
                           alignItems: "center",
@@ -1881,10 +1878,10 @@ export default function ThreatFeedPage() {
                           e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.5)";
                           e.currentTarget.style.color = "#DDD6FE";
                         }}
-                        title="Virtual CISO: Plain-English explanation & code remediation"
+                        title="Explain: Plain-English explanation & code remediation"
                       >
                         <span>✨</span>
-                        <span>Explain with AI</span>
+                        <span>Explain</span>
                       </button>
 
                       <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 600 }}>
@@ -2125,12 +2122,14 @@ export default function ThreatFeedPage() {
                 {/* Header Actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <button
-                    onClick={() => handleOpenVirtualCiso(selectedAdvisory)}
+                    onClick={() => setDossierTab("explain")}
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "0.35rem",
-                      background: "linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(79, 70, 229, 0.3) 100%)",
+                      background: dossierTab === "explain" 
+                        ? "linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(79, 70, 229, 0.5) 100%)"
+                        : "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(79, 70, 229, 0.25) 100%)",
                       border: "1px solid rgba(167, 139, 250, 0.55)",
                       color: "#EDE9FE",
                       padding: "0.26rem 0.7rem",
@@ -2140,10 +2139,10 @@ export default function ThreatFeedPage() {
                       fontWeight: 700,
                       boxShadow: "0 0 10px rgba(139, 92, 246, 0.2)"
                     }}
-                    title="Virtual CISO: Plain-English explanation and code remediation"
+                    title="Switch to AI Explain tab"
                   >
                     <span>✨</span>
-                    <span>Explain with AI</span>
+                    <span>Explain</span>
                   </button>
 
                   <button
@@ -2234,7 +2233,7 @@ export default function ThreatFeedPage() {
               )}
             </div>
 
-            {/* Streamlined Tabs Navigation (3 Clean Tabs) */}
+            {/* Unified Tabs Navigation (Overview, Explain, Workstation, Sources) */}
             <div style={{
               display: "flex",
               borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
@@ -2244,6 +2243,7 @@ export default function ThreatFeedPage() {
             }}>
               {[
                 { id: "overview", label: "Overview & Mechanism" },
+                { id: "explain", label: "✨ Explain" },
                 { id: "workstation", label: "Workstation & Build Impact" },
                 { 
                   id: "sources", 
@@ -2741,6 +2741,11 @@ export default function ThreatFeedPage() {
                   )}
                 </div>
               )}
+
+              {/* TAB 4: EXPLAIN (INTEGRATED VIRTUAL CISO ADVISOR) */}
+              {dossierTab === "explain" && (
+                <VirtualCisoView advisory={selectedAdvisory} />
+              )}
             </div>
 
             {/* Streamlined Modal Footer */}
@@ -3201,13 +3206,6 @@ export default function ThreatFeedPage() {
           </div>
         </div>
       )}
-
-      {/* VIRTUAL CISO AI EXPLANATION MODAL */}
-      <VirtualCisoModal
-        advisory={virtualCisoAdvisory}
-        isOpen={isVirtualCisoOpen}
-        onClose={() => setIsVirtualCisoOpen(false)}
-      />
     </div>
   );
 }
