@@ -689,7 +689,8 @@ export type FeedCategory =
   | "Phishing & Fraud"
   | "IP Reputation, Scanners & Network Telemetry"
   | "Vulnerabilities & Exploitation"
-  | "Multi-Indicator Hubs & Aggregators";
+  | "Multi-Indicator Hubs & Aggregators"
+  | "Research, Bug Bounty & Community Disclosures";
 
 export interface PublicFeedSource {
   id: string;
@@ -1244,6 +1245,269 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     homepageUrl: "https://arxiv.org/corr/cs/CR",
     icon: "🎓",
     recordsIngested: 2800
+  },
+  // ==========================================
+  // 6. Research, Bug Bounty & Community Disclosures
+  // ==========================================
+  {
+    id: "hackerone_hacktivity",
+    name: "HackerOne Hacktivity",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Public Bug Bounty Disclosures, Triaged Exploit Reports & Payouts",
+    access: "Public Feed / GraphQL API / Community",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Real-time stream of disclosed security vulnerabilities, triaged proof-of-concepts, and bug bounty payouts awarded across global tech programs on HackerOne.",
+    homepageUrl: "https://hackerone.com/hacktivity",
+    icon: "🎯",
+    recordsIngested: 84000
+  },
+  {
+    id: "bugcrowd_crowdstream",
+    name: "Bugcrowd CrowdStream",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Crowdsourced Vulnerability Disclosures & Hall of Fame Validations",
+    access: "Public Stream / Webhook",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Crowdsourced vulnerability disclosure stream validating critical, high, and medium severity findings across enterprise bug bounty programs.",
+    homepageUrl: "https://bugcrowd.com/crowdstream",
+    icon: "🐛",
+    recordsIngested: 46000
+  },
+  {
+    id: "immunefi_disclosures",
+    name: "Immunefi Vulnerability Disclosures",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Web3 Smart Contract Exploits, DeFi Protocols & Crypto Bounty Writeups",
+    access: "Public Disclosures / Medium / API",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Leading Web3 bug bounty platform publishing in-depth postmortems and architectural teardowns of multi-million dollar smart contract and protocol vulnerabilities.",
+    homepageUrl: "https://medium.com/immunefi",
+    icon: "🛡️",
+    recordsIngested: 12500
+  },
+  {
+    id: "pentester_land",
+    name: "Pentester Land Writeups",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Curated Bug Bounty & Penetration Testing Writeup Archive (Browser & JSON)",
+    access: "Public JSON Feed / Browser Archive",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Authoritative machine-readable (writeups.json) and web catalog of community bug bounty writeups, exploit chains, and offensive techniques categorized by vulnerability type.",
+    homepageUrl: "https://pentester.land/writeups/",
+    icon: "📖",
+    recordsIngested: 18500
+  },
+  {
+    id: "disclose_io",
+    name: "disclose.io diodb",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Standardized Vulnerability Disclosure Policies (VDPs) & Bug Bounty Targets",
+    access: "Public Git Repository / JSON Dataset",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Open-source standardized directory of authorized vulnerability disclosure policies, safe harbor commitments, and program contacts for ethical hackers.",
+    homepageUrl: "https://github.com/disclose/diodb",
+    icon: "🌐",
+    recordsIngested: 32000
+  },
+  {
+    id: "bugbounty_disclosed_reports",
+    name: "Bug Bounty Disclosed Reports",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Curated HackerOne & Bugcrowd Disclosed Reports Corpus",
+    access: "Public GitHub Dataset / JSON Corpus",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Open GitHub repository consolidating publicly disclosed bug bounty reports with structured vulnerability taxonomy, impact metrics, and payout metadata.",
+    homepageUrl: "https://github.com/bugbountywithmarco/bugbounty-disclosed-reports",
+    icon: "📂",
+    recordsIngested: 21000
+  },
+  {
+    id: "reddit_bugbounty",
+    name: "r/bugbounty (Reddit)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Hunter Methodologies, Program Nuances, Scope Analysis & Reconnaissance",
+    access: "Public Reddit Community API",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Practitioner community sharing active recon workflows, program scope analysis, triage etiquette, and emerging web exploit vectors.",
+    homepageUrl: "https://www.reddit.com/r/bugbounty/",
+    icon: "🤖",
+    recordsIngested: 75000
+  },
+  {
+    id: "bugcrowd_discord",
+    name: "Bugcrowd Discord Community",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Real-time Hunter Collaboration, Tooling Demos & Live Program Drops",
+    access: "Community Discord",
+    status: "Active",
+    refreshRate: "Realtime",
+    coverage: "Real-time researcher channels for collaborative exploit reproduction, live hacking events, and triage discussions.",
+    homepageUrl: "https://discord.gg/bugcrowd",
+    icon: "💬",
+    recordsIngested: 15000
+  },
+  {
+    id: "bounty_world_discord",
+    name: "Bounty World Discord",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Offensive Research, Private Bounty Discussions & Exploit Chains",
+    access: "Community Discord",
+    status: "Active",
+    refreshRate: "Realtime",
+    coverage: "Global community of ethical hackers exchanging zero-day triage tips, automation tooling, and private program bypasses.",
+    homepageUrl: "https://discord.gg/bugbounty",
+    icon: "🌍",
+    recordsIngested: 12000
+  },
+  {
+    id: "reddit_netsec",
+    name: "r/netsec (Reddit Technical)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Peer-Reviewed Exploits, PoCs, Kernel Flaws & Academic Security",
+    access: "Public Reddit Community API",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Rigorous technical forum featuring peer-reviewed zero-day advisories, reverse engineering teardowns, exploit PoCs, and binary exploitation whitepapers.",
+    homepageUrl: "https://www.reddit.com/r/netsec/",
+    icon: "🔬",
+    recordsIngested: 92000
+  },
+  {
+    id: "reddit_cybersecurity",
+    name: "r/cybersecurity (Reddit)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Enterprise SecOps, Incident Response & Threat Landscape Discussions",
+    access: "Public Reddit Community API",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Industry forum discussing enterprise breach investigations, threat actor tradecraft, identity architecture, and SOC engineering.",
+    homepageUrl: "https://www.reddit.com/r/cybersecurity/",
+    icon: "🛡️",
+    recordsIngested: 140000
+  },
+  {
+    id: "reddit_blueteamsec",
+    name: "r/blueteamsec (Reddit)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Defensive Engineering, Sigma Rules, YARA Detections & Forensic Artifacts",
+    access: "Public Reddit Community API",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Curated defensive repository of Sigma detection rules, YARA hunting signatures, forensic artifacts, and mitigation playbooks.",
+    homepageUrl: "https://www.reddit.com/r/blueteamsec/",
+    icon: "🟦",
+    recordsIngested: 38000
+  },
+  {
+    id: "sec_stackexchange",
+    name: "InfoSec Stack Exchange",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Applied Cryptography, Threat Modeling & Protocol Security Q&A",
+    access: "Public Stack Exchange API",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Practitioner Q&A encyclopedia addressing cryptographic algorithm weaknesses, threat modeling frameworks, and secure systems architecture.",
+    homepageUrl: "https://security.stackexchange.com/",
+    icon: "💡",
+    recordsIngested: 110000
+  },
+  {
+    id: "wwhf_discord",
+    name: "Wild West Hackin' Fest Community",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Red/Blue Team Tradecraft, Active Defense & Live Threat Emulation",
+    access: "Community Discord",
+    status: "Active",
+    refreshRate: "Realtime",
+    coverage: "Active hands-on community hosted by Black Hills InfoSec sharing adversarial emulation tips, bypasses, and defensive detections.",
+    homepageUrl: "https://discord.gg/wwhf",
+    icon: "🤠",
+    recordsIngested: 18000
+  },
+  {
+    id: "hacker_news_infosec",
+    name: "Hacker News (InfoSec / Exploits)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Software Supply Chain, Emerging Zero-Days & Infrastructure Chatter",
+    access: "Public Algolia API / RSS",
+    status: "Realtime",
+    refreshRate: "Every 15 Minutes",
+    coverage: "Real-time discussions and early breaking alerts on software vulnerabilities, open-source compromises, and cloud infrastructure failures.",
+    homepageUrl: "https://news.ycombinator.com/",
+    icon: "📰",
+    recordsIngested: 165000
+  },
+  {
+    id: "krebs_on_security",
+    name: "Krebs on Security",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Cybercrime Syndicates, Access Brokers & Critical Infrastructure Breaches",
+    access: "Public Investigative Reporting / RSS",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Investigative journalism tracking financial crime rings, ransomware extortion cartels, ATM malware, and initial access broker networks.",
+    homepageUrl: "https://krebsonsecurity.com/",
+    icon: "🕵️",
+    recordsIngested: 8500
+  },
+  {
+    id: "schneier_on_security",
+    name: "Schneier on Security",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Cryptography, Systemic Trust, Security Economics & Threat Modeling",
+    access: "Public Essays / Blog / RSS",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Critical commentary by Bruce Schneier on cryptographic standards, state surveillance, algorithmic governance, and societal security.",
+    homepageUrl: "https://www.schneier.com/",
+    icon: "🔐",
+    recordsIngested: 9200
+  },
+  {
+    id: "portswigger_research",
+    name: "PortSwigger Research",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Web Application Exploits, HTTP Request Smuggling & Cache Poisoning",
+    access: "Public Research Publications / GitHub",
+    status: "Active",
+    refreshRate: "Monthly",
+    coverage: "Groundbreaking offensive research by James Kettle and the PortSwigger team uncovering novel HTTP request smuggling, cache deception, and web protocol attacks.",
+    homepageUrl: "https://portswigger.net/research",
+    icon: "🗡️",
+    recordsIngested: 6200
+  },
+  {
+    id: "unit42_research",
+    name: "Unit 42 (Palo Alto Networks)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Nation-State APT Campaigns, Cloud Escapes & Zero-Day Threat Briefs",
+    access: "Public Threat Briefs / IoC Feeds",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Palo Alto Networks threat research analyzing nation-state espionage campaigns, cloud container escapes, and ransomware syndicates.",
+    homepageUrl: "https://unit42.paloaltonetworks.com/",
+    icon: "🌲",
+    recordsIngested: 28000
+  },
+  {
+    id: "microsoft_threat_intel",
+    name: "Microsoft Threat Intelligence (MSTI)",
+    category: "Research, Bug Bounty & Community Disclosures",
+    scope: "Global Nation-State Actors (Storm/Midnight Blizzard) & OS Vulnerabilities",
+    access: "Public Threat Intelligence Bulletins",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Global telemetry tracking advanced persistent threat actors, identity infrastructure compromises, cloud tenant takeovers, and Windows kernel exploits.",
+    homepageUrl: "https://www.microsoft.com/en-us/security/blog/topic/threat-intelligence/",
+    icon: "🪟",
+    recordsIngested: 35000
   }
 ];
 

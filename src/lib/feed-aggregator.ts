@@ -35,9 +35,34 @@ let cachedAggregatedAdvisories: UviAdvisoryRecord[] | null = null;
 let lastCacheTime = 0;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour cache
 
+export interface GlobalRegistryMetrics {
+  totalConsolidatedCount: number;
+  directBuildImpactCount: number;
+  nonCveThreatsCount: number;
+  informationalDisclosuresCount: number;
+}
+
+let cachedGlobalMetrics: GlobalRegistryMetrics | null = null;
+
 export function invalidateAggregatorCache(): void {
   cachedAggregatedAdvisories = null;
+  cachedGlobalMetrics = null;
   lastCacheTime = 0;
+}
+
+export async function getGlobalRegistryMetrics(): Promise<GlobalRegistryMetrics> {
+  if (cachedGlobalMetrics) {
+    return cachedGlobalMetrics;
+  }
+  const all = await getAggregatedUviAdvisories();
+  if (cachedGlobalMetrics) return cachedGlobalMetrics;
+  cachedGlobalMetrics = {
+    totalConsolidatedCount: all.length,
+    directBuildImpactCount: all.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
+    nonCveThreatsCount: all.filter(a => a.cveList.length === 0 && a.disclosureType !== 'INFORMATIONAL_DISCLOSURE').length,
+    informationalDisclosuresCount: all.filter(a => a.disclosureType === 'INFORMATIONAL_DISCLOSURE').length,
+  };
+  return cachedGlobalMetrics;
 }
 
 function classifyDomain(vendor: string, product: string, desc: string): DomainCategory {
@@ -1687,6 +1712,12 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
 
   const standardized = standardizeUviAdvisories(merged);
   cachedAggregatedAdvisories = standardized;
+  cachedGlobalMetrics = {
+    totalConsolidatedCount: standardized.length,
+    directBuildImpactCount: standardized.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
+    nonCveThreatsCount: standardized.filter(a => a.cveList.length === 0 && a.disclosureType !== 'INFORMATIONAL_DISCLOSURE').length,
+    informationalDisclosuresCount: standardized.filter(a => a.disclosureType === 'INFORMATIONAL_DISCLOSURE').length,
+  };
   lastCacheTime = now;
   return standardized;
 }

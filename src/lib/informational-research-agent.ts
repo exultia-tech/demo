@@ -197,6 +197,237 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
     publishedDate: "2025-03-16",
     confidenceScore: 97,
     signalTags: ["Snyk Research", "VS Code Extension", "Marketplace Typosquatting", "SSH Key Exfiltration"]
+  },
+  {
+    id: "DISP-2025-105",
+    sourceName: "HackerOne Hacktivity",
+    author: "Orange Tsai & Top Bounty Researchers",
+    sourceUrl: "https://hackerone.com/hacktivity",
+    rawHeadline: "Localhost WebSocket RPC Command Execution in Developer Diagnostic Daemons",
+    rawText: "Publicly disclosed bug bounty report on HackerOne detailing how cross-origin web applications visited in a developer's browser can connect to unauthenticated localhost WebSocket endpoints (ports 8080, 9222, 5000) exposed by local dev tooling. By sending crafted JSON-RPC messages without Origin validation, malicious websites trigger arbitrary file reads and remote code execution on developer machines.",
+    publishedDate: "2025-03-17",
+    confidenceScore: 96,
+    signalTags: ["HackerOne Hacktivity", "Bug Bounty Disclosure", "WebSocket Hijack", "Localhost RPC", "Developer Workstation"]
+  },
+  {
+    id: "DISP-2025-106",
+    sourceName: "Bugcrowd CrowdStream",
+    author: "SecBug Hunter Collective",
+    sourceUrl: "https://bugcrowd.com/crowdstream",
+    rawHeadline: "Server-Side Request Forgery via Cloud Storage Presigned URL Parser in Build Webhooks",
+    rawText: "Validated Bugcrowd CrowdStream disclosure documenting SSRF in CI webhook notification integrations. When developers configure build status webhooks pointing to presigned S3/GCS URLs, the backend parser fails to enforce URL schema isolation, allowing attackers to pivot requests to AWS IMDSv2 and GCP metadata endpoints to harvest instance profile credentials.",
+    publishedDate: "2025-03-18",
+    confidenceScore: 94,
+    signalTags: ["Bugcrowd CrowdStream", "SSRF", "Cloud Storage", "Metadata Exfiltration", "CI/CD Webhooks"]
+  },
+  {
+    id: "DISP-2025-107",
+    sourceName: "Immunefi Vulnerability Disclosures",
+    author: "Samczsun & Immunefi Security Research",
+    sourceUrl: "https://medium.com/immunefi",
+    rawHeadline: "Cross-Chain Bridge Calldata Signature Replay via Unchecked ECDSA Malleability",
+    rawText: "Technical postmortem from Immunefi on a critical vulnerability in cross-chain validator relayer nodes. A failure to enforce canonical 's' values in ECDSA signature verification allowed adversaries to craft alternate valid signatures for already-executed bridge deposit transactions, triggering double-minting of collateral tokens.",
+    publishedDate: "2025-03-19",
+    confidenceScore: 98,
+    signalTags: ["Immunefi Disclosures", "Web3 Security", "Signature Malleability", "Smart Contracts", "Bridge Relayers"]
+  },
+  {
+    id: "DISP-2025-108",
+    sourceName: "Pentester Land Writeups",
+    author: "Pentester Land Community Curators",
+    sourceUrl: "https://pentester.land/writeups/",
+    rawHeadline: "Multi-Stage Account Takeover via OAuth Redirect URI Wildcard Poisoning in Developer SSO",
+    rawText: "Curated writeup featured on Pentester Land documenting a zero-click account takeover in major developer cloud portals. The OAuth 2.0 authorization server accepted wildcard subdomains in redirect_uri parameters. Attackers registered expired cloud staging subdomains to silently intercept authorization codes during developer OAuth handshakes.",
+    publishedDate: "2025-03-20",
+    confidenceScore: 95,
+    signalTags: ["Pentester Land Writeups", "OAuth 2.0", "Account Takeover", "Redirect URI", "Developer SSO"]
+  },
+  {
+    id: "DISP-2025-109",
+    sourceName: "disclose.io diodb",
+    author: "Casey Ellis & disclose.io Project",
+    sourceUrl: "https://github.com/disclose/diodb",
+    rawHeadline: "Exposed /.git and Environment Dumps on Staging Subdomains Across Active VDP Programs",
+    rawText: "Research analysis of targets indexed in the disclose.io diodb repository identifying systemic exposure of development .git directories, .env files, and docker-compose configurations on developer staging environments. Automated crawlers reconstruct source trees and recover API keys from publicly accessible git packfiles.",
+    publishedDate: "2025-03-21",
+    confidenceScore: 92,
+    signalTags: ["disclose.io diodb", "Git Exposure", "VDP Targets", "Credential Leakage", "Staging Environments"]
+  },
+  {
+    id: "DISP-2025-110",
+    sourceName: "Bug Bounty Disclosed Reports",
+    author: "Marco & Community Contributors",
+    sourceUrl: "https://github.com/bugbountywithmarco/bugbounty-disclosed-reports",
+    rawHeadline: "CI Runner Cache Poisoning via Unpinned Actions Hashes Disclosed in Enterprise Bounty Report",
+    rawText: "Disclosed report corpus entry documenting cache poisoning in shared self-hosted CI/CD runners. Third-party repository dependencies manipulating cache keys (actions/cache) allowed untrusted pull requests to overwrite compiled build binaries, resulting in backdoored artifacts deployed to staging environments.",
+    publishedDate: "2025-03-22",
+    confidenceScore: 93,
+    signalTags: ["Bug Bounty Disclosed Reports", "CI Runner", "Cache Poisoning", "GitHub Actions", "Build Tampering"]
+  },
+  {
+    id: "DISP-2025-111",
+    sourceName: "r/bugbounty (Reddit)",
+    author: "u/bounty_hunter_99",
+    sourceUrl: "https://www.reddit.com/r/bugbounty/",
+    rawHeadline: "Bypassing Webhook Payload Validation via DNS Rebinding Against Developer Localhost Listeners",
+    rawText: "Technical methodology shared on r/bugbounty detailing how to bypass webhook IP blocklists using dual A-record DNS rebinding. By alternating TTLs, external webhook triggers initially resolve to public IPs during validation, but resolve to 127.0.0.1 during delivery, dumping developer test payloads into local services.",
+    publishedDate: "2025-03-23",
+    confidenceScore: 91,
+    signalTags: ["r/bugbounty", "DNS Rebinding", "Webhook Bypass", "Localhost Exploitation", "Developer Tools"]
+  },
+  {
+    id: "DISP-2025-112",
+    sourceName: "r/netsec (Reddit Technical)",
+    author: "u/kernel_sec_researcher",
+    sourceUrl: "https://www.reddit.com/r/netsec/",
+    rawHeadline: "Linux Kernel eBPF Verifier Type Confusion Leading to Local Privilege Escalation on Dev Workstations",
+    rawText: "Detailed technical advisory posted to r/netsec analyzing an eBPF verifier flaw in modern Linux kernels. Inaccurate branch pruning during scalar-to-pointer verification allows unprivileged processes to execute arbitrary read/write memory primitives, bypassing KASLR and obtaining root on developer Linux workstations.",
+    publishedDate: "2025-03-24",
+    confidenceScore: 97,
+    signalTags: ["r/netsec", "Linux Kernel", "eBPF Verifier", "Local Privilege Escalation", "Developer Workstation"]
+  },
+  {
+    id: "DISP-2025-113",
+    sourceName: "r/blueteamsec (Reddit)",
+    author: "u/blue_detection_eng",
+    sourceUrl: "https://www.reddit.com/r/blueteamsec/",
+    rawHeadline: "Sigma Rule Detections for Suspicious IDE Child Processes and Compiler Shell Spawns",
+    rawText: "Detection engineering release on r/blueteamsec providing Sigma and YARA rules to detect adversary tradecraft abusing IDE process trees. Focuses on vscode.exe or idea64.exe spawning cmd.exe or bash.exe executing base64-encoded curl or PowerShell download cradles during project load.",
+    publishedDate: "2025-03-25",
+    confidenceScore: 93,
+    signalTags: ["r/blueteamsec", "Sigma Rules", "IDE Process Trees", "Workstation Defense", "Detection Engineering"]
+  },
+  {
+    id: "DISP-2025-114",
+    sourceName: "InfoSec Stack Exchange",
+    author: "Community Crypto Practitioners",
+    sourceUrl: "https://security.stackexchange.com/",
+    rawHeadline: "Insufficient Nonce Entropy in Hardware Security Key Ephemeral ECDSA Signing Handshakes",
+    rawText: "In-depth cryptographic review on Information Security Stack Exchange exploring nonce reuse vulnerabilities in embedded developer tokens and hardware tokens when signing Git commits under high-concurrency automated release workflows.",
+    publishedDate: "2025-03-26",
+    confidenceScore: 90,
+    signalTags: ["InfoSec Stack Exchange", "Cryptography", "ECDSA Nonce", "Hardware Security Keys", "Git Signatures"]
+  },
+  {
+    id: "DISP-2025-115",
+    sourceName: "Hacker News (InfoSec)",
+    author: "HN Community Security Editors",
+    sourceUrl: "https://news.ycombinator.com/",
+    rawHeadline: "Unvetted Extension Marketplaces Enabling One-Click Malicious Plugin Registration in Cloud IDEs",
+    rawText: "High-velocity discussion on Hacker News highlighting lack of code signing or namespace verification in third-party OpenVSX and cloud editor registries. Threat actors reserve typosquats of popular extension brands, silently harvesting developer environment tokens upon auto-import.",
+    publishedDate: "2025-03-27",
+    confidenceScore: 92,
+    signalTags: ["Hacker News", "Cloud IDE", "Extension Marketplaces", "Typosquatting", "Supply Chain"]
+  },
+  {
+    id: "DISP-2025-116",
+    sourceName: "Krebs on Security",
+    author: "Brian Krebs",
+    sourceUrl: "https://krebsonsecurity.com/",
+    rawHeadline: "Bulletproof Hosting Syndicates Laundering Stolen Code-Signing Certificates to Sign Malware",
+    rawText: "Investigative report by Brian Krebs revealing how cybercrime brokers acquire compromised corporate code-signing certificates to sign weaponized npm package installers and developer utilities, allowing malware to execute without SmartScreen or antivirus alerts on enterprise developer laptops.",
+    publishedDate: "2025-03-28",
+    confidenceScore: 98,
+    signalTags: ["Krebs on Security", "Code Signing Certificates", "Bulletproof Hosting", "Developer Workstation", "Supply Chain"]
+  },
+  {
+    id: "DISP-2025-117",
+    sourceName: "Schneier on Security",
+    author: "Bruce Schneier",
+    sourceUrl: "https://www.schneier.com/",
+    rawHeadline: "Systemic Fragility in Ephemeral CI/CD Cryptographic Key Generation and PRNG Seeding",
+    rawText: "Essay and threat modeling breakdown by Bruce Schneier on PRNG state exhaustion in rapidly scaled cloud container runners. Ephemeral VMs launched with cloned initial memory snapshots generate colliding cryptographic keys and SSH host pairs due to identical early-boot entropy pools.",
+    publishedDate: "2025-03-29",
+    confidenceScore: 94,
+    signalTags: ["Schneier on Security", "Applied Cryptography", "PRNG Entropy", "CI/CD Runners", "Systemic Trust"]
+  },
+  {
+    id: "DISP-2025-118",
+    sourceName: "PortSwigger Research",
+    author: "James Kettle (PortSwigger)",
+    sourceUrl: "https://portswigger.net/research",
+    rawHeadline: "HTTP/2 Web Cache Deception and Server-Side Desynchronization via Framing Discrepancies",
+    rawText: "Breakthrough research from James Kettle demonstrating how subtle differences in HTTP/2 to HTTP/1.1 protocol translation allow attackers to manipulate caching proxies into saving sensitive developer session cookies and API tokens in public CDN caches, accessible to unauthenticated attackers.",
+    publishedDate: "2025-03-30",
+    confidenceScore: 99,
+    signalTags: ["PortSwigger Research", "HTTP/2 Desync", "Web Cache Deception", "Request Smuggling", "Session Hijack"]
+  },
+  {
+    id: "DISP-2025-119",
+    sourceName: "Unit 42 (Palo Alto Networks)",
+    author: "Palo Alto Networks Unit 42 Research Team",
+    sourceUrl: "https://unit42.paloaltonetworks.com/",
+    rawHeadline: "Nation-State APT Campaign Compromising Developer Laptops to Pivot into Cloud Infrastructure",
+    rawText: "Unit 42 threat intelligence bulletin tracking a state-sponsored cyber espionage campaign targeting software engineers at critical infrastructure firms. Attackers delivered trojanized IDE packages to gain initial footholds on developer laptops, extracting local AWS ~/.aws/credentials and Kubernetes kubeconfig files for cloud persistence.",
+    publishedDate: "2025-03-31",
+    confidenceScore: 98,
+    signalTags: ["Unit 42", "Nation-State APT", "Cloud Credentials", "Developer Laptop", "Kubeconfig Hijack"]
+  },
+  {
+    id: "DISP-2025-120",
+    sourceName: "Microsoft Threat Intelligence (MSTI)",
+    author: "Microsoft Defender Security Research",
+    sourceUrl: "https://www.microsoft.com/en-us/security/blog/topic/threat-intelligence/",
+    rawHeadline: "Midnight Blizzard Abuse of Malicious OAuth Apps to Intercept Developer Exchange and Graph APIs",
+    rawText: "Microsoft Threat Intelligence report documenting sophisticated threat actor Midnight Blizzard compromising developer identity tenants. By registering rogue OAuth multi-tenant applications with broad MS Graph permissions, adversaries maintained persistent read access to source repositories, build logs, and internal messaging channels.",
+    publishedDate: "2025-04-01",
+    confidenceScore: 99,
+    signalTags: ["Microsoft Threat Intelligence", "Midnight Blizzard", "OAuth App Hijack", "MS Graph API", "Identity Compromise"]
+  },
+  {
+    id: "DISP-2025-121",
+    sourceName: "Bugcrowd Discord Community",
+    author: "Bugcrowd Triage Ambassadors",
+    sourceUrl: "https://discord.gg/bugcrowd",
+    rawHeadline: "Zero-Day Drop in Cloud Developer Environments Bypassing Port Allow-Lists via IPv6 Scoped Addresses",
+    rawText: "Live hunter chatter and vulnerability validation on Bugcrowd Discord identifying an internal port bypass in cloud-hosted IDE containers. By querying fe80:: IPv6 link-local interfaces, external requests circumvent IPv4 localhost security filters and reach privileged orchestrator control sockets.",
+    publishedDate: "2025-04-02",
+    confidenceScore: 93,
+    signalTags: ["Bugcrowd Discord", "IPv6 Link-Local", "Cloud IDE", "Firewall Bypass", "Container Escapes"]
+  },
+  {
+    id: "DISP-2025-122",
+    sourceName: "Bounty World Discord",
+    author: "Bounty World Research Group",
+    sourceUrl: "https://discord.gg/bugbounty",
+    rawHeadline: "Race Conditions in Multi-Account OAuth Authorization Code Grants Allowing Token Substitution",
+    rawText: "Offensive research collaboration on Bounty World Discord demonstrating concurrent redemption of single-use OAuth authorization codes. Sub-millisecond parallel POST requests to token endpoints exploit database transaction isolation gaps, generating multiple valid access tokens under different tenant roles.",
+    publishedDate: "2025-04-03",
+    confidenceScore: 95,
+    signalTags: ["Bounty World Discord", "OAuth 2.0", "Race Conditions", "Token Substitution", "Identity"]
+  },
+  {
+    id: "DISP-2025-123",
+    sourceName: "r/cybersecurity (Reddit)",
+    author: "u/incident_lead_ciso",
+    sourceUrl: "https://www.reddit.com/r/cybersecurity/",
+    rawHeadline: "Widespread Compromise of Developer GitHub Personal Access Tokens via Malicious Coding Challenge Repos",
+    rawText: "Incident response breakdown shared on r/cybersecurity warning of fake recruitment technical evaluations. Adversaries send candidates coding challenge repositories containing obfuscated postinstall npm hooks that extract saved SSH keys, AWS credentials, and GitHub PATs from developer workstations.",
+    publishedDate: "2025-04-04",
+    confidenceScore: 94,
+    signalTags: ["r/cybersecurity", "Fake Interview Repos", "Supply Chain", "Credential Theft", "Developer Laptops"]
+  },
+  {
+    id: "DISP-2025-124",
+    sourceName: "Wild West Hackin' Fest Community",
+    author: "Black Hills InfoSec Research",
+    sourceUrl: "https://discord.gg/wwhf",
+    rawHeadline: "Active Defense Canary Injection into Developer Git Repositories and Build Artifacts",
+    rawText: "Blue team methodology discussed in Wild West Hackin' Fest Discord demonstrating automated injection of canary AWS tokens and honey-credentials into developer starter templates. Triggers real-time alerts the moment compromised repos or developer laptops are cloned by threat actors.",
+    publishedDate: "2025-04-05",
+    confidenceScore: 92,
+    signalTags: ["Wild West Hackin' Fest", "Canary Tokens", "Active Defense", "Honey Credentials", "Workstation Alerting"]
+  },
+  {
+    id: "DISP-2025-125",
+    sourceName: "Google Project Zero",
+    author: "Tavis Ormandy & Project Zero Team",
+    sourceUrl: "https://googleprojectzero.blogspot.com/",
+    rawHeadline: "Sandbox Escape via Mach Message Type Confusion in Desktop Development Runtimes",
+    rawText: "In-depth zero-day exploit analysis published on Google Project Zero blog discovering Mach message port confusion in macOS desktop developer runtimes. A privileged helper daemon incorrectly parsed inline Mach port descriptors, allowing unprivileged processes to acquire task ports and execute arbitrary code outside the app sandbox.",
+    publishedDate: "2025-04-06",
+    confidenceScore: 99,
+    signalTags: ["Google Project Zero", "Sandbox Escape", "macOS Mach Ports", "Zero-Day PoC", "Type Confusion"]
   }
 ];
 
@@ -241,6 +472,7 @@ export class InformationalResearchAgent {
    * Automatically develops all queued informal dispatches into canonical UVI entries.
    */
   public synthesizeInitialDispatches(): void {
+    let addedCount = 0;
     for (const dispatch of UNANALYZED_INFORMAL_DISPATCHES) {
       if (!this.processedDispatchIds.has(dispatch.id)) {
         this.processedDispatchIds.add(dispatch.id);
@@ -251,10 +483,13 @@ export class InformationalResearchAgent {
         // Push directly into live data arrays
         CONSOLIDATED_UVI_ADVISORIES.unshift(result.advisory);
         CURATED_INFORMATIONAL_DISCLOSURES.unshift(result.advisory);
+        addedCount++;
       }
     }
     this.lastCycleTimestamp = new Date().toISOString();
-    invalidateAggregatorCache();
+    if (addedCount > 0) {
+      invalidateAggregatorCache();
+    }
   }
 
   /**
@@ -348,7 +583,27 @@ export class InformationalResearchAgent {
     const uviId = `UVI-INFO-${year}-${nextSeq}`;
 
     let canonicalSourceId = raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    if (canonicalSourceId.includes("project_zero")) canonicalSourceId = "project_zero";
+    if (canonicalSourceId.includes("hackerone") || canonicalSourceId.includes("hacktivity")) canonicalSourceId = "hackerone_hacktivity";
+    else if (canonicalSourceId.includes("bugcrowd_crowdstream") || (canonicalSourceId.includes("bugcrowd") && !canonicalSourceId.includes("discord"))) canonicalSourceId = "bugcrowd_crowdstream";
+    else if (canonicalSourceId.includes("bugcrowd") && canonicalSourceId.includes("discord")) canonicalSourceId = "bugcrowd_discord";
+    else if (canonicalSourceId.includes("bounty_world") || (canonicalSourceId.includes("bounty") && canonicalSourceId.includes("discord"))) canonicalSourceId = "bounty_world_discord";
+    else if (canonicalSourceId.includes("immunefi")) canonicalSourceId = "immunefi_disclosures";
+    else if (canonicalSourceId.includes("pentester")) canonicalSourceId = "pentester_land";
+    else if (canonicalSourceId.includes("disclose")) canonicalSourceId = "disclose_io";
+    else if (canonicalSourceId.includes("disclosed_reports") || (canonicalSourceId.includes("bug") && canonicalSourceId.includes("bounty") && canonicalSourceId.includes("report"))) canonicalSourceId = "bugbounty_disclosed_reports";
+    else if (canonicalSourceId.includes("reddit_bugbounty") || (canonicalSourceId.includes("reddit") && canonicalSourceId.includes("bugbounty"))) canonicalSourceId = "reddit_bugbounty";
+    else if (canonicalSourceId.includes("netsec")) canonicalSourceId = "reddit_netsec";
+    else if (canonicalSourceId.includes("blueteamsec")) canonicalSourceId = "reddit_blueteamsec";
+    else if (canonicalSourceId.includes("cybersecurity")) canonicalSourceId = "reddit_cybersecurity";
+    else if (canonicalSourceId.includes("stackexchange") || canonicalSourceId.includes("stack_exchange")) canonicalSourceId = "sec_stackexchange";
+    else if (canonicalSourceId.includes("wwhf") || canonicalSourceId.includes("wild_west")) canonicalSourceId = "wwhf_discord";
+    else if (canonicalSourceId.includes("hacker_news") || canonicalSourceId.includes("ycombinator")) canonicalSourceId = "hacker_news_infosec";
+    else if (canonicalSourceId.includes("krebs")) canonicalSourceId = "krebs_on_security";
+    else if (canonicalSourceId.includes("schneier")) canonicalSourceId = "schneier_on_security";
+    else if (canonicalSourceId.includes("portswigger")) canonicalSourceId = "portswigger_research";
+    else if (canonicalSourceId.includes("unit42") || canonicalSourceId.includes("unit_42")) canonicalSourceId = "unit42_research";
+    else if (canonicalSourceId.includes("microsoft") || canonicalSourceId.includes("msti")) canonicalSourceId = "microsoft_threat_intel";
+    else if (canonicalSourceId.includes("project_zero")) canonicalSourceId = "project_zero";
     else if (canonicalSourceId.includes("arxiv") || canonicalSourceId.includes("iacr") || canonicalSourceId.includes("academic") || canonicalSourceId.includes("preprint")) canonicalSourceId = "academic_research";
     else if (canonicalSourceId.includes("underground") || canonicalSourceId.includes("dark_web") || canonicalSourceId.includes("vx_underground")) canonicalSourceId = "underground_intel";
     else if (canonicalSourceId.includes("bleeping")) canonicalSourceId = "bleeping_computer";
@@ -451,20 +706,20 @@ export class InformationalResearchAgent {
    * Run an autonomous discovery cycle on the next available unanalyzed dispatch
    * or generate an incremental emerging finding from monitored channels.
    */
-  public runAutonomousCycle(customFinding?: RawInformalResearchFinding): AgentSynthesisResult {
-    this.currentStatus = "ANALYZING";
+  public runAutonomousCycle(customFinding?: RawInformalResearchFinding): AgentSynthesisResult | null {
+    if (this.currentStatus === "ANALYZING" || this.currentStatus === "SYNTHESIZING") return null;
 
-    let targetDispatch: RawInformalResearchFinding;
+    let targetDispatch: RawInformalResearchFinding | undefined;
     if (customFinding) {
       targetDispatch = customFinding;
     } else {
-      let next = UNANALYZED_INFORMAL_DISPATCHES.find(d => !this.processedDispatchIds.has(d.id));
-      if (!next) {
-        // Recycle dispatch queue to enable endless autonomous discovery loops
-        this.processedDispatchIds.clear();
-        next = UNANALYZED_INFORMAL_DISPATCHES[0];
+      targetDispatch = UNANALYZED_INFORMAL_DISPATCHES.find(d => !this.processedDispatchIds.has(d.id));
+      if (!targetDispatch) {
+        // All staged dispatches have been synthesized. Stay idle without injecting duplicate records.
+        this.currentStatus = "IDLE";
+        this.lastCycleTimestamp = new Date().toISOString();
+        return null;
       }
-      targetDispatch = next;
       this.processedDispatchIds.add(targetDispatch.id);
     }
 
@@ -505,13 +760,31 @@ export class InformationalResearchAgent {
       status: this.currentStatus,
       totalFindingsAnalyzed: this.totalAnalyzedCount,
       monitoredChannels: [
+        "HackerOne Hacktivity (https://hackerone.com/hacktivity)",
+        "Bugcrowd CrowdStream (https://bugcrowd.com/crowdstream)",
+        "Immunefi Vulnerability Disclosures (https://medium.com/immunefi)",
+        "Pentester Land Writeups (https://pentester.land/writeups/)",
+        "disclose.io diodb (https://github.com/disclose/diodb)",
+        "Bug Bounty Disclosed Reports (https://github.com/bugbountywithmarco/bugbounty-disclosed-reports)",
+        "r/bugbounty (https://www.reddit.com/r/bugbounty/)",
+        "Bugcrowd & Bounty World Discords",
+        "r/netsec Technical Vulnerabilities (https://www.reddit.com/r/netsec/)",
+        "r/cybersecurity Discussions (https://www.reddit.com/r/cybersecurity/)",
+        "r/blueteamsec Detections (https://www.reddit.com/r/blueteamsec/)",
+        "Information Security Stack Exchange (https://security.stackexchange.com/)",
+        "Wild West Hackin' Fest Discord (https://discord.gg/wwhf)",
+        "Hacker News InfoSec Stream (https://news.ycombinator.com/)",
+        "Krebs on Security (https://krebsonsecurity.com/)",
+        "Schneier on Security (https://www.schneier.com/)",
+        "Google Project Zero Blog (https://googleprojectzero.blogspot.com/)",
+        "PortSwigger Research (https://portswigger.net/research)",
+        "Unit 42 Threat Research (https://unit42.paloaltonetworks.com/)",
+        "Microsoft Security Threat Intelligence (https://www.microsoft.com/en-us/security/blog/topic/threat-intelligence/)",
         "GitHub Security Lab Research (https://securitylab.github.com/advisories/)",
-        "Google Project Zero Blog",
         "ArXiv Cryptography & Security Preprints (cs.CR)",
         "Wiz Threat Research Lab",
         "Trail of Bits Security Publications",
         "Snyk Security Research",
-        "Krebs on Security Telemetry",
         "BleepingComputer Threat Dispatches"
       ],
       lastCycleTimestamp: this.lastCycleTimestamp,

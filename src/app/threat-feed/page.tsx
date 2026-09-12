@@ -31,8 +31,8 @@ export default function ThreatFeedPage() {
 
   // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
-  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(46);
-  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(36);
+  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(884);
+  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(72);
 
   // AI CTI Research Agent Background Telemetry
   const [agentTelemetry, setAgentTelemetry] = useState<{
@@ -57,6 +57,7 @@ export default function ThreatFeedPage() {
 
   const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
     { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
+    { id: "Research, Bug Bounty & Community Disclosures", label: "Research & Bounties", icon: "🔬", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Research, Bug Bounty & Community Disclosures").length },
     { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Malware, C2 & Botnets").length },
     { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Phishing & Fraud").length },
     { id: "IP Reputation, Scanners & Network Telemetry", label: "IP Telemetry", icon: "🌪️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "IP Reputation, Scanners & Network Telemetry").length },
@@ -89,10 +90,10 @@ export default function ThreatFeedPage() {
 
   // Live Aggregated Data State
   const [advisories, setAdvisories] = useState<UviAdvisoryRecord[]>(CONSOLIDATED_UVI_ADVISORIES);
-  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(1820);
-  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(414);
-  const [matchedCount, setMatchedCount] = useState<number>(1820);
-  const [totalPages, setTotalPages] = useState<number>(37);
+  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(2723);
+  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(989);
+  const [matchedCount, setMatchedCount] = useState<number>(2723);
+  const [totalPages, setTotalPages] = useState<number>(55);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLiveSynced, setHasLiveSynced] = useState<boolean>(false);
 
@@ -197,10 +198,10 @@ export default function ThreatFeedPage() {
             });
 
             setAdvisories(sorted);
-            setTotalUniversalCount(data.totalConsolidatedCount || 1820);
-            setDirectBuildImpactCount(data.directBuildImpactCount || 414);
-            setNonCveThreatsCount(data.nonCveThreatsCount || 46);
-            setInformationalDisclosuresCount(data.informationalDisclosuresCount || 20);
+            if (typeof data.totalConsolidatedCount === "number") setTotalUniversalCount(data.totalConsolidatedCount);
+            if (typeof data.directBuildImpactCount === "number") setDirectBuildImpactCount(data.directBuildImpactCount);
+            if (typeof data.nonCveThreatsCount === "number") setNonCveThreatsCount(data.nonCveThreatsCount);
+            if (typeof data.informationalDisclosuresCount === "number") setInformationalDisclosuresCount(data.informationalDisclosuresCount);
             setMatchedCount(data.matchedAdvisoriesCount ?? sorted.length);
             setTotalPages(data.totalPages || Math.ceil((data.matchedAdvisoriesCount || sorted.length) / pageSize));
             setHasLiveSynced(true);
@@ -1333,7 +1334,7 @@ export default function ThreatFeedPage() {
                 borderBottom: "2px solid rgba(59, 130, 246, 0.3)"
               }}>
                 <tr>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "180px" }}>
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "190px" }}>
                     Identifier
                   </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
@@ -1410,7 +1411,7 @@ export default function ThreatFeedPage() {
                         }}
                       >
                         {/* Column 1: Identifier */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "180px", verticalAlign: "top" }}>
+                        <td style={{ padding: "1.1rem 1.25rem", width: "190px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                               <span style={{
@@ -1508,6 +1509,45 @@ export default function ThreatFeedPage() {
                                 </span>
                               )}
                             </div>
+
+                            {/* Virtual CISO "Explain with AI" button underneath identifiers */}
+                            <div style={{ marginTop: "0.35rem" }}>
+                              <button
+                                onClick={(e) => handleOpenVirtualCiso(record, e)}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.35rem",
+                                  padding: "0.22rem 0.55rem",
+                                  borderRadius: "6px",
+                                  background: "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)",
+                                  border: "1px solid rgba(167, 139, 250, 0.45)",
+                                  color: "#DDD6FE",
+                                  fontSize: "0.71rem",
+                                  fontWeight: 700,
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease",
+                                  boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)",
+                                  whiteSpace: "nowrap"
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(79, 70, 229, 0.4) 100%)";
+                                  e.currentTarget.style.borderColor = "#A78BFA";
+                                  e.currentTarget.style.color = "#FFFFFF";
+                                  e.currentTarget.style.boxShadow = "0 0 14px rgba(167, 139, 250, 0.35)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)";
+                                  e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.45)";
+                                  e.currentTarget.style.color = "#DDD6FE";
+                                  e.currentTarget.style.boxShadow = "0 0 10px rgba(139, 92, 246, 0.15)";
+                                }}
+                                title="Virtual CISO: Plain-English explanation & technical code remediation"
+                              >
+                                <span>✨</span>
+                                <span>Explain with AI</span>
+                              </button>
+                            </div>
                           </div>
                         </td>
 
@@ -1599,40 +1639,6 @@ export default function ThreatFeedPage() {
                                   💻 Direct Build Impact
                                 </span>
                               )}
-
-                              {/* Virtual CISO "Explain with AI" button */}
-                              <button
-                                onClick={(e) => handleOpenVirtualCiso(record, e)}
-                                style={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: "0.3rem",
-                                  padding: "0.14rem 0.55rem",
-                                  borderRadius: "5px",
-                                  background: "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)",
-                                  border: "1px solid rgba(167, 139, 250, 0.45)",
-                                  color: "#DDD6FE",
-                                  fontSize: "0.71rem",
-                                  fontWeight: 700,
-                                  cursor: "pointer",
-                                  transition: "all 0.15s ease",
-                                  boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)"
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(79, 70, 229, 0.4) 100%)";
-                                  e.currentTarget.style.borderColor = "#A78BFA";
-                                  e.currentTarget.style.color = "#FFFFFF";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(79, 70, 229, 0.22) 100%)";
-                                  e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.45)";
-                                  e.currentTarget.style.color = "#DDD6FE";
-                                }}
-                                title="Virtual CISO: Plain-English explanation & technical code remediation"
-                              >
-                                <span>✨</span>
-                                <span>Explain with AI</span>
-                              </button>
                             </div>
                           </div>
                         </td>
@@ -3062,6 +3068,8 @@ export default function ThreatFeedPage() {
                         return { bg: "rgba(99, 102, 241, 0.12)", text: "#A5B4FC", border: "rgba(99, 102, 241, 0.3)" };
                       case "Vulnerabilities & Exploitation":
                         return { bg: "rgba(16, 185, 129, 0.12)", text: "#6EE7B7", border: "rgba(16, 185, 129, 0.3)" };
+                      case "Research, Bug Bounty & Community Disclosures":
+                        return { bg: "rgba(6, 182, 212, 0.12)", text: "#67E8F9", border: "rgba(6, 182, 212, 0.35)" };
                       case "Multi-Indicator Hubs & Aggregators":
                       default:
                         return { bg: "rgba(168, 85, 247, 0.12)", text: "#D8B4FE", border: "rgba(168, 85, 247, 0.3)" };

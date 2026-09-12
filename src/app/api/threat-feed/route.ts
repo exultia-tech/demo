@@ -8,7 +8,7 @@ import {
   IdeBuildImpactAssessment,
   getRecordObservationalAssessment
 } from '@/lib/threat-feed-data';
-import { getAggregatedUviAdvisories } from '@/lib/feed-aggregator';
+import { getAggregatedUviAdvisories, getGlobalRegistryMetrics } from '@/lib/feed-aggregator';
 import { ctiResearchAgent } from '@/lib/informational-research-agent';
 
 export const dynamic = 'force-dynamic';
@@ -40,8 +40,9 @@ export async function GET(request: Request) {
   const isLimitAll = limitParam.toLowerCase() === 'all';
   const limit = isLimitAll ? 5000 : (parseInt(limitParam, 10) || 50);
 
-  // Fetch live aggregated dataset (curated + CISA KEV + OSV)
+  // Fetch live aggregated dataset (curated + CISA KEV + OSV) and global catalog metrics
   const allAdvisories = await getAggregatedUviAdvisories();
+  const globalMetrics = await getGlobalRegistryMetrics();
   let filtered = [...allAdvisories];
 
   // Specific UVI ID lookup (e.g., ?id=UVI-2024-03-000001 or legacy ?id=UVI-2021-44228)
@@ -157,10 +158,30 @@ export async function GET(request: Request) {
         const sId = s.sourceId.toLowerCase();
         const sName = s.sourceName.toLowerCase();
         if (sId === srcLower || sName.includes(srcLower)) return true;
-        if (srcLower === "project_zero" && (sId === "project_zero_research" || sName.includes("project zero"))) return true;
+        if ((srcLower === "project_zero" || srcLower === "google_project_zero" || srcLower === "google_project_zero_blog") && (sId === "project_zero" || sId === "project_zero_research" || sName.includes("project zero"))) return true;
         if (srcLower === "academic_research" && (sId === "project_zero_research" || sName.includes("academic") || sName.includes("arxiv") || sName.includes("iacr"))) return true;
         if (srcLower === "underground_intel" && (sId === "underground_intel" || sName.includes("underground") || s.badge?.toLowerCase().includes("underground"))) return true;
         if (srcLower === "bleeping_computer" && (sId === "bleeping_computer" || sName.includes("bleepingcomputer") || sName.includes("bleeping computer"))) return true;
+        if (srcLower === "hackerone_hacktivity" && (sId.includes("hackerone") || sName.includes("hackerone"))) return true;
+        if (srcLower === "bugcrowd_crowdstream" && (sId.includes("crowdstream") || (sId.includes("bugcrowd") && !sId.includes("discord")) || sName.includes("crowdstream"))) return true;
+        if (srcLower === "bugcrowd_discord" && (sId.includes("bugcrowd") && (sId.includes("discord") || sName.includes("discord")))) return true;
+        if (srcLower === "bounty_world_discord" && (sId.includes("bounty_world") || (sId.includes("bounty") && (sId.includes("discord") || sName.includes("bounty world"))))) return true;
+        if (srcLower === "immunefi_disclosures" && (sId.includes("immunefi") || sName.includes("immunefi"))) return true;
+        if ((srcLower === "pentester_land" || srcLower === "pentester_land_json") && (sId.includes("pentester") || sName.includes("pentester"))) return true;
+        if (srcLower === "disclose_io" && (sId.includes("disclose") || sName.includes("disclose"))) return true;
+        if (srcLower === "bugbounty_disclosed_reports" && (sId.includes("disclosed_reports") || sName.includes("disclosed reports"))) return true;
+        if ((srcLower === "reddit_bugbounty" || srcLower === "r_bugbounty") && (sId.includes("bugbounty") || sName.includes("bugbounty"))) return true;
+        if ((srcLower === "reddit_netsec" || srcLower === "r_netsec") && (sId.includes("netsec") || sName.includes("netsec"))) return true;
+        if ((srcLower === "reddit_blueteamsec" || srcLower === "r_blueteamsec") && (sId.includes("blueteamsec") || sName.includes("blueteamsec"))) return true;
+        if ((srcLower === "reddit_cybersecurity" || srcLower === "r_cybersecurity") && (sId.includes("cybersecurity") || sName.includes("cybersecurity"))) return true;
+        if (srcLower === "sec_stackexchange" && (sId.includes("stackexchange") || sName.includes("stack exchange"))) return true;
+        if (srcLower === "wwhf_discord" && (sId.includes("wwhf") || sName.includes("wild west"))) return true;
+        if (srcLower === "hacker_news_infosec" && (sId.includes("hacker_news") || sName.includes("hacker news"))) return true;
+        if (srcLower === "krebs_on_security" && (sId.includes("krebs") || sName.includes("krebs"))) return true;
+        if (srcLower === "schneier_on_security" && (sId.includes("schneier") || sName.includes("schneier"))) return true;
+        if (srcLower === "portswigger_research" && (sId.includes("portswigger") || sName.includes("portswigger"))) return true;
+        if (srcLower === "unit42_research" && (sId.includes("unit42") || sId.includes("unit_42") || sName.includes("unit 42"))) return true;
+        if (srcLower === "microsoft_threat_intel" && (sId.includes("microsoft") || sId.includes("msti") || sName.includes("microsoft"))) return true;
         return false;
       })
     );
@@ -218,7 +239,7 @@ export async function GET(request: Request) {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
     feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
     identifierSystem: "UVI-YYYY-MM-000001",
-    mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, and Multi-Indicator Hubs (URLhaus, ThreatFox, Feodo Tracker, MalwareBazaar, MontySecurity C2-Tracker, Botvrij.eu, OpenPhish, PhishTank, SANS ISC DShield, Blocklist.de, IPSum, Tor Exit List, Cisco Talos, Emerging Threats, GreenSnow, GreyNoise, CISA KEV, FIRST EPSS, AlienVault OTX, CIRCL MISP, threatfeeds.io, Bert-JanP OTI, NVD, GHSA, OSV.dev, OpenSSF, MSRC, Snyk, and language advisory DBs). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, and protocol flaws into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
+    mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, Multi-Indicator Hubs, and Research & Bug Bounty Disclosures (HackerOne, Bugcrowd, Immunefi, Pentester Land, disclose.io, r/netsec, r/cybersecurity, r/blueteamsec, PortSwigger Research, Krebs on Security, Schneier, Google Project Zero, Unit 42, Microsoft MSTI, URLhaus, ThreatFox, CISA KEV, FIRST EPSS, CIRCL MISP, NVD, GHSA, OSV.dev, OpenSSF, Snyk, and more). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, bug bounty writeups, and practitioner disclosures into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
     license: "CC-BY-4.0 (Open Access for All Developers and Systems)",
     generatedAt: new Date().toISOString(),
     queryParameters: {
@@ -234,10 +255,10 @@ export async function GET(request: Request) {
       page,
       limit: isLimitAll ? "all" : limit
     },
-    totalConsolidatedCount: allAdvisories.length,
-    directBuildImpactCount: allAdvisories.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
-    nonCveThreatsCount: allAdvisories.filter(a => a.cveList.length === 0 && a.disclosureType !== 'INFORMATIONAL_DISCLOSURE').length,
-    informationalDisclosuresCount: allAdvisories.filter(a => a.disclosureType === 'INFORMATIONAL_DISCLOSURE').length,
+    totalConsolidatedCount: globalMetrics.totalConsolidatedCount,
+    directBuildImpactCount: globalMetrics.directBuildImpactCount,
+    nonCveThreatsCount: globalMetrics.nonCveThreatsCount,
+    informationalDisclosuresCount: globalMetrics.informationalDisclosuresCount,
     totalFeedSourcesCount: UVI_PUBLIC_FEED_SOURCES.length,
     totalUpstreamRecordsIngested: UVI_PUBLIC_FEED_SOURCES.reduce((acc, f) => acc + f.recordsIngested, 0),
     feedCategories: [
@@ -245,7 +266,8 @@ export async function GET(request: Request) {
       "Phishing & Fraud",
       "IP Reputation, Scanners & Network Telemetry",
       "Vulnerabilities & Exploitation",
-      "Multi-Indicator Hubs & Aggregators"
+      "Multi-Indicator Hubs & Aggregators",
+      "Research, Bug Bounty & Community Disclosures"
     ],
     matchedAdvisoriesCount: totalMatched,
     page,
