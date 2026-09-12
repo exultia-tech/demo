@@ -2427,6 +2427,79 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     },
     publishedDate: "2024-08-22",
     lastUpdatedDate: "2024-08-28"
+  },
+  // 37. GitHub Security Lab Research (GHSL-2025-021)
+  {
+    uviId: "UVI-INFO-2025-0037",
+    title: "Informational: GitHub Security Lab Advisory GHSL-2025-021: Arbitrary Workflow Command Injection in CI/CD Automation Toolkits",
+    headline: "GitHub Security Lab research identifies systemic expression injection vulnerabilities across open-source GitHub Actions workflows.",
+    summary: "GitHub Security Lab researchers uncover a pervasive vulnerability pattern across open-source CI/CD automation. Workflows that dynamically evaluate untrusted pull request data (such as commit titles, issue comments, or branch names) using inline bash expressions ${{ github.event.issue.title }} allow external contributors to break out of string delimiters and execute arbitrary shell commands inside privileged runner containers.",
+    technicalDetails: "GitHub Actions expressions evaluated directly in run: script blocks are expanded prior to shell invocation. Attackers submit pull requests with malicious titles containing command substitution sequences, leading to immediate remote code execution, access to GITHUB_TOKEN secrets, and poisoning of release binaries. GitHub Security Lab published comprehensive CodeQL query packs and mitigation guides to detect this anti-pattern across thousands of repositories.",
+    globalImpact: "High-severity supply chain vulnerability affecting automated release pipelines and build environments across the open-source ecosystem.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Compromised CI/CD pipeline releasing backdoored build artifacts and container images consumed by developer workstations.",
+      buildPipelineRisk: "Root arbitrary execution on runner environments, exfiltrating cloud deployment keys and signing certificates.",
+      recommendationForIdeBuilds: "Never interpolate untrusted context expressions directly into run steps; pass variables via intermediate environment variables (env: block)."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.3,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N",
+    cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+    domainCategory: "Developer Tools & Workstations",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "CHANGED",
+    cveList: [],
+    disclosureType: "INFORMATIONAL_DISCLOSURE",
+    informationalSynthesis: {
+      chatterVelocity: "VIRAL",
+      consensusLevel: "RESEARCHER_DISCLOSURE",
+      weaponizationStage: "UNDERGROUND_TOOLING",
+      exposureHorizon: "CI_CD_PIPELINE",
+      operationalDomain: "PIPELINE",
+      actionDirective: "PIPELINE",
+      vectorCategory: "CI/CD Pipeline & Workflow Expression Injection",
+      executiveBrief: "GitHub Security Lab research warns that putting issue titles or branch names directly inside workflow run scripts lets external pull requests run unauthorized shell commands on build runners.",
+      inferredMechanism: "Pre-shell expression interpolation in GitHub Actions YAML definitions permitting argument breakout and command substitution.",
+      potentialVictimSurface: ["GitHub Actions Workflows", "Open-Source Repository CI/CD", "Self-Hosted Runners", "Automated Release Toolchains"],
+      precautionaryPosture: "Audit .github/workflows/ with GitHub CodeQL; replace inline expressions in run blocks with env: declarations.",
+      primarySources: [
+        {
+          sourceId: "github_security_lab",
+          sourceName: "GitHub Security Lab (GHSL)",
+          authorOrHandle: "Jaroslav Lobačevski (GitHub Security Lab)",
+          headline: "GitHub Security Lab Advisory GHSL-2025-021: Keeping GitHub Actions Safe from Expression Injection",
+          url: "https://securitylab.github.com/advisories/",
+          publishedAt: "2025-02-18",
+          signalQuote: "The most frequent mistake in GitHub Actions is expanding untrusted user input directly inside run blocks, turning benign issues into root shell exploits."
+        }
+      ]
+    },
+    affectedTargets: [
+      { product: "GitHub Actions Workflows", ecosystem: "CI/CD & DevOps", affectedVersions: "Workflows interpolating untrusted event context directly in run: blocks" }
+    ],
+    cisaKev: { isKnownExploited: false },
+    upstreamSignals: [
+      {
+        sourceId: "github_security_lab",
+        sourceName: "GitHub Security Lab (GHSL)",
+        badge: "GHSL Research Advisory",
+        finding: "Original vulnerability research on GitHub Actions expression injection and CodeQL detection rules.",
+        signalType: "RESEARCH_DISCLOSURE",
+        confidence: "CONFIRMED"
+      }
+    ],
+    remediation: {
+      recommendedAction: "Pass untrusted values via intermediate environment variables in the action step's env: block, which safely quotes values.",
+      patchDetails: "GitHub Security Lab provides automated CodeQL remediation queries to identify and rewrite vulnerable workflow files.",
+      workarounds: ["Restrict pull request workflow execution permissions for first-time external contributors."]
+    },
+    publishedDate: "2025-02-18",
+    lastUpdatedDate: "2025-02-22"
   }
 ];
 

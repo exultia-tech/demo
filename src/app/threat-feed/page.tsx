@@ -511,7 +511,7 @@ export default function ThreatFeedPage() {
                 padding: "0.15rem 0.35rem",
                 borderRadius: "4px"
               }}>
-                37
+                {UVI_PUBLIC_FEED_SOURCES.length}
               </div>
 
               {/* Stack of Category Icons */}
@@ -561,7 +561,7 @@ export default function ThreatFeedPage() {
                   cursor: "pointer",
                   fontSize: "1rem"
                 }}
-                title="View All 37 Feeds Directory Modal"
+                title={`View All ${UVI_PUBLIC_FEED_SOURCES.length} Feeds Directory Modal`}
               >
                 🌐
               </button>
@@ -593,7 +593,7 @@ export default function ThreatFeedPage() {
                       color: "#34D399",
                       border: "1px solid rgba(16, 185, 129, 0.3)"
                     }}>
-                      37 Live
+                      {UVI_PUBLIC_FEED_SOURCES.length} Live
                     </span>
                   </div>
 
@@ -630,7 +630,7 @@ export default function ThreatFeedPage() {
                     type="text"
                     value={sidebarFeedSearch}
                     onChange={(e) => setSidebarFeedSearch(e.target.value)}
-                    placeholder="Search 37 feeds (e.g. urlhaus, tor)..."
+                    placeholder={`Search ${UVI_PUBLIC_FEED_SOURCES.length} feeds (e.g. urlhaus, ghsl)...`}
                     style={{
                       width: "100%",
                       padding: "0.38rem 0.65rem 0.38rem 1.75rem",
@@ -882,7 +882,7 @@ export default function ThreatFeedPage() {
                   }}
                 >
                   <span>🌐</span>
-                  <span>View All 37 Feeds Directory</span>
+                  <span>View All {UVI_PUBLIC_FEED_SOURCES.length} Feeds Directory</span>
                   <span>↗</span>
                 </button>
               </div>
@@ -1009,7 +1009,7 @@ export default function ThreatFeedPage() {
                 title={isSidebarCollapsed ? "Expand Threat Feeds Sidebar" : "Collapse Threat Feeds Sidebar to Maximize Table Width"}
               >
                 <span>{isSidebarCollapsed ? "⚡" : "◀"}</span>
-                <span>{isSidebarCollapsed ? "Show Feeds (37)" : "Hide Sidebar"}</span>
+                <span>{isSidebarCollapsed ? `Show Feeds (${UVI_PUBLIC_FEED_SOURCES.length})` : "Hide Sidebar"}</span>
               </button>
 
               <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
@@ -3310,7 +3310,7 @@ export default function ThreatFeedPage() {
                     type="text"
                     value={feedDirectorySearch}
                     onChange={(e) => setFeedDirectorySearch(e.target.value)}
-                    placeholder="Search 37 threat feeds by name, protocol, URL, or coverage scope..."
+                    placeholder={`Search ${UVI_PUBLIC_FEED_SOURCES.length} threat feeds by name, protocol, URL, or coverage scope...`}
                     style={{
                       width: "100%",
                       padding: "0.6rem 1rem 0.6rem 2.4rem",

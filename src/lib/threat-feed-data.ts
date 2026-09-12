@@ -1034,6 +1034,19 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 185000
   },
   {
+    id: "github_security_lab",
+    name: "GitHub Security Lab (GHSL)",
+    category: "Vulnerabilities & Exploitation",
+    scope: "Original Security Research & Zero-Day Disclosures (GHSL)",
+    access: "Public Research Advisories",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Original vulnerability disclosures, zero-days, and security advisories discovered by GitHub's dedicated security research team, auditing developer toolchains, CI/CD actions, language runtimes, and critical open-source libraries.",
+    homepageUrl: "https://securitylab.github.com/advisories/",
+    icon: "🔬",
+    recordsIngested: 640
+  },
+  {
     id: "osv_dev",
     name: "Open Source Vulnerabilities (OSV.dev)",
     category: "Vulnerabilities & Exploitation",

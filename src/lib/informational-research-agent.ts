@@ -112,14 +112,14 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
   },
   {
     id: "DISP-2025-097",
-    sourceName: "GitHub Security Lab Dispatch",
-    author: "Kevin Backhouse",
-    sourceUrl: "https://securitylab.github.com",
+    sourceName: "GitHub Security Lab (GHSL)",
+    author: "Kevin Backhouse (GitHub Security Lab)",
+    sourceUrl: "https://securitylab.github.com/advisories/",
     rawHeadline: "Git Config Directory Traversal in Core Hooks via Malicious Submodule Tree Entries",
-    rawText: "Security researchers report a directory traversal vulnerability during recursive git checkouts. Malicious repository manifests define submodule pointer paths containing '../.git/hooks/post-checkout', causing git to write arbitrary executable scripts into the parent repository hook directory, achieving silent remote code execution upon git switch or git pull.",
+    rawText: "GitHub Security Lab researchers report a directory traversal vulnerability during recursive git checkouts (GHSL-2024-112). Malicious repository manifests define submodule pointer paths containing '../.git/hooks/post-checkout', causing git to write arbitrary executable scripts into the parent repository hook directory, achieving silent remote code execution upon git switch or git pull.",
     publishedDate: "2025-03-09",
-    confidenceScore: 95,
-    signalTags: ["Git Hooks", "Directory Traversal", "Remote Code Execution", "Workstation Shell"]
+    confidenceScore: 98,
+    signalTags: ["GitHub Security Lab", "Git Hooks", "Directory Traversal", "Remote Code Execution", "Workstation Shell"]
   },
   {
     id: "DISP-2025-098",
@@ -392,10 +392,10 @@ export class InformationalResearchAgent {
         "Google Project Zero Blog",
         "Wiz Threat Research Lab",
         "Trail of Bits Security Publications",
+        "GitHub Security Lab Research (https://securitylab.github.com/advisories/)",
         "Krebs on Security Telemetry",
         "BleepingComputer Threat Dispatches",
-        "Mastodon Infosec Chatter Stream",
-        "GitHub Security Advisory Discussions"
+        "Mastodon Infosec Chatter Stream"
       ],
       lastCycleTimestamp: this.lastCycleTimestamp,
       unprocessedQueueCount: UNANALYZED_INFORMAL_DISPATCHES.filter(d => !this.processedDispatchIds.has(d.id)).length
