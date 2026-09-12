@@ -292,6 +292,19 @@ export interface ExploitationRealityBadge {
 export function getExploitationRealityBadge(record: UviAdvisoryRecord): ExploitationRealityBadge {
   const obs = getRecordObservationalAssessment(record);
 
+  // 0. Informational Research & Emerging Informal Disclosures
+  if (record.disclosureType === "INFORMATIONAL_DISCLOSURE") {
+    return {
+      label: "📡 INFORMAL RESEARCH",
+      subLabel: record.informationalSynthesis?.vectorCategory || "Autonomous Agent Synthesis",
+      statusType: "THEORETICAL",
+      bg: "rgba(139, 92, 246, 0.18)",
+      border: "rgba(139, 92, 246, 0.45)",
+      text: "#C4B5FD",
+      dot: "#8B5CF6"
+    };
+  }
+
   // 1. Confirmed Ransomware Campaign
   if (record.cisaKev?.ransomwareUse) {
     return {

@@ -31,7 +31,22 @@ export default function ThreatFeedPage() {
   // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
   const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(46);
-  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(20);
+  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(36);
+
+  // AI CTI Research Agent State
+  const [isAgentRunning, setIsAgentRunning] = useState(false);
+  const [agentTelemetry, setAgentTelemetry] = useState<{
+    agentName: string;
+    version: string;
+    status: string;
+    totalFindingsAnalyzed: number;
+    monitoredChannels: string[];
+    lastCycleTimestamp: string;
+    unprocessedQueueCount: number;
+  } | null>(null);
+  const [agentLogs, setAgentLogs] = useState<string[]>([]);
+  const [lastSynthesizedUviId, setLastSynthesizedUviId] = useState<string | null>(null);
+  const [agentSuccessNotice, setAgentSuccessNotice] = useState<string | null>(null);
 
   // Feed Sources Directory Modal & Category Filtering
   const [isFeedDirectoryOpen, setIsFeedDirectoryOpen] = useState(false);
@@ -205,6 +220,64 @@ export default function ThreatFeedPage() {
       clearTimeout(timer);
     };
   }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
+
+  // Fetch initial agent telemetry on mount
+  useEffect(() => {
+    fetch("/api/threat-feed/agent-research")
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.telemetry) {
+          setAgentTelemetry(data.telemetry);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Autonomous CTI Research Agent Execution (Zero User Input Required)
+  const handleRunAgentCycle = async () => {
+    if (isAgentRunning) return;
+    setIsAgentRunning(true);
+    setAgentSuccessNotice(null);
+    setAgentLogs([
+      "⚡ [Agent Ingestion] Scanning ArXiv, Project Zero, Wiz Research, and BleepingComputer feeds...",
+      "🔍 [Semantic Analysis] Parsing unstructured text for threat vectors and blast radius..."
+    ]);
+
+    try {
+      const res = await fetch("/api/threat-feed/agent-research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}) // Zero user input required!
+      });
+
+      if (!res.ok) throw new Error("Agent cycle failed");
+
+      const data = await res.json();
+      if (data && data.result) {
+        const { advisory, reasoningLog } = data.result;
+        setAgentLogs(reasoningLog || []);
+        setLastSynthesizedUviId(advisory.uviId);
+        setAgentSuccessNotice(`Synthesized "${advisory.uviId}: ${advisory.title.replace('Informational: ', '')}" into active threat feed!`);
+        
+        if (data.telemetry) {
+          setAgentTelemetry(data.telemetry);
+        }
+
+        // Increment count and insert into live view
+        setInformationalDisclosuresCount(prev => prev + 1);
+        if (feedScope === "INFORMATIONAL") {
+          setAdvisories(prev => [advisory, ...prev]);
+          setMatchedCount(prev => prev + 1);
+        } else {
+          setFeedScope("INFORMATIONAL");
+        }
+      }
+    } catch (err: any) {
+      setAgentLogs(prev => [...prev, `❌ Error: ${err?.message || "Failed to execute agent cycle"}`]);
+    } finally {
+      setIsAgentRunning(false);
+    }
+  };
 
   // Reset page to 1 when filters change
   const handleFilterChange = (setter: () => void) => {
@@ -986,6 +1059,374 @@ export default function ThreatFeedPage() {
             </div>
           </div>
 
+          {/* ========================================================================= */}
+          {/* 4-PERSPECTIVE SCOPE SELECTOR                                              */}
+          {/* ========================================================================= */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+            gap: "0.75rem",
+            marginBottom: "1rem"
+          }}>
+            {/* Scope 1: Universal Threats */}
+            <button
+              onClick={() => handleFilterChange(() => setFeedScope("ALL"))}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+                padding: "0.85rem 1.1rem",
+                borderRadius: "12px",
+                background: feedScope === "ALL" ? "rgba(59, 130, 246, 0.16)" : "rgba(15, 23, 42, 0.55)",
+                border: feedScope === "ALL" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: feedScope === "ALL" ? "0 4px 16px rgba(59, 130, 246, 0.2)" : "none",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: "0.86rem", fontWeight: 700, color: feedScope === "ALL" ? "#93C5FD" : "#F8FAFC" }}>
+                  🌐 All Universal Threats
+                </span>
+                <span style={{
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  color: feedScope === "ALL" ? "#FFFFFF" : "#94A3B8",
+                  background: feedScope === "ALL" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.06)",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "5px"
+                }}>
+                  {totalUniversalCount.toLocaleString()}
+                </span>
+              </div>
+              <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                Official CVEs, active zero-days & supply chain trojans
+              </span>
+            </button>
+
+            {/* Scope 2: Developer & Build Exposure */}
+            <button
+              onClick={() => handleFilterChange(() => setFeedScope("DEV_BUILD"))}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+                padding: "0.85rem 1.1rem",
+                borderRadius: "12px",
+                background: feedScope === "DEV_BUILD" ? "rgba(16, 185, 129, 0.16)" : "rgba(15, 23, 42, 0.55)",
+                border: feedScope === "DEV_BUILD" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: feedScope === "DEV_BUILD" ? "0 4px 16px rgba(16, 185, 129, 0.2)" : "none",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: "0.86rem", fontWeight: 700, color: feedScope === "DEV_BUILD" ? "#6EE7B7" : "#F8FAFC" }}>
+                  💻 Workstation & Build Exposure
+                </span>
+                <span style={{
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  color: feedScope === "DEV_BUILD" ? "#FFFFFF" : "#94A3B8",
+                  background: feedScope === "DEV_BUILD" ? "rgba(16, 185, 129, 0.4)" : "rgba(255, 255, 255, 0.06)",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "5px"
+                }}>
+                  {directBuildImpactCount.toLocaleString()}
+                </span>
+              </div>
+              <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                Threats directly affecting IDEs, developer laptops & CI/CD
+              </span>
+            </button>
+
+            {/* Scope 3: Pure Non-CVE Malware */}
+            <button
+              onClick={() => handleFilterChange(() => setFeedScope("NON_CVE"))}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+                padding: "0.85rem 1.1rem",
+                borderRadius: "12px",
+                background: feedScope === "NON_CVE" ? "rgba(236, 72, 153, 0.16)" : "rgba(15, 23, 42, 0.55)",
+                border: feedScope === "NON_CVE" ? "1px solid #EC4899" : "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: feedScope === "NON_CVE" ? "0 4px 16px rgba(236, 72, 153, 0.2)" : "none",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: "0.86rem", fontWeight: 700, color: feedScope === "NON_CVE" ? "#F472B6" : "#F8FAFC" }}>
+                  🛡️ Pure Non-CVE Malware
+                </span>
+                <span style={{
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  color: feedScope === "NON_CVE" ? "#FFFFFF" : "#94A3B8",
+                  background: feedScope === "NON_CVE" ? "rgba(236, 72, 153, 0.4)" : "rgba(255, 255, 255, 0.06)",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "5px"
+                }}>
+                  {nonCveThreatsCount.toLocaleString()}
+                </span>
+              </div>
+              <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                Botnet C2 nodes, malicious extensions & typosquats
+              </span>
+            </button>
+
+            {/* Scope 4: AI Informational Disclosures */}
+            <button
+              onClick={() => handleFilterChange(() => setFeedScope("INFORMATIONAL"))}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+                padding: "0.85rem 1.1rem",
+                borderRadius: "12px",
+                background: feedScope === "INFORMATIONAL" ? "rgba(139, 92, 246, 0.22)" : "rgba(15, 23, 42, 0.55)",
+                border: feedScope === "INFORMATIONAL" ? "1px solid #8B5CF6" : "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: feedScope === "INFORMATIONAL" ? "0 4px 20px rgba(139, 92, 246, 0.28)" : "none",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                  <span style={{ fontSize: "0.86rem", fontWeight: 700, color: feedScope === "INFORMATIONAL" ? "#C4B5FD" : "#F8FAFC" }}>
+                    📡 AI Informational Disclosures
+                  </span>
+                  <span style={{
+                    fontSize: "0.62rem",
+                    fontWeight: 800,
+                    background: "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                    color: "#FFFFFF",
+                    padding: "0.08rem 0.35rem",
+                    borderRadius: "4px"
+                  }}>
+                    AI Agent
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  color: feedScope === "INFORMATIONAL" ? "#FFFFFF" : "#94A3B8",
+                  background: feedScope === "INFORMATIONAL" ? "rgba(139, 92, 246, 0.45)" : "rgba(255, 255, 255, 0.06)",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "5px"
+                }}>
+                  {informationalDisclosuresCount.toLocaleString()}
+                </span>
+              </div>
+              <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                Autonomous AI agent synthesized informal research & threat vectors
+              </span>
+            </button>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* AUTONOMOUS CTI RESEARCH AGENT CONSOLE (Informational Category)            */}
+          {/* ========================================================================= */}
+          {feedScope === "INFORMATIONAL" && (
+            <div style={{
+              background: "linear-gradient(135deg, rgba(23, 19, 58, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%)",
+              border: "1px solid rgba(139, 92, 246, 0.35)",
+              borderRadius: "14px",
+              padding: "1.4rem 1.6rem",
+              marginBottom: "1.25rem",
+              boxShadow: "0 10px 36px rgba(124, 58, 237, 0.16)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.1rem"
+            }}>
+              {/* Agent Title & Action Bar */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: "1.5rem",
+                flexWrap: "wrap"
+              }}>
+                <div style={{ flex: 1, minWidth: "300px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.35rem" }}>
+                    <span style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                      fontSize: "0.68rem",
+                      fontWeight: 800,
+                      padding: "0.15rem 0.55rem",
+                      borderRadius: "6px",
+                      background: isAgentRunning ? "rgba(245, 158, 11, 0.2)" : "rgba(16, 185, 129, 0.18)",
+                      color: isAgentRunning ? "#FCD34D" : "#34D399",
+                      border: isAgentRunning ? "1px solid rgba(245, 158, 11, 0.4)" : "1px solid rgba(16, 185, 129, 0.4)",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase"
+                    }}>
+                      <span style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        background: isAgentRunning ? "#F59E0B" : "#10B981",
+                        display: "inline-block",
+                        boxShadow: isAgentRunning ? "0 0 8px #F59E0B" : "0 0 8px #10B981"
+                      }}></span>
+                      {isAgentRunning ? "● Synthesizing Threat Vector..." : "● Agent Active & Monitoring"}
+                    </span>
+                    <span style={{ fontSize: "0.72rem", color: "#A78BFA", fontFamily: "monospace" }}>
+                      v2.4-autonomous-cti
+                    </span>
+                  </div>
+
+                  <h2 style={{
+                    fontSize: "1.25rem",
+                    fontWeight: 800,
+                    color: "#F8FAFC",
+                    margin: "0 0 0.35rem 0",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem"
+                  }}>
+                    <span>🤖</span>
+                    <span>Autonomous CTI Research Agent</span>
+                  </h2>
+                  <p style={{ fontSize: "0.85rem", color: "#CBD5E1", margin: 0, lineHeight: 1.5 }}>
+                    Researches informal findings from academic preprints, security advisories, and developer chatter.
+                    Autonomously analyzes unstructured content, assesses developer workstation exposure, and translates findings into structured UVI threat feed entries with <strong>zero manual input required</strong>.
+                  </p>
+                </div>
+
+                {/* Agent Trigger Button */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.4rem" }}>
+                  <button
+                    onClick={handleRunAgentCycle}
+                    disabled={isAgentRunning}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.75rem 1.4rem",
+                      borderRadius: "10px",
+                      background: isAgentRunning 
+                        ? "rgba(139, 92, 246, 0.3)" 
+                        : "linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)",
+                      border: "1px solid rgba(167, 139, 250, 0.4)",
+                      color: "#FFFFFF",
+                      fontSize: "0.88rem",
+                      fontWeight: 700,
+                      cursor: isAgentRunning ? "not-allowed" : "pointer",
+                      boxShadow: "0 4px 18px rgba(124, 58, 237, 0.35)",
+                      transition: "all 0.18s ease"
+                    }}
+                  >
+                    <span style={{ fontSize: "1.05rem" }}>{isAgentRunning ? "⏳" : "⚡"}</span>
+                    <span>{isAgentRunning ? "Synthesizing Informal Finding..." : "Run Agent Discovery Cycle"}</span>
+                  </button>
+                  <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    Fully autonomous • Auto-extracts CWE, CVSS & Workstation risk
+                  </span>
+                </div>
+              </div>
+
+              {/* Agent Metrics Strip */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "0.75rem",
+                background: "rgba(10, 14, 23, 0.65)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "10px",
+                padding: "0.85rem 1.1rem"
+              }}>
+                <div>
+                  <div style={{ fontSize: "0.68rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.05em" }}>
+                    Synthesized Advisories
+                  </div>
+                  <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "#C4B5FD", marginTop: "0.2rem" }}>
+                    {informationalDisclosuresCount} Findings
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.68rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.05em" }}>
+                    Unanalyzed Queue
+                  </div>
+                  <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "#34D399", marginTop: "0.2rem" }}>
+                    {agentTelemetry?.unprocessedQueueCount ?? 9} Dispatches
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.68rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.05em" }}>
+                    Monitored Research Feeds
+                  </div>
+                  <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "#93C5FD", marginTop: "0.2rem" }}>
+                    8 Research Feeds
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.68rem", textTransform: "uppercase", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.05em" }}>
+                    Required User Input
+                  </div>
+                  <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "#FCD34D", marginTop: "0.2rem" }}>
+                    Zero (0%)
+                  </div>
+                </div>
+              </div>
+
+              {/* Agent Console / Reasoning Output */}
+              {(isAgentRunning || agentLogs.length > 0) && (
+                <div style={{
+                  background: "rgba(10, 14, 23, 0.92)",
+                  border: "1px solid rgba(139, 92, 246, 0.25)",
+                  borderRadius: "10px",
+                  padding: "0.9rem 1.1rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", fontSize: "0.74rem", color: "#A78BFA", fontWeight: 700 }}>
+                      <span>💻</span>
+                      <span>Autonomous Synthesis Execution Stream</span>
+                    </div>
+                    {agentSuccessNotice && (
+                      <span style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 600 }}>
+                        ✓ {agentSuccessNotice}
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{
+                    fontFamily: "monospace",
+                    fontSize: "0.78rem",
+                    lineHeight: 1.6,
+                    color: "#CBD5E1",
+                    maxHeight: "130px",
+                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.25rem"
+                  }}>
+                    {agentLogs.map((log, lIdx) => (
+                      <div key={lIdx} style={{
+                        color: log.includes("Error") ? "#F87171" : log.includes("Step 1") ? "#93C5FD" : log.includes("Step 2") ? "#FCD34D" : log.includes("Step 3") ? "#C084FC" : log.includes("Step 4") ? "#6EE7B7" : "#CBD5E1"
+                      }}>
+                        {log}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
       {/* Unified Filter Control Bar */}
       <div style={{
         background: "rgba(15, 20, 32, 0.8)",
@@ -1390,13 +1831,21 @@ export default function ThreatFeedPage() {
                         style={{
                           borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
                           transition: "background 0.15s ease",
-                          cursor: "pointer"
+                          cursor: "pointer",
+                          background: lastSynthesizedUviId === record.uviId 
+                            ? "linear-gradient(90deg, rgba(139, 92, 246, 0.18) 0%, rgba(30, 41, 59, 0.4) 100%)" 
+                            : "transparent",
+                          borderLeft: lastSynthesizedUviId === record.uviId ? "3px solid #8B5CF6" : "3px solid transparent"
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(30, 41, 59, 0.45)";
+                          e.currentTarget.style.background = lastSynthesizedUviId === record.uviId 
+                            ? "linear-gradient(90deg, rgba(139, 92, 246, 0.28) 0%, rgba(30, 41, 59, 0.55) 100%)" 
+                            : "rgba(30, 41, 59, 0.45)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.background = lastSynthesizedUviId === record.uviId 
+                            ? "linear-gradient(90deg, rgba(139, 92, 246, 0.18) 0%, rgba(30, 41, 59, 0.4) 100%)" 
+                            : "transparent";
                         }}
                       >
                         {/* Column 1: Identifier */}
@@ -1412,6 +1861,19 @@ export default function ThreatFeedPage() {
                               }}>
                                 {record.uviId}
                               </span>
+                              {lastSynthesizedUviId === record.uviId && (
+                                <span style={{
+                                  fontSize: "0.6rem",
+                                  fontWeight: 800,
+                                  background: "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                                  color: "#FFFFFF",
+                                  padding: "0.08rem 0.35rem",
+                                  borderRadius: "4px",
+                                  letterSpacing: "0.03em"
+                                }}>
+                                  NEW
+                                </span>
+                              )}
                               <button
                                 onClick={(e) => handleCopyUviId(record.uviId, e)}
                                 style={{

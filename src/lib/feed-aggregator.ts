@@ -35,6 +35,11 @@ let cachedAggregatedAdvisories: UviAdvisoryRecord[] | null = null;
 let lastCacheTime = 0;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour cache
 
+export function invalidateAggregatorCache(): void {
+  cachedAggregatedAdvisories = null;
+  lastCacheTime = 0;
+}
+
 function classifyDomain(vendor: string, product: string, desc: string): DomainCategory {
   const text = `${vendor} ${product} ${desc}`.toLowerCase();
 
