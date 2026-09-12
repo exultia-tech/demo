@@ -1541,16 +1541,11 @@ export default function ThreatFeedPage() {
                               </div>
                             )}
 
-                            {/* Metadata tags: CWE, Attack Vector, Feed Signals Count, Direct Build Impact */}
+                            {/* Metadata tags: CWE, Feed Signals Count, Direct Build Impact */}
                             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
                               {record.cwe && (
                                 <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "monospace" }}>
                                   {record.cwe}
-                                </span>
-                              )}
-                              {record.attackVector && (
-                                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                                  Vector: <strong style={{ color: "#E2E8F0" }}>{record.attackVector}</strong>
                                 </span>
                               )}
                               <span style={{
