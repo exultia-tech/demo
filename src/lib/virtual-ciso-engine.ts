@@ -406,38 +406,24 @@ export function answerVirtualCisoQuestion(advisory: UviAdvisoryRecord, question:
 
   // 1. Executive / Board / Leadership / CEO Summary
   if (isExecutive) {
-    return `### 💼 Virtual CISO Executive Brief for Leadership & Board
+    return `**Executive Bottom Line:**
+${briefing.executiveBriefTemplate}
 
-**Executive Summary:**
-"${briefing.executiveBriefTemplate}"
-
-**Core Risk & Exposure:**
-- **Business Impact:** ${briefing.businessImpact.worstCaseScenario}
-- **Systems in Scope:** Enterprise infrastructure and developer workstations utilizing **${affectedProduct}** (${affectedVersions}).
-- **Exploitation Posture:** ${isKev ? "⚠️ **Actively Exploited In-The-Wild (CISA KEV)**. Attackers have automated tooling targeting this flaw right now." : isCritical ? "Critical technical severity. High probability of weaponization if exposed to untrusted networks." : "Standard vulnerability exposure manageable within engineering sprints."}
-
-**CISO Bottom-Line Recommendation:**
-Classified as **${briefing.businessImpact.urgencyBadge}**. Our directive to the engineering leads is to prioritize upgrading to **${fixedVersion}**. Cost of remediation is estimated under 4 hours of sprint time, whereas potential incident response and containment costs would be orders of magnitude higher.`;
+- **Urgency & Status:** ${briefing.businessImpact.urgencyBadge} (${isKev ? 'Actively exploited in-the-wild' : `${advisory.severity} - CVSS ${advisory.cvssScore.toFixed(1)}`}).
+- **Direct Action:** Upgrade **${affectedProduct}** (${affectedVersions}) to **${fixedVersion}**. Estimated engineering effort is under 4 hours.`;
   }
 
   // 2. Slack / Teams / Developer Communication
   if (isSlack) {
-    return `### 💬 Ready-to-Send Developer Announcement (Slack / Teams / Discord)
-
-Copy and paste the following snippet directly into your engineering channels:
+    return `**Slack / Teams Announcement:**
 
 \`\`\`markdown
-🚨 *SECURITY DIRECTIVE: ${advisory.uviId} (${affectedProduct})*
-• *Severity*: ${advisory.severity} (CVSS ${advisory.cvssScore.toFixed(1)})
-• *Affected*: \`${affectedProduct}\` versions \`${affectedVersions}\`
-• *Action Required*: Upgrade to \`${fixedVersion}\` across all active branches & manifests.
-• *Summary*: ${advisory.headline}
-• *Quick Fix*: ${briefing.technicalRemediation.strategyOverview}
-• *Verification*: ${briefing.technicalRemediation.verificationTest}
-👉 Please ping #appsec if you encounter any dependency conflicts or blockers.
-\`\`\`
-
-*CISO Tip:* Post this in your \`#engineering-announcements\` and \`#devops\` channels with high-visibility tagging.`;
+🚨 SECURITY UPDATE: ${advisory.uviId} (${affectedProduct})
+• Severity: ${advisory.severity} (CVSS ${advisory.cvssScore.toFixed(1)})
+• Required Action: Upgrade ${affectedProduct} to ${fixedVersion}
+• Impact: ${advisory.headline}
+• Verification: ${briefing.technicalRemediation.verificationTest}
+\`\`\``;
   }
 
   // 3. Docker, Containers, Kubernetes & Cloud Pods
@@ -445,300 +431,149 @@ Copy and paste the following snippet directly into your engineering channels:
     const isContainerSpecific = advisory.summary.toLowerCase().includes("container") || advisory.summary.toLowerCase().includes("docker") || advisory.summary.toLowerCase().includes("socket") || advisory.summary.toLowerCase().includes("escape");
     
     if (isContainerSpecific) {
-      return `### 🐳 Container & Kubernetes Blast Radius: DIRECT IMPACT
+      return `**Container & Kubernetes Impact:**
+⚠️ This vulnerability directly attacks container virtualization boundaries or Docker daemon sockets.
 
-⚠️ **Critical Warning for Container Environments:**
-This vulnerability directly attacks container virtualization boundaries, Linux cgroups, or exposed Docker daemon sockets.
-
-**Key Technical Vectors:**
-1. **Container Escape Vector:** Attackers inside a container running ${affectedProduct} may be able to interact with host system resources or break out into the host OS kernel.
-2. **Exposed Docker Socket:** If \`/var/run/docker.sock\` is bind-mounted into this container, root access to the host node is trivially achievable.
-
-**Mandatory Remediation Steps:**
-- Audit all Helm charts and Kubernetes manifests: ensure \`privileged: false\` and \`allowPrivilegeEscalation: false\`.
-- Enforce Read-Only root filesystems (\`readOnlyRootFilesystem: true\`) to neutralize binary drop and execution.
-- Immediately rebuild base images from an official patched release (\`${fixedVersion}\`) and trigger a rolling update (\`kubectl rollout restart deployment\`).`;
+- **Risk:** An attacker inside a container running ${affectedProduct} can interact with host node resources or attempt container breakout.
+- **Action:**
+  1. In \`Dockerfile\`, bump base image or dependencies to **${fixedVersion}**.
+  2. Ensure containers run with \`privileged: false\` and \`readOnlyRootFilesystem: true\`.
+  3. Execute \`kubectl rollout restart\` once images are updated.`;
     }
 
-    return `### 🐳 Container & Kubernetes Assessment for ${affectedProduct}
-
-**Does running inside Docker or Kubernetes protect us?**
-- **Partially, but not completely:** Docker containers provide process and filesystem namespaces. However, if ${affectedProduct} is packaged inside your container image, the vulnerability still resides within that runtime environment.
-- **Network Reachability:** If the container exposes service ports to the ingress controller or load balancer, an attacker can still send exploit payloads across the network (${advisory.attackVector}).
-- **Post-Exploitation Risk:** Once an attacker compromises the containerized process, they will harvest local container environment variables (e.g. \`DATABASE_URL\`, \`AWS_ACCESS_KEY_ID\`, Kubernetes ServiceAccount tokens in \`/var/run/secrets/kubernetes.io/serviceaccount\`) and attempt lateral movement within the cluster VPC.
-
-**Action Plan for Container Teams:**
-1. **Image Scan:** Run \`trivy image <your-repo>/<app-image>:tag\` to confirm detection of ${advisory.cveList[0] || advisory.uviId}.
-2. **Base Image Bump:** In your \`Dockerfile\`, update the base image or package manager command to pull \`${fixedVersion}\`.
-3. **Cluster Redeploy:** Push the updated image and execute \`kubectl rollout restart deployment/<service-name>\`.`;
+    return `**Container & Kubernetes Impact:**
+- **Does running in Docker/K8s shield us?** Only partially. If ${affectedProduct} is packaged inside your container image, the vulnerable runtime is still exposed to network traffic hitting container ports.
+- **Action:** Bump the dependency or base image in your Dockerfile to **${fixedVersion}** and redeploy (\`kubectl rollout restart\`).`;
   }
 
   // 4. Temporary Workarounds & Emergency Mitigations (Cannot patch today)
   if (isWorkaround) {
     const hasExistingWorkarounds = advisory.remediation.workarounds && advisory.remediation.workarounds.length > 0;
     
-    return `### 🛡️ Emergency Workarounds & Compensating Controls (Zero-Downtime Shields)
+    if (hasExistingWorkarounds) {
+      return `**Immediate Workarounds (Until ${fixedVersion} can be deployed):**
 
-When an immediate code refactor or production package upgrade to **${fixedVersion}** cannot be scheduled today, implement these compensating controls:
+${advisory.remediation.workarounds!.map((w, idx) => `• ${w}`).join("\n")}
 
-${hasExistingWorkarounds ? `**Vendor-Documented Mitigations:**\n${advisory.remediation.workarounds!.map((w, idx) => `**${idx + 1}.** ${w}`).join("\n\n")}\n\n` : ''}**Tactical Defensive Perimeter Controls:**
-1. **Network Boundary Ingress Filtering:**
-   - If this service does not need public internet access, restrict ingress traffic to authenticated VPN or corporate IP CIDR blocks immediately.
-   - For AWS Security Groups / Cloud Firewalls: restrict port exposure from \`0.0.0.0/0\` to internal subnets only.
+• **Perimeter Isolation:** Restrict network ingress to trusted VPN CIDRs and block outbound unauthorized egress connections.`;
+    }
 
-2. **WAF & Reverse Proxy Inspection:**
-   - Configure your Web Application Firewall (Cloudflare WAF, AWS WAF, NGINX) with regex drop rules matching known exploitation patterns for **${advisory.cwe || 'input validation flaws'}**.
-   - Drop incoming requests containing unexpected URI decodings, nested serialization payloads, or suspicious traversal sequences.
-
-3. **Egress Isolation (Cuts Off C2 / Reverse Shells):**
-   - Restrict outbound egress traffic on nodes running ${affectedProduct}. Block outbound TCP/UDP to non-standard external ports to prevent reverse shell callbacks or token exfiltration.
-
-4. **Runtime Process Isolation:**
-   - Ensure the process is executing under a dedicated non-root service account (e.g. \`uid 10001\`) with no write permissions to binary or configuration directories.
-
-*CISO Note:* Compensating controls reduce the attack surface temporarily, but do NOT resolve the root flaw. Log a prioritized Jira ticket to deploy version **${fixedVersion}** within your standard SLA.`;
+    return `**Immediate Workarounds (Until ${fixedVersion} can be deployed):**
+• **Network Access:** Restrict ingress ports on ${affectedProduct} to internal VPN subnets only.
+• **WAF / Reverse Proxy:** Inspect and block anomalous requests targeting ${advisory.cwe || 'input validation flaws'}.
+• **Least Privilege:** Run the service process as an unprivileged, non-root system user.`;
   }
 
   // 5. Compliance, Audit, Cyber Insurance & SLAs
   if (isCompliance) {
-    return `### 📋 Compliance, Governance & Audit Advisory
-
-**Regulatory & Framework Impact:**
-- **SOC 2 Type II / ISO 27001:** Requires continuous vulnerability management and adherence to defined remediation SLAs. Failure to remediate a known ${advisory.severity} vulnerability within defined SLA windows will be flagged as an audit exception.
-- **PCI-DSS 4.0 (Requirement 6.3.3):** Requires all "Critical" and "High" security vulnerabilities to be patched within **30 days** of public release (with internet-facing zero-days expected within **24–72 hours**).
-- **Cyber Insurance Requirements:** Major cyber underwriters mandate that KEV-listed or 9.0+ CVSS vulnerabilities with public exploits be addressed promptly to maintain policy coverage validity in case of breach.
-
-**Standard CISO Remediation Timelines:**
-• **Critical / KEV Flaws:** Remediation SLA: **24 to 48 Hours**
-• **High Severity Flaws:** Remediation SLA: **7 Days**
-• **Medium Severity Flaws:** Remediation SLA: **30 Days (Standard Sprint)**
-
-**Audit Trail Documentation:**
-Record the following evidence in your ticketing system (Jira/ServiceNow):
-1. Timestamp when ${advisory.uviId} was ingested and triaged.
-2. Pull request or deployment ID applying the fix (${fixedVersion}).
-3. Verification test log confirming successful deployment.`;
+    const sla = isCritical || isKev ? "24–48 Hours" : advisory.severity === "HIGH" ? "7 Days" : "30 Days";
+    return `**Compliance & Audit Directive:**
+- **Standard Remediation SLA:** **${sla}** (PCI-DSS 4.0 req 6.3.3 / SOC 2 Type II compliance).
+- **Audit Requirement:** Log the triage timestamp, PR/deployment deploying **${fixedVersion}**, and automated verification logs in your change management system.`;
   }
 
   // 6. Testing, Verification, Commands & Scans
   if (isTestOrScan) {
-    return `### 🧪 Verification & Audit Playbook for Engineering Teams
+    return `**Audit & Verification Commands:**
 
-**How to verify if your systems or codebases are affected:**
-
-1. **Dependency Audit Commands (Run in repository roots):**
 \`\`\`bash
-# Audit package dependencies across your repositories
-# Node.js:
-npm audit --audit-level=high
-# Python:
-pip-audit || pip list | grep -i "${affectedProduct.split(' ')[0]}"
-# Go:
-govulncheck ./...
-# Rust:
-cargo audit
-\`\`\`
+# Audit dependencies in repository root:
+npm audit || pip-audit || govulncheck ./... || cargo audit
 
-2. **Filesystem Search for Affected Files:**
-\`\`\`bash
-# Search for referenced package or library names across local configs
+# Search codebase for affected component:
 grep -rn "${affectedProduct.split(' ')[0]}" . --exclude-dir={node_modules,.git,vendor,dist}
 \`\`\`
 
-3. **Post-Patch Verification Test:**
-${briefing.technicalRemediation.verificationTest}
-
-4. **Runtime Health Check:**
-After updating to version \`${fixedVersion}\`, monitor application error logs for 15 minutes to verify that no class loading, deserialization, or dependency resolution exceptions are thrown.`;
+**Post-Patch Verification:**
+${briefing.technicalRemediation.verificationTest}`;
   }
 
   // 7. Detection, SOC Logging, SIEM & Indicators of Compromise (IoCs)
   if (isSocLogging) {
-    return `### 🔍 SOC Detection & Threat Hunting Playbook: ${advisory.uviId}
-
-**What to Hunt For in Your SIEM & Logs:**
-1. **Application & Ingress Access Logs:**
-   - Search for anomalous request payloads containing unexpected special characters, protocol specifiers, or encoding wrappers related to **${advisory.cwe || 'untrusted input'}**.
-   - Inspect web server access logs (NGINX, Envoy, Apache, API Gateway) for HTTP 400/500 bursts associated with exploit probing.
-
-2. **Suspicious Child Process Spawns (EDR / Sysmon / Auditd):**
-   - Look for the parent process of **${affectedProduct}** spawning interactive shells:
-     - Windows: \`powershell.exe\`, \`cmd.exe\`, \`wscript.exe\` spawned by developer or web runtimes.
-     - Linux: \`/bin/sh\`, \`/bin/bash\`, \`python3\`, \`curl\`, \`wget\` spawned by application worker processes.
-
-3. **Egress Network Connections:**
-   - Alert on unexpected outbound DNS queries or TCP connections initiated by ${affectedProduct} to external untrusted IPs, especially over non-standard ports.
-
-4. **Quick Log Hunting Command:**
+    return `**SOC Threat Hunting & Detection:**
+- **Application Logs:** Search web server and ingress logs for anomalous request payloads and burst HTTP 400/500 errors.
+- **Process Monitoring (EDR):** Alert if the parent process of **${affectedProduct}** spawns unexpected shell binaries (\`sh\`, \`bash\`, \`powershell.exe\`, \`cmd.exe\`, \`curl\`).
+- **Log Search Command:**
 \`\`\`bash
-# Search recent system and container logs for indicators
 journalctl -u ${affectedProduct} -S -24h | grep -Ei "(error|fatal|exception|denied|probe|exploit)"
-\`\`\`
-
-*CISO Forensic Recommendation:* If suspicious anomalous spawns or egress connections are detected from affected hosts, isolate the container/VM immediately, preserve volatile memory for forensics, and rotate all credentials stored in environment variables on that instance.`;
+\`\`\``;
   }
 
   // 8. Authentication, Authorization & Pre-Auth vs Post-Auth
   if (isAuth) {
-    return `### 🔐 Authentication & Access Preconditions Analysis
-
-**Authentication Requirements:**
+    return `**Authentication Requirements:**
 - **Privileges Required:** **${advisory.privilegesRequired}**
-- **User Interaction Required:** **${advisory.userInteraction}**
+- **User Interaction:** **${advisory.userInteraction}**
 - **Attack Vector:** **${advisory.attackVector}**
 
-**Can this be exploited anonymously by any internet user?**
-${isZeroPriv && isNetwork ? `🚨 **YES — Unauthenticated Remote Vector:**
-This vulnerability is **pre-authentication**. An attacker does NOT need a user account, password, API key, or valid session. Any external party who can send packets to the exposed port or web interface can trigger the exploit mechanism.` : isZeroPriv ? `⚠️ **Zero-Privilege Required:**
-While authentication is not required, the attack vector is **${advisory.attackVector}**, meaning the attacker must have local access, adjacent network access, or trick a user into executing malicious input.` : `🛡️ **Post-Authentication Vector:**
-The attacker must already possess **${advisory.privilegesRequired}** privileges (a valid user login, API key, or role) before they can reach the vulnerable execution path. However, note that compromised guest credentials, self-registered users, or SSRF pivots could fulfill this requirement.`}
-
-**Identity & Access Management (IAM) Impact:**
-${advisory.scope === "CHANGED" ? `• **Scope Change:** Exploiting this flaw crosses security boundaries, allowing unauthorized privilege escalation beyond the application's intended role structure.` : `• **Standard Scope:** Exploitation operates within the application's privilege context, but can lead to credential extraction or session hijacking.`}`;
+${isZeroPriv && isNetwork 
+  ? `🚨 **Pre-Authentication Flaw:** Can be exploited anonymously over the network without valid credentials or user interaction.` 
+  : isZeroPriv 
+  ? `⚠️ **No Credentials Needed:** Requires local or adjacent network access (${advisory.attackVector}), but no prior account or login.` 
+  : `🛡️ **Post-Authentication:** Attacker must already possess **${advisory.privilegesRequired}** credentials to reach the vulnerable code path.`}`;
   }
 
   // 9. Network Architecture, VPC, Firewalls & WAF
   if (isNetworkBoundary) {
-    return `### 🌐 Network Perimeter, Firewall & WAF Defense Strategy
-
-**Perimeter Exposure Analysis:**
-- **Attack Vector:** **${advisory.attackVector}**
-- **Attack Complexity:** **${advisory.attackComplexity}**
-
-**Will our Web Application Firewall (WAF) protect us?**
-- **Partial Shield (Heuristic Only):** While WAF rules (such as OWASP Core Rule Set) can block common canonical exploit signatures, advanced attackers routinely use encoding bypasses (URL encoding, unicode escapes, nested base64, protocol chunking) that slip through signature inspection. A WAF is a helpful speedbump, not a permanent fix.
-
-**Internal Network & VPC Exposure:**
-- **Intranet / VPC Risk:** Even if ${affectedProduct} is hosted on an internal private subnet behind a VPN, it remains vulnerable to:
-  1. **Server-Side Request Forgery (SSRF):** Attackers targeting public-facing microservices can proxy requests to internal backend endpoints.
-  2. **Developer Workstation Pivoting:** Compromised developer laptops connected via VPN can inadvertently expose internal listeners.
-  3. **DNS Rebinding:** Malicious websites opened in developer browsers can rebind hostnames to \`127.0.0.1\` or internal private RFC-1918 IPs.
-
-**Recommended Network Hardening:**
-1. Enforce strict **Egress Filtering**: Block outbound connections from application servers to the public internet except for explicit allowlisted endpoints (e.g. package repositories, payment gateways).
-2. Segment database and sensitive microservice subnets so they cannot be reached directly by general web worker nodes.`;
+    return `**Network Perimeter & Firewall Assessment:**
+- **Attack Vector:** **${advisory.attackVector}** (${advisory.attackComplexity} complexity).
+- **WAF Coverage:** WAF rules offer heuristic protection against known exploit signatures, but cannot substitute for patching due to encoding bypasses.
+- **Recommendation:** Restrict ingress ports to authorized VPC subnets and enforce egress filtering to prevent reverse shells or credential exfiltration.`;
   }
 
   // 10. Developer Workstations, Laptops, IDEs & CI/CD Pipelines
   if (isDevWorkstation) {
     const buildRisk = advisory.ideBuildImpact;
-    return `### 💻 Developer Workstation & CI/CD Pipeline Impact
-
-**Are developer laptops and build runners at risk?**
-${buildRisk.hasDirectBuildImpact ? `⚠️ **HIGH WORKSTATION & BUILD EXPOSURE:**
-This threat directly exposes developer environments and build automation!
-- **Workstation Vector:** ${buildRisk.workstationVector}
+    return `**Developer Workstation & CI/CD Impact:**
+${buildRisk.hasDirectBuildImpact 
+  ? `⚠️ **Direct Build Impact:** ${buildRisk.workstationVector}
 - **Build Pipeline Risk:** ${buildRisk.buildPipelineRisk}
-- **Developer Environment Severity:** **${buildRisk.severityOnDeveloperEnv}**` : `🛡️ **Standard Production Exposure:**
-While developer workstations are not the primary target surface, local test runs, mock servers, or local integration testing can inadvertently mirror the vulnerability.`}
-
-**How Developer Workstations Get Compromised:**
-1. **Repository Hooks & Build Scripts:** Cloned repositories containing untrusted dependencies or malicious \`postinstall\`, \`Makefile\`, or Gradle tasks execute commands silently with the developer's full local OS privileges.
-2. **Localhost Socket Exposure:** Background developer daemons or debug listeners (e.g. ports 3000, 8080, 9222) can be probed by malicious websites visited in the developer's browser via cross-origin WebSockets or DNS rebinding.
-
-**Specific Guidance for Engineering Teams:**
-- **Workstation Hardening:** ${buildRisk.recommendationForIdeBuilds}
-- **CI/CD Hygiene:** Ensure GitHub Actions or Jenkins runners run as ephemeral containers with restricted host permissions. Never grant self-hosted runners write access to production IAM roles or long-lived deployment secrets.`;
+- **Action:** ${buildRisk.recommendationForIdeBuilds}` 
+  : `🛡️ **Production Focused:** Developer laptops are not directly exposed unless running vulnerable local instances or mock servers.`}`;
   }
 
   // 11. Active Exploitation, Threat Actors, KEV & 0-Day Status
   if (isThreatIntelOrKev) {
-    return `### 🚨 Threat Intelligence & In-The-Wild Threat Actor Activity
-
-**CISA Known Exploited Vulnerabilities (KEV) Status:**
-${isKev ? `🔥 **CONFIRMED ACTIVE IN-THE-WILD EXPLOITATION (CISA KEV LISTED):**
-- **CISA Verdict:** Federal agencies and critical infrastructure are under mandatory binding directive to patch this flaw immediately.
-- **Threat Landscape:** Automated cybercrime rings, ransomware affiliates, and initial access brokers (IABs) actively scan the IPv4 space for exposed targets running ${affectedProduct}.` : `📋 **NOT CURRENTLY ON CISA KEV LIST:**
-- While not yet flagged by CISA as actively exploited in mass campaigns, weaponization proof-of-concepts (PoCs) or researcher disclosures indicate high weaponization potential.
-- CVSS Score: **${advisory.cvssScore.toFixed(1)} / 10.0** (${advisory.severity}).`}
-
-**Attacker Ecosystem Profile:**
-- **Weaponization Vector:** ${advisory.attackComplexity === "LOW" ? "Low technical complexity means script-kiddies and automated botnet scanners can easily weaponize public PoCs." : "Requires chained exploits or targeted reconnaissance, characteristic of advanced threat groups."}
-- **Ransomware & Extortion Risk:** Vulnerabilities with remote execution or credentials exposure are rapidly weaponized by ransomware syndicates for initial access within 48–72 hours of public disclosure.`;
+    return `**Threat Intelligence & Exploitation Status:**
+- **CISA KEV Listed:** ${isKev ? '🔥 **YES — Actively exploited in the wild.** Mandatory emergency remediation.' : 'No current evidence of mass automated in-the-wild exploitation.'}
+- **Severity Rating:** **${advisory.cvssScore.toFixed(1)} / 10.0** (${advisory.severity}).
+- **Action:** Prioritize deploying **${fixedVersion}** immediately.`;
   }
 
   // 12. Data Impact, Confidentiality, Exfiltration & Blast Radius
   if (isDataOrBlastRadius) {
-    return `### 💥 Blast Radius & Data Confidentiality Assessment
-
-**Worst-Case Impact Scenario:**
-${briefing.businessImpact.worstCaseScenario}
-
-**Can an attacker access or exfiltrate our customer data?**
-- **Mechanism:** ${isRce ? `Because this vulnerability involves arbitrary code execution or process hijacking, an attacker can run commands in the context of the running application. This grants them read access to anything the application can access—including active database connection pools, environment variables (\`DATABASE_URL\`, \`SECRET_KEY_BASE\`), AWS S3 tokens, and local cached data.` : `This vulnerability targets ${advisory.cwe || 'application logic'}. Depending on application architecture, an attacker can manipulate application state, read unauthorized records, or cause systemic service disruption.`}
-
-**Specific Blast Radius Breakdown:**
-1. **Confidentiality:** ${advisory.cvssVector.includes("/C:H") ? "🔴 **HIGH** — Full disclosure of sensitive data, configuration keys, and memory contents." : "🟡 **MODERATE** — Partial or scoped data leakage possible."}
-2. **Integrity:** ${advisory.cvssVector.includes("/I:H") ? "🔴 **HIGH** — Attacker can modify records, tamper with configurations, or inject backdoors." : "🟡 **MODERATE** — Limited file or parameter tampering."}
-3. **Availability:** ${advisory.cvssVector.includes("/A:H") ? "🔴 **HIGH** — Potential for crash loops, resource starvation, or denial of service." : "🟢 **LOW** — Minimal operational uptime impact."}
-
-*CISO Defense Check:* Ensure database credentials utilize least-privilege schemas and enable AWS GuardDuty / CloudTrail anomaly alerts for unexpected mass database exports.`;
+    return `**Data Impact & Blast Radius:**
+- **Worst-Case Consequence:** ${briefing.businessImpact.worstCaseScenario}
+- **Exposure:** ${isRce ? `Arbitrary code execution permits reading application process memory, environment variables, and database credentials.` : `Impacts application integrity and state according to ${advisory.cwe || 'input validation rules'}.`}
+- **Remediation:** Upgrade to **${fixedVersion}** to prevent unauthorized access.`;
   }
 
   // 13. Rollback, Compatibility & Regression Risks (Breaking changes)
   if (isRollbackOrBreakage) {
-    return `### 🔄 Rollback & Regression Risk Assessment
-
-**Will upgrading to ${fixedVersion} break our application?**
-- **SemVer Risk Analysis:** Minor and patch releases (e.g. \`1.2.3\` to \`1.2.4\`) typically preserve backward compatibility and public API signatures. Major version jumps may include deprecated function removals or stricter input validation schemas.
-- **Stricter Parsing Expectations:** Security patches often enforce stricter input sanitization or disable legacy insecure protocols by default. If your legacy code relied on lax input formatting, you may encounter validation errors.
-
-**Zero-Risk Deployment Strategy:**
-1. **Canary / Staging Deployment:** Deploy the updated package to a staging or pre-production cluster first.
-2. **Automated Integration Test Suite:** Run your end-to-end integration and API smoke tests against the canary instance.
-3. **Rollback Contingency Plan:**
-   - Keep the previous stable container image or artifact tag tagged in your registry.
-   - If unexpected regressions occur in production, execute a fast rollback:
-     \`kubectl rollout undo deployment/<service-name>\` or revert the lockfile commit.
-   - Concurrently apply the interim workaround (network restriction or WAF filter) so you remain shielded while fixing the regression.`;
+    return `**Upgrade & Compatibility Guidance:**
+- **Compatibility:** Patch updates to **${fixedVersion}** generally maintain backwards compatibility, but check for stricter input validation rules.
+- **Rollback Plan:** Validate first in a staging environment. Keep the previous build artifact/image tagged so you can execute a quick rollback if regressions occur.`;
   }
 
   // 14. Language & Package Ecosystem Details
   if (isEcosystemNuance) {
-    return `### 📦 Package Ecosystem & Dependency Tree Analysis
-
-**Ecosystem:** **${advisory.affectedTargets[0]?.ecosystem || 'Software Engineering Toolchain'}**
-**Affected Component:** **${affectedProduct}** (${affectedVersions})
-**Patched Target:** **${fixedVersion}**
-
-**Transitive Dependency Hazards:**
-Even if \`${affectedProduct}\` is not explicitly listed in your top-level \`package.json\`, \`requirements.txt\`, or \`pom.xml\`, it may be pulled in as a **transitive dependency** by another library or developer plugin!
-
-**How to Inspect Your Deep Dependency Tree:**
-\`\`\`bash
-# Node / JavaScript:
-npm ls ${affectedProduct.split(' ')[0]} || yarn why ${affectedProduct.split(' ')[0]}
-
-# Python:
-pipdeptree -p ${affectedProduct.split(' ')[0]}
-
-# Java / Maven:
-mvn dependency:tree -Dincludes=*${affectedProduct.split(' ')[0]}*
-
-# Go:
-go mod why -m ${affectedProduct.split(' ')[0]}
-\`\`\`
-
-**Resolution:**
-If pulled in transitively, override the resolution in your lockfile (e.g. via \`overrides\` in package.json or \`dependencyManagement\` in pom.xml) to pin the dependency to **${fixedVersion}**.`;
+    return `**Ecosystem & Dependency Resolution:**
+- **Ecosystem:** ${advisory.affectedTargets[0]?.ecosystem || 'Toolchain'}
+- **Component:** **${affectedProduct}** (${affectedVersions})
+- **Fix:** Update dependency declaration to **${fixedVersion}**. If pulled in as a transitive sub-dependency, use package manager overrides (e.g. \`overrides\` in package.json or dependencyManagement in pom.xml).`;
   }
 
   // 15. Mechanism Explanation
   if (isMechanismExplanation) {
-    return `### 🔬 Detailed Exploitation Mechanism Breakdown
-
-**Plain-English Overview:**
+    return `**Exploitation Mechanism:**
 ${briefing.plainEnglishSummary}
 
-**Step-by-Step Attack Flow:**
-${briefing.attackFlow.map(s => `${s.icon} **Step ${s.step}: ${s.title}** — ${s.description}`).join("\n")}
-
-**Architectural Root Cause:**
-The underlying weakness is classified under **${advisory.cwe || 'system architecture flaw'}**. When unvalidated input crosses the trust boundary into **${affectedProduct}**, execution flow is hijacked before defensive bounds-checking takes effect.`;
+- **Root Cause:** Classified under **${advisory.cwe || 'input validation error'}**.
+- **Remediation:** Upgrade to **${fixedVersion}**.`;
   }
 
-  // 16. Intelligent NLP Dynamic Synthesis for Custom Open-Ended Inquiries
-  // Extract key topic nouns and formulate a tailored, multi-faceted CISO response
+  // 16. Direct, Concise Response for Custom User Inquiries
+  // Extract key topic nouns and answer the prompt directly without dumping boilerplate dossiers
   const stopWords = new Set([
     'what', 'when', 'where', 'which', 'who', 'whom', 'whose', 'why', 'how',
     'could', 'would', 'should', 'about', 'their', 'there', 'these', 'those',
@@ -753,24 +588,15 @@ The underlying weakness is classified under **${advisory.cwe || 'system architec
     .replace(/[?.,!/\\;:'"()]/g, ' ')
     .split(/\s+/)
     .filter(w => w.length > 2 && !stopWords.has(w.toLowerCase()));
-  const focusTopic = sanitizedWords.slice(0, 4).join(" ") || "your inquiry";
+  const focusTopic = sanitizedWords.slice(0, 4).join(" ") || "this inquiry";
 
-  return `### 🛡️ Virtual CISO Assessment: "${question}"
+  return `Regarding **"${question}"**:
 
-**1. Direct CISO Ruling on ${focusTopic.toUpperCase()}:**
-In evaluating how **${advisory.title}** (${advisory.uviId}) relates specifically to **"${question}"**:
-${isNetwork ? `Because this threat operates across the **NETWORK** boundary with **${advisory.privilegesRequired}** privileges required, any architecture or component involving ${focusTopic} that receives or processes external untrusted input must be treated as directly exposed.` : `Because this vector is **${advisory.attackVector}** (${advisory.attackComplexity} complexity), ${focusTopic} is primarily at risk if untrusted files, repository code, or unvetted scripts are executed within that local environment.`}
+${isNetwork 
+  ? `Because this vulnerability operates over the **NETWORK** (${advisory.privilegesRequired} privileges required), any component or workflow involving **${focusTopic}** that handles untrusted external traffic is directly at risk.` 
+  : `Because the attack vector is **${advisory.attackVector}**, **${focusTopic}** is primarily affected if malicious files or unvetted scripts are processed in that environment.`}
 
-**2. Threat Architecture & Blast Radius:**
-- **Vulnerability Mechanism:** ${advisory.headline}
-- **Attack Classification:** ${advisory.cwe || 'Application Input Validation Flaw'} affecting **${affectedProduct}** (${affectedVersions}).
-- **Operational Domain:** **${advisory.domainCategory}**
-- **Potential Exposure for ${focusTopic}:** ${isRce ? `If ${focusTopic} runs within the process execution boundary of ${affectedProduct}, an attacker achieving code execution can read environment variables, steal local API tokens, and attempt lateral movement.` : `The primary impact involves potential data tampering, unauthorized parameter manipulation, or service disruption (${briefing.businessImpact.worstCaseScenario}).`}
-
-**3. Strategic Action Plan:**
-1. **Targeted Inspection:** Verify whether ${focusTopic} directly packages or interfaces with **${affectedProduct}** (${affectedVersions}).
-2. **Remediation Priority:** Upgrade affected components to **${fixedVersion}** (${briefing.businessImpact.urgencyBadge}).
-3. **Defensive Verification:** ${briefing.technicalRemediation.verificationTest}
-
-*Have a specific follow-up on your tech stack, network ingress, or compliance timeline? Type your question below.*`;
+- **Core Risk:** ${isRce ? `Arbitrary code execution could allow unauthorized access to local environment variables, credentials, and internal resources.` : briefing.businessImpact.worstCaseScenario}
+- **Recommended Action:** Upgrade **${affectedProduct}** (${affectedVersions}) to **${fixedVersion}**.
+- **Verification:** ${briefing.technicalRemediation.verificationTest}`;
 }
