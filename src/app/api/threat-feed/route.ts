@@ -9,12 +9,16 @@ import {
   getRecordObservationalAssessment
 } from '@/lib/threat-feed-data';
 import { getAggregatedUviAdvisories } from '@/lib/feed-aggregator';
+import { ctiResearchAgent } from '@/lib/informational-research-agent';
 
 export const dynamic = 'force-dynamic';
 
 export type { UviAdvisoryRecord, PublicFeedSource, ThreatSeverity, DomainCategory, IdeBuildImpactAssessment };
 
 export async function GET(request: Request) {
+  // Ensure autonomous CTI research agent background worker is active
+  ctiResearchAgent.ensureInitialized();
+
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query')?.trim().toLowerCase();
   const id = searchParams.get('id')?.trim().toUpperCase();
