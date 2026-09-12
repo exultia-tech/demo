@@ -566,7 +566,11 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
                     { label: '💼 30-sec summary for non-tech CEO', q: 'Give me a 30-second summary for non-technical CEO and board' },
                     { label: '💬 1-minute Slack message for dev team', q: 'What is a 1-minute Slack announcement I can post for developers?' },
                     { label: '🐳 Does this impact Docker containers?', q: 'How does this vulnerability affect our applications if we run them inside Docker or Kubernetes?' },
-                    { label: '🛡️ Temporary emergency workaround', q: 'What are temporary workarounds if our team cannot upgrade today?' }
+                    { label: '🛡️ Temporary emergency workaround', q: 'What are temporary workarounds if our team cannot upgrade today?' },
+                    { label: '🔍 SOC detection & log hunting', q: 'What should our SOC and engineers hunt for in logs to detect exploitation?' },
+                    { label: '🔐 Is authentication required?', q: 'Can an attacker exploit this anonymously or do they need valid credentials?' },
+                    { label: '💻 Are developer laptops at risk?', q: 'How does this threat impact developer laptops, IDEs, and local build environments?' },
+                    { label: '🧪 Commands to audit our repos', q: 'What terminal commands can developers run to test if our code is affected?' }
                   ].map((preset, i) => (
                     <button
                       key={i}
