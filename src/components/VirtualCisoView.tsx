@@ -1,19 +1,40 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { UviAdvisoryRecord } from '@/lib/threat-feed-data';
+import { 
+  UviAdvisoryRecord,
+  getRecordObservationalAssessment,
+  getActionDirectiveBadge,
+  getWeaponizationStageLabel,
+  getExposureHorizonLabel
+} from '@/lib/threat-feed-data';
 import { generateVirtualCisoBriefing, answerVirtualCisoQuestion, VirtualCisoBriefing } from '@/lib/virtual-ciso-engine';
+
+export type CisoSubTab = 'layman' | 'technical' | 'qa';
 
 interface VirtualCisoViewProps {
   advisory: UviAdvisoryRecord;
+  ratingMode?: 'observational' | 'classic';
+  activeSubTab?: CisoSubTab;
+  onSubTabChange?: (tab: CisoSubTab) => void;
 }
 
-type CisoSubTab = 'layman' | 'technical' | 'qa';
-
-export default function VirtualCisoView({ advisory }: VirtualCisoViewProps) {
-  const [activeSubTab, setActiveSubTab] = useState<CisoSubTab>('layman');
+export default function VirtualCisoView({
+  advisory,
+  ratingMode = 'observational',
+  activeSubTab,
+  onSubTabChange
+}: VirtualCisoViewProps) {
+  const [internalSubTab, setInternalSubTab] = useState<CisoSubTab>('layman');
   const [briefing, setBriefing] = useState<VirtualCisoBriefing | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+
+  // Controlled or uncontrolled sub-tab state
+  const currentSubTab = activeSubTab || internalSubTab;
+  const setSubTab = (tab: CisoSubTab) => {
+    setInternalSubTab(tab);
+    if (onSubTabChange) onSubTabChange(tab);
+  };
 
   // Interactive Q&A State
   const [customQuestion, setCustomQuestion] = useState('');
@@ -31,6 +52,8 @@ export default function VirtualCisoView({ advisory }: VirtualCisoViewProps) {
 
   if (!briefing) return null;
 
+  const obs = getRecordObservationalAssessment(advisory);
+
   const handleCopy = (text: string, sectionId: string) => {
     navigator.clipboard.writeText(text);
     setCopiedSection(sectionId);
@@ -40,6 +63,7 @@ export default function VirtualCisoView({ advisory }: VirtualCisoViewProps) {
   const handleAskPreset = (presetQuestion: string) => {
     setCustomQuestion(presetQuestion);
     setIsAnswering(true);
+    setSubTab('qa');
     setTimeout(() => {
       const ans = answerVirtualCisoQuestion(advisory, presetQuestion);
       setQaAnswer(ans);
@@ -58,10 +82,10 @@ export default function VirtualCisoView({ advisory }: VirtualCisoViewProps) {
     }, 200);
   };
 
-  const fullReportMarkdown = `# Virtual CISO Intelligence Briefing: ${advisory.uviId}
+  const fullReportMarkdown = `# Unified Threat Overview & AI Briefing: ${advisory.uviId}
 ## ${advisory.title}
 
-### Plain-English Summary (Layman Perspective)
+### Plain-English Summary
 ${briefing.plainEnglishSummary}
 
 ### Analogy: ${briefing.analogy.title}
@@ -95,7 +119,7 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Executive Headline & Quick Action Bar */}
+      {/* 1. Executive Intelligence & Urgency Banner */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -103,8 +127,8 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
         flexWrap: 'wrap',
         gap: '0.75rem',
         padding: '0.85rem 1.15rem',
-        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%)',
-        border: '1px solid rgba(139, 92, 246, 0.25)',
+        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.14) 0%, rgba(59, 130, 246, 0.08) 100%)',
+        border: '1px solid rgba(139, 92, 246, 0.28)',
         borderRadius: '10px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -114,8 +138,8 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
             gap: '0.4rem',
             padding: '0.2rem 0.6rem',
             borderRadius: '9999px',
-            background: 'rgba(124, 58, 237, 0.2)',
-            border: '1px solid rgba(167, 139, 250, 0.4)',
+            background: 'rgba(124, 58, 237, 0.22)',
+            border: '1px solid rgba(167, 139, 250, 0.45)',
             color: '#DDD6FE',
             fontSize: '0.74rem',
             fontWeight: 700
@@ -136,7 +160,7 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
             {briefing.businessImpact.urgencyBadge}
           </span>
 
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>
+          <span style={{ fontSize: '0.82rem', color: '#CBD5E1', fontWeight: 500 }}>
             {briefing.headline}
           </span>
         </div>
@@ -147,7 +171,7 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
             background: 'rgba(255, 255, 255, 0.06)',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             color: copiedSection === 'fullReport' ? '#34D399' : '#CBD5E1',
-            padding: '0.28rem 0.7rem',
+            padding: '0.28rem 0.75rem',
             borderRadius: '6px',
             fontSize: '0.74rem',
             cursor: 'pointer',
@@ -164,31 +188,120 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
         </button>
       </div>
 
-      {/* Internal Sub-Tabs */}
+      {/* 2. Enterprise Telemetry & Metric Assessment Strip (Non-redundant, concise) */}
+      {ratingMode === 'observational' ? (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+          gap: '0.75rem'
+        }}>
+          {/* Pillar 1: Operational Domain */}
+          {(() => {
+            const actionBadge = getActionDirectiveBadge(obs.operationalDomain || obs.actionDirective);
+            return (
+              <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: `1px solid ${actionBadge.border}`, borderRadius: '8px', padding: '0.7rem 0.95rem' }}>
+                <div style={{ fontSize: '0.66rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Operational Domain</div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: actionBadge.text, marginTop: '0.2rem' }}>
+                  {actionBadge.label}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Pillar 2: Weaponization Stage */}
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.7rem 0.95rem' }}>
+            <div style={{ fontSize: '0.66rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Weaponization Stage</div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {getWeaponizationStageLabel(obs.weaponizationStage)}
+            </div>
+          </div>
+
+          {/* Pillar 3: Exposure Horizon */}
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.7rem 0.95rem' }}>
+            <div style={{ fontSize: '0.66rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Exposure Horizon</div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#93C5FD', marginTop: '0.2rem' }}>
+              {getExposureHorizonLabel(obs.exposureHorizon)}
+            </div>
+          </div>
+
+          {/* Pillar 4: Signal & Corroboration */}
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.7rem 0.95rem' }}>
+            <div style={{ fontSize: '0.66rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Signal & Corroboration</div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {obs.chatterVelocity === 'VIRAL' ? '🔥 Viral' : '⚡ ' + obs.chatterVelocity} • {obs.consensusLevel.replace(/_/g, ' ')}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+          gap: '0.6rem'
+        }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>CVSS v3.1</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F8FAFC', marginTop: '0.15rem' }}>
+              {advisory.cvssScore.toFixed(1)}
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Attack Vector</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {advisory.attackVector}
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Complexity</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {advisory.attackComplexity}
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Privileges</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {advisory.privilegesRequired}
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.025)', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px', padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Interaction</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F8FAFC', marginTop: '0.2rem' }}>
+              {advisory.userInteraction}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Sub-Navigation Tabs (Unified Threat Analysis) */}
       <div style={{
         display: 'flex',
         gap: '0.4rem',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        paddingBottom: '0.4rem'
+        paddingBottom: '0.4rem',
+        overflowX: 'auto'
       }}>
         {[
-          { id: 'layman' as CisoSubTab, label: '📖 Layman Summary & Analogy' },
-          { id: 'technical' as CisoSubTab, label: '🛠️ Technical Remediation & Fix' },
-          { id: 'qa' as CisoSubTab, label: '💬 Ask Virtual CISO (Q&A)' }
+          { id: 'layman' as CisoSubTab, label: '📖 Plain-English Threat & Analogy', desc: 'Layman narrative, real-world analogy & attack flow' },
+          { id: 'technical' as CisoSubTab, label: '🛠️ Technical Remediation & Code Fix', desc: 'Side-by-side vulnerable vs. fixed configuration' },
+          { id: 'qa' as CisoSubTab, label: '💬 Ask AI Advisor (Interactive Q&A)', desc: 'Instant Q&A with tailored threat intelligence' }
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveSubTab(tab.id)}
+            onClick={() => setSubTab(tab.id)}
             style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '6px',
-              border: activeSubTab === tab.id ? '1px solid rgba(139, 92, 246, 0.5)' : '1px solid transparent',
-              background: activeSubTab === tab.id ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-              color: activeSubTab === tab.id ? '#EDE9FE' : '#94A3B8',
+              padding: '0.5rem 0.95rem',
+              borderRadius: '7px',
+              border: currentSubTab === tab.id ? '1px solid rgba(139, 92, 246, 0.55)' : '1px solid transparent',
+              background: currentSubTab === tab.id ? 'rgba(124, 58, 237, 0.22)' : 'rgba(255, 255, 255, 0.03)',
+              color: currentSubTab === tab.id ? '#EDE9FE' : '#94A3B8',
               fontSize: '0.78rem',
-              fontWeight: activeSubTab === tab.id ? 700 : 500,
+              fontWeight: currentSubTab === tab.id ? 700 : 500,
               cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
+              whiteSpace: 'nowrap'
             }}
           >
             {tab.label}
@@ -196,10 +309,10 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
         ))}
       </div>
 
-      {/* SUB-TAB 1: LAYMAN PERSPECTIVE */}
-      {activeSubTab === 'layman' && (
+      {/* 4. SUB-TAB 1: PLAIN-ENGLISH THREAT & ANALOGY (Prioritized Explain content) */}
+      {currentSubTab === 'layman' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Executive Plain English Card */}
+          {/* Executive Plain-English Summary */}
           <div style={{
             background: 'rgba(30, 27, 75, 0.25)',
             border: '1px solid rgba(139, 92, 246, 0.3)',
@@ -300,11 +413,35 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
               </p>
             </div>
           </div>
+
+          {/* Target Surfaces (from Overview) */}
+          {obs.potentialVictimSurface && obs.potentialVictimSurface.length > 0 && (
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.1rem' }}>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 600 }}>
+                Target Surfaces:
+              </span>
+              {obs.potentialVictimSurface.map((surf, sIdx) => (
+                <span
+                  key={sIdx}
+                  style={{
+                    fontSize: '0.72rem',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '4px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    color: '#CBD5E1'
+                  }}
+                >
+                  {surf}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* SUB-TAB 2: TECHNICAL REMEDIATION */}
-      {activeSubTab === 'technical' && (
+      {/* 5. SUB-TAB 2: TECHNICAL REMEDIATION & CODE FIX */}
+      {currentSubTab === 'technical' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Strategy Header */}
           <div style={{
@@ -466,11 +603,37 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
               {briefing.technicalRemediation.verificationTest}
             </p>
           </div>
+
+          {/* Root Cause & Taxonomy Card (Preserved from Overview) */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.025)',
+            border: '1px solid rgba(255, 255, 255, 0.07)',
+            borderRadius: '10px',
+            padding: '1rem 1.2rem'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: '0.4rem', letterSpacing: '0.05em' }}>
+              Technical Root Cause & Taxonomy
+            </div>
+            {advisory.technicalDetails && (
+              <p style={{ color: '#CBD5E1', fontSize: '0.84rem', lineHeight: 1.6, margin: '0 0 0.5rem 0' }}>
+                {advisory.technicalDetails}
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.75rem', color: '#94A3B8', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '0.5rem' }}>
+              <span>Taxonomy: <strong style={{ color: '#E2E8F0', fontWeight: 600 }}>{advisory.cwe || 'CWE Unclassified'}</strong></span>
+              {advisory.cvssVector && (
+                <span>Vector: <code style={{ color: '#CBD5E1' }}>{advisory.cvssVector}</code></span>
+              )}
+              {advisory.remediation?.patchDetails && (
+                <span>Patch: <span style={{ color: '#A7F3D0' }}>{advisory.remediation.patchDetails}</span></span>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* SUB-TAB 3: INTERACTIVE ASK VIRTUAL CISO */}
-      {activeSubTab === 'qa' && (
+      {/* 6. SUB-TAB 3: INTERACTIVE ASK AI ADVISOR */}
+      {currentSubTab === 'qa' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Preset Quick Question Chips */}
           <div>

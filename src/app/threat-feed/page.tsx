@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import VirtualCisoView from "@/components/VirtualCisoView";
+import VirtualCisoView, { CisoSubTab } from "@/components/VirtualCisoView";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -99,7 +99,8 @@ export default function ThreatFeedPage() {
 
   // Inspection Dossier Modal State (Unified Threat Dossier & AI Explain Dialog)
   const [selectedAdvisory, setSelectedAdvisory] = useState<UviAdvisoryRecord | null>(null);
-  const [dossierTab, setDossierTab] = useState<"overview" | "explain" | "workstation" | "sources">("overview");
+  const [dossierTab, setDossierTab] = useState<"overview" | "workstation" | "sources">("overview");
+  const [cisoSubTab, setCisoSubTab] = useState<CisoSubTab>("layman");
   const [copiedUviId, setCopiedUviId] = useState<string | null>(null);
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
@@ -108,7 +109,8 @@ export default function ThreatFeedPage() {
   const handleOpenExplain = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setSelectedAdvisory(record);
-    setDossierTab("explain");
+    setDossierTab("overview");
+    setCisoSubTab("layman");
   };
 
   // Available operational domains list
@@ -2122,12 +2124,15 @@ export default function ThreatFeedPage() {
                 {/* Header Actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <button
-                    onClick={() => setDossierTab("explain")}
+                    onClick={() => {
+                      setDossierTab("overview");
+                      setCisoSubTab(cisoSubTab === "qa" ? "layman" : "qa");
+                    }}
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "0.35rem",
-                      background: dossierTab === "explain" 
+                      background: dossierTab === "overview" && cisoSubTab === "qa"
                         ? "linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(79, 70, 229, 0.5) 100%)"
                         : "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(79, 70, 229, 0.25) 100%)",
                       border: "1px solid rgba(167, 139, 250, 0.55)",
@@ -2139,10 +2144,10 @@ export default function ThreatFeedPage() {
                       fontWeight: 700,
                       boxShadow: "0 0 10px rgba(139, 92, 246, 0.2)"
                     }}
-                    title="Switch to AI Explain tab"
+                    title="Interactive AI Intelligence & Q&A"
                   >
                     <span>✨</span>
-                    <span>Explain</span>
+                    <span>{cisoSubTab === "qa" && dossierTab === "overview" ? "Viewing Q&A" : "Explain & Ask AI"}</span>
                   </button>
 
                   <button
@@ -2233,7 +2238,7 @@ export default function ThreatFeedPage() {
               )}
             </div>
 
-            {/* Unified Tabs Navigation (Overview, Explain, Workstation, Sources) */}
+            {/* Unified Tabs Navigation (Overview & Explain, Workstation, Sources) */}
             <div style={{
               display: "flex",
               borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
@@ -2242,8 +2247,7 @@ export default function ThreatFeedPage() {
               overflowX: "auto"
             }}>
               {[
-                { id: "overview", label: "Overview & Mechanism" },
-                { id: "explain", label: "✨ Explain" },
+                { id: "overview", label: "✨ Overview & Explain" },
                 { id: "workstation", label: "Workstation & Build Impact" },
                 { 
                   id: "sources", 
@@ -2282,227 +2286,14 @@ export default function ThreatFeedPage() {
               flexDirection: "column",
               gap: "1.25rem"
             }}>
-              {/* TAB 1: Overview & Mechanism */}
+              {/* TAB 1: Unified Overview & Explain (Virtual CISO Intelligence Briefing) */}
               {dossierTab === "overview" && (
-                ratingMode === "observational" ? (
-                  (() => {
-                    const obs = getRecordObservationalAssessment(selectedAdvisory);
-                    return (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                        {/* 4-Pillar Observational Assessment Strip (Zero numeric scores) */}
-                        <div style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-                          gap: "0.75rem"
-                        }}>
-                          {/* Pillar 1: Operational Domain */}
-                          {(() => {
-                            const actionBadge = getActionDirectiveBadge(obs.operationalDomain || obs.actionDirective);
-                            return (
-                              <div style={{ background: "rgba(255, 255, 255, 0.025)", border: `1px solid ${actionBadge.border}`, borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                                <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Operational Domain</div>
-                                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: actionBadge.text, marginTop: "0.25rem" }}>
-                                  {actionBadge.label}
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Pillar 2: Weaponization Reality */}
-                          <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                            <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Weaponization Stage</div>
-                            <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.25rem" }}>
-                              {getWeaponizationStageLabel(obs.weaponizationStage)}
-                            </div>
-                          </div>
-
-                          {/* Pillar 3: Exposure Horizon */}
-                          <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                            <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Exposure Horizon</div>
-                            <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#93C5FD", marginTop: "0.25rem" }}>
-                              {getExposureHorizonLabel(obs.exposureHorizon)}
-                            </div>
-                          </div>
-
-                          {/* Pillar 4: Signal & Corroboration */}
-                          <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
-                            <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Signal & Corroboration</div>
-                            <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.25rem" }}>
-                              {obs.chatterVelocity === "VIRAL" ? "🔥 Viral" : "⚡ " + obs.chatterVelocity} • {obs.consensusLevel.replace(/_/g, " ")}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Executive Digest - Unified neutral card */}
-                        <div style={{
-                          background: "rgba(255, 255, 255, 0.025)",
-                          border: "1px solid rgba(255, 255, 255, 0.07)",
-                          borderRadius: "8px",
-                          padding: "1rem 1.2rem"
-                        }}>
-                          <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                            Executive Digest
-                          </div>
-                          <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
-                            {obs.executiveBrief}
-                          </p>
-                        </div>
-
-                        {/* Inferred Threat Vector & Mechanism - Unified neutral card */}
-                        <div style={{
-                          background: "rgba(255, 255, 255, 0.025)",
-                          border: "1px solid rgba(255, 255, 255, 0.07)",
-                          borderRadius: "8px",
-                          padding: "1rem 1.2rem"
-                        }}>
-                          <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                            Inferred Attack Mechanism & Vector Execution
-                          </div>
-                          <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
-                            {obs.inferredMechanism}
-                          </p>
-                        </div>
-
-                        {/* Precautionary Posture - Unified neutral card */}
-                        <div style={{
-                          background: "rgba(255, 255, 255, 0.025)",
-                          border: "1px solid rgba(255, 255, 255, 0.07)",
-                          borderRadius: "8px",
-                          padding: "1rem 1.2rem"
-                        }}>
-                          <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                            Precautionary Defensive Posture (Operational Guidance)
-                          </div>
-                          <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: 0 }}>
-                            {obs.precautionaryPosture}
-                          </p>
-                        </div>
-
-                        {/* Potential Victim Surface - Normalized neutral tags */}
-                        {obs.potentialVictimSurface && obs.potentialVictimSurface.length > 0 && (
-                          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", paddingTop: "0.1rem" }}>
-                            <span style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>
-                              Target Surfaces:
-                            </span>
-                            {obs.potentialVictimSurface.map((surf, sIdx) => (
-                              <span
-                                key={sIdx}
-                                style={{
-                                  fontSize: "0.72rem",
-                                  padding: "0.15rem 0.5rem",
-                                  borderRadius: "4px",
-                                  background: "rgba(255, 255, 255, 0.05)",
-                                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                                  color: "#CBD5E1"
-                                }}
-                              >
-                                {surf}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    {/* CVSS & Vector Breakdown - Normalized neutral tiles */}
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-                      gap: "0.6rem"
-                    }}>
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>CVSS v3.1</div>
-                        <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.cvssScore.toFixed(1)}
-                        </div>
-                      </div>
-
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Attack Vector</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.attackVector}
-                        </div>
-                      </div>
-
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Complexity</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.attackComplexity}
-                        </div>
-                      </div>
-
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Privileges</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.privilegesRequired}
-                        </div>
-                      </div>
-
-                      <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.65rem 0.85rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.65rem", color: "#94A3B8", textTransform: "uppercase" }}>Interaction</div>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                          {selectedAdvisory.userInteraction}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Executive Threat Summary - Unified neutral card */}
-                    <div style={{
-                      background: "rgba(255, 255, 255, 0.025)",
-                      border: "1px solid rgba(255, 255, 255, 0.07)",
-                      borderRadius: "8px",
-                      padding: "1rem 1.2rem"
-                    }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                        Executive Threat Summary
-                      </div>
-                      <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
-                        {selectedAdvisory.summary}
-                      </p>
-                    </div>
-
-                    {/* Technical Root Cause & Weakness - Unified neutral card */}
-                    <div style={{
-                      background: "rgba(255, 255, 255, 0.025)",
-                      border: "1px solid rgba(255, 255, 255, 0.07)",
-                      borderRadius: "8px",
-                      padding: "1rem 1.2rem"
-                    }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                        Technical Root Cause & Weakness
-                      </div>
-                      <p style={{ color: "#CBD5E1", fontSize: "0.86rem", lineHeight: 1.65, margin: "0 0 0.5rem 0" }}>
-                        {selectedAdvisory.technicalDetails}
-                      </p>
-                      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.75rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.5rem" }}>
-                        <span>Taxonomy: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.cwe}</strong></span>
-                        <span>Vector: <code style={{ color: "#CBD5E1" }}>{selectedAdvisory.cvssVector}</code></span>
-                      </div>
-                    </div>
-
-                    {/* Remediation & Actionable Fix - Unified neutral card */}
-                    <div style={{
-                      background: "rgba(255, 255, 255, 0.025)",
-                      border: "1px solid rgba(255, 255, 255, 0.07)",
-                      borderRadius: "8px",
-                      padding: "1rem 1.2rem"
-                    }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#94A3B8", marginBottom: "0.4rem", letterSpacing: "0.05em" }}>
-                        Remediation & Fix Details
-                      </div>
-                      <p style={{ color: "#E2E8F0", fontSize: "0.86rem", lineHeight: 1.65, margin: "0 0 0.35rem 0" }}>
-                        {selectedAdvisory.remediation.recommendedAction}
-                      </p>
-                      {selectedAdvisory.remediation.patchDetails && (
-                        <div style={{ fontSize: "0.8rem", color: "#94A3B8" }}>
-                          Patch: <span style={{ color: "#CBD5E1" }}>{selectedAdvisory.remediation.patchDetails}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
+                <VirtualCisoView
+                  advisory={selectedAdvisory}
+                  ratingMode={ratingMode}
+                  activeSubTab={cisoSubTab}
+                  onSubTabChange={setCisoSubTab}
+                />
               )}
 
               {/* TAB 2: Workstation & Pipeline Impact */}
@@ -2740,11 +2531,6 @@ export default function ThreatFeedPage() {
                     </div>
                   )}
                 </div>
-              )}
-
-              {/* TAB 4: EXPLAIN (INTEGRATED VIRTUAL CISO ADVISOR) */}
-              {dossierTab === "explain" && (
-                <VirtualCisoView advisory={selectedAdvisory} />
               )}
             </div>
 
