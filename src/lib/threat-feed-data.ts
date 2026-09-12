@@ -1195,29 +1195,55 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   },
   {
     id: "bleeping_computer",
-    name: "BleepingComputer & Underground Intel",
+    name: "BleepingComputer",
     category: "Multi-Indicator Hubs & Aggregators",
-    scope: "Breaking Exploit Waves, PoC Disclosures & Ransomware TTPs",
-    access: "Public RSS / Telemetry",
+    scope: "Breaking Exploit Waves, Security News & Ransomware Tracking",
+    access: "Public RSS / Journalism",
     status: "Realtime",
     refreshRate: "Continuous",
-    coverage: "Real-time reporting on zero-day weaponization, emerging cyber extortion campaigns, and proof-of-concept exploit drops.",
+    coverage: "Authoritative real-time cybersecurity journalism reporting on zero-day weaponization, emerging cyber extortion campaigns, ransomware tactics, and threat actor campaigns.",
     homepageUrl: "https://www.bleepingcomputer.com",
     icon: "⚡",
     recordsIngested: 18500
   },
   {
-    id: "project_zero_research",
-    name: "Project Zero & Academic Research (arXiv/IACR)",
+    id: "underground_intel",
+    name: "Underground & Dark Web Intel",
     category: "Multi-Indicator Hubs & Aggregators",
-    scope: "Zero-Day Exploit PoCs, Side-Channels & Deep Sandbox Escapes",
-    access: "Public Blogs / Preprints",
+    scope: "Dark Web Leak Sites, Cybercrime Forums & Telegram Extortion Channels",
+    access: "Public OSINT / Telemetry / vx-underground",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Automated telemetry tracking underground cybercrime forums, illicit dark web leak sites, ransomware extortion portals, and researcher malware archives (vx-underground).",
+    homepageUrl: "https://vx-underground.org/",
+    icon: "🕶️",
+    recordsIngested: 14200
+  },
+  {
+    id: "project_zero",
+    name: "Google Project Zero",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "Zero-Day Exploit PoCs, Browser Sandboxes & Root Cause Analysis",
+    access: "Public Research / Issue Tracker",
     status: "Active",
     refreshRate: "Weekly",
-    coverage: "Elite technical teardowns of browser sandbox escapes, kernel race conditions, and pre-disclosure exploit research.",
+    coverage: "Elite technical teardowns of zero-days exploited in the wild, browser sandbox escapes, kernel race conditions, and pre-disclosure exploit research.",
     homepageUrl: "https://googleprojectzero.blogspot.com",
-    icon: "🔬",
+    icon: "🧪",
     recordsIngested: 3600
+  },
+  {
+    id: "academic_research",
+    name: "Academic Research (arXiv & IACR)",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "Cryptographic Preprints, Microarchitecture & System Security Papers",
+    access: "Public Preprints / Open Access",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Preprints and peer-reviewed research papers from arXiv Computer Science (cs.CR) and the International Association for Cryptologic Research (IACR) documenting novel attack primitives.",
+    homepageUrl: "https://arxiv.org/corr/cs/CR",
+    icon: "🎓",
+    recordsIngested: 2800
   }
 ];
 
@@ -2810,8 +2836,8 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
           signalQuote: "Prompt injection is not just a chatbot quirk; when LLMs are granted access to execute commands and read developer workspaces, it represents an arbitrary command execution vector."
         },
         {
-          sourceId: "project_zero_research",
-          sourceName: "Project Zero & Preprints",
+          sourceId: "academic_research",
+          sourceName: "Academic Research (arXiv)",
           headline: "Invisible Markdown Traps: Exfiltrating Workspace Secrets via Autonomous LLM Tool Calling",
           url: "https://arxiv.org/abs/cs.CR",
           publishedAt: "2025-01-28",
@@ -2833,7 +2859,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research (arXiv)",
         badge: "Preprint PoC",
         finding: "Empirical proof of concept demonstrating workspace secret extraction via autonomous tool calling.",
@@ -2900,7 +2926,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
           signalQuote: "We are moving from key sizes measured in tens of bytes to thousands of bytes. The mathematical cryptography is solid, but the network plumbing wasn't built for packets this bulky."
         },
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "IACR Cryptology ePrint",
           headline: "Empirical Measurements of Hybrid Post-Quantum Handshake Degradation Across Global ASNs",
           url: "https://eprint.iacr.org",
@@ -2923,7 +2949,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "IACR ePrint",
         badge: "Cryptographic Preprint",
         finding: "Global telemetry confirming packet fragmentation drops during hybrid post-quantum TLS handshakes.",
@@ -3071,15 +3097,15 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Set sysctl kernel.unprivileged_bpf_disabled=1; strip CAP_BPF and CAP_SYS_ADMIN from container runtime profiles; deploy kernel signature enforcement for BPF bytecode.",
       primarySources: [
         {
-          sourceId: "bleeping_computer",
-          sourceName: "BleepingComputer / vx-underground",
+          sourceId: "underground_intel",
+          sourceName: "Underground Intel (vx-underground)",
           headline: "Underground forums circulate proof-of-concept eBPF rootkit that evades modern Linux EDR",
-          url: "https://www.bleepingcomputer.com",
+          url: "https://vx-underground.org",
           publishedAt: "2025-01-30",
           signalQuote: "The PoC hooks raw tracepoints to modify user-space buffers, effectively hiding specified PIDs and open network connections from ps, netstat, and commercial agents."
         },
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Trail of Bits & Academic Intel",
           headline: "Blind in the Kernel: The Challenges of Detecting Malicious eBPF Bytecode",
           url: "https://blog.trailofbits.com",
@@ -3094,7 +3120,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "bleeping_computer",
+        sourceId: "underground_intel",
         sourceName: "Underground Intel (vx-underground)",
         badge: "Exploit Telemetry",
         finding: "Cataloging functional eBPF rootkit code samples circulated across private researcher channels.",
@@ -3102,7 +3128,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Trail of Bits Research",
         badge: "Deep AST Research",
         finding: "Technical analysis of memory interception techniques bypassing Linux endpoint telemetry.",

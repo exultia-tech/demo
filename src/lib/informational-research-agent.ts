@@ -347,6 +347,12 @@ export class InformationalResearchAgent {
     const nextSeq = (maxSeq + 1).toString().padStart(4, "0");
     const uviId = `UVI-INFO-${year}-${nextSeq}`;
 
+    let canonicalSourceId = raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    if (canonicalSourceId.includes("project_zero")) canonicalSourceId = "project_zero";
+    else if (canonicalSourceId.includes("arxiv") || canonicalSourceId.includes("iacr") || canonicalSourceId.includes("academic") || canonicalSourceId.includes("preprint")) canonicalSourceId = "academic_research";
+    else if (canonicalSourceId.includes("underground") || canonicalSourceId.includes("dark_web") || canonicalSourceId.includes("vx_underground")) canonicalSourceId = "underground_intel";
+    else if (canonicalSourceId.includes("bleeping")) canonicalSourceId = "bleeping_computer";
+
     const synthesis: InformationalSynthesis = {
       chatterVelocity: raw.confidenceScore >= 95 ? "VIRAL" : raw.confidenceScore >= 90 ? "HIGH" : "EMERGING",
       consensusLevel: raw.sourceName.includes("Preprint") || raw.sourceName.includes("ArXiv") 
@@ -365,7 +371,7 @@ export class InformationalResearchAgent {
       precautionaryPosture: `Review local workstation tool permissions; isolate development runners and tunnel listeners from production identity endpoints.`,
       primarySources: [
         {
-          sourceId: raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_"),
+          sourceId: canonicalSourceId,
           sourceName: raw.sourceName,
           authorOrHandle: raw.author,
           headline: raw.rawHeadline,
@@ -413,7 +419,7 @@ export class InformationalResearchAgent {
       cisaKev: { isKnownExploited: false },
       upstreamSignals: [
         {
-          sourceId: raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_"),
+          sourceId: canonicalSourceId,
           sourceName: raw.sourceName,
           badge: "AI Agent OSINT Extraction",
           finding: raw.rawHeadline,

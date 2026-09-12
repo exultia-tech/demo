@@ -151,8 +151,18 @@ export async function GET(request: Request) {
 
   // Source feed filter
   if (source && source !== "all" && source !== "All Feeds") {
+    const srcLower = source.toLowerCase();
     filtered = filtered.filter(f => 
-      f.upstreamSignals.some(s => s.sourceId.toLowerCase() === source.toLowerCase() || s.sourceName.toLowerCase().includes(source.toLowerCase()))
+      f.upstreamSignals.some(s => {
+        const sId = s.sourceId.toLowerCase();
+        const sName = s.sourceName.toLowerCase();
+        if (sId === srcLower || sName.includes(srcLower)) return true;
+        if (srcLower === "project_zero" && (sId === "project_zero_research" || sName.includes("project zero"))) return true;
+        if (srcLower === "academic_research" && (sId === "project_zero_research" || sName.includes("academic") || sName.includes("arxiv") || sName.includes("iacr"))) return true;
+        if (srcLower === "underground_intel" && (sId === "underground_intel" || sName.includes("underground") || s.badge?.toLowerCase().includes("underground"))) return true;
+        if (srcLower === "bleeping_computer" && (sId === "bleeping_computer" || sName.includes("bleepingcomputer") || sName.includes("bleeping computer"))) return true;
+        return false;
+      })
     );
   }
 

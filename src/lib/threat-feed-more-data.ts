@@ -492,7 +492,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Never share caches between untrusted pull requests and release-tag builds; enforce exact cryptographic hash matches on cache restoration keys.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (arXiv)",
           headline: "Poisoning the Well: Cache Isolation Failures in Modern Cloud CI/CD Pipelines",
           url: "https://arxiv.org",
@@ -515,7 +515,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research (arXiv)",
         badge: "arXiv Preprint",
         finding: "Empirical study analyzing 10,000 GitHub repositories with vulnerable cache-restore configurations.",
@@ -581,7 +581,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Update host WebAssembly runtimes regularly; disable SIMD instruction extensions for third-party untrusted plugins.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (IACR)",
           headline: "Breaking the Bounds: Register Allocation Bugs in WebAssembly SIMD Compilers",
           url: "https://eprint.iacr.org",
@@ -605,7 +605,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research (IACR)",
         badge: "IACR Preprint",
         finding: "Mathematical modeling of register allocation state machines exposing sandbox breakout conditions.",
@@ -679,7 +679,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
           signalQuote: "Security researchers identified botnet variants specifically designed to scan developer home networks for Android devices with port 5555 exposed."
         },
         {
-          sourceId: "project_zero_research",
+          sourceId: "project_zero",
           sourceName: "Project Zero & Research",
           headline: "The Remote Attack Surface of Mobile Developer Workstations",
           url: "https://googleprojectzero.blogspot.com",
@@ -702,7 +702,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "project_zero",
         sourceName: "Project Zero",
         badge: "Security Advisory",
         finding: "Analysis of mobile developer workstation exposure vectors via wireless debug bridges.",
@@ -859,7 +859,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
           signalQuote: "Rewriting code in a safe language is only as effective as the understanding of the underlying memory model. Wrapping C logic in Rust unsafe blocks simply relocates the vulnerability."
         },
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (arXiv)",
           headline: "Semantic Pitfalls in Automated Memory-Safe Language Conversions",
           url: "https://arxiv.org",
@@ -882,7 +882,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research (arXiv)",
         badge: "Academic Audit",
         finding: "Fuzzing benchmarks highlighting compiler aliasing violations in automated Rust conversions.",
@@ -1029,7 +1029,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Never clone untrusted repositories with recursive submodules enabled; inspect `.gitmodules` before initializing submodules.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "underground_intel",
           sourceName: "Underground Intel (vx-underground)",
           headline: "Analysis of Weaponized .gitmodules Configurations Observed in the Wild",
           url: "https://vx-underground.org",
@@ -1052,7 +1052,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "underground_intel",
         sourceName: "Underground Intel (vx-underground)",
         badge: "PoC Capture",
         finding: "Capture and analysis of weaponized Git repository payloads exploiting nested submodule directory traversals.",
@@ -1217,7 +1217,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
           signalQuote: "The math of post-quantum cryptography is sound, but turning math into constant-time computer code is the hardest engineering problem in computer security."
         },
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (IACR)",
           headline: "KyberSlash: Exploiting Timing Leaks in Lattice-Based Key Encapsulation Mechanisms",
           url: "https://eprint.iacr.org",
@@ -1240,7 +1240,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
         confidence: "CONFIRMED"
       },
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research (IACR)",
         badge: "IACR ePrint",
         finding: "Full algorithmic breakdown of timing leakages in lattice-based key encapsulation.",
@@ -1378,7 +1378,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Never grant autonomous AI agents unprompted shell execution rights; enforce strict human verification for any command containing destructive or network flags.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "ArXiv Security Preprint (cs.CR)",
           authorOrHandle: "Kumar et al., Carnegie Mellon University",
           headline: "Prompt-to-Shell: Jailbreaking Autonomous Coding Agents via Indirect Repository Injections",
@@ -1394,7 +1394,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research",
         badge: "Carnegie Mellon Preprint",
         finding: "Formal demonstration of indirect prompt injection driving unprompted MCP terminal execution.",
@@ -1814,7 +1814,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Update Docker Desktop and Windows virtualization components; enforce group policies restricting local Docker group memberships.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "project_zero",
           sourceName: "Google Project Zero Research",
           authorOrHandle: "James Forshaw",
           headline: "Escaping the Sandbox: Named Pipe Insecurities in Developer Virtualization",
@@ -1830,7 +1830,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "project_zero",
         sourceName: "Google Project Zero",
         badge: "Project Zero Disclosure",
         finding: "Detailed technical vulnerability writeup on Windows named pipe privilege escalation in container daemons.",
@@ -1887,7 +1887,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Isolate untrusted code in distinct OS process boundaries rather than thread-level memory spaces.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (ACM CCS)",
           authorOrHandle: "V8 Security Research Group",
           headline: "Speculative Array Boundaries: Side-Channels in Modern JIT Compilers",
@@ -1903,7 +1903,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research",
         badge: "ACM CCS Research",
         finding: "Evaluation of branch target buffer poisoning in modern JavaScript JIT engines.",
@@ -2033,7 +2033,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Enable linter rules blocking non-ASCII bidirectional control characters in repository pre-commit hooks.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (Cambridge University)",
           authorOrHandle: "Boucher & Anderson",
           headline: "Trojan Source 2.0: Invisible Manipulations in Modern Code Review",
@@ -2049,7 +2049,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research",
         badge: "Cambridge University Preprint",
         finding: "Formal breakdown of second-generation Unicode bidirectional overrides in source code.",
@@ -2396,7 +2396,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
       precautionaryPosture: "Verify that CLI authentication tools use PKCE with S256; avoid using fixed, hardcoded loopback ports for OAuth callbacks.",
       primarySources: [
         {
-          sourceId: "project_zero_research",
+          sourceId: "academic_research",
           sourceName: "Academic Research (ACM Digital Library)",
           authorOrHandle: "OAuth Security Working Group",
           headline: "Best Current Practices for OAuth 2.0 in Native and CLI Applications",
@@ -2412,7 +2412,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
     cisaKev: { isKnownExploited: false },
     upstreamSignals: [
       {
-        sourceId: "project_zero_research",
+        sourceId: "academic_research",
         sourceName: "Academic Research",
         badge: "IETF RFC Analysis",
         finding: "Evaluation of loopback port interception vulnerabilities in developer OAuth flows.",
