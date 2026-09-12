@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import VirtualCisoView, { CisoSubTab } from "@/components/VirtualCisoView";
+import VirtualCisoView from "@/components/VirtualCisoView";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -99,18 +99,16 @@ export default function ThreatFeedPage() {
 
   // Inspection Dossier Modal State (Unified Threat Dossier & AI Explain Dialog)
   const [selectedAdvisory, setSelectedAdvisory] = useState<UviAdvisoryRecord | null>(null);
-  const [dossierTab, setDossierTab] = useState<"overview" | "workstation" | "sources">("overview");
-  const [cisoSubTab, setCisoSubTab] = useState<CisoSubTab>("layman");
+  const [dossierTab, setDossierTab] = useState<"overview" | "remediation" | "workstation" | "sources">("overview");
   const [copiedUviId, setCopiedUviId] = useState<string | null>(null);
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
 
-  // Single unified handler for opening the dossier modal directly into the Explain tab
+  // Single unified handler for opening the dossier modal directly into the Overview tab
   const handleOpenExplain = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setSelectedAdvisory(record);
     setDossierTab("overview");
-    setCisoSubTab("layman");
   };
 
   // Available operational domains list
@@ -2124,33 +2122,6 @@ export default function ThreatFeedPage() {
                 {/* Header Actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <button
-                    onClick={() => {
-                      setDossierTab("overview");
-                      setCisoSubTab(cisoSubTab === "qa" ? "layman" : "qa");
-                    }}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.35rem",
-                      background: dossierTab === "overview" && cisoSubTab === "qa"
-                        ? "linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(79, 70, 229, 0.5) 100%)"
-                        : "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(79, 70, 229, 0.25) 100%)",
-                      border: "1px solid rgba(167, 139, 250, 0.55)",
-                      color: "#EDE9FE",
-                      padding: "0.26rem 0.7rem",
-                      borderRadius: "6px",
-                      fontSize: "0.75rem",
-                      cursor: "pointer",
-                      fontWeight: 700,
-                      boxShadow: "0 0 10px rgba(139, 92, 246, 0.2)"
-                    }}
-                    title="Interactive AI Intelligence & Q&A"
-                  >
-                    <span>✨</span>
-                    <span>{cisoSubTab === "qa" && dossierTab === "overview" ? "Viewing Q&A" : "Explain & Ask AI"}</span>
-                  </button>
-
-                  <button
                     onClick={() => handleCopyUviId(selectedAdvisory.uviId)}
                     style={{
                       background: "rgba(255, 255, 255, 0.05)",
@@ -2248,6 +2219,7 @@ export default function ThreatFeedPage() {
             }}>
               {[
                 { id: "overview", label: "Overview" },
+                { id: "remediation", label: "Remediation & Fix" },
                 { id: "workstation", label: "Workstation & Build Impact" },
                 { 
                   id: "sources", 
@@ -2286,17 +2258,25 @@ export default function ThreatFeedPage() {
               flexDirection: "column",
               gap: "1.25rem"
             }}>
-              {/* TAB 1: Unified Overview & Explain (Virtual CISO Intelligence Briefing) */}
+              {/* TAB 1: Overview */}
               {dossierTab === "overview" && (
                 <VirtualCisoView
                   advisory={selectedAdvisory}
                   ratingMode={ratingMode}
-                  activeSubTab={cisoSubTab}
-                  onSubTabChange={setCisoSubTab}
+                  view="overview"
                 />
               )}
 
-              {/* TAB 2: Workstation & Pipeline Impact */}
+              {/* TAB 2: Remediation & Fix */}
+              {dossierTab === "remediation" && (
+                <VirtualCisoView
+                  advisory={selectedAdvisory}
+                  ratingMode={ratingMode}
+                  view="remediation"
+                />
+              )}
+
+              {/* TAB 3: Workstation & Pipeline Impact */}
               {dossierTab === "workstation" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                   {/* Workstation Exposure Summary Card */}
