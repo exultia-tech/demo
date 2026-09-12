@@ -22,6 +22,7 @@ export async function GET(request: Request) {
   const severity = searchParams.get('severity')?.toUpperCase();
   const domain = searchParams.get('domain');
   const source = searchParams.get('source');
+  const feedCategory = searchParams.get('category')?.trim();
   const scope = searchParams.get('scope')?.toLowerCase() || 'all'; // 'all' | 'build-impact'
   const kevOnly = searchParams.get('kevOnly') === 'true';
   const action = (searchParams.get('action') || searchParams.get('opDomain') || searchParams.get('domain_op'))?.toUpperCase();
@@ -150,6 +151,18 @@ export async function GET(request: Request) {
     );
   }
 
+  // Feed Category filter (Malware, C2 & Botnets | Phishing & Fraud | IP Reputation | Vulnerabilities | Threat Hubs)
+  if (feedCategory && feedCategory.toUpperCase() !== "ALL") {
+    const matchingFeedIds = new Set(
+      UVI_PUBLIC_FEED_SOURCES
+        .filter(f => f.category.toLowerCase() === feedCategory.toLowerCase() || f.category.toLowerCase().includes(feedCategory.toLowerCase()))
+        .map(f => f.id.toLowerCase())
+    );
+    filtered = filtered.filter(f =>
+      f.upstreamSignals.some(s => matchingFeedIds.has(s.sourceId.toLowerCase()))
+    );
+  }
+
   // CISA KEV Known Exploited Vulnerability filter
   if (kevOnly) {
     filtered = filtered.filter(f => f.cisaKev.isKnownExploited);
@@ -171,7 +184,7 @@ export async function GET(request: Request) {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
     feedName: "Unified Vulnerability Intelligence (UVI) Consolidated Registry",
     identifierSystem: "UVI-YYYY-NNNN",
-    mission: "Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from 12 authoritative feeds (NVD, CISA KEV, GHSA, OSV.dev, OpenSSF, MSRC, Trail of Bits, Socket.dev, JFrog, Aqua Nautilus, Snyk, Language Advisory DBs). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, and protocol flaws into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.",
+    mission: `Universal cross-ecosystem open vulnerability & threat intelligence registry consolidating upstream signals from ${UVI_PUBLIC_FEED_SOURCES.length} authoritative feeds across Malware, C2 & Botnets, Phishing & Fraud, IP Reputation & Telemetry, Vulnerabilities & Exploitation, and Multi-Indicator Hubs (URLhaus, ThreatFox, Feodo Tracker, MalwareBazaar, MontySecurity C2-Tracker, Botvrij.eu, OpenPhish, PhishTank, SANS ISC DShield, Blocklist.de, IPSum, Tor Exit List, Cisco Talos, Emerging Threats, GreenSnow, GreyNoise, CISA KEV, FIRST EPSS, AlienVault OTX, CIRCL MISP, threatfeeds.io, Bert-JanP OTI, NVD, GHSA, OSV.dev, OpenSSF, MSRC, Snyk, and language advisory DBs). Pre-assigned unified UVI identifiers synthesize CVEs, active zero-days, runtime escapes, supply chain trojans, botnet C2s, and protocol flaws into an organized, queryable encyclopedia. Features dual-perspective impact assessment: Global Software Awareness & Developer/Build Exposure.`,
     license: "CC-BY-4.0 (Open Access for All Developers and Systems)",
     generatedAt: new Date().toISOString(),
     queryParameters: {
@@ -182,6 +195,7 @@ export async function GET(request: Request) {
       severity: severity || "ALL",
       domain: domain || "all",
       source: source || "all",
+      category: feedCategory || "all",
       kevOnly,
       page,
       limit: isLimitAll ? "all" : limit
@@ -190,6 +204,15 @@ export async function GET(request: Request) {
     directBuildImpactCount: allAdvisories.filter(a => a.ideBuildImpact.hasDirectBuildImpact).length,
     nonCveThreatsCount: allAdvisories.filter(a => a.cveList.length === 0 && a.disclosureType !== 'INFORMATIONAL_DISCLOSURE').length,
     informationalDisclosuresCount: allAdvisories.filter(a => a.disclosureType === 'INFORMATIONAL_DISCLOSURE').length,
+    totalFeedSourcesCount: UVI_PUBLIC_FEED_SOURCES.length,
+    totalUpstreamRecordsIngested: UVI_PUBLIC_FEED_SOURCES.reduce((acc, f) => acc + f.recordsIngested, 0),
+    feedCategories: [
+      "Malware, C2 & Botnets",
+      "Phishing & Fraud",
+      "IP Reputation, Scanners & Network Telemetry",
+      "Vulnerabilities & Exploitation",
+      "Multi-Indicator Hubs & Aggregators"
+    ],
     matchedAdvisoriesCount: totalMatched,
     page,
     totalPages,

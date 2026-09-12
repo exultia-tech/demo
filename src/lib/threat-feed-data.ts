@@ -15,7 +15,20 @@ export interface UpstreamSignalContribution {
   sourceName: string;
   badge: string;
   finding: string;
-  signalType: "CVE_RECORD" | "ACTIVE_EXPLOITATION" | "AST_IOC" | "TYPOSQUAT" | "BEHAVIORAL_ALERT" | "REACHABILITY" | "HYGIENE_SCORE" | "INFORMATIONAL_CHATTER" | "RESEARCH_DISCLOSURE";
+  signalType: 
+    | "CVE_RECORD" 
+    | "ACTIVE_EXPLOITATION" 
+    | "AST_IOC" 
+    | "TYPOSQUAT" 
+    | "BEHAVIORAL_ALERT" 
+    | "REACHABILITY" 
+    | "HYGIENE_SCORE" 
+    | "INFORMATIONAL_CHATTER" 
+    | "RESEARCH_DISCLOSURE"
+    | "C2_BEACON"
+    | "IP_REPUTATION"
+    | "PHISHING_URL"
+    | "EPSS_PERCENTILE";
   confidence: "CONFIRMED" | "PROBABLE" | "THEORETICAL";
 }
 
@@ -480,9 +493,17 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
   };
 }
 
+export type FeedCategory =
+  | "Malware, C2 & Botnets"
+  | "Phishing & Fraud"
+  | "IP Reputation, Scanners & Network Telemetry"
+  | "Vulnerabilities & Exploitation"
+  | "Multi-Indicator Hubs & Aggregators";
+
 export interface PublicFeedSource {
   id: string;
   name: string;
+  category: FeedCategory;
   scope: string;
   access: string;
   status: "Active" | "Synced" | "Realtime";
@@ -494,21 +515,285 @@ export interface PublicFeedSource {
 }
 
 export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
+  // ==========================================
+  // 1. Malware, C2 & Botnets
+  // ==========================================
   {
-    id: "nvd_cve",
-    name: "NIST National Vulnerability Database (NVD)",
-    scope: "Universal Common Vulnerabilities and Exposures (CVEs)",
-    access: "Public REST API 2.0",
+    id: "urlhaus",
+    name: "URLhaus (abuse.ch)",
+    category: "Malware, C2 & Botnets",
+    scope: "Malware Distribution Sites & Payload Delivery URLs",
+    access: "Public API / CSV / JSON Feed",
     status: "Realtime",
-    refreshRate: "Hourly",
-    coverage: "Primary global index for official CVE identifiers, CVSS v3.1/v4.0 scoring, and CWE weakness taxonomy.",
-    homepageUrl: "https://nvd.nist.gov",
-    icon: "🏛️",
-    recordsIngested: 248000
+    refreshRate: "Every 5 Minutes",
+    coverage: "Global community project from abuse.ch tracking, analyzing, and disseminating active malicious URLs used for malware distribution and dropper execution.",
+    homepageUrl: "https://urlhaus.abuse.ch/",
+    icon: "☣️",
+    recordsIngested: 1650000
   },
   {
+    id: "threatfox",
+    name: "ThreatFox (abuse.ch)",
+    category: "Malware, C2 & Botnets",
+    scope: "Indicators of Compromise (IoCs) & C2 Infrastructure",
+    access: "Public API / Export Feeds",
+    status: "Realtime",
+    refreshRate: "Every 10 Minutes",
+    coverage: "Authoritative open repository from abuse.ch cataloging indicators of compromise (IoCs), malware hashes, domains, and botnet IPs shared by security analysts.",
+    homepageUrl: "https://threatfox.abuse.ch/",
+    icon: "🦊",
+    recordsIngested: 820000
+  },
+  {
+    id: "feodo_tracker",
+    name: "Feodo Tracker (abuse.ch)",
+    category: "Malware, C2 & Botnets",
+    scope: "Botnet Command & Control (C2) Server IP Blocklists",
+    access: "Public Blocklists / IP Feeds",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Specialized abuse.ch intelligence tracking active botnet C2 servers associated with Dridex, Emotet, QakBot, TrickBot, and Cobalt Strike relays.",
+    homepageUrl: "https://feodotracker.abuse.ch/",
+    icon: "🤖",
+    recordsIngested: 145000
+  },
+  {
+    id: "malwarebazaar",
+    name: "MalwareBazaar (abuse.ch)",
+    category: "Malware, C2 & Botnets",
+    scope: "Malware Sample Binaries, Hashes & YARA Rules",
+    access: "Public REST API / Bulk Downloads",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "Community-driven malware exchange operated by abuse.ch sharing classified malware binaries, signatures, unpacked stages, and weaponized artifacts.",
+    homepageUrl: "https://bazaar.abuse.ch/",
+    icon: "🗄️",
+    recordsIngested: 950000
+  },
+  {
+    id: "montysecurity_c2",
+    name: "MontySecurity C2-Tracker",
+    category: "Malware, C2 & Botnets",
+    scope: "JARM & Shodan C2 Infrastructure Tracking",
+    access: "Public Git / Raw Feeds",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Automated threat scanner tracking active C2 frameworks including Cobalt Strike, Sliver, Havoc, Mythic, and Brute Ratel via TLS/JARM fingerprinting.",
+    homepageUrl: "https://github.com/montysecurity/C2-Tracker",
+    icon: "🎯",
+    recordsIngested: 38000
+  },
+  {
+    id: "botvrij_eu",
+    name: "Botvrij.eu",
+    category: "Malware, C2 & Botnets",
+    scope: "Botnet IoCs, Malicious Domains & Suricata/Snort Rules",
+    access: "Public Community Feeds",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Open threat intelligence initiative providing curated lists of malicious IPs, fast-flux domains, and detection rules to neutralize cybercrime syndicates.",
+    homepageUrl: "https://www.botvrij.eu/",
+    icon: "🛡️",
+    recordsIngested: 210000
+  },
+  {
+    id: "openssf_malicious",
+    name: "OpenSSF Malicious Packages Repository",
+    category: "Malware, C2 & Botnets",
+    scope: "Supply Chain Malware, Typosquats & Token Harvesters",
+    access: "Public API / Git",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "Real-time automated ingestion of confirmed malicious packages uploaded to public open-source registries (npm, PyPI, RubyGems).",
+    homepageUrl: "https://github.com/ossf/malicious-packages",
+    icon: "📦",
+    recordsIngested: 22000
+  },
+  {
+    id: "socket_dev",
+    name: "Socket.dev Threat Intelligence",
+    category: "Malware, C2 & Botnets",
+    scope: "Behavioral Heuristics, Env/SSH Theft & Shell Spawning",
+    access: "Public Research / API",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "Detects runtime behavioral anomalies: reading ~/.ssh, accessing environment variables, and spawning background processes in packages.",
+    homepageUrl: "https://socket.dev",
+    icon: "🔌",
+    recordsIngested: 45000
+  },
+  {
+    id: "aqua_nautilus",
+    name: "Aqua Nautilus Cloud Threat Research",
+    category: "Malware, C2 & Botnets",
+    scope: "Cloud Native, Container Escapes & Droppers",
+    access: "Public Feed",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Targeted threat intelligence tracking container breakouts, Kubernetes misconfigurations, and supply chain droppers.",
+    homepageUrl: "https://www.aquasec.com/research",
+    icon: "🌊",
+    recordsIngested: 11200
+  },
+  {
+    id: "jfrog_research",
+    name: "JFrog Security Research Advisories",
+    category: "Malware, C2 & Botnets",
+    scope: "AST Call-Graph Reachability & Real-World Exploitability",
+    access: "Public Advisories",
+    status: "Active",
+    refreshRate: "Weekly",
+    coverage: "Separates theoretical dependency vulnerabilities from executable attack paths across software architectures.",
+    homepageUrl: "https://jfrog.com/security",
+    icon: "🐸",
+    recordsIngested: 6800
+  },
+
+  // ==========================================
+  // 2. Phishing & Fraud
+  // ==========================================
+  {
+    id: "openphish",
+    name: "OpenPhish",
+    category: "Phishing & Fraud",
+    scope: "Zero-Day Phishing URLs & Credential Harvesting Kits",
+    access: "Public Community Feed",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Autonomous detection system identifying active phishing campaigns, deceptive OAuth consent screens, and developer credential harvesting kits.",
+    homepageUrl: "https://openphish.com/",
+    icon: "🎣",
+    recordsIngested: 340000
+  },
+  {
+    id: "phishtank",
+    name: "PhishTank",
+    category: "Phishing & Fraud",
+    scope: "Verified Community Phishing URL Database",
+    access: "Public REST API / XML / CSV",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Collaborative clearinghouse for phishing data with verified community votes on suspicious links and fraudulent brand impersonations.",
+    homepageUrl: "https://phishtank.org/",
+    icon: "🐟",
+    recordsIngested: 1280000
+  },
+
+  // ==========================================
+  // 3. IP Reputation, Scanners & Network Telemetry
+  // ==========================================
+  {
+    id: "sans_dshield",
+    name: "SANS ISC (DShield)",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Distributed Firewall Honeypot Telemetry & Top Attackers",
+    access: "Public API / XML / Text Feeds",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Global internet storm center analyzing distributed honeypot sensor logs, active port scanning surges, and top attacking IP subnets.",
+    homepageUrl: "https://isc.sans.edu/",
+    icon: "🌪️",
+    recordsIngested: 520000
+  },
+  {
+    id: "blocklist_de",
+    name: "Blocklist.de",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Fail2ban Sensor Reports (SSH, Postfix, Apache, Mail)",
+    access: "Public Export Feeds",
+    status: "Active",
+    refreshRate: "Every 30 Minutes",
+    coverage: "Real-time attack reporting service aggregating fail2ban sensor telemetry across 59,000+ servers defending against automated brute-force attacks.",
+    homepageUrl: "https://www.blocklist.de/",
+    icon: "⛔",
+    recordsIngested: 490000
+  },
+  {
+    id: "ipsum",
+    name: "IPSum",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Scored IP Blacklist Aggregator (30+ Upstream Feeds)",
+    access: "Public GitHub Raw Feed",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Consolidated and weighted IP reputation feed scoring suspicious and malicious addresses across 30+ publicly available blocklists.",
+    homepageUrl: "https://github.com/stamparm/ipsum",
+    icon: "📊",
+    recordsIngested: 310000
+  },
+  {
+    id: "tor_exit_nodes",
+    name: "Tor Project Exit Addresses",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Tor Anonymity Network Bulk Exit Node Directory",
+    access: "Public HTTPS Text Feed",
+    status: "Realtime",
+    refreshRate: "Every 30 Minutes",
+    coverage: "Authoritative directory of active Tor exit nodes for distinguishing privacy-preserving connections from anonymous abuse campaigns.",
+    homepageUrl: "https://check.torproject.org/torbulkexitlist",
+    icon: "🧅",
+    recordsIngested: 2800
+  },
+  {
+    id: "talos_ip_blacklist",
+    name: "Cisco Talos IP Blacklist",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Reputation Intelligence & Malicious Infrastructure",
+    access: "Public Plaintext Feed",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Authoritative IP blacklist from Cisco Talos Intelligence Group tracking active malware distribution hosts, botnets, and malicious relays.",
+    homepageUrl: "https://www.talosintelligence.com/documents/ip-blacklist",
+    icon: "🦅",
+    recordsIngested: 86000
+  },
+  {
+    id: "et_open_rules",
+    name: "Emerging Threats (ET Open Rules)",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Suricata / Snort Signature Rules & IP Reputation Feeds",
+    access: "Public HTTP / Rule Feeds",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Community-driven IDS/IPS signature library providing deep packet inspection rules for zero-day exploits, trojan telemetry, and compromised hosts.",
+    homepageUrl: "https://rules.emergingthreats.net/open/",
+    icon: "⚡",
+    recordsIngested: 420000
+  },
+  {
+    id: "greensnow",
+    name: "GreenSnow",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Automated Brute-Force & Attack Harvester Blocklist",
+    access: "Public Text Feed",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "Harvests attack telemetry from servers worldwide blocking SSH, SQL, and RDP brute-force attempts and port scan probes.",
+    homepageUrl: "https://greensnow.co/",
+    icon: "❄️",
+    recordsIngested: 160000
+  },
+  {
+    id: "greynoise_community",
+    name: "GreyNoise Community",
+    category: "IP Reputation, Scanners & Network Telemetry",
+    scope: "Internet-Wide Scanners, Benign Noise & Attack Crawlers",
+    access: "Public API / Query Feeds",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Differentiates targeted exploits from opportunistic mass-internet scanners (Shodan, Censys, masscan) and worm propagation sweeps.",
+    homepageUrl: "https://www.greynoise.io/",
+    icon: "📡",
+    recordsIngested: 650000
+  },
+
+  // ==========================================
+  // 4. Vulnerabilities & Exploitation
+  // ==========================================
+  {
     id: "cisa_kev",
-    name: "CISA Known Exploited Vulnerabilities (KEV)",
+    name: "CISA KEV Catalog",
+    category: "Vulnerabilities & Exploitation",
     scope: "Active In-The-Wild Exploitation & Weaponized CVEs",
     access: "Public JSON Feed",
     status: "Active",
@@ -519,8 +804,35 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 1250
   },
   {
+    id: "first_epss",
+    name: "FIRST EPSS Data",
+    category: "Vulnerabilities & Exploitation",
+    scope: "Machine Learning Probability of Exploitation in the Wild",
+    access: "Public REST API / Daily CSV",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Data-driven statistical model estimating the empirical probability that a software vulnerability will be weaponized in the wild within 30 days.",
+    homepageUrl: "https://www.first.org/epss/data_stats",
+    icon: "📈",
+    recordsIngested: 260000
+  },
+  {
+    id: "nvd_cve",
+    name: "NIST National Vulnerability Database (NVD)",
+    category: "Vulnerabilities & Exploitation",
+    scope: "Universal Common Vulnerabilities and Exposures (CVEs)",
+    access: "Public REST API 2.0",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Primary global index for official CVE identifiers, CVSS v3.1/v4.0 scoring, and CWE weakness taxonomy.",
+    homepageUrl: "https://nvd.nist.gov",
+    icon: "🏛️",
+    recordsIngested: 248000
+  },
+  {
     id: "ghsa",
     name: "GitHub Advisory Database (GHSA)",
+    category: "Vulnerabilities & Exploitation",
     scope: "Open Source Ecosystem Security Advisories",
     access: "Public GraphQL / REST",
     status: "Realtime",
@@ -533,6 +845,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   {
     id: "osv_dev",
     name: "Open Source Vulnerabilities (OSV.dev)",
+    category: "Vulnerabilities & Exploitation",
     scope: "OpenSSF Standardized Aggregation Database",
     access: "Public REST API",
     status: "Active",
@@ -543,80 +856,9 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 310000
   },
   {
-    id: "openssf_malicious",
-    name: "OpenSSF Malicious Packages Repository",
-    scope: "Supply Chain Malware, Typosquats & Token Harvesters",
-    access: "Public API / Git",
-    status: "Active",
-    refreshRate: "Continuous",
-    coverage: "Real-time automated ingestion of confirmed malicious packages uploaded to public open-source registries.",
-    homepageUrl: "https://github.com/ossf/malicious-packages",
-    icon: "🛡️",
-    recordsIngested: 22000
-  },
-  {
-    id: "vendor_msrc_eclipse",
-    name: "Microsoft MSRC & Platform Advisories",
-    scope: "Vendor Bulletins, Windows, VS Code & Platform Security",
-    access: "Public Advisories",
-    status: "Active",
-    refreshRate: "Daily",
-    coverage: "Official security notices targeting Windows, VS Code Core, Electron, Linux WSL, and Azure.",
-    homepageUrl: "https://msrc.microsoft.com",
-    icon: "🏢",
-    recordsIngested: 14500
-  },
-  {
-    id: "trail_of_bits_vsix",
-    name: "Trail of Bits Security Research & IoCs",
-    scope: "Static AST Analysis, Obfuscation & Binary Auditing",
-    access: "Public Open Source",
-    status: "Active",
-    refreshRate: "Continuous",
-    coverage: "Deep AST inspection heuristics, command injection vectors, and indicators of compromise (IoCs).",
-    homepageUrl: "https://github.com/trailofbits/vsix-audit",
-    icon: "🔬",
-    recordsIngested: 8400
-  },
-  {
-    id: "socket_dev",
-    name: "Socket.dev Threat Intelligence",
-    scope: "Behavioral Heuristics, Env/SSH Theft & Shell Spawning",
-    access: "Public Research / API",
-    status: "Active",
-    refreshRate: "Continuous",
-    coverage: "Detects runtime behavioral anomalies: reading ~/.ssh, accessing environment variables, and spawning background processes.",
-    homepageUrl: "https://socket.dev",
-    icon: "🔌",
-    recordsIngested: 45000
-  },
-  {
-    id: "jfrog_research",
-    name: "JFrog Security Research Advisories",
-    scope: "AST Call-Graph Reachability & Real-World Exploitability",
-    access: "Public Advisories",
-    status: "Active",
-    refreshRate: "Weekly",
-    coverage: "Separates theoretical dependency vulnerabilities from executable attack paths across software architectures.",
-    homepageUrl: "https://jfrog.com/security",
-    icon: "🐸",
-    recordsIngested: 6800
-  },
-  {
-    id: "aqua_nautilus",
-    name: "Aqua Nautilus Cloud Threat Research",
-    scope: "Cloud Native, Container Escapes & Droppers",
-    access: "Public Feed",
-    status: "Active",
-    refreshRate: "Weekly",
-    coverage: "Targeted threat intelligence tracking container breakouts, Kubernetes misconfigurations, and supply chain droppers.",
-    homepageUrl: "https://www.aquasec.com/research",
-    icon: "🌊",
-    recordsIngested: 11200
-  },
-  {
     id: "snyk_vulndb",
     name: "Snyk Open Vulnerability Database",
+    category: "Vulnerabilities & Exploitation",
     scope: "Transitive Dependency Trees & Parser Vulnerabilities",
     access: "Public Database",
     status: "Active",
@@ -627,8 +869,22 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     recordsIngested: 195000
   },
   {
+    id: "vendor_msrc_eclipse",
+    name: "Microsoft MSRC & Platform Advisories",
+    category: "Vulnerabilities & Exploitation",
+    scope: "Vendor Bulletins, Windows, VS Code & Platform Security",
+    access: "Public Advisories",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Official security notices targeting Windows, VS Code Core, Electron, Linux WSL, and Azure.",
+    homepageUrl: "https://msrc.microsoft.com",
+    icon: "🏢",
+    recordsIngested: 14500
+  },
+  {
     id: "ecosystem_dbs",
     name: "Ecosystem Advisory DBs (RustSec, Go VulnDB, PyPA)",
+    category: "Vulnerabilities & Exploitation",
     scope: "Native Language Toolchain & Compiler Security",
     access: "Public DBs / Git",
     status: "Realtime",
@@ -638,9 +894,79 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     icon: "📦",
     recordsIngested: 16000
   },
+
+  // ==========================================
+  // 5. Multi-Indicator Hubs & Aggregators
+  // ==========================================
+  {
+    id: "alienvault_otx",
+    name: "AlienVault OTX",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "Community Pulses, Threat Actor IoCs & Malware Campaigns",
+    access: "Public REST API / SDK",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Global crowd-sourced threat intelligence platform with over 200,000 security professionals sharing collaborative threat pulses.",
+    homepageUrl: "https://otx.alienvault.com/",
+    icon: "👽",
+    recordsIngested: 19500000
+  },
+  {
+    id: "circl_misp",
+    name: "CIRCL MISP Default Feeds",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "OSINT Threat Sharing, Attributes & Event Graph",
+    access: "Public MISP Manifest / JSON",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "European Computer Incident Response Center (CIRCL) open threat sharing feeds standardizing cross-border incident response attributes.",
+    homepageUrl: "https://www.circl.lu/doc/misp/feed-osint/",
+    icon: "🇪🇺",
+    recordsIngested: 3200000
+  },
+  {
+    id: "threatfeeds_io",
+    name: "threatfeeds.io",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "Directory & Status Monitor for 60+ Public Threat Feeds",
+    access: "Public Directory / Aggregator",
+    status: "Active",
+    refreshRate: "Hourly",
+    coverage: "Curated meta-index tracking live availability, formats, and updates across global open-source cyber threat intelligence feeds.",
+    homepageUrl: "https://threatfeeds.io/",
+    icon: "📑",
+    recordsIngested: 750000
+  },
+  {
+    id: "bertjanp_oti",
+    name: "Bert-JanP Open Threat Intelligence Repository",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "GitHub CTI Repository & Blocklist Aggregations",
+    access: "Public GitHub Repository",
+    status: "Active",
+    refreshRate: "Daily",
+    coverage: "Community repository consolidating high-fidelity OSINT threat feeds, automated extraction scripts, and threat actor infrastructure maps.",
+    homepageUrl: "https://github.com/Bert-JanP/Open-threat-intelligence",
+    icon: "📂",
+    recordsIngested: 480000
+  },
+  {
+    id: "trail_of_bits_vsix",
+    name: "Trail of Bits Security Research & IoCs",
+    category: "Multi-Indicator Hubs & Aggregators",
+    scope: "Static AST Analysis, Obfuscation & Binary Auditing",
+    access: "Public Open Source",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "Deep AST inspection heuristics, command injection vectors, and indicators of compromise (IoCs).",
+    homepageUrl: "https://github.com/trailofbits/vsix-audit",
+    icon: "🔬",
+    recordsIngested: 8400
+  },
   {
     id: "krebs_security",
     name: "Krebs on Security (Brian Krebs)",
+    category: "Multi-Indicator Hubs & Aggregators",
     scope: "Investigative Cybercrime, Account Takeover & Threat Actors",
     access: "Public RSS / Journalism",
     status: "Active",
@@ -653,6 +979,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   {
     id: "schneier_security",
     name: "Schneier on Security (Bruce Schneier)",
+    category: "Multi-Indicator Hubs & Aggregators",
     scope: "Cryptographic Analysis, AI Policy & Systemic Vectors",
     access: "Public RSS / Essays",
     status: "Active",
@@ -665,6 +992,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   {
     id: "bleeping_computer",
     name: "BleepingComputer & Underground Intel",
+    category: "Multi-Indicator Hubs & Aggregators",
     scope: "Breaking Exploit Waves, PoC Disclosures & Ransomware TTPs",
     access: "Public RSS / Telemetry",
     status: "Realtime",
@@ -677,6 +1005,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
   {
     id: "project_zero_research",
     name: "Project Zero & Academic Research (arXiv/IACR)",
+    category: "Multi-Indicator Hubs & Aggregators",
     scope: "Zero-Day Exploit PoCs, Side-Channels & Deep Sandbox Escapes",
     access: "Public Blogs / Preprints",
     status: "Active",

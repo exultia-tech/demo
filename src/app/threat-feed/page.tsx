@@ -7,6 +7,7 @@ import {
   UVI_PUBLIC_FEED_SOURCES, 
   UviAdvisoryRecord, 
   PublicFeedSource,
+  FeedCategory,
   ThreatSeverity,
   DomainCategory,
   IdeBuildImpactAssessment,
@@ -29,6 +30,21 @@ export default function ThreatFeedPage() {
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
   const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(46);
   const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(20);
+
+  // Feed Sources Directory Modal & Category Filtering
+  const [isFeedDirectoryOpen, setIsFeedDirectoryOpen] = useState(false);
+  const [feedDirectorySearch, setFeedDirectorySearch] = useState("");
+  const [feedDirectoryCategory, setFeedDirectoryCategory] = useState<string>("ALL");
+  const [activeStripCategory, setActiveStripCategory] = useState<string>("ALL");
+
+  const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
+    { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
+    { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Malware, C2 & Botnets").length },
+    { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Phishing & Fraud").length },
+    { id: "IP Reputation, Scanners & Network Telemetry", label: "IP Telemetry", icon: "🌪️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "IP Reputation, Scanners & Network Telemetry").length },
+    { id: "Vulnerabilities & Exploitation", label: "Vulnerabilities", icon: "🚨", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vulnerabilities & Exploitation").length },
+    { id: "Multi-Indicator Hubs & Aggregators", label: "Threat Hubs", icon: "👽", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Multi-Indicator Hubs & Aggregators").length }
+  ];
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -267,7 +283,7 @@ export default function ThreatFeedPage() {
               gap: "0.35rem" 
             }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
-              {hasLiveSynced ? `Live Ingestion Active (${totalUniversalCount.toLocaleString()} Records Streamed)` : "12 Synchronized Upstream Public Feeds"}
+              {hasLiveSynced ? `Live Ingestion Active (${totalUniversalCount.toLocaleString()} Records Streamed)` : `${UVI_PUBLIC_FEED_SOURCES.length} Synchronized Upstream Public Feeds`}
             </span>
           </div>
 
@@ -328,65 +344,169 @@ export default function ThreatFeedPage() {
         </div>
       </div>
 
-      {/* Simplified Feed Sources Strip (Compact listing, not tall) */}
+      {/* Enhanced Threat Feed Sources Network Strip */}
       <div style={{
-        background: "rgba(15, 23, 42, 0.55)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        borderRadius: "12px",
-        padding: "0.75rem 1.25rem",
+        background: "rgba(15, 23, 42, 0.65)",
+        border: "1px solid rgba(255, 255, 255, 0.09)",
+        borderRadius: "14px",
+        padding: "0.95rem 1.35rem",
         marginBottom: "1.5rem",
         display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        flexWrap: "wrap"
+        flexDirection: "column",
+        gap: "0.85rem",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", whiteSpace: "nowrap" }}>
-          <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-            Feed Sources:
-          </span>
-          <span style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            padding: "0.15rem 0.5rem",
-            borderRadius: "4px",
-            background: "rgba(16, 185, 129, 0.15)",
-            color: "#34D399",
-            border: "1px solid rgba(16, 185, 129, 0.3)"
-          }}>
-            {UVI_PUBLIC_FEED_SOURCES.length} Feeds
-          </span>
+        {/* Top controls: Category Switcher + Directory Modal Trigger */}
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between", 
+          gap: "1rem", 
+          flexWrap: "wrap",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+          paddingBottom: "0.75rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
+                Upstream Feeds:
+              </span>
+              <span style={{
+                fontSize: "0.74rem",
+                fontWeight: 700,
+                padding: "0.15rem 0.5rem",
+                borderRadius: "4px",
+                background: "rgba(16, 185, 129, 0.15)",
+                color: "#34D399",
+                border: "1px solid rgba(16, 185, 129, 0.3)"
+              }}>
+                {UVI_PUBLIC_FEED_SOURCES.length} Feeds ({((totalUpstreamRecords) / 1000000).toFixed(1)}M+ Records)
+              </span>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
+              {FEED_CATEGORIES.map(cat => {
+                const isActive = activeStripCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveStripCategory(cat.id)}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.3rem",
+                      padding: "0.22rem 0.6rem",
+                      borderRadius: "6px",
+                      background: isActive ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                      border: isActive ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                      color: isActive ? "#93C5FD" : "#94A3B8",
+                      fontSize: "0.73rem",
+                      fontWeight: isActive ? 700 : 500,
+                      cursor: "pointer",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    <span style={{ 
+                      fontSize: "0.65rem", 
+                      padding: "0.05rem 0.3rem", 
+                      borderRadius: "10px", 
+                      background: isActive ? "rgba(59, 130, 246, 0.3)" : "rgba(255, 255, 255, 0.06)",
+                      color: isActive ? "#FFFFFF" : "#64748B"
+                    }}>
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Directory Button */}
+          <button
+            onClick={() => setIsFeedDirectoryOpen(true)}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.45rem",
+              padding: "0.35rem 0.85rem",
+              borderRadius: "8px",
+              background: "linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(99, 102, 241, 0.18))",
+              border: "1px solid rgba(99, 102, 241, 0.35)",
+              color: "#A5B4FC",
+              fontSize: "0.78rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+          >
+            <span>🌐</span>
+            <span>View All {UVI_PUBLIC_FEED_SOURCES.length} Feeds Directory</span>
+            <span>↗</span>
+          </button>
         </div>
 
-        {/* Compact inline feed list */}
+        {/* Bottom row: Interactive Feed Chips */}
         <div style={{ 
           display: "flex", 
           flexWrap: "wrap", 
-          gap: "0.35rem 0.5rem", 
-          alignItems: "center", 
-          flex: 1 
+          gap: "0.4rem 0.55rem", 
+          alignItems: "center"
         }}>
-          {UVI_PUBLIC_FEED_SOURCES.map((feed) => {
+          {selectedSourceFeed !== "ALL" && (
+            <button
+              onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                padding: "0.22rem 0.65rem",
+                borderRadius: "6px",
+                background: "rgba(239, 68, 68, 0.15)",
+                border: "1px solid rgba(239, 68, 68, 0.35)",
+                color: "#FCA5A5",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                cursor: "pointer"
+              }}
+              title="Clear active feed filter"
+            >
+              <span>✕</span>
+              <span>Reset to All Feeds</span>
+            </button>
+          )}
+
+          {(activeStripCategory === "ALL" 
+            ? UVI_PUBLIC_FEED_SOURCES 
+            : UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === activeStripCategory)
+          ).map((feed) => {
             const isSelected = selectedSourceFeed === feed.id;
             return (
-              <span
+              <button
                 key={feed.id}
+                onClick={() => handleFilterChange(() => setSelectedSourceFeed(isSelected ? "ALL" : feed.id))}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.3rem",
-                  padding: "0.2rem 0.55rem",
-                  borderRadius: "5px",
+                  gap: "0.35rem",
+                  padding: "0.22rem 0.6rem",
+                  borderRadius: "6px",
                   background: isSelected ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                  border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.07)",
+                  border: isSelected ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
                   color: isSelected ? "#93C5FD" : "#CBD5E1",
                   fontSize: "0.76rem",
-                  fontWeight: 500
+                  fontWeight: isSelected ? 700 : 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease"
                 }}
-                title={`${feed.name}: ${feed.scope} (${feed.recordsIngested.toLocaleString()} records)`}
+                title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter UVI by this source`}
               >
                 <span style={{ fontSize: "0.85rem" }}>{feed.icon}</span>
                 <span>{feed.name.replace("NIST ", "").replace(" Database", "").replace(" Security", "").replace(" (MSRC)", "").replace(" Advisories", "")}</span>
-              </span>
+                {isSelected && <span style={{ fontSize: "0.7rem", color: "#60A5FA" }}>●</span>}
+              </button>
             );
           })}
         </div>
@@ -623,10 +743,14 @@ export default function ThreatFeedPage() {
               }}
             >
               <option value="ALL">All Feeds ({UVI_PUBLIC_FEED_SOURCES.length} Sources)</option>
-              {UVI_PUBLIC_FEED_SOURCES.map((feed) => (
-                <option key={feed.id} value={feed.id}>
-                  {feed.icon} {feed.name}
-                </option>
+              {FEED_CATEGORIES.filter(c => c.id !== "ALL").map(category => (
+                <optgroup key={category.id} label={`${category.icon} ${category.id}`}>
+                  {UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === category.id).map(feed => (
+                    <option key={feed.id} value={feed.id}>
+                      {feed.icon} {feed.name}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -2476,6 +2600,414 @@ export default function ThreatFeedPage() {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Connected Threat Feeds Directory Modal */}
+      {isFeedDirectoryOpen && (
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsFeedDirectoryOpen(false);
+          }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(3, 7, 18, 0.85)",
+            backdropFilter: "blur(12px)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem"
+          }}
+        >
+          <div style={{
+            background: "#0B1120",
+            border: "1px solid rgba(255, 255, 255, 0.14)",
+            borderRadius: "20px",
+            maxWidth: "1280px",
+            width: "100%",
+            maxHeight: "92vh",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)",
+            overflow: "hidden"
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: "1.25rem 1.75rem",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+              background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.5))",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
+                  <span style={{ fontSize: "1.4rem" }}>🌐</span>
+                  <h2 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#F8FAFC", margin: 0 }}>
+                    Connected Threat Intelligence Network ({UVI_PUBLIC_FEED_SOURCES.length} Feeds)
+                  </h2>
+                  <span style={{
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    padding: "0.2rem 0.6rem",
+                    borderRadius: "20px",
+                    background: "rgba(16, 185, 129, 0.15)",
+                    color: "#34D399",
+                    border: "1px solid rgba(16, 185, 129, 0.3)"
+                  }}>
+                    LIVE FEDERATION ACTIVE
+                  </span>
+                </div>
+                <p style={{ fontSize: "0.85rem", color: "#94A3B8", margin: 0 }}>
+                  Consolidated multi-feed architecture ingesting over {((totalUpstreamRecords) / 1000000).toFixed(1)}M+ indicators across malware, botnets, phishing URLs, IP telemetry, and exploit probability models.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsFeedDirectoryOpen(false)}
+                style={{
+                  background: "rgba(255, 255, 255, 0.06)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  borderRadius: "8px",
+                  color: "#94A3B8",
+                  width: "32px",
+                  height: "32px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  fontSize: "1rem"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Subheader: Search & Category Filter Toolbar */}
+            <div style={{
+              padding: "1rem 1.75rem",
+              background: "rgba(15, 23, 42, 0.4)",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem"
+            }}>
+              {/* Search Bar */}
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <div style={{ flex: 1, position: "relative" }}>
+                  <span style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "#64748B", fontSize: "0.9rem" }}>
+                    🔍
+                  </span>
+                  <input
+                    type="text"
+                    value={feedDirectorySearch}
+                    onChange={(e) => setFeedDirectorySearch(e.target.value)}
+                    placeholder="Search 37 threat feeds by name, protocol, URL, or coverage scope..."
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem 1rem 0.6rem 2.4rem",
+                      background: "rgba(10, 14, 23, 0.8)",
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      borderRadius: "8px",
+                      color: "#F8FAFC",
+                      fontSize: "0.85rem",
+                      outline: "none"
+                    }}
+                  />
+                  {feedDirectorySearch && (
+                    <button
+                      onClick={() => setFeedDirectorySearch("")}
+                      style={{
+                        position: "absolute",
+                        right: "0.75rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        color: "#94A3B8",
+                        cursor: "pointer",
+                        fontSize: "0.8rem"
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Category Filter Pills inside Modal */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                <span style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#64748B", fontWeight: 700, marginRight: "0.25rem" }}>
+                  Category:
+                </span>
+                {FEED_CATEGORIES.map(cat => {
+                  const isActive = feedDirectoryCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setFeedDirectoryCategory(cat.id)}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        padding: "0.25rem 0.65rem",
+                        borderRadius: "6px",
+                        background: isActive ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.03)",
+                        border: isActive ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                        color: isActive ? "#93C5FD" : "#94A3B8",
+                        fontSize: "0.74rem",
+                        fontWeight: isActive ? 700 : 500,
+                        cursor: "pointer"
+                      }}
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.label}</span>
+                      <span style={{ 
+                        fontSize: "0.65rem", 
+                        padding: "0.05rem 0.35rem", 
+                        borderRadius: "10px", 
+                        background: isActive ? "rgba(59, 130, 246, 0.35)" : "rgba(255, 255, 255, 0.06)",
+                        color: isActive ? "#FFFFFF" : "#64748B"
+                      }}>
+                        {cat.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Body: Feed Cards Grid */}
+            <div style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: "1.25rem 1.75rem",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+              gap: "1rem",
+              background: "#080D1A"
+            }}>
+              {UVI_PUBLIC_FEED_SOURCES
+                .filter(feed => {
+                  const matchesCat = feedDirectoryCategory === "ALL" || feed.category === feedDirectoryCategory;
+                  const q = feedDirectorySearch.trim().toLowerCase();
+                  const matchesSearch = !q || (
+                    feed.name.toLowerCase().includes(q) ||
+                    feed.scope.toLowerCase().includes(q) ||
+                    feed.coverage.toLowerCase().includes(q) ||
+                    feed.access.toLowerCase().includes(q) ||
+                    feed.category.toLowerCase().includes(q) ||
+                    feed.homepageUrl.toLowerCase().includes(q)
+                  );
+                  return matchesCat && matchesSearch;
+                })
+                .map((feed) => {
+                  const isSelectedInMainFeed = selectedSourceFeed === feed.id;
+                  
+                  // Category color styles
+                  const getCategoryStyle = (cat: string) => {
+                    switch (cat) {
+                      case "Malware, C2 & Botnets":
+                        return { bg: "rgba(239, 68, 68, 0.12)", text: "#FCA5A5", border: "rgba(239, 68, 68, 0.3)" };
+                      case "Phishing & Fraud":
+                        return { bg: "rgba(249, 115, 22, 0.12)", text: "#FDBA74", border: "rgba(249, 115, 22, 0.3)" };
+                      case "IP Reputation, Scanners & Network Telemetry":
+                        return { bg: "rgba(99, 102, 241, 0.12)", text: "#A5B4FC", border: "rgba(99, 102, 241, 0.3)" };
+                      case "Vulnerabilities & Exploitation":
+                        return { bg: "rgba(16, 185, 129, 0.12)", text: "#6EE7B7", border: "rgba(16, 185, 129, 0.3)" };
+                      case "Multi-Indicator Hubs & Aggregators":
+                      default:
+                        return { bg: "rgba(168, 85, 247, 0.12)", text: "#D8B4FE", border: "rgba(168, 85, 247, 0.3)" };
+                    }
+                  };
+                  const catStyle = getCategoryStyle(feed.category);
+
+                  return (
+                    <div
+                      key={feed.id}
+                      style={{
+                        background: isSelectedInMainFeed ? "rgba(59, 130, 246, 0.08)" : "rgba(15, 23, 42, 0.7)",
+                        border: isSelectedInMainFeed ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: "12px",
+                        padding: "1.1rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        gap: "0.85rem",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      <div>
+                        {/* Feed Card Top Header */}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+                            <span style={{ fontSize: "1.35rem" }}>{feed.icon}</span>
+                            <div>
+                              <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#F8FAFC", margin: 0, lineHeight: 1.25 }}>
+                                {feed.name}
+                              </h3>
+                              <span style={{
+                                display: "inline-block",
+                                fontSize: "0.68rem",
+                                fontWeight: 600,
+                                padding: "0.1rem 0.45rem",
+                                borderRadius: "4px",
+                                background: catStyle.bg,
+                                color: catStyle.text,
+                                border: `1px solid ${catStyle.border}`,
+                                marginTop: "0.25rem"
+                              }}>
+                                {feed.category}
+                              </span>
+                            </div>
+                          </div>
+
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            fontSize: "0.68rem",
+                            fontWeight: 700,
+                            padding: "0.15rem 0.45rem",
+                            borderRadius: "4px",
+                            background: feed.status === "Realtime" ? "rgba(16, 185, 129, 0.15)" : "rgba(59, 130, 246, 0.15)",
+                            color: feed.status === "Realtime" ? "#34D399" : "#60A5FA",
+                            border: feed.status === "Realtime" ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(59, 130, 246, 0.3)"
+                          }}>
+                            <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: feed.status === "Realtime" ? "#34D399" : "#60A5FA" }}></span>
+                            {feed.status.toUpperCase()}
+                          </span>
+                        </div>
+
+                        {/* Scope */}
+                        <div style={{ fontSize: "0.78rem", color: "#E2E8F0", fontWeight: 600, marginBottom: "0.4rem" }}>
+                          {feed.scope}
+                        </div>
+
+                        {/* Coverage Details */}
+                        <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45, margin: "0 0 0.65rem" }}>
+                          {feed.coverage}
+                        </p>
+
+                        {/* Metadata Tags */}
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", fontSize: "0.72rem" }}>
+                          <span style={{
+                            padding: "0.15rem 0.45rem",
+                            borderRadius: "4px",
+                            background: "rgba(255, 255, 255, 0.04)",
+                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            color: "#CBD5E1"
+                          }}>
+                            📡 {feed.access}
+                          </span>
+                          <span style={{
+                            padding: "0.15rem 0.45rem",
+                            borderRadius: "4px",
+                            background: "rgba(255, 255, 255, 0.04)",
+                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            color: "#CBD5E1"
+                          }}>
+                            ⏱️ {feed.refreshRate}
+                          </span>
+                          <span style={{
+                            padding: "0.15rem 0.45rem",
+                            borderRadius: "4px",
+                            background: "rgba(16, 185, 129, 0.08)",
+                            border: "1px solid rgba(16, 185, 129, 0.2)",
+                            color: "#34D399",
+                            fontWeight: 600
+                          }}>
+                            📊 {feed.recordsIngested.toLocaleString()} Ingested
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Footer Actions */}
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        paddingTop: "0.65rem",
+                        borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+                        gap: "0.5rem"
+                      }}>
+                        <a
+                          href={feed.homepageUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#60A5FA",
+                            textDecoration: "none",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            fontWeight: 600
+                          }}
+                        >
+                          <span>Official Endpoint</span>
+                          <span>↗</span>
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            handleFilterChange(() => setSelectedSourceFeed(isSelectedInMainFeed ? "ALL" : feed.id));
+                            setIsFeedDirectoryOpen(false);
+                          }}
+                          style={{
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "6px",
+                            background: isSelectedInMainFeed ? "rgba(239, 68, 68, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                            border: isSelectedInMainFeed ? "1px solid #EF4444" : "1px solid #3B82F6",
+                            color: isSelectedInMainFeed ? "#FCA5A5" : "#93C5FD",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          {isSelectedInMainFeed ? "Clear Filter" : "Filter UVI Feed"}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: "0.85rem 1.75rem",
+              borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+              background: "rgba(15, 23, 42, 0.6)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-NNNN</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
+              </span>
+
+              <button
+                onClick={() => setIsFeedDirectoryOpen(false)}
+                style={{
+                  padding: "0.4rem 1.25rem",
+                  borderRadius: "6px",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "#F8FAFC",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  cursor: "pointer"
+                }}
+              >
+                Close Directory
               </button>
             </div>
           </div>

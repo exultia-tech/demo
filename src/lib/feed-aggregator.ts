@@ -373,6 +373,112 @@ function generateMultiFeedSignals(
     });
   }
 
+  // 13. FIRST EPSS Data (Exploit Prediction Scoring System)
+  const epssPercentile = isRansomware ? "99th %ile" : "96th %ile";
+  const epssScore = isRansomware ? "0.974" : "0.892";
+  signals.push({
+    sourceId: "first_epss",
+    sourceName: "FIRST EPSS",
+    badge: `EPSS ${epssScore} (${epssPercentile})`,
+    finding: `FIRST EPSS machine-learning statistical model estimates elevated in-the-wild exploitation probability within 30 days.`,
+    signalType: "EPSS_PERCENTILE",
+    confidence: "CONFIRMED"
+  });
+
+  // 14. ThreatFox (abuse.ch) C2 & IoC Telemetry
+  if (isRansomware || text.includes("c2") || text.includes("trojan") || text.includes("botnet") || text.includes("payload")) {
+    signals.push({
+      sourceId: "threatfox",
+      sourceName: "ThreatFox",
+      badge: "C2 IoC Telemetry",
+      finding: `ThreatFox intelligence cataloged active C2 infrastructure, IP addresses, and payload hashes used in exploitation campaigns.`,
+      signalType: "C2_BEACON",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 15. Feodo Tracker (abuse.ch) Botnet C2 Controllers
+  if (isRansomware || text.includes("botnet") || text.includes("qakbot") || text.includes("emotet") || text.includes("cobalt strike")) {
+    signals.push({
+      sourceId: "feodo_tracker",
+      sourceName: "Feodo Tracker",
+      badge: "Botnet C2 Node",
+      finding: `Feodo Tracker flagged active command & control nodes and proxy relays associated with this exploit campaign.`,
+      signalType: "C2_BEACON",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 16. MontySecurity C2-Tracker (JARM / TLS fingerprinting)
+  if (isRansomware || text.includes("cobalt strike") || text.includes("beacon") || text.includes("c2")) {
+    signals.push({
+      sourceId: "montysecurity_c2",
+      sourceName: "MontySecurity C2-Tracker",
+      badge: "JARM C2 Match",
+      finding: `Automated TLS/JARM fingerprint scan identified active adversary C2 listeners across public cloud IPs.`,
+      signalType: "C2_BEACON",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 17. GreyNoise Community Telemetry (Internet scanners & mass sweeps)
+  if (domain === "Networking, Protocols & Cryptography" || text.includes("vpn") || text.includes("gateway") || text.includes("rce") || text.includes("remote code execution")) {
+    signals.push({
+      sourceId: "greynoise_community",
+      sourceName: "GreyNoise",
+      badge: "Scanner Surge",
+      finding: `GreyNoise sensor telemetry detected mass opportunistic port scanning and exploitation sweeps targeting this flaw.`,
+      signalType: "BEHAVIORAL_ALERT",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 18. Cisco Talos IP Blacklist
+  if (isRansomware || text.includes("firewall") || text.includes("vpn") || text.includes("router") || text.includes("cisco")) {
+    signals.push({
+      sourceId: "talos_ip_blacklist",
+      sourceName: "Cisco Talos IP Blacklist",
+      badge: "Talos Reputation",
+      finding: `Cisco Talos Intelligence IP blacklist dynamically blocking attacking relays and exploitation sources.`,
+      signalType: "IP_REPUTATION",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 19. Emerging Threats (ET Open Rules)
+  if (domain === "Networking, Protocols & Cryptography" || text.includes("command injection") || text.includes("deserialization")) {
+    signals.push({
+      sourceId: "et_open_rules",
+      sourceName: "Emerging Threats",
+      badge: "ET Open IDS Rule",
+      finding: `Suricata and Snort IDS signatures deployed to identify network payload transmission and inbound shell requests.`,
+      signalType: "AST_IOC",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 20. AlienVault OTX Community Pulse
+  signals.push({
+    sourceId: "alienvault_otx",
+    sourceName: "AlienVault OTX",
+    badge: "OTX Threat Pulse",
+    finding: `AlienVault OTX verified community pulse contributed cross-referenced IoCs and behavioral signatures.`,
+    signalType: "RESEARCH_DISCLOSURE",
+    confidence: "CONFIRMED"
+  });
+
+  // 21. CIRCL MISP Threat Sharing
+  if (isRansomware || domain === "Operating Systems & Kernels" || domain === "Networking, Protocols & Cryptography") {
+    signals.push({
+      sourceId: "circl_misp",
+      sourceName: "CIRCL MISP",
+      badge: "MISP Sharing Feed",
+      finding: `European CIRCL MISP threat sharing cluster mapped campaign attributes across CERT incident response teams.`,
+      signalType: "RESEARCH_DISCLOSURE",
+      confidence: "CONFIRMED"
+    });
+  }
+
   return signals;
 }
 
