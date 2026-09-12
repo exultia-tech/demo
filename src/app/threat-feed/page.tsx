@@ -302,40 +302,8 @@ export default function ThreatFeedPage() {
         marginBottom: "1.5rem",
         flexWrap: "wrap"
       }}>
-        {/* Left Column: Banner, Title & Subtitle */}
+        {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          {/* Top Banner Tag */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{ 
-              fontSize: "0.72rem", 
-              fontWeight: 700, 
-              letterSpacing: "0.08em", 
-              textTransform: "uppercase", 
-              padding: "0.25rem 0.65rem", 
-              borderRadius: "6px", 
-              background: "rgba(59, 130, 246, 0.15)", 
-              color: "#60A5FA",
-              border: "1px solid rgba(59, 130, 246, 0.3)"
-            }}>
-              Standalone Vulnerability Registry
-            </span>
-            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
-            <span style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
-              Unified Vulnerability Intelligence (UVI) Encyclopedia
-            </span>
-            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>•</span>
-            <span style={{ 
-              fontSize: "0.75rem", 
-              fontWeight: 600, 
-              color: "#34D399", 
-              display: "inline-flex", 
-              alignItems: "center", 
-              gap: "0.35rem" 
-            }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
-              {UVI_PUBLIC_FEED_SOURCES.length} Synchronized Upstream Public Feeds
-            </span>
-          </div>
 
           <h1 style={{ 
             fontSize: "2.35rem", 
