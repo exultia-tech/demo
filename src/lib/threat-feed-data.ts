@@ -295,7 +295,7 @@ export function getExploitationRealityBadge(record: UviAdvisoryRecord): Exploita
   // 0. Informational Research & Emerging Informal Disclosures
   if (record.disclosureType === "INFORMATIONAL_DISCLOSURE") {
     return {
-      label: "📡 INFORMAL RESEARCH",
+      label: "📡 RESEARCH",
       subLabel: record.informationalSynthesis?.vectorCategory || "Autonomous Agent Synthesis",
       statusType: "THEORETICAL",
       bg: "rgba(139, 92, 246, 0.18)",

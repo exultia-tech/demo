@@ -336,7 +336,7 @@ export default function ThreatFeedPage() {
               gap: "0.35rem" 
             }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
-              {hasLiveSynced ? `Live Ingestion Active (${totalUniversalCount.toLocaleString()} Records Streamed)` : `${UVI_PUBLIC_FEED_SOURCES.length} Synchronized Upstream Public Feeds`}
+              {UVI_PUBLIC_FEED_SOURCES.length} Synchronized Upstream Public Feeds
             </span>
           </div>
 
@@ -351,7 +351,7 @@ export default function ThreatFeedPage() {
             Universal Vulnerability Intelligence (UVI) Threat Feed
           </h1>
           <p style={{ fontSize: "1rem", color: "var(--text-muted)", maxWidth: "720px", lineHeight: 1.6, margin: 0 }}>
-            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized <code style={{ color: "#60A5FA", fontWeight: 700, background: "rgba(59, 130, 246, 0.12)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>UVI-YYYY-MM-000001</code> records.
+            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized records.
           </p>
         </div>
 
@@ -541,7 +541,7 @@ export default function ThreatFeedPage() {
                       color: "#34D399",
                       border: "1px solid rgba(16, 185, 129, 0.3)"
                     }}>
-                      {UVI_PUBLIC_FEED_SOURCES.length} Live
+                      {UVI_PUBLIC_FEED_SOURCES.length} Feeds
                     </span>
                   </div>
 
@@ -990,67 +990,7 @@ export default function ThreatFeedPage() {
 
 
 
-          {/* ========================================================================= */}
-          {/* AUTONOMOUS CTI RESEARCH AGENT STATUS BANNER (Informational Category)      */}
-          {/* ========================================================================= */}
-          {feedScope === "INFORMATIONAL" && (
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.85rem 1.25rem",
-              borderRadius: "10px",
-              background: "linear-gradient(135deg, rgba(30, 27, 75, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%)",
-              border: "1px solid rgba(139, 92, 246, 0.28)",
-              marginBottom: "1.25rem",
-              fontSize: "0.84rem",
-              color: "#CBD5E1",
-              flexWrap: "wrap",
-              gap: "0.75rem",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexWrap: "wrap" }}>
-                <span style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.35rem",
-                  fontSize: "0.7rem",
-                  fontWeight: 800,
-                  padding: "0.2rem 0.55rem",
-                  borderRadius: "6px",
-                  background: "rgba(16, 185, 129, 0.16)",
-                  color: "#34D399",
-                  border: "1px solid rgba(16, 185, 129, 0.35)",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase"
-                }}>
-                  <span style={{
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    background: "#10B981",
-                    display: "inline-block",
-                    boxShadow: "0 0 6px #10B981"
-                  }}></span>
-                  Active Background Pipeline
-                </span>
-                <span style={{ fontWeight: 700, color: "#EDE9FE" }}>
-                  Autonomous CTI Research Agent:
-                </span>
-                <span style={{ color: "#94A3B8" }}>
-                  Continuously scans informal OSINT, academic preprints, and research feeds into structured UVI advisories in the background.
-                </span>
-              </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", fontSize: "0.76rem", color: "#A78BFA" }}>
-                <span>Monitored: 8 Research Feeds</span>
-                <span>•</span>
-                <span>Includes GitHub Security Lab & Project Zero</span>
-                <span>•</span>
-                <span style={{ color: "#34D399", fontWeight: 700 }}>Zero User Input Required</span>
-              </div>
-            </div>
-          )}
 
       {/* Unified Filter Control Bar */}
       <div style={{
@@ -2908,7 +2848,7 @@ export default function ThreatFeedPage() {
                     color: "#34D399",
                     border: "1px solid rgba(16, 185, 129, 0.3)"
                   }}>
-                    LIVE FEDERATION ACTIVE
+                    SYNCHRONIZED NETWORK
                   </span>
                 </div>
                 <p style={{ fontSize: "0.85rem", color: "#94A3B8", margin: 0 }}>
