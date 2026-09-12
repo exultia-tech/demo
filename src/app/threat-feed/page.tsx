@@ -1313,7 +1313,7 @@ export default function ThreatFeedPage() {
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat & Target Summary
                   </th>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "220px", textAlign: "right" }}>
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "195px", textAlign: "right" }}>
                     {ratingMode === "observational" ? "Exploitation Reality" : "Severity & Score"}
                   </th>
                 </tr>
@@ -1578,115 +1578,48 @@ export default function ThreatFeedPage() {
                         </td>
 
                         {/* Column 3: Exploitation Reality (or Severity & Score in classic mode) */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "220px", verticalAlign: "top", textAlign: "right" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem" }}>
+                        <td style={{ padding: "1.1rem 1.25rem", width: "195px", verticalAlign: "top", textAlign: "right" }}>
+                          <div style={{ display: "flex", justifyContent: "flex-end" }}>
                             {ratingMode === "observational" ? (
                               (() => {
                                 const reality = getExploitationRealityBadge(record);
-                                const obs = getRecordObservationalAssessment(record);
                                 return (
-                                  <>
-                                    <div style={{
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      gap: "0.35rem",
-                                      padding: "0.25rem 0.6rem",
-                                      borderRadius: "6px",
-                                      background: reality.bg,
-                                      border: `1px solid ${reality.border}`,
-                                      boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)"
-                                    }}>
-                                      <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: reality.dot }}></span>
-                                      <span style={{ fontSize: "0.74rem", fontWeight: 800, color: reality.text, letterSpacing: "0.02em" }}>
-                                        {reality.label}
-                                      </span>
-                                    </div>
-
-                                    <div style={{ fontSize: "0.72rem", color: "#CBD5E1", fontWeight: 500 }}>
-                                      {reality.subLabel}
-                                    </div>
-
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                                      {record.cisaKev.isKnownExploited && (
-                                        <span style={{
-                                          fontSize: "0.65rem",
-                                          fontWeight: 800,
-                                          color: "#EF4444",
-                                          background: "rgba(239, 68, 68, 0.15)",
-                                          border: "1px solid rgba(239, 68, 68, 0.3)",
-                                          padding: "0.1rem 0.4rem",
-                                          borderRadius: "3px"
-                                        }}>
-                                          🚨 CISA KEV
-                                        </span>
-                                      )}
-                                      {obs.chatterVelocity === "VIRAL" && (
-                                        <span style={{
-                                          fontSize: "0.65rem",
-                                          fontWeight: 700,
-                                          color: "#F87171",
-                                          background: "rgba(239, 68, 68, 0.15)",
-                                          padding: "0.1rem 0.4rem",
-                                          borderRadius: "3px"
-                                        }}>
-                                          🔥 VIRAL
-                                        </span>
-                                      )}
-                                    </div>
-                                  </>
+                                  <div style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.35rem",
+                                    padding: "0.32rem 0.65rem",
+                                    borderRadius: "6px",
+                                    background: reality.bg,
+                                    border: `1px solid ${reality.border}`,
+                                    boxShadow: "0 1px 4px rgba(0, 0, 0, 0.15)",
+                                    whiteSpace: "nowrap"
+                                  }}>
+                                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: reality.dot }}></span>
+                                    <span style={{ fontSize: "0.75rem", fontWeight: 800, color: reality.text, letterSpacing: "0.02em" }}>
+                                      {reality.label}
+                                    </span>
+                                  </div>
                                 );
                               })()
                             ) : (
-                              <>
-                                <div style={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: "0.4rem",
-                                  padding: "0.25rem 0.55rem",
-                                  borderRadius: "6px",
-                                  background: sevStyle.bg,
-                                  border: `1px solid ${sevStyle.border}`
-                                }}>
-                                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
-                                  <span style={{ fontSize: "0.75rem", fontWeight: 800, color: sevStyle.text }}>
-                                    {record.severity}
-                                  </span>
-                                </div>
-
-                                <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
-                                  <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#F8FAFC" }}>
-                                    {record.cvssScore.toFixed(1)}
-                                  </span>
-                                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>CVSS v3.1</span>
-                                </div>
-
-                                {record.cisaKev.isKnownExploited && (
-                                  <span style={{
-                                    fontSize: "0.65rem",
-                                    fontWeight: 800,
-                                    color: "#EF4444",
-                                    background: "rgba(239, 68, 68, 0.15)",
-                                    border: "1px solid rgba(239, 68, 68, 0.3)",
-                                    padding: "0.15rem 0.4rem",
-                                    borderRadius: "4px"
-                                  }}>
-                                    🚨 CISA KEV
-                                  </span>
-                                )}
-                              </>
+                              <div style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                                padding: "0.32rem 0.65rem",
+                                borderRadius: "6px",
+                                background: sevStyle.bg,
+                                border: `1px solid ${sevStyle.border}`,
+                                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.15)",
+                                whiteSpace: "nowrap"
+                              }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: sevStyle.dot }}></span>
+                                <span style={{ fontSize: "0.76rem", fontWeight: 800, color: sevStyle.text }}>
+                                  {record.severity} {record.cvssScore.toFixed(1)}
+                                </span>
+                              </div>
                             )}
-
-                            <span style={{
-                              fontSize: "0.72rem",
-                              color: "#60A5FA",
-                              fontWeight: 600,
-                              marginTop: "0.35rem",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "0.2rem"
-                            }}>
-                              Dossier →
-                            </span>
                           </div>
                         </td>
                       </tr>
@@ -1822,34 +1755,8 @@ export default function ThreatFeedPage() {
                       {record.headline}
                     </p>
 
-                    {/* Exploitation Reality Banner vs Standard Dev Impact */}
-                    {ratingMode === "observational" ? (
-                      (() => {
-                        const reality = getExploitationRealityBadge(record);
-                        const obs = getRecordObservationalAssessment(record);
-                        return (
-                          <div style={{
-                            marginBottom: "0.75rem",
-                            padding: "0.45rem 0.7rem",
-                            borderRadius: "6px",
-                            background: "rgba(59, 130, 246, 0.08)",
-                            border: "1px solid rgba(59, 130, 246, 0.18)",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.2rem",
-                            fontSize: "0.75rem"
-                          }}>
-                            <div style={{ color: "#93C5FD", fontWeight: 600 }}>
-                              📍 {reality.subLabel}
-                            </div>
-                            <div style={{ color: "#94A3B8", fontSize: "0.72rem" }}>
-                              Target Horizon: {getExposureHorizonLabel(obs.exposureHorizon)}
-                            </div>
-                          </div>
-                        );
-                      })()
-                    ) : (
-                      hasDevImpact && (
+                    {/* Dev Impact Alert Banner if applicable */}
+                    {hasDevImpact && (
                         <div style={{
                           marginBottom: "0.75rem",
                           padding: "0.4rem 0.65rem",
@@ -1865,8 +1772,7 @@ export default function ThreatFeedPage() {
                           <span>💻</span>
                           <span><strong>Dev Workstation Risk:</strong> {record.ideBuildImpact.severityOnDeveloperEnv}</span>
                         </div>
-                      )
-                    )}
+                      )}
 
                     {/* CISA KEV Banner if exploited */}
                     {record.cisaKev.isKnownExploited && (
