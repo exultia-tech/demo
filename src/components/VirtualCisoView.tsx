@@ -119,76 +119,7 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* 1. Executive Intelligence & Urgency Banner */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '0.75rem',
-        padding: '0.85rem 1.15rem',
-        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.14) 0%, rgba(59, 130, 246, 0.08) 100%)',
-        border: '1px solid rgba(139, 92, 246, 0.28)',
-        borderRadius: '10px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.2rem 0.6rem',
-            borderRadius: '9999px',
-            background: 'rgba(124, 58, 237, 0.22)',
-            border: '1px solid rgba(167, 139, 250, 0.45)',
-            color: '#DDD6FE',
-            fontSize: '0.74rem',
-            fontWeight: 700
-          }}>
-            <span>🛡️</span>
-            <span>Virtual CISO Assessment</span>
-          </div>
-
-          <span style={{
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            color: briefing.businessImpact.urgencyColor,
-            background: `${briefing.businessImpact.urgencyColor}18`,
-            border: `1px solid ${briefing.businessImpact.urgencyColor}40`,
-            padding: '0.2rem 0.55rem',
-            borderRadius: '4px'
-          }}>
-            {briefing.businessImpact.urgencyBadge}
-          </span>
-
-          <span style={{ fontSize: '0.82rem', color: '#CBD5E1', fontWeight: 500 }}>
-            {briefing.headline}
-          </span>
-        </div>
-
-        <button
-          onClick={() => handleCopy(fullReportMarkdown, 'fullReport')}
-          style={{
-            background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            color: copiedSection === 'fullReport' ? '#34D399' : '#CBD5E1',
-            padding: '0.28rem 0.75rem',
-            borderRadius: '6px',
-            fontSize: '0.74rem',
-            cursor: 'pointer',
-            fontWeight: 600,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            transition: 'all 0.15s ease'
-          }}
-          title="Copy markdown executive briefing"
-        >
-          <span>{copiedSection === 'fullReport' ? '✓' : '📋'}</span>
-          <span>{copiedSection === 'fullReport' ? 'Report Copied!' : 'Copy CISO Briefing'}</span>
-        </button>
-      </div>
-
-      {/* 2. Enterprise Telemetry & Metric Assessment Strip (Non-redundant, concise) */}
+      {/* 1. Enterprise Telemetry & Metric Assessment Strip (Non-redundant, concise) */}
       {ratingMode === 'observational' ? (
         <div style={{
           display: 'grid',
@@ -275,38 +206,66 @@ ${briefing.cisoActionPlan.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
         </div>
       )}
 
-      {/* 3. Sub-Navigation Tabs (Unified Threat Analysis) */}
+      {/* 2. Sub-Navigation Tabs (Unified Threat Analysis) */}
       <div style={{
         display: 'flex',
-        gap: '0.4rem',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         paddingBottom: '0.4rem',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        gap: '0.5rem'
       }}>
-        {[
-          { id: 'layman' as CisoSubTab, label: '📖 Plain-English Threat & Analogy', desc: 'Layman narrative, real-world analogy & attack flow' },
-          { id: 'technical' as CisoSubTab, label: '🛠️ Technical Remediation & Code Fix', desc: 'Side-by-side vulnerable vs. fixed configuration' },
-          { id: 'qa' as CisoSubTab, label: '💬 Ask AI Advisor (Interactive Q&A)', desc: 'Instant Q&A with tailored threat intelligence' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setSubTab(tab.id)}
-            style={{
-              padding: '0.5rem 0.95rem',
-              borderRadius: '7px',
-              border: currentSubTab === tab.id ? '1px solid rgba(139, 92, 246, 0.55)' : '1px solid transparent',
-              background: currentSubTab === tab.id ? 'rgba(124, 58, 237, 0.22)' : 'rgba(255, 255, 255, 0.03)',
-              color: currentSubTab === tab.id ? '#EDE9FE' : '#94A3B8',
-              fontSize: '0.78rem',
-              fontWeight: currentSubTab === tab.id ? 700 : 500,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+          {[
+            { id: 'layman' as CisoSubTab, label: '📖 Plain-English Threat & Analogy', desc: 'Layman narrative, real-world analogy & attack flow' },
+            { id: 'technical' as CisoSubTab, label: '🛠️ Technical Remediation & Code Fix', desc: 'Side-by-side vulnerable vs. fixed configuration' },
+            { id: 'qa' as CisoSubTab, label: '💬 Ask AI Advisor (Interactive Q&A)', desc: 'Instant Q&A with tailored threat intelligence' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setSubTab(tab.id)}
+              style={{
+                padding: '0.45rem 0.85rem',
+                borderRadius: '7px',
+                border: currentSubTab === tab.id ? '1px solid rgba(139, 92, 246, 0.55)' : '1px solid transparent',
+                background: currentSubTab === tab.id ? 'rgba(124, 58, 237, 0.22)' : 'rgba(255, 255, 255, 0.03)',
+                color: currentSubTab === tab.id ? '#EDE9FE' : '#94A3B8',
+                fontSize: '0.78rem',
+                fontWeight: currentSubTab === tab.id ? 700 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => handleCopy(fullReportMarkdown, 'fullReport')}
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: copiedSection === 'fullReport' ? '#34D399' : '#CBD5E1',
+            padding: '0.3rem 0.65rem',
+            borderRadius: '6px',
+            fontSize: '0.73rem',
+            cursor: 'pointer',
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            transition: 'all 0.15s ease',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
+          }}
+          title="Copy markdown executive briefing"
+        >
+          <span>{copiedSection === 'fullReport' ? '✓' : '📋'}</span>
+          <span>{copiedSection === 'fullReport' ? 'Copied Briefing' : 'Copy Briefing'}</span>
+        </button>
       </div>
 
       {/* 4. SUB-TAB 1: PLAIN-ENGLISH THREAT & ANALOGY (Prioritized Explain content) */}

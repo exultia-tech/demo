@@ -2247,7 +2247,7 @@ export default function ThreatFeedPage() {
               overflowX: "auto"
             }}>
               {[
-                { id: "overview", label: "✨ Overview & Explain" },
+                { id: "overview", label: "Overview" },
                 { id: "workstation", label: "Workstation & Build Impact" },
                 { 
                   id: "sources", 
