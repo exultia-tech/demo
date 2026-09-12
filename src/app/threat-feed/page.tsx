@@ -19,7 +19,8 @@ import {
   getActionDirectiveBadge,
   getWeaponizationStageLabel,
   getExposureHorizonLabel,
-  getRecordObservationalAssessment
+  getRecordObservationalAssessment,
+  getExploitationRealityBadge
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
@@ -851,10 +852,10 @@ export default function ThreatFeedPage() {
                     cursor: "pointer",
                     transition: "all 0.15s ease"
                   }}
-                  title="Assess all threats through qualitative Operational Domains, Weaponization Stages, and Exposure Horizons without misleading numbers"
+                  title="Assess real-world threat weaponization: CISA KEV active exploitation, in-the-wild campaigns, botnet C2 nodes, scanner sprays, and public PoCs"
                 >
-                  <span>🛡️</span>
-                  <span>Behavioral Observational Ratings</span>
+                  <span>🌐</span>
+                  <span>Exploitation Reality View</span>
                   <span style={{
                     fontSize: "0.65rem",
                     background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.05)",
@@ -863,7 +864,7 @@ export default function ThreatFeedPage() {
                     borderRadius: "4px",
                     fontWeight: 600
                   }}>
-                    NON-QUANTITATIVE
+                    IN-THE-WILD
                   </span>
                 </button>
 
@@ -1312,8 +1313,8 @@ export default function ThreatFeedPage() {
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8" }}>
                     Threat & Target Summary
                   </th>
-                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "210px", textAlign: "right" }}>
-                    {ratingMode === "observational" ? "Action & Posture" : "Severity & Score"}
+                  <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "220px", textAlign: "right" }}>
+                    {ratingMode === "observational" ? "Exploitation Reality" : "Severity & Score"}
                   </th>
                 </tr>
               </thead>
@@ -1576,44 +1577,61 @@ export default function ThreatFeedPage() {
                           </div>
                         </td>
 
-                        {/* Column 3: Severity & Action Directive */}
-                        <td style={{ padding: "1.1rem 1.25rem", width: "210px", verticalAlign: "top", textAlign: "right" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.45rem" }}>
+                        {/* Column 3: Exploitation Reality (or Severity & Score in classic mode) */}
+                        <td style={{ padding: "1.1rem 1.25rem", width: "220px", verticalAlign: "top", textAlign: "right" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem" }}>
                             {ratingMode === "observational" ? (
                               (() => {
+                                const reality = getExploitationRealityBadge(record);
                                 const obs = getRecordObservationalAssessment(record);
-                                const actionBadge = getActionDirectiveBadge(obs.actionDirective);
                                 return (
                                   <>
                                     <div style={{
                                       display: "inline-flex",
                                       alignItems: "center",
                                       gap: "0.35rem",
-                                      padding: "0.28rem 0.65rem",
+                                      padding: "0.25rem 0.6rem",
                                       borderRadius: "6px",
-                                      background: actionBadge.bg,
-                                      border: `1px solid ${actionBadge.border}`,
+                                      background: reality.bg,
+                                      border: `1px solid ${reality.border}`,
                                       boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)"
                                     }}>
-                                      <span style={{ fontSize: "0.76rem", fontWeight: 800, color: actionBadge.text, letterSpacing: "0.02em" }}>
-                                        {actionBadge.label}
+                                      <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: reality.dot }}></span>
+                                      <span style={{ fontSize: "0.74rem", fontWeight: 800, color: reality.text, letterSpacing: "0.02em" }}>
+                                        {reality.label}
                                       </span>
                                     </div>
 
-                                    <span style={{
-                                      fontSize: "0.7rem",
-                                      fontWeight: 600,
-                                      padding: "0.15rem 0.45rem",
-                                      borderRadius: "4px",
-                                      background: "rgba(59, 130, 246, 0.12)",
-                                      border: "1px solid rgba(59, 130, 246, 0.25)",
-                                      color: "#93C5FD"
-                                    }}>
-                                      🎯 {getExposureHorizonLabel(obs.exposureHorizon)}
-                                    </span>
+                                    <div style={{ fontSize: "0.72rem", color: "#CBD5E1", fontWeight: 500 }}>
+                                      {reality.subLabel}
+                                    </div>
 
-                                    <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
-                                      {getWeaponizationStageLabel(obs.weaponizationStage)}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                                      {record.cisaKev.isKnownExploited && (
+                                        <span style={{
+                                          fontSize: "0.65rem",
+                                          fontWeight: 800,
+                                          color: "#EF4444",
+                                          background: "rgba(239, 68, 68, 0.15)",
+                                          border: "1px solid rgba(239, 68, 68, 0.3)",
+                                          padding: "0.1rem 0.4rem",
+                                          borderRadius: "3px"
+                                        }}>
+                                          🚨 CISA KEV
+                                        </span>
+                                      )}
+                                      {obs.chatterVelocity === "VIRAL" && (
+                                        <span style={{
+                                          fontSize: "0.65rem",
+                                          fontWeight: 700,
+                                          color: "#F87171",
+                                          background: "rgba(239, 68, 68, 0.15)",
+                                          padding: "0.1rem 0.4rem",
+                                          borderRadius: "3px"
+                                        }}>
+                                          🔥 VIRAL
+                                        </span>
+                                      )}
                                     </div>
                                   </>
                                 );
@@ -1760,8 +1778,7 @@ export default function ThreatFeedPage() {
 
                       {ratingMode === "observational" ? (
                         (() => {
-                          const obs = getRecordObservationalAssessment(record);
-                          const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                          const reality = getExploitationRealityBadge(record);
                           return (
                             <div style={{
                               display: "inline-flex",
@@ -1769,11 +1786,12 @@ export default function ThreatFeedPage() {
                               gap: "0.35rem",
                               padding: "0.2rem 0.55rem",
                               borderRadius: "6px",
-                              background: actionBadge.bg,
-                              border: `1px solid ${actionBadge.border}`
+                              background: reality.bg,
+                              border: `1px solid ${reality.border}`
                             }}>
-                              <span style={{ fontSize: "0.72rem", fontWeight: 800, color: actionBadge.text }}>
-                                {actionBadge.label}
+                              <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: reality.dot }}></span>
+                              <span style={{ fontSize: "0.72rem", fontWeight: 800, color: reality.text }}>
+                                {reality.label}
                               </span>
                             </div>
                           );
@@ -1804,27 +1822,28 @@ export default function ThreatFeedPage() {
                       {record.headline}
                     </p>
 
-                    {/* Informational Reality & Horizon Banner vs Standard Dev Impact */}
+                    {/* Exploitation Reality Banner vs Standard Dev Impact */}
                     {ratingMode === "observational" ? (
                       (() => {
+                        const reality = getExploitationRealityBadge(record);
                         const obs = getRecordObservationalAssessment(record);
                         return (
                           <div style={{
                             marginBottom: "0.75rem",
                             padding: "0.45rem 0.7rem",
                             borderRadius: "6px",
-                            background: "rgba(59, 130, 246, 0.1)",
-                            border: "1px solid rgba(59, 130, 246, 0.2)",
+                            background: "rgba(59, 130, 246, 0.08)",
+                            border: "1px solid rgba(59, 130, 246, 0.18)",
                             display: "flex",
                             flexDirection: "column",
-                            gap: "0.25rem",
+                            gap: "0.2rem",
                             fontSize: "0.75rem"
                           }}>
                             <div style={{ color: "#93C5FD", fontWeight: 600 }}>
-                              📍 {getWeaponizationStageLabel(obs.weaponizationStage)}
+                              📍 {reality.subLabel}
                             </div>
                             <div style={{ color: "#94A3B8", fontSize: "0.72rem" }}>
-                              🎯 {getExposureHorizonLabel(obs.exposureHorizon)}
+                              Target Horizon: {getExposureHorizonLabel(obs.exposureHorizon)}
                             </div>
                           </div>
                         );
@@ -2091,22 +2110,21 @@ export default function ThreatFeedPage() {
                     {selectedAdvisory.uviId}
                   </span>
 
-                  {/* Severity Pill or Action Directive Pill */}
+                  {/* Severity Pill or Exploitation Reality Pill */}
                   {ratingMode === "observational" ? (
                     (() => {
-                      const obs = getRecordObservationalAssessment(selectedAdvisory);
-                      const actionBadge = getActionDirectiveBadge(obs.actionDirective);
+                      const reality = getExploitationRealityBadge(selectedAdvisory);
                       return (
                         <span style={{
                           fontSize: "0.72rem",
                           fontWeight: 800,
                           padding: "0.2rem 0.6rem",
                           borderRadius: "4px",
-                          background: actionBadge.bg,
-                          color: actionBadge.text,
-                          border: `1px solid ${actionBadge.border}`
+                          background: reality.bg,
+                          color: reality.text,
+                          border: `1px solid ${reality.border}`
                         }}>
-                          {actionBadge.label}
+                          {reality.label}
                         </span>
                       );
                     })()

@@ -279,6 +279,154 @@ export function getExposureHorizonLabel(horizon?: string): string {
   }
 }
 
+export interface ExploitationRealityBadge {
+  label: string;
+  subLabel: string;
+  statusType: "KEV" | "RANSOMWARE" | "ZERO_DAY" | "BOTNET_C2" | "SCANNER" | "POC" | "BUILD_EXPLOIT" | "THEORETICAL";
+  bg: string;
+  border: string;
+  text: string;
+  dot: string;
+}
+
+export function getExploitationRealityBadge(record: UviAdvisoryRecord): ExploitationRealityBadge {
+  const obs = getRecordObservationalAssessment(record);
+
+  // 1. Confirmed Ransomware Campaign
+  if (record.cisaKev?.ransomwareUse) {
+    return {
+      label: "🏴‍☠️ RANSOMWARE VECTOR",
+      subLabel: "Active In-The-Wild Campaign",
+      statusType: "RANSOMWARE",
+      bg: "rgba(220, 38, 38, 0.2)",
+      border: "rgba(239, 68, 68, 0.55)",
+      text: "#FCA5A5",
+      dot: "#EF4444"
+    };
+  }
+
+  // 2. Confirmed In-The-Wild Exploitation (CISA KEV)
+  if (record.cisaKev?.isKnownExploited) {
+    return {
+      label: "🚨 IN-THE-WILD EXPLOITED",
+      subLabel: "CISA KEV Confirmed",
+      statusType: "KEV",
+      bg: "rgba(239, 68, 68, 0.16)",
+      border: "rgba(239, 68, 68, 0.45)",
+      text: "#FCA5A5",
+      dot: "#EF4444"
+    };
+  }
+
+  // 3. Active Zero-Day
+  const isZeroDay = 
+    record.title.toLowerCase().includes("zero-day") || 
+    record.headline.toLowerCase().includes("zero-day") || 
+    record.summary.toLowerCase().includes("zero-day");
+  if (isZeroDay) {
+    return {
+      label: "⚡ ACTIVE ZERO-DAY",
+      subLabel: "Exploited Prior to Patch",
+      statusType: "ZERO_DAY",
+      bg: "rgba(249, 115, 22, 0.2)",
+      border: "rgba(249, 115, 22, 0.5)",
+      text: "#FDBA74",
+      dot: "#F97316"
+    };
+  }
+
+  // 4. Active Botnet C2 / Malware Infrastructure
+  const isC2orBotnet = record.upstreamSignals.some(s => 
+    s.signalType === "C2_BEACON" || 
+    s.sourceId === "feodo_tracker" || 
+    s.sourceId === "threatfox" || 
+    s.sourceId === "montysecurity_c2" ||
+    s.sourceId === "urlhaus" ||
+    s.sourceId === "malwarebazaar"
+  );
+  if (isC2orBotnet) {
+    return {
+      label: "🤖 ACTIVE BOTNET / C2",
+      subLabel: "Live Malicious Command Node",
+      statusType: "BOTNET_C2",
+      bg: "rgba(217, 70, 239, 0.18)",
+      border: "rgba(217, 70, 239, 0.45)",
+      text: "#F0ABFC",
+      dot: "#D946EF"
+    };
+  }
+
+  // 5. Mass Port / Brute Force Scanning Spray
+  const isScanner = record.upstreamSignals.some(s =>
+    s.sourceId === "blocklist_de" ||
+    s.sourceId === "ipsum" ||
+    s.sourceId === "sans_isc" ||
+    s.sourceId === "emerging_threats" ||
+    s.sourceId === "greensnow" ||
+    s.sourceId === "greynoise"
+  );
+  if (isScanner) {
+    return {
+      label: "🌪️ MASS SCANNER SPRAY",
+      subLabel: "Automated Recon & Brute Force",
+      statusType: "SCANNER",
+      bg: "rgba(245, 158, 11, 0.18)",
+      border: "rgba(245, 158, 11, 0.45)",
+      text: "#FDE68A",
+      dot: "#F59E0B"
+    };
+  }
+
+  // 6. Direct Developer / Toolchain / IDE Poisoning
+  if (record.ideBuildImpact?.hasDirectBuildImpact || record.affectedTargets.some(t => t.ecosystem.includes("VS Code") || t.ecosystem.includes("GitHub Actions"))) {
+    return {
+      label: "💻 TOOLCHAIN THREAT",
+      subLabel: "Direct Build & Developer Risk",
+      statusType: "BUILD_EXPLOIT",
+      bg: "rgba(59, 130, 246, 0.18)",
+      border: "rgba(59, 130, 246, 0.45)",
+      text: "#93C5FD",
+      dot: "#3B82F6"
+    };
+  }
+
+  // 7. Weaponized Exploit Kit or Underground Tooling
+  if (obs.weaponizationStage === "ACTIVE_CAMPAIGNS") {
+    return {
+      label: "☣️ WEAPONIZED EXPLOIT",
+      subLabel: "Active In-Wild Campaigns",
+      statusType: "POC",
+      bg: "rgba(234, 179, 8, 0.18)",
+      border: "rgba(234, 179, 8, 0.45)",
+      text: "#FDE047",
+      dot: "#EAB308"
+    };
+  }
+
+  if (obs.weaponizationStage === "UNDERGROUND_TOOLING") {
+    return {
+      label: "💥 UNDERGROUND EXPLOIT",
+      subLabel: "Underground Attack Tooling",
+      statusType: "POC",
+      bg: "rgba(234, 179, 8, 0.16)",
+      border: "rgba(234, 179, 8, 0.4)",
+      text: "#FDE047",
+      dot: "#EAB308"
+    };
+  }
+
+  // 8. Theoretical / Vulnerability Disclosure Only
+  return {
+    label: "🔬 THEORETICAL ADVISORY",
+    subLabel: "No In-Wild Exploit Observed",
+    statusType: "THEORETICAL",
+    bg: "rgba(148, 163, 184, 0.12)",
+    border: "rgba(148, 163, 184, 0.25)",
+    text: "#CBD5E1",
+    dot: "#94A3B8"
+  };
+}
+
 export function getRecordObservationalAssessment(record: UviAdvisoryRecord): ObservationalAssessment {
   if (record.informationalSynthesis) {
     const domain = record.informationalSynthesis.operationalDomain || (record.informationalSynthesis.actionDirective as any) || "ENDPOINT";
