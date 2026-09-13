@@ -24,6 +24,9 @@ export default function Navbar() {
     pathname.startsWith("/foia") || 
     pathname.startsWith("/products/foia");
 
+  // The horizontal subnav only appears once a user visits a product page
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext;
+
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
       {/* TIER 1: PARENT NAVIGATION BAR */}
@@ -69,8 +72,8 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* TOP LEVEL NAV LINKS */}
-        <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        {/* TOP LEVEL NAV LINKS (Clean parent navigation without builder console CTA button) */}
+        <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
           {/* PRODUCTS DROPDOWN */}
           <div 
             style={{ position: "relative" }}
@@ -204,195 +207,143 @@ export default function Navbar() {
             Docs
           </Link>
         </nav>
-
-        {/* ACTION CTA */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <Link 
-            href="/console" 
-            className="btn-primary" 
-            style={{ padding: "0.65rem 1.25rem", fontSize: "0.875rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            Launch Console →
-          </Link>
-        </div>
       </header>
 
-      {/* TIER 2: HORIZONTAL PRODUCT SUBMENU (Directly under parent menu) */}
-      <div className="product-submenu-bar">
-        {/* SUBMENU OPTION 1: SECUREIDE SUBMENU */}
-        {isSecureIdeContext && (
-          <>
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                SecureIDE
-              </span>
+      {/* TIER 2: HORIZONTAL PRODUCT SUBMENU (Only rendered once user is on a product page) */}
+      {hasSubnav && (
+        <div className="product-submenu-bar">
+          {/* SUBMENU OPTION 1: SECUREIDE SUBMENU */}
+          {isSecureIdeContext && (
+            <>
+              <div className="product-submenu-group">
+                <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  SecureIDE
+                </span>
 
-              <Link 
-                href="/products/secure-ide" 
-                className={`submenu-link ${pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
-                Overview
-              </Link>
-              <Link 
-                href="/features" 
-                className={`submenu-link ${pathname === "/features" ? "active-blue" : ""}`}>
-                Features
-              </Link>
-              <Link 
-                href="/pricing" 
-                className={`submenu-link ${pathname === "/pricing" ? "active-blue" : ""}`}>
-                Pricing
-              </Link>
-              <Link 
-                href="/docs" 
-                className={`submenu-link ${pathname === "/docs" ? "active-blue" : ""}`}>
-                Docs
-              </Link>
-              <Link 
-                href="/console" 
-                className={`submenu-link ${pathname === "/console" ? "active-blue" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Builder Console
-              </Link>
-            </div>
+                <Link 
+                  href="/products/secure-ide" 
+                  className={`submenu-link ${pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
+                  Overview
+                </Link>
+                <Link 
+                  href="/features" 
+                  className={`submenu-link ${pathname === "/features" ? "active-blue" : ""}`}>
+                  Features
+                </Link>
+                <Link 
+                  href="/pricing" 
+                  className={`submenu-link ${pathname === "/pricing" ? "active-blue" : ""}`}>
+                  Pricing
+                </Link>
+                <Link 
+                  href="/docs" 
+                  className={`submenu-link ${pathname === "/docs" ? "active-blue" : ""}`}>
+                  Docs
+                </Link>
+                <Link 
+                  href="/console" 
+                  className={`submenu-link ${pathname === "/console" ? "active-blue" : ""}`}
+                  style={{ fontWeight: 600 }}>
+                  Builder Console
+                </Link>
+              </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ fontSize: "0.75rem", color: "#64748B", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399" }} />
-                Hermetic Build Ready
-              </span>
-            </div>
-          </>
-        )}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "0.75rem", color: "#64748B", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399" }} />
+                  Hermetic Build Ready
+                </span>
+              </div>
+            </>
+          )}
 
-        {/* SUBMENU OPTION 2: UVI THREAT FEED SUBMENU */}
-        {isThreatFeedContext && (
-          <>
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                UVI Threat Feed
-              </span>
+          {/* SUBMENU OPTION 2: UVI THREAT FEED SUBMENU */}
+          {isThreatFeedContext && (
+            <>
+              <div className="product-submenu-group">
+                <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  UVI Threat Feed
+                </span>
 
-              <Link 
-                href="/threat-feed" 
-                className={`submenu-link ${pathname === "/threat-feed" ? "active-purple" : ""}`}>
-                Feed Registry
-              </Link>
-              <a 
-                href="/threat-feed#sources" 
-                className="submenu-link">
-                Upstream Sources (55)
-              </a>
-              <Link 
-                href="/docs#threat-intel" 
-                className="submenu-link">
-                Threat Docs
-              </Link>
-              <a 
-                href="/api/threat-feed" 
-                target="_blank" 
-                rel="noreferrer" 
-                className="submenu-link">
-                REST API (JSON)
-              </a>
-            </div>
+                <Link 
+                  href="/threat-feed" 
+                  className={`submenu-link ${pathname === "/threat-feed" ? "active-purple" : ""}`}>
+                  Feed Registry
+                </Link>
+                <a 
+                  href="/threat-feed#sources" 
+                  className="submenu-link">
+                  Upstream Sources (55)
+                </a>
+                <Link 
+                  href="/docs#threat-intel" 
+                  className="submenu-link">
+                  Threat Docs
+                </Link>
+                <a 
+                  href="/api/threat-feed" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="submenu-link">
+                  REST API (JSON)
+                </a>
+              </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ fontSize: "0.75rem", color: "#C084FC", background: "rgba(139, 92, 246, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(139, 92, 246, 0.25)" }}>
-                55 Synced Feeds
-              </span>
-            </div>
-          </>
-        )}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "0.75rem", color: "#C084FC", background: "rgba(139, 92, 246, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(139, 92, 246, 0.25)" }}>
+                  55 Synced Feeds
+                </span>
+              </div>
+            </>
+          )}
 
-        {/* SUBMENU OPTION 3: DETERMINISTIC FOIA SUBMENU */}
-        {isFoiaContext && (
-          <>
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                LexPublica FOIA
-              </span>
+          {/* SUBMENU OPTION 3: DETERMINISTIC FOIA SUBMENU */}
+          {isFoiaContext && (
+            <>
+              <div className="product-submenu-group">
+                <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  LexPublica FOIA
+                </span>
 
-              <Link 
-                href="/products/foia" 
-                className={`submenu-link ${pathname === "/products/foia" ? "active-cyan" : ""}`}>
-                Overview
-              </Link>
-              <Link 
-                href="/foia" 
-                className={`submenu-link ${pathname === "/foia" ? "active-cyan" : ""}`}>
-                Request Wizard
-              </Link>
-              <Link 
-                href="/foia?tab=agencies" 
-                className="submenu-link">
-                Agency Directory
-              </Link>
-              <Link 
-                href="/foia?tab=analyzer" 
-                className="submenu-link">
-                Denial Analyzer
-              </Link>
-              <Link 
-                href="/foia?tab=cases" 
-                className="submenu-link">
-                Case Dashboard
-              </Link>
-            </div>
+                <Link 
+                  href="/products/foia" 
+                  className={`submenu-link ${pathname === "/products/foia" ? "active-cyan" : ""}`}>
+                  Overview
+                </Link>
+                <Link 
+                  href="/foia" 
+                  className={`submenu-link ${pathname === "/foia" ? "active-cyan" : ""}`}>
+                  Request Wizard
+                </Link>
+                <Link 
+                  href="/foia?tab=agencies" 
+                  className="submenu-link">
+                  Agency Directory
+                </Link>
+                <Link 
+                  href="/foia?tab=analyzer" 
+                  className="submenu-link">
+                  Denial Analyzer
+                </Link>
+                <Link 
+                  href="/foia?tab=cases" 
+                  className="submenu-link">
+                  Case Dashboard
+                </Link>
+              </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ fontSize: "0.75rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(6, 182, 212, 0.25)" }}>
-                50 States + Federal
-              </span>
-            </div>
-          </>
-        )}
-
-        {/* SUBMENU OPTION 4: DEFAULT PARENT SITE SUBMENU */}
-        {!isSecureIdeContext && !isThreatFeedContext && !isFoiaContext && (
-          <>
-            <div className="product-submenu-group">
-              <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginRight: "0.5rem" }}>
-                Product Portfolio:
-              </span>
-
-              <Link 
-                href="/products/secure-ide" 
-                className="submenu-link">
-                SecureIDE
-              </Link>
-              <Link 
-                href="/threat-feed" 
-                className="submenu-link">
-                UVI Threat Feed
-              </Link>
-              <Link 
-                href="/products/foia" 
-                className="submenu-link">
-                Deterministic FOIA
-              </Link>
-              <a 
-                href="/#architecture" 
-                className="submenu-link">
-                Architecture Invariants
-              </a>
-              <Link 
-                href="/about" 
-                className={`submenu-link ${pathname === "/about" ? "active-blue" : ""}`}>
-                About Invariant
-              </Link>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
-                High-Assurance Computing
-              </span>
-            </div>
-          </>
-        )}
-      </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "0.75rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(6, 182, 212, 0.25)" }}>
+                  50 States + Federal
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
