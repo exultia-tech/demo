@@ -4,8 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "SecureIDE | Universal Zero-Trust Multi-IDE Governance Platform",
-  description: "Compile, govern, and distribute zero-trust custom developer releases across VS Code, Eclipse Theia, Zed (Rust), Neovim, and JupyterLab with supply chain sandboxing and automated CycloneDX SBOMs.",
+  title: "Invariant Technologies | High-Assurance Deterministic Computing",
+  description: "High-assurance deterministic infrastructure for zero-trust developer workstation compilation (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
 };
 
 export default function RootLayout({
