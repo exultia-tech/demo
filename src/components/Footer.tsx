@@ -71,7 +71,7 @@ export default function Footer() {
             <li><Link href="/foia">FOIA Request Wizard</Link></li>
             <li><Link href="/foia?tab=agencies">50-State Agency Directory</Link></li>
             <li><Link href="/foia?tab=analyzer">Exemption & Denial Analyzer</Link></li>
-            <li><Link href="/about">The Invariant Principle</Link></li>
+            <li><Link href="/about">The Exultia Standard</Link></li>
           </ul>
         </div>
 

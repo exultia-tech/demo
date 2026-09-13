@@ -44,7 +44,7 @@ export default function Navbar() {
               color: "white",
               boxShadow: "0 0 15px rgba(59, 130, 246, 0.4)"
             }}>
-              {/* INVARIANT GLYPH: Interlocking Invariant Geometric Diamond */}
+              {/* EXULTIA GLYPH: Geometric Diamond */}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
                 <line x1="12" y1="22" x2="12" y2="15.5" />
