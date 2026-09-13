@@ -55,20 +55,20 @@ export default function Navbar() {
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
               <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
-                Invariant
+                Exultia
               </span>
               <span style={{
                 fontSize: "0.68rem",
                 color: "#60A5FA",
                 fontWeight: 700,
                 letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                textTransform: "lowercase",
                 background: "rgba(59, 130, 246, 0.15)",
                 padding: "2px 6px",
                 borderRadius: "4px",
                 border: "1px solid rgba(59, 130, 246, 0.3)"
               }}>
-                Systems
+                .tech
               </span>
             </div>
           </Link>

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Invariant Technologies | Deterministic Computing & Trust",
-  description: "Invariant Technologies builds high-assurance deterministic infrastructure for cyber defense, zero-trust developer tooling, and statutory public accountability.",
+  title: "About Exultia | Deterministic Computing & Trust",
+  description: "Exultia (exultia.tech) builds high-assurance deterministic infrastructure for cyber defense, zero-trust developer tooling, and statutory public accountability.",
 };
 
 export default function AboutPage() {
@@ -29,7 +29,7 @@ export default function AboutPage() {
       {/* CORE THESIS */}
       <section style={{ maxWidth: "1000px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
         <div className="glass-card" style={{ padding: "2.75rem", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-          <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem", color: "#FFFFFF" }}>Why Invariant?</h2>
+          <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem", color: "#FFFFFF" }}>Why Exultia?</h2>
           <p style={{ color: "#CBD5E1", fontSize: "1rem", lineHeight: 1.7, marginBottom: "1.25rem" }}>
             In mathematics and computer science, an <strong>invariant</strong> is a property that remains unconditionally true regardless of external transformations, time delays, or ambient noise.
           </p>
@@ -37,7 +37,7 @@ export default function AboutPage() {
             Modern critical infrastructure is plagued by the opposite: <em>fragile non-determinism</em>. Developers build on unvetted, floating packages that leak telemetry back to proprietary clouds. Security teams react to fragmented, conflicting vulnerability disclosures across dozens of disconnected forums. Citizens and journalists requesting government records encounter arbitrary bureaucratic delays, unlawful fee demands, and pretextual redactions.
           </p>
           <p style={{ color: "#F8FAFC", fontSize: "1rem", lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
-            Invariant Technologies was created to replace ambiguity with mathematical and statutory determinism.
+            Exultia was created to replace ambiguity with mathematical and statutory determinism.
           </p>
         </div>
       </section>
@@ -48,7 +48,7 @@ export default function AboutPage() {
           <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
             Our 3 Core Domains
           </span>
-          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Three Pillars of Invariant Systems</h2>
+          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Three Pillars of Exultia</h2>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
@@ -100,7 +100,7 @@ export default function AboutPage() {
         }}>
           <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Explore Our Product Portfolio</h2>
           <p style={{ color: "#94A3B8", maxWidth: "540px", margin: "0 auto 2rem auto", fontSize: "1.05rem" }}>
-            See how Invariant Technologies brings deterministic certainty to developers, security operations, and investigative researchers.
+            See how Exultia (exultia.tech) brings deterministic certainty to developers, security operations, and investigative researchers.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
             <Link href="/console" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "1rem", textDecoration: "none" }}>

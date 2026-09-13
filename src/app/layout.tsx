@@ -4,8 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Invariant Technologies | High-Assurance Deterministic Computing",
-  description: "High-assurance deterministic infrastructure for zero-trust developer workstation compilation (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
+  title: "Exultia | High-Assurance Deterministic Computing",
+  description: "Exultia (exultia.tech) engineers high-assurance deterministic infrastructure for zero-trust developer workstation compilation (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
 };
 
 export default function RootLayout({

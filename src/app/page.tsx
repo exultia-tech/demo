@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Invariant Technologies | High-Assurance Deterministic Computing",
-  description: "Invariant Technologies engineers deterministic infrastructure across zero-trust developer workstations (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
+  title: "Exultia | High-Assurance Deterministic Computing",
+  description: "Exultia (exultia.tech) engineers deterministic infrastructure across zero-trust developer workstations (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
 };
 
 export default function HomePage() {
@@ -34,7 +34,7 @@ export default function HomePage() {
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "720px", marginBottom: "0", fontSize: "1.2rem", lineHeight: "1.65", color: "#94A3B8" }}>
-          Invariant Technologies engineers deterministic infrastructure across zero-trust developer workstations, universal cyber threat intelligence, and statutory open records compliance.
+          Exultia engineers deterministic infrastructure across zero-trust developer workstations, universal cyber threat intelligence, and statutory open records compliance.
         </p>
       </section>
 

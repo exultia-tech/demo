@@ -23,8 +23,8 @@ export default function Footer() {
               </svg>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "5px" }}>
-              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF" }}>Invariant</span>
-              <span style={{ fontSize: "0.7rem", color: "#60A5FA", fontWeight: 700, textTransform: "uppercase" }}>Systems</span>
+              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF" }}>Exultia</span>
+              <span style={{ fontSize: "0.7rem", color: "#60A5FA", fontWeight: 700, textTransform: "lowercase" }}>.tech</span>
             </div>
           </div>
 
@@ -91,7 +91,7 @@ export default function Footer() {
         color: "#64748B"
       }}>
         <div>
-          © {new Date().getFullYear()} Invariant Technologies. All rights reserved. CC-BY-4.0 Open Intelligence.
+          © {new Date().getFullYear()} Exultia (exultia.tech). All rights reserved. CC-BY-4.0 Open Intelligence.
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/about" style={{ color: "#94A3B8", textDecoration: "none" }}>About</Link>
