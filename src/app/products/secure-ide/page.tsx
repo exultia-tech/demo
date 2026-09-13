@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SecureIDE | Enterprise Zero-Trust Workstation Compiler",
-  description: "Compile, harden, and distribute deterministic developer workstations in seconds. Eliminate ambient telemetry, enforce air-gapped extension sandboxes, and export verifiable CycloneDX 1.5 SBOMs.",
+  title: "SecureIDE | Zero-Trust Development, On-Demand",
+  description: "Compile, harden and distribute secure dev environments in seconds. Eliminate ambient telemetry, enforce air-gapped extension sandboxes, and export verifiable CycloneDX 1.5 SBOMs.",
 };
 
 export default function SecureIdeLandingPage() {
@@ -11,31 +11,13 @@ export default function SecureIdeLandingPage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* PRODUCT HERO */}
       <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "rgba(59, 130, 246, 0.12)",
-          border: "1px solid rgba(59, 130, 246, 0.3)",
-          borderRadius: "999px",
-          padding: "5px 16px",
-          marginBottom: "1.5rem",
-          boxShadow: "0 0 15px rgba(59, 130, 246, 0.2)"
-        }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3B82F6", boxShadow: "0 0 8px #3B82F6" }} />
-          <span style={{ fontSize: "0.8rem", color: "#93C5FD", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Product 01: Zero-Trust Developer Workstation Compiler
-          </span>
-        </div>
-
-        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.12 }}>
-          Secure<span style={{ color: "#60A5FA" }}>IDE</span>
-          <br />
-          <span className="gradient-text">Zero-Trust Development, On-Demand</span>
+        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.025em", lineHeight: 1.1 }}>
+          Zero-Trust Development, <br />
+          <span className="gradient-text">On-Demand</span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: "760px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.65", color: "#94A3B8" }}>
-          Compile, harden, and distribute deterministic developer workstations in seconds. Eliminate ambient telemetry, enforce air-gapped extension sandboxes, and export verifiable CycloneDX 1.5 SBOMs.
+        <p className="hero-desc" style={{ maxWidth: "720px", margin: "0 auto 2.25rem auto", fontSize: "1.25rem", lineHeight: "1.6", color: "#94A3B8" }}>
+          Compile, harden and distribute secure dev environments in seconds.
         </p>
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
@@ -69,11 +51,11 @@ export default function SecureIdeLandingPage() {
         <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-              Deterministic Compilation Workflow
+              Deterministic Workflow
             </span>
-            <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>How SecureIDE Works in 3 Steps</h2>
+            <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>How It Works in 3 Steps</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "600px", margin: "0 auto" }}>
-              From stack curation and threat validation to cryptographically signed workstation distribution.
+              From stack curation and threat validation to signed workstation distribution.
             </p>
           </div>
 
@@ -84,7 +66,7 @@ export default function SecureIdeLandingPage() {
               </div>
               <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Select Engine & Stack</strong>
               <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5", margin: 0 }}>
-                Choose your IDE runtime (VSCodium, Theia, VSCode, Zed), apply role blueprints (SecOps, DevOps, AI, Web3), and set socket sandboxing policies.
+                Choose your IDE engine, apply a curated role blueprint or custom extension list, and set zero-telemetry and proxy rules.
               </p>
             </div>
 
@@ -92,9 +74,9 @@ export default function SecureIdeLandingPage() {
               <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--accent-secondary)", marginBottom: "0.5rem" }}>
                 02. Assemble
               </div>
-              <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Stateless Cloud Sandbox</strong>
+              <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Cloud Sandbox Compilation</strong>
               <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5", margin: 0 }}>
-                Our stateless cloud runner correlates UVI threat intelligence signals, strips telemetry endpoints, and compiles bit-for-bit sealed workstation binaries.
+                Our stateless cloud runner correlates UVI threat signals, strips telemetry, and compiles sealed binaries for Win, Mac, and Linux.
               </p>
             </div>
 
@@ -102,58 +84,11 @@ export default function SecureIdeLandingPage() {
               <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#34D399", marginBottom: "0.5rem" }}>
                 03. Deploy
               </div>
-              <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Signed Package & SBOM</strong>
+              <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Download & Distribute</strong>
               <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5", margin: 0 }}>
-                Download digitally signed native installers with exportable CycloneDX 1.5 JSON SBOMs ready for MDM deployment and compliance audits.
+                Download digitally signed native installers with exportable CycloneDX 1.5 JSON SBOMs for MDM and enterprise audits.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SUPPORTED RUNTIMES & ENGINES */}
-      <section style={{ maxWidth: "1200px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-            Universal Compatibility
-          </span>
-          <h2 style={{ fontSize: "2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>Choose Your Foundation Engine</h2>
-          <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "600px", margin: "0 auto" }}>
-            Build sealed, audited workstations on top of open-source industry standard editor runtimes.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.25rem" }}>
-          <div className="glass-card" style={{ padding: "1.75rem", borderRadius: "14px" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>⚡</div>
-            <strong style={{ fontSize: "1.1rem", color: "#FFFFFF", display: "block", marginBottom: "0.25rem" }}>VSCodium Core</strong>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Telemetry-stripped binary build of VS Code with Open-VSX compatibility and zero Microsoft telemetry endpoints.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: "1.75rem", borderRadius: "14px" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🪐</div>
-            <strong style={{ fontSize: "1.1rem", color: "#FFFFFF", display: "block", marginBottom: "0.25rem" }}>Eclipse Theia</strong>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Cloud-native & desktop architecture with strict client-server decoupling, ideally suited for air-gapped SCIF environments.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: "1.75rem", borderRadius: "14px" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🛡️</div>
-            <strong style={{ fontSize: "1.1rem", color: "#FFFFFF", display: "block", marginBottom: "0.25rem" }}>Hardened VS Code</strong>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Enterprise vanilla VS Code with programmatic socket firewalls, proxy isolation, and package signature enforcement.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: "1.75rem", borderRadius: "14px" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🦀</div>
-            <strong style={{ fontSize: "1.1rem", color: "#FFFFFF", display: "block", marginBottom: "0.25rem" }}>Zed & Neovim</strong>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Blazing fast Rust-native Zed editor and air-gapped Neovim configurations with pinned, pre-compiled Lua LSP plugins.
-            </p>
           </div>
         </div>
       </section>
