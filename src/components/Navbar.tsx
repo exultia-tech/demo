@@ -10,6 +10,7 @@ export default function Navbar() {
 
   // Determine current active product context
   const isSecureIdeContext = 
+    pathname.startsWith("/products/pure-ide") || 
     pathname.startsWith("/products/secure-ide") || 
     pathname === "/pricing" || 
     pathname === "/docs" || 
@@ -128,7 +129,7 @@ export default function Navbar() {
                   boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2)"
                 }}>
                   <Link 
-                    href="/products/secure-ide" 
+                    href="/products/pure-ide" 
                     onClick={() => setIsProductsOpen(false)}
                     style={{
                       display: "flex",
@@ -146,7 +147,7 @@ export default function Navbar() {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>SecureIDE</div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureIDE</div>
                       <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
                     </div>
                   </Link>
@@ -218,17 +219,17 @@ export default function Navbar() {
       {/* TIER 2: HORIZONTAL PRODUCT SUBMENU (Centered in the viewport) */}
       {hasSubnav && (
         <div className="product-submenu-bar">
-          {/* SUBMENU OPTION 1: SECUREIDE SUBMENU */}
+          {/* SUBMENU OPTION 1: PUREIDE SUBMENU */}
           {isSecureIdeContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                SecureIDE
+                PureIDE
               </span>
 
               <Link 
-                href="/products/secure-ide" 
-                className={`submenu-link ${pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
+                href="/products/pure-ide" 
+                className={`submenu-link ${pathname === "/products/pure-ide" || pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
                 Overview
               </Link>
               <Link 

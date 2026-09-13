@@ -219,7 +219,7 @@ export default function FeaturesPage() {
               Zero-Trust Extension Sandboxing Across 6 IDE Engines
             </h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '0.92rem', marginBottom: '1.75rem' }}>
-              Standard IDEs allow arbitrary marketplace plugins to execute native code with root-level access. SecureIDE enforces strict policy boundaries and pre-approved extension toolchains across 6 engines.
+              Standard IDEs allow arbitrary marketplace plugins to execute native code with root-level access. PureIDE enforces strict policy boundaries and pre-approved extension toolchains across 6 engines.
             </p>
 
             {/* CHECKLIST HIGHLIGHTS */}

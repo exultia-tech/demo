@@ -41,9 +41,9 @@ export default function Footer() {
 
         {/* COLUMN 1: PRODUCTS */}
         <div className="footer-col">
-          <h4>SecureIDE</h4>
+          <h4>PureIDE</h4>
           <ul>
-            <li><Link href="/products/secure-ide">Product Overview</Link></li>
+            <li><Link href="/products/pure-ide">Product Overview</Link></li>
             <li><Link href="/console">Builder Console</Link></li>
             <li><Link href="/features">Architecture & Specs</Link></li>
             <li><Link href="/pricing">Plans & Pricing</Link></li>

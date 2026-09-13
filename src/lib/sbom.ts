@@ -94,15 +94,15 @@ export function generateCycloneDX(options: SbomOptions): { success: boolean; out
       timestamp: timestamp,
       tools: [
         {
-          vendor: 'SecureIDE Foundation',
-          name: 'SecureIDE Deterministic SBOM Engine',
+          vendor: 'Exultia',
+          name: 'PureIDE Deterministic SBOM Engine',
           version: '2.4.0'
         }
       ],
       authors: [
         {
-          name: 'SecureIDE Cloud Pipeline',
-          email: 'security@secureide.internal'
+          name: 'Exultia PureIDE Cloud Pipeline',
+          email: 'security@exultia.tech'
         }
       ],
       component: {

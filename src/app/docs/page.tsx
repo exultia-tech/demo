@@ -7,7 +7,7 @@ export default function DocsPage() {
       <div style={{ marginBottom: '3rem' }}>
         <span className="hero-badge">Developer & DevOps Documentation</span>
         <h1 style={{ fontSize: '2.75rem', fontWeight: 800, marginBottom: '0.75rem' }}>
-          SecureIDE Technical Documentation
+          PureIDE Technical Documentation
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '850px' }}>
           Architecture reference, cloud build engine specifications, REST API documentation, and CycloneDX 1.5 SBOM governance.
@@ -36,7 +36,7 @@ export default function DocsPage() {
           <section id="quickstart" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>1. Quickstart Guide</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem' }}>
-              Building a secure, air-gapped IDE distribution takes under 60 seconds using the SecureIDE Builder Console.
+              Building a secure, air-gapped IDE distribution takes under 60 seconds using the PureIDE Builder Console.
             </p>
             <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
               <li>
@@ -61,7 +61,7 @@ export default function DocsPage() {
             </div>
 
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              SecureIDE executes deterministic packaging inside clean, ephemeral cloud sandboxes. Target operating system payloads are assembled in parallel with zero persistent server footprint:
+              PureIDE executes deterministic packaging inside clean, ephemeral cloud sandboxes. Target operating system payloads are assembled in parallel with zero persistent server footprint:
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -83,7 +83,7 @@ export default function DocsPage() {
             <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem', color: '#93C5FD' }}>Official Upstream Release Endpoints & Direct Permalinks</h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                SecureIDE resolves clean base distributions directly from official vendor release mirrors:
+                PureIDE resolves clean base distributions directly from official vendor release mirrors:
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', fontSize: '0.78rem' }}>
                 <div style={{ padding: '0.6rem 0.75rem', background: 'rgba(0,0,0,0.25)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -109,7 +109,7 @@ export default function DocsPage() {
           <section id="tamperproof" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>3. Tamper-Proof Binary Hardening & Governance</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              To ensure that developers cannot manually alter marketplace URLs or telemetry settings on local workstations, SecureIDE enforces security policies at the binary level:
+              To ensure that developers cannot manually alter marketplace URLs or telemetry settings on local workstations, PureIDE enforces security policies at the binary level:
             </p>
             <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
               <li><strong>Zero Plaintext Config Files</strong>: Configuration settings and policies are sealed inside the native binary distribution and removed from disk.</li>
@@ -122,7 +122,7 @@ export default function DocsPage() {
           <section id="threat-intel" className="glass-card" style={{ padding: '2rem', marginBottom: 0 }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>4. Unified Vulnerability Intelligence (UVI) & REST API</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1rem', fontSize: '0.92rem' }}>
-              SecureIDE ingests all accessible public vulnerability registries and security advisory feeds into a single <strong>Unified Vulnerability Intelligence (UVI)</strong> multi-feed. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is evaluated dynamically by search query and Package URL (<code style={{ color: '#60A5FA' }}>purl</code>):
+              PureIDE ingests all accessible public vulnerability registries and security advisory feeds into a single <strong>Unified Vulnerability Intelligence (UVI)</strong> multi-feed. Whether an advisory applies to an IDE extension, language server (LSP), compiler toolchain, or runtime package dependency is evaluated dynamically by search query and Package URL (<code style={{ color: '#60A5FA' }}>purl</code>):
             </p>
             <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
               <li><strong>NIST NVD & Global CVE List</strong>: Universal common vulnerabilities and exposures repository.</li>
@@ -187,19 +187,18 @@ curl -X POST https://api.secureide.dev/api/build \\
   "metadata": {
     "component": {
       "type": "application",
-      "name": "SecureIDE Studio",
-      "version": "1.135.0"
+      "name": "PureIDE Studio",
+      "version": "1.89.1-pureide",
+      "purl": "pkg:generic/pureide-studio@1.89.1",
+      "hashes": [
+        { "alg": "SHA-256", "content": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+      ]
     }
   },
   "components": [
     {
-      "type": "application",
-      "name": "SecureIDE_Studio.exe",
-      "hashes": [{ "alg": "SHA-256", "content": "9b1d..." }]
-    },
-    {
-      "type": "framework",
-      "name": "runtime-core",
+      "type": "file",
+      "name": "PureIDE_Studio.exe",
       "hashes": [{ "alg": "SHA-256", "content": "4e7a..." }]
     }
   ]

@@ -57,7 +57,7 @@ export default function AboutPage() {
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🛡️</div>
             <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>1. Toolchain Determinism</h3>
             <div style={{ fontSize: "0.85rem", color: "#60A5FA", fontWeight: 600, marginBottom: "0.75rem" }}>
-              SecureIDE Foundation
+              PureIDE Foundation
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
               Workstations must be hermetically sealed. Extensions cannot open clandestine telemetry sockets, binaries must compile into bit-for-bit reproducible artifacts, and every dependency must be cryptographically attested in a CycloneDX SBOM.
@@ -104,7 +104,7 @@ export default function AboutPage() {
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
             <Link href="/console" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "1rem", textDecoration: "none" }}>
-              Launch SecureIDE →
+              Launch PureIDE →
             </Link>
             <Link href="/threat-feed" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               UVI Threat Feed

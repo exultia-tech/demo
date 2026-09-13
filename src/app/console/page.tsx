@@ -385,7 +385,7 @@ export default function ConsolePage() {
   const [blockOutboundTelemetry, setBlockOutboundTelemetry] = useState(true);
 
   // Theme & White-label Branding & Localization
-  const [brandName, setBrandName] = useState("SecureIDE Studio");
+  const [brandName, setBrandName] = useState("PureIDE Studio");
   const [brandColor, setBrandColor] = useState("#3B82F6"); // Default Quantum Blue
   const [brandHelpdesk, setBrandHelpdesk] = useState("https://it-support.corp.internal");
   const [brandSecChannel, setBrandSecChannel] = useState("#sec-ops-alert");
@@ -780,7 +780,7 @@ export default function ConsolePage() {
 
   useEffect(() => {
     if (!canUseWhitelabel) {
-      setBrandName("SecureIDE Studio");
+      setBrandName("PureIDE Studio");
       setBrandColor("#3B82F6");
     }
   }, [tier, canUseWhitelabel]);
@@ -1768,7 +1768,7 @@ export default function ConsolePage() {
         timestamp: new Date().toISOString(),
         tools: [
           {
-            vendor: "SecureIDE",
+            vendor: "Exultia PureIDE",
             name: brandName,
             version: "2.4.0-enterprise"
           }
@@ -1957,7 +1957,7 @@ build_hardened_ide:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tier,
-          brandName: brandName || 'SecureIDE Studio',
+          brandName: brandName || 'PureIDE Studio',
           locale: selectedLocale,
           version: resolvedVersionTag,
           versionChannel: versionChannel,
@@ -2031,7 +2031,7 @@ build_hardened_ide:
         });
       }
 
-      const cleanBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+      const cleanBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
       if (!artifactPath) {
         artifactPath = `${cleanBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
       }
@@ -2048,7 +2048,7 @@ build_hardened_ide:
 
       // Auto-publish to Community Blueprints catalog if enabled and cart has extensions
       if (autoPublishBlueprint && cart.length > 0) {
-        const autoBpName = brandName && brandName !== "SecureIDE Studio" 
+        const autoBpName = brandName && brandName !== "PureIDE Studio" 
           ? `${brandName} Distribution` 
           : `${selectedEngine.toUpperCase()} ${cart.slice(0, 2).map(c => c.displayName.split(" ")[0]).join(" + ")} Stack`;
         
@@ -4424,7 +4424,7 @@ build_hardened_ide:
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <h2 style={{ margin: 0, fontSize: '1.2rem' }}>
-                      {brandName || 'SecureIDE'} Build & Packaging Pipeline
+                      {brandName || 'PureIDE'} Build & Packaging Pipeline
                     </h2>
                     <span style={{
                       fontSize: '0.72rem',
@@ -4468,7 +4468,7 @@ build_hardened_ide:
               flexDirection: 'column'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.4rem', marginBottom: '0.6rem', color: 'var(--text-muted)', fontSize: '0.72rem' }}>
-                <span>$ secureide-orchestrator --target={selectedEngine} --tier={tier}</span>
+                <span>$ pureide-orchestrator --target={selectedEngine} --tier={tier}</span>
                 <span>Session ID: {activeBuildId || 'init'}</span>
               </div>
 
@@ -4508,10 +4508,10 @@ build_hardened_ide:
                     <button 
                       className="btn-primary" 
                       onClick={() => {
-                        const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                        const safeBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
                         const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
                         const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
-                        const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
+                        const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'PureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=installer&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;
                         window.location.href = url;
                       }} 
                       style={{ background: 'var(--accent, #6366f1)', padding: '0.65rem 1.25rem', fontSize: '0.88rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', boxShadow: '0 2px 10px rgba(99, 102, 241, 0.4)' }}
@@ -4521,7 +4521,7 @@ build_hardened_ide:
                     </button>
                     <button 
                       onClick={() => {
-                        const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+                        const safeBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
                         const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
                         const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
                         const url = `/api/download?buildId=${encodeURIComponent(activeBuildId || '')}&path=${encodeURIComponent(target)}&brand=${encodeURIComponent(brandName || 'SecureIDE')}&engine=${encodeURIComponent(selectedEngine)}&type=zip&tier=${encodeURIComponent(tier)}&extensions=${encodeURIComponent(extList)}`;

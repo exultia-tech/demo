@@ -14,14 +14,14 @@ export interface BundleOptions {
 
 export async function assembleCustomDistribution(options: BundleOptions): Promise<string> {
   const {
-    brandName = 'SecureIDE Studio',
+    brandName = 'PureIDE Studio',
     engine = 'vscode',
     tier = 'TEAM',
     extensions = '',
     targetOs = 'windows'
   } = options;
 
-  const safeBrand = (brandName || 'SecureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'SecureIDE';
+  const safeBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
   const downloadsDir = path.join(process.cwd(), 'public', 'downloads');
   const buildsDir = path.join(downloadsDir, 'builds');
   const extCacheDir = path.join(downloadsDir, 'extensions_cache');

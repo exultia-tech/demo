@@ -490,7 +490,7 @@ export default function PricingPage() {
 
           <div>
             <h3 style={{ fontSize: '1.05rem', color: '#93C5FD', marginBottom: '0.4rem' }}>
-              Can we run SecureIDE completely air-gapped on-premises?
+              Can we run PureIDE completely air-gapped on-premises?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
               Yes. Enterprise deployments support headless CLI orchestrators, private Artifactory/OpenVSX proxy mirrors, and dedicated key attestation with zero external internet dependencies.

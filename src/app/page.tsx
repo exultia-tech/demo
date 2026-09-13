@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Exultia | High-Assurance Deterministic Computing",
-  description: "Exultia (exultia.tech) engineers deterministic infrastructure across zero-trust developer workstations (SecureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
+  description: "Exultia (exultia.tech) engineers deterministic infrastructure across zero-trust developer workstations (PureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
 };
 
 export default function HomePage() {
@@ -42,7 +42,7 @@ export default function HomePage() {
       <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 2rem" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
           
-          {/* PRODUCT 1: SECUREIDE */}
+          {/* PRODUCT 1: PUREIDE */}
           <div className="glass-card" style={{
             padding: "2.5rem 2rem",
             display: "flex",
@@ -72,7 +72,7 @@ export default function HomePage() {
                 <span className="badge badge-blue">Product 01</span>
               </div>
 
-              <h2 style={{ fontSize: "1.75rem", marginBottom: "0.4rem", color: "#FFFFFF", fontWeight: 700 }}>SecureIDE</h2>
+              <h2 style={{ fontSize: "1.75rem", marginBottom: "0.4rem", color: "#FFFFFF", fontWeight: 700 }}>PureIDE</h2>
               <div style={{ color: "#60A5FA", fontWeight: 600, fontSize: "0.92rem", marginBottom: "1rem" }}>
                 Zero-Trust Workstation Compiler
               </div>
@@ -83,10 +83,10 @@ export default function HomePage() {
 
             <div>
               <Link 
-                href="/products/secure-ide" 
+                href="/products/pure-ide" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.9rem", fontSize: "0.95rem", fontWeight: 600 }}>
-                Explore SecureIDE →
+                Explore PureIDE →
               </Link>
             </div>
           </div>
