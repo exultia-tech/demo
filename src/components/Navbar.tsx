@@ -8,195 +8,391 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
 
+  // Determine current active product context
+  const isSecureIdeContext = 
+    pathname.startsWith("/products/secure-ide") || 
+    pathname === "/pricing" || 
+    pathname === "/docs" || 
+    pathname === "/features" || 
+    pathname === "/console";
+
+  const isThreatFeedContext = 
+    pathname.startsWith("/threat-feed") || 
+    pathname.startsWith("/products/threat-feed");
+
+  const isFoiaContext = 
+    pathname.startsWith("/foia") || 
+    pathname.startsWith("/products/foia");
+
   return (
-    <header className="public-nav" style={{ position: "relative", zIndex: 100 }}>
-      {/* BRAND / LOGO */}
-      <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <div style={{
-          width: "36px",
-          height: "36px",
-          borderRadius: "10px",
-          background: "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #06B6D4 100%)",
-          display: "grid",
-          placeItems: "center",
-          color: "white",
-          boxShadow: "0 0 15px rgba(59, 130, 246, 0.4)"
-        }}>
-          {/* INVARIANT GLYPH: Interlocking Invariant Geometric Diamond */}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-            <line x1="12" y1="22" x2="12" y2="15.5" />
-            <polyline points="22 8.5 12 15.5 2 8.5" />
-            <polyline points="2 15.5 12 8.5 22 15.5" />
-            <line x1="12" y1="2" x2="12" y2="8.5" />
-          </svg>
-        </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-          <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
-            Invariant
-          </span>
-          <span style={{
-            fontSize: "0.68rem",
-            color: "#60A5FA",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            background: "rgba(59, 130, 246, 0.15)",
-            padding: "2px 6px",
-            borderRadius: "4px",
-            border: "1px solid rgba(59, 130, 246, 0.3)"
+    <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
+      {/* TIER 1: PARENT NAVIGATION BAR */}
+      <header className="public-nav">
+        {/* BRAND / LOGO */}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "10px",
+            background: "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #06B6D4 100%)",
+            display: "grid",
+            placeItems: "center",
+            color: "white",
+            boxShadow: "0 0 15px rgba(59, 130, 246, 0.4)"
           }}>
-            Systems
-          </span>
-        </div>
-      </Link>
-
-      {/* NAV LINKS */}
-      <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        {/* PRODUCTS DROPDOWN */}
-        <div 
-          style={{ position: "relative" }}
-          onMouseEnter={() => setIsProductsOpen(true)}
-          onMouseLeave={() => setIsProductsOpen(false)}
-        >
-          <button 
-            type="button"
-            className={`nav-link ${pathname === "/console" || pathname.startsWith("/products") || pathname === "/threat-feed" || pathname === "/foia" ? "active" : ""}`}
-            style={{
-              background: "transparent",
-              border: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontSize: "0.95rem",
-              fontWeight: 500,
-              padding: "6px 10px",
-              borderRadius: "8px"
-            }}
-            onClick={() => setIsProductsOpen(!isProductsOpen)}
-          >
-            <span>Products</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}>
-              <polyline points="6 9 12 15 18 9"/>
+            {/* INVARIANT GLYPH: Interlocking Invariant Geometric Diamond */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+              <line x1="12" y1="22" x2="12" y2="15.5" />
+              <polyline points="22 8.5 12 15.5 2 8.5" />
+              <polyline points="2 15.5 12 8.5 22 15.5" />
+              <line x1="12" y1="2" x2="12" y2="8.5" />
             </svg>
-          </button>
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+            <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
+              Invariant
+            </span>
+            <span style={{
+              fontSize: "0.68rem",
+              color: "#60A5FA",
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              background: "rgba(59, 130, 246, 0.15)",
+              padding: "2px 6px",
+              borderRadius: "4px",
+              border: "1px solid rgba(59, 130, 246, 0.3)"
+            }}>
+              Systems
+            </span>
+          </div>
+        </Link>
 
-          {/* FLYOUT MENU */}
-          {isProductsOpen && (
-            <div 
+        {/* TOP LEVEL NAV LINKS */}
+        <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {/* PRODUCTS DROPDOWN */}
+          <div 
+            style={{ position: "relative" }}
+            onMouseEnter={() => setIsProductsOpen(true)}
+            onMouseLeave={() => setIsProductsOpen(false)}
+          >
+            <button 
+              type="button"
+              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
               style={{
-                position: "absolute",
-                top: "100%",
-                left: "-20px",
-                width: "340px",
-                paddingTop: "8px",
-                zIndex: 150
+                background: "transparent",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                fontSize: "0.95rem",
+                fontWeight: 500,
+                padding: "6px 10px",
+                borderRadius: "8px"
               }}
+              onClick={() => setIsProductsOpen(!isProductsOpen)}
             >
-              <div style={{
-                background: "rgba(10, 15, 26, 0.96)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                borderRadius: "14px",
-                padding: "8px",
-                boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2)"
-              }}>
-                <Link 
-                  href="/console" 
-                  onClick={() => setIsProductsOpen(false)}
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                    padding: "10px 12px",
-                    borderRadius: "10px",
-                    textDecoration: "none",
-                    transition: "background 0.15s ease",
-                    background: pathname === "/console" || pathname.includes("secure-ide") ? "rgba(59, 130, 246, 0.15)" : "transparent"
-                  }}
-                  className="dropdown-item"
-                >
-                  <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #3B82F6, #2563EB)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>SecureIDE</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
-                  </div>
-                </Link>
+              <span>Products</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}>
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
 
-                <Link 
-                  href="/threat-feed" 
-                  onClick={() => setIsProductsOpen(false)}
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                    padding: "10px 12px",
-                    borderRadius: "10px",
-                    textDecoration: "none",
-                    transition: "background 0.15s ease",
-                    background: pathname === "/threat-feed" || pathname.includes("threat-feed") ? "rgba(139, 92, 246, 0.15)" : "transparent"
-                  }}
-                  className="dropdown-item"
-                >
-                  <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #8B5CF6, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>UVI Threat Feed</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>55 synchronized public intelligence feeds</div>
-                  </div>
-                </Link>
+            {/* FLYOUT MENU */}
+            {isProductsOpen && (
+              <div 
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: "-20px",
+                  width: "350px",
+                  paddingTop: "8px",
+                  zIndex: 150
+                }}
+              >
+                <div style={{
+                  background: "rgba(10, 15, 26, 0.98)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  borderRadius: "14px",
+                  padding: "8px",
+                  boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2)"
+                }}>
+                  <Link 
+                    href="/products/secure-ide" 
+                    onClick={() => setIsProductsOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "12px",
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                      transition: "background 0.15s ease",
+                      background: isSecureIdeContext ? "rgba(59, 130, 246, 0.15)" : "transparent"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #3B82F6, #2563EB)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>SecureIDE</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
+                    </div>
+                  </Link>
 
-                <Link 
-                  href="/foia" 
-                  onClick={() => setIsProductsOpen(false)}
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                    padding: "10px 12px",
-                    borderRadius: "10px",
-                    textDecoration: "none",
-                    transition: "background 0.15s ease",
-                    background: pathname === "/foia" || pathname.includes("foia") ? "rgba(6, 182, 212, 0.15)" : "transparent"
-                  }}
-                  className="dropdown-item"
-                >
-                  <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #06B6D4, #0891B2)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Deterministic FOIA</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>LexPublica open records & compliance autopilot</div>
-                  </div>
-                </Link>
+                  <Link 
+                    href="/threat-feed" 
+                    onClick={() => setIsProductsOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "12px",
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                      transition: "background 0.15s ease",
+                      background: isThreatFeedContext ? "rgba(139, 92, 246, 0.15)" : "transparent"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #8B5CF6, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>UVI Threat Feed</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>55 synchronized public intelligence feeds</div>
+                    </div>
+                  </Link>
+
+                  <Link 
+                    href="/products/foia" 
+                    onClick={() => setIsProductsOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "12px",
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                      transition: "background 0.15s ease",
+                      background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #06B6D4, #0891B2)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Deterministic FOIA</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>LexPublica open records & compliance autopilot</div>
+                    </div>
+                  </Link>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
+            About
+          </Link>
+          <Link href="/docs" className={`nav-link ${pathname === "/docs" ? "active" : ""}`}>
+            Docs
+          </Link>
+        </nav>
+
+        {/* ACTION CTA */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <Link 
+            href="/console" 
+            className="btn-primary" 
+            style={{ padding: "0.65rem 1.25rem", fontSize: "0.875rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            Launch Console →
+          </Link>
         </div>
+      </header>
 
-        <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
-          About
-        </Link>
-        <Link href="/docs" className={`nav-link ${pathname === "/docs" ? "active" : ""}`}>
-          Docs
-        </Link>
-      </nav>
+      {/* TIER 2: HORIZONTAL PRODUCT SUBMENU (Directly under parent menu) */}
+      <div className="product-submenu-bar">
+        {/* SUBMENU OPTION 1: SECUREIDE SUBMENU */}
+        {isSecureIdeContext && (
+          <>
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                SecureIDE
+              </span>
 
-      {/* ACTION CTA */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <Link 
-          href="/console" 
-          className="btn-primary" 
-          style={{ padding: "0.65rem 1.25rem", fontSize: "0.875rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          Launch Console →
-        </Link>
+              <Link 
+                href="/products/secure-ide" 
+                className={`submenu-link ${pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
+                Overview
+              </Link>
+              <Link 
+                href="/features" 
+                className={`submenu-link ${pathname === "/features" ? "active-blue" : ""}`}>
+                Features
+              </Link>
+              <Link 
+                href="/pricing" 
+                className={`submenu-link ${pathname === "/pricing" ? "active-blue" : ""}`}>
+                Pricing
+              </Link>
+              <Link 
+                href="/docs" 
+                className={`submenu-link ${pathname === "/docs" ? "active-blue" : ""}`}>
+                Docs
+              </Link>
+              <Link 
+                href="/console" 
+                className={`submenu-link ${pathname === "/console" ? "active-blue" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Builder Console
+              </Link>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "#64748B", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399" }} />
+                Hermetic Build Ready
+              </span>
+            </div>
+          </>
+        )}
+
+        {/* SUBMENU OPTION 2: UVI THREAT FEED SUBMENU */}
+        {isThreatFeedContext && (
+          <>
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                UVI Threat Feed
+              </span>
+
+              <Link 
+                href="/threat-feed" 
+                className={`submenu-link ${pathname === "/threat-feed" ? "active-purple" : ""}`}>
+                Feed Registry
+              </Link>
+              <a 
+                href="/threat-feed#sources" 
+                className="submenu-link">
+                Upstream Sources (55)
+              </a>
+              <Link 
+                href="/docs#threat-intel" 
+                className="submenu-link">
+                Threat Docs
+              </Link>
+              <a 
+                href="/api/threat-feed" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="submenu-link">
+                REST API (JSON)
+              </a>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "#C084FC", background: "rgba(139, 92, 246, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(139, 92, 246, 0.25)" }}>
+                55 Synced Feeds
+              </span>
+            </div>
+          </>
+        )}
+
+        {/* SUBMENU OPTION 3: DETERMINISTIC FOIA SUBMENU */}
+        {isFoiaContext && (
+          <>
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                LexPublica FOIA
+              </span>
+
+              <Link 
+                href="/products/foia" 
+                className={`submenu-link ${pathname === "/products/foia" ? "active-cyan" : ""}`}>
+                Overview
+              </Link>
+              <Link 
+                href="/foia" 
+                className={`submenu-link ${pathname === "/foia" ? "active-cyan" : ""}`}>
+                Request Wizard
+              </Link>
+              <Link 
+                href="/foia?tab=agencies" 
+                className="submenu-link">
+                Agency Directory
+              </Link>
+              <Link 
+                href="/foia?tab=analyzer" 
+                className="submenu-link">
+                Denial Analyzer
+              </Link>
+              <Link 
+                href="/foia?tab=cases" 
+                className="submenu-link">
+                Case Dashboard
+              </Link>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid rgba(6, 182, 212, 0.25)" }}>
+                50 States + Federal
+              </span>
+            </div>
+          </>
+        )}
+
+        {/* SUBMENU OPTION 4: DEFAULT PARENT SITE SUBMENU */}
+        {!isSecureIdeContext && !isThreatFeedContext && !isFoiaContext && (
+          <>
+            <div className="product-submenu-group">
+              <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginRight: "0.5rem" }}>
+                Product Portfolio:
+              </span>
+
+              <Link 
+                href="/products/secure-ide" 
+                className="submenu-link">
+                SecureIDE
+              </Link>
+              <Link 
+                href="/threat-feed" 
+                className="submenu-link">
+                UVI Threat Feed
+              </Link>
+              <Link 
+                href="/products/foia" 
+                className="submenu-link">
+                Deterministic FOIA
+              </Link>
+              <a 
+                href="/#architecture" 
+                className="submenu-link">
+                Architecture Invariants
+              </a>
+              <Link 
+                href="/about" 
+                className={`submenu-link ${pathname === "/about" ? "active-blue" : ""}`}>
+                About Invariant
+              </Link>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                High-Assurance Computing
+              </span>
+            </div>
+          </>
+        )}
       </div>
-    </header>
+    </div>
   );
 }

@@ -41,21 +41,21 @@ export default function Footer() {
 
         {/* COLUMN 1: PRODUCTS */}
         <div className="footer-col">
-          <h4>Product Suite</h4>
+          <h4>SecureIDE</h4>
           <ul>
-            <li><Link href="/console">SecureIDE (Compiler)</Link></li>
-            <li><Link href="/threat-feed">UVI Threat Feed</Link></li>
-            <li><Link href="/foia">LexPublica FOIA Autopilot</Link></li>
+            <li><Link href="/products/secure-ide">Product Overview</Link></li>
             <li><Link href="/console">Builder Console</Link></li>
-            <li><Link href="/#products">Product Suite</Link></li>
+            <li><Link href="/features">Architecture & Specs</Link></li>
+            <li><Link href="/pricing">Plans & Pricing</Link></li>
+            <li><Link href="/docs">Technical Docs</Link></li>
           </ul>
         </div>
 
         {/* COLUMN 2: CYBER & THREAT INTEL */}
         <div className="footer-col">
-          <h4>Threat Intelligence</h4>
+          <h4>UVI Threat Feed</h4>
           <ul>
-            <li><Link href="/threat-feed">UVI Interactive Registry</Link></li>
+            <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
             <li><Link href="/features#sandbox">Air-Gapped Sandboxing</Link></li>
             <li><Link href="/features#hardening">Workstation Binary Hardening</Link></li>
@@ -65,13 +65,13 @@ export default function Footer() {
 
         {/* COLUMN 3: CIVIC & FOIA INTELLIGENCE */}
         <div className="footer-col">
-          <h4>Open Records & Civic</h4>
+          <h4>LexPublica FOIA</h4>
           <ul>
+            <li><Link href="/products/foia">Product Overview</Link></li>
             <li><Link href="/foia">FOIA Request Wizard</Link></li>
-            <li><Link href="/foia">50-State Agency Directory</Link></li>
-            <li><Link href="/foia">Exemption & Denial Analyzer</Link></li>
+            <li><Link href="/foia?tab=agencies">50-State Agency Directory</Link></li>
+            <li><Link href="/foia?tab=analyzer">Exemption & Denial Analyzer</Link></li>
             <li><Link href="/about">The Invariant Principle</Link></li>
-            <li><Link href="/docs">System Documentation</Link></li>
           </ul>
         </div>
 

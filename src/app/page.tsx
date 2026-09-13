@@ -47,11 +47,11 @@ export default function ParentHomePage() {
         {/* PRIMARY CALL TO ACTIONS */}
         <div className="hero-cta-group" style={{ marginBottom: "2rem" }}>
           <Link 
-            href="/console" 
+            href="/products/secure-ide" 
             className="btn-primary" 
             style={{ padding: "0.95rem 1.85rem", fontSize: "1rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.6rem" }}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <span>Launch SecureIDE</span>
+            <span>Explore SecureIDE</span>
           </Link>
 
           <Link 
@@ -74,7 +74,7 @@ export default function ParentHomePage() {
           </Link>
 
           <Link 
-            href="/foia" 
+            href="/products/foia" 
             style={{
               padding: "0.95rem 1.6rem",
               borderRadius: "10px",
@@ -243,9 +243,12 @@ export default function ParentHomePage() {
               </ul>
             </div>
 
-            <div>
-              <Link href="/console" className="btn-primary" style={{ display: "block", textAlign: "center", textDecoration: "none", padding: "0.9rem 1.25rem", fontSize: "0.95rem" }}>
-                Launch SecureIDE Builder →
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <Link href="/products/secure-ide" className="btn-primary" style={{ flex: 1, textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem" }}>
+                Product Overview →
+              </Link>
+              <Link href="/console" style={{ padding: "0.85rem 1.25rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.92rem" }}>
+                Console
               </Link>
             </div>
           </div>
@@ -300,10 +303,13 @@ export default function ParentHomePage() {
               </ul>
             </div>
 
-            <div>
-              <Link href="/threat-feed" className="btn-primary" style={{ display: "block", textAlign: "center", textDecoration: "none", padding: "0.9rem 1.25rem", fontSize: "0.95rem", background: "linear-gradient(135deg, #8B5CF6, #3B82F6)" }}>
-                Explore UVI Threat Feed →
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <Link href="/threat-feed" className="btn-primary" style={{ flex: 1, textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", background: "linear-gradient(135deg, #8B5CF6, #3B82F6)" }}>
+                Feed Registry →
               </Link>
+              <a href="/api/threat-feed" target="_blank" rel="noreferrer" style={{ padding: "0.85rem 1.25rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.92rem" }}>
+                JSON API
+              </a>
             </div>
           </div>
 
@@ -357,9 +363,12 @@ export default function ParentHomePage() {
               </ul>
             </div>
 
-            <div>
-              <Link href="/foia" className="btn-primary" style={{ display: "block", textAlign: "center", textDecoration: "none", padding: "0.9rem 1.25rem", fontSize: "0.95rem", background: "linear-gradient(135deg, #06B6D4, #3B82F6)" }}>
-                Launch FOIA Autopilot →
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <Link href="/products/foia" className="btn-primary" style={{ flex: 1, textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", background: "linear-gradient(135deg, #06B6D4, #3B82F6)" }}>
+                Product Overview →
+              </Link>
+              <Link href="/foia" style={{ padding: "0.85rem 1.25rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.92rem" }}>
+                Workspace
               </Link>
             </div>
           </div>
