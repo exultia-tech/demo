@@ -79,10 +79,10 @@ export default function AboutPage() {
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚖️</div>
             <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>3. Statutory Mandates</h3>
             <div style={{ fontSize: "0.85rem", color: "#06B6D4", fontWeight: 600, marginBottom: "0.75rem" }}>
-              LexPublica FOIA Foundation
+              Inquest Foundation
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-              The Freedom of Information Act and state sunshine laws are not guidelines—they are statutory mandates with mandatory segregability, fee limits, and 20-day clocks. LexPublica translates open records statutes into automated, verifiable enforcement code.
+              The Freedom of Information Act and state sunshine laws are not guidelines—they are statutory mandates with mandatory segregability, fee limits, and 20-day clocks. Inquest translates open records statutes into automated, verifiable enforcement code.
             </p>
           </div>
 
@@ -110,7 +110,7 @@ export default function AboutPage() {
               UVI Threat Feed
             </Link>
             <Link href="/foia" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              LexPublica FOIA
+              Exultia Inquest
             </Link>
           </div>
         </div>

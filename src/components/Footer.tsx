@@ -65,12 +65,12 @@ export default function Footer() {
 
         {/* COLUMN 3: CIVIC & FOIA INTELLIGENCE */}
         <div className="footer-col">
-          <h4>LexPublica FOIA</h4>
+          <h4>Inquest</h4>
           <ul>
-            <li><Link href="/products/foia">Product Overview</Link></li>
-            <li><Link href="/foia">FOIA Request Wizard</Link></li>
-            <li><Link href="/foia?tab=agencies">50-State Agency Directory</Link></li>
-            <li><Link href="/foia?tab=analyzer">Exemption & Denial Analyzer</Link></li>
+            <li><Link href="/products/inquest">Product Overview</Link></li>
+            <li><Link href="/inquest">Request Wizard</Link></li>
+            <li><Link href="/inquest?tab=agencies">50-State Agency Directory</Link></li>
+            <li><Link href="/inquest?tab=analyzer">Exemption & Denial Analyzer</Link></li>
             <li><Link href="/about">The Exultia Standard</Link></li>
           </ul>
         </div>

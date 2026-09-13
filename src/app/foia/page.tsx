@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { FoiaWorkspace } from "@/components/foia/FoiaWorkspace";
 
 export const metadata: Metadata = {
-  title: "LexPublica FOIA | Exultia",
+  title: "Exultia Inquest | Deterministic Open Records Autopilot",
   description: "Deterministic Open Records & Statutory FOIA Compliance Platform.",
 };
 

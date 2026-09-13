@@ -80,7 +80,7 @@ export const DispatchModal: React.FC<DispatchModalProps> = ({
         historyLogs: [
           {
             timestamp: new Date().toISOString(),
-            action: 'Dispatched via LexPublica Engine',
+            action: 'Dispatched via Inquest Engine',
             details: `Dispatched request package to ${params.agencyEmail || 'Agency Online Portal'} under ${compiledPackage.statute.citation}`
           }
         ]
@@ -222,7 +222,7 @@ export const DispatchModal: React.FC<DispatchModalProps> = ({
               <div><strong>To:</strong> {params.agencyEmail || 'foia@agency.gov'}</div>
               <div><strong>From:</strong> {requester.email}</div>
               <div><strong>Subject:</strong> {compiledPackage.emailSubject}</div>
-              <div><strong>X-LexPublica-Tracking-ID:</strong> {compiledPackage.trackingNumber}</div>
+              <div><strong>X-Inquest-Tracking-ID:</strong> {compiledPackage.trackingNumber}</div>
               <div><strong>X-Statutory-Deadline:</strong> {compiledPackage.statutoryDeadline}</div>
               <div><strong>X-SHA256-Fingerprint:</strong> {compiledPackage.sha256Fingerprint}</div>
               <div style={{ marginTop: '8px', color: '#64748b' }}>[Full legal statutory body included]</div>

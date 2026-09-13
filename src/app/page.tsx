@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Exultia | High-Assurance Deterministic Computing",
-  description: "Exultia (exultia.tech) engineers deterministic infrastructure across zero-trust developer workstations (PureIDE), universal threat intelligence (UVI), and statutory open records compliance (LexPublica).",
+  description: "Exultia (exultia.tech) engineers deterministic infrastructure across zero-trust developer workstations (PureIDE), universal threat intelligence (UVI), and statutory open records compliance (Inquest).",
 };
 
 export default function HomePage() {
@@ -140,7 +140,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* PRODUCT 3: LEXPUBLICA FOIA */}
+          {/* PRODUCT 3: EXULTIA INQUEST */}
           <div className="glass-card" style={{
             padding: "2.5rem 2rem",
             display: "flex",
@@ -170,7 +170,7 @@ export default function HomePage() {
                 <span className="badge badge-green">Product 03</span>
               </div>
 
-              <h2 style={{ fontSize: "1.75rem", marginBottom: "0.4rem", color: "#FFFFFF", fontWeight: 700 }}>LexPublica FOIA</h2>
+              <h2 style={{ fontSize: "1.75rem", marginBottom: "0.4rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h2>
               <div style={{ color: "#06B6D4", fontWeight: 600, fontSize: "0.92rem", marginBottom: "1rem" }}>
                 Deterministic Open Records Autopilot
               </div>
@@ -181,10 +181,10 @@ export default function HomePage() {
 
             <div>
               <Link 
-                href="/products/foia" 
+                href="/products/inquest" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.9rem", fontSize: "0.95rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
-                Explore LexPublica →
+                Explore Inquest →
               </Link>
             </div>
           </div>

@@ -111,7 +111,7 @@ export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wiza
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1rem', fontWeight: 800, letterSpacing: '-0.01em', color: '#F8FAFC' }}>
-                LexPublica <span style={{ color: '#06B6D4' }}>Autopilot</span>
+                Inquest <span style={{ color: '#06B6D4' }}>Autopilot</span>
               </span>
               <span className="badge badge-blue" style={{ fontSize: '0.65rem', padding: '2px 7px' }}>
                 Deterministic Engine

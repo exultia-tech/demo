@@ -75,7 +75,7 @@ export async function compileRequestPackage(
 
   const emailSubject = `Public Records Act Request (${statute.shortCode}): ${params.subjectMatter.slice(0, 75)} [Ref: ${trackingNumber}]`;
 
-  const emailBodyRfc822 = `To: ${params.agencyEmail || 'records-officer@agency.gov'}\nFrom: ${requester.email}\nSubject: ${emailSubject}\nX-LexPublica-Tracking-ID: ${trackingNumber}\nX-Statutory-Deadline: ${statutoryDeadline}\n\n${finalLetterText}`;
+  const emailBodyRfc822 = `To: ${params.agencyEmail || 'records-officer@agency.gov'}\nFrom: ${requester.email}\nSubject: ${emailSubject}\nX-Inquest-Tracking-ID: ${trackingNumber}\nX-Statutory-Deadline: ${statutoryDeadline}\n\n${finalLetterText}`;
 
   const portalDescription = `${params.subjectMatter}\n\nTemporal Scope: ${params.dateStart} to ${params.dateEnd}\n\nSearch Keywords: ${params.keywords.join(', ')}\n\nFormats: ${params.requestedFormats.join(', ')}\n\nFee Waiver Requested: ${params.feeWaiverRequested ? 'Yes (Public Interest / News Media)' : 'No'}\n\nStatutory Citation: ${statute.name} (${statute.citation})\nTracking Ref: ${trackingNumber}`;
 

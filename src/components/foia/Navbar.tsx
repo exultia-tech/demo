@@ -86,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: theme === 'dark' ? 'transparent' : 'inherit'
               }}>
-                LexPublica
+                Inquest
               </span>
               <span className="badge badge-blue" style={{ fontSize: '0.65rem', padding: '2px 7px' }}>
                 <Sparkles size={10} /> FOIA Autopilot

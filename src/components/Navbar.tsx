@@ -22,6 +22,8 @@ export default function Navbar() {
     pathname.startsWith("/products/threat-feed");
 
   const isFoiaContext = 
+    pathname.startsWith("/inquest") || 
+    pathname.startsWith("/products/inquest") || 
     pathname.startsWith("/foia") || 
     pathname.startsWith("/products/foia");
 
@@ -177,7 +179,7 @@ export default function Navbar() {
                   </Link>
 
                   <Link 
-                    href="/products/foia" 
+                    href="/products/inquest" 
                     onClick={() => setIsProductsOpen(false)}
                     style={{
                       display: "flex",
@@ -195,8 +197,8 @@ export default function Navbar() {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Deterministic FOIA</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>LexPublica open records & compliance autopilot</div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous FOIA & statutory compliance platform</div>
                     </div>
                   </Link>
                 </div>
@@ -289,36 +291,36 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 3: DETERMINISTIC FOIA SUBMENU */}
+          {/* SUBMENU OPTION 3: INQUEST SUBMENU */}
           {isFoiaContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                LexPublica FOIA
+                Inquest
               </span>
 
               <Link 
-                href="/products/foia" 
-                className={`submenu-link ${pathname === "/products/foia" ? "active-cyan" : ""}`}>
+                href="/products/inquest" 
+                className={`submenu-link ${pathname === "/products/inquest" || pathname === "/products/foia" ? "active-cyan" : ""}`}>
                 Overview
               </Link>
               <Link 
-                href="/foia" 
-                className={`submenu-link ${pathname === "/foia" ? "active-cyan" : ""}`}>
+                href="/inquest" 
+                className={`submenu-link ${pathname === "/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}>
                 Request Wizard
               </Link>
               <Link 
-                href="/foia?tab=agencies" 
+                href="/inquest?tab=agencies" 
                 className="submenu-link">
                 Agency Directory
               </Link>
               <Link 
-                href="/foia?tab=analyzer" 
+                href="/inquest?tab=analyzer" 
                 className="submenu-link">
                 Denial Analyzer
               </Link>
               <Link 
-                href="/foia?tab=cases" 
+                href="/inquest?tab=cases" 
                 className="submenu-link">
                 Case Dashboard
               </Link>

@@ -1,10 +1,14 @@
 import { FilingCase, RequesterProfile } from '@/types/foia';
 
 const STORAGE_KEYS = {
-  CASES: 'lexpublica_cases_v1',
-  PROFILE: 'lexpublica_profile_v1',
-  API_KEY: 'lexpublica_gemini_api_key_v1',
-  THEME: 'lexpublica_theme_v1'
+  CASES: 'inquest_cases_v1',
+  PROFILE: 'inquest_profile_v1',
+  API_KEY: 'inquest_gemini_api_key_v1',
+  THEME: 'inquest_theme_v1',
+  LEGACY_CASES: 'lexpublica_cases_v1',
+  LEGACY_PROFILE: 'lexpublica_profile_v1',
+  LEGACY_API_KEY: 'lexpublica_gemini_api_key_v1',
+  LEGACY_THEME: 'lexpublica_theme_v1'
 };
 
 export const DEFAULT_REQUESTER_PROFILE: RequesterProfile = {
@@ -183,7 +187,7 @@ export const SAMPLE_CASES: FilingCase[] = [
 
 export function getStoredCases(): FilingCase[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CASES);
+    const raw = localStorage.getItem(STORAGE_KEYS.CASES) || localStorage.getItem(STORAGE_KEYS.LEGACY_CASES);
     if (!raw) {
       saveStoredCases(SAMPLE_CASES);
       return SAMPLE_CASES;
@@ -225,7 +229,7 @@ export function deleteFilingCase(id: string): void {
 
 export function getStoredProfile(): RequesterProfile {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PROFILE);
+    const raw = localStorage.getItem(STORAGE_KEYS.PROFILE) || localStorage.getItem(STORAGE_KEYS.LEGACY_PROFILE);
     if (!raw) return DEFAULT_REQUESTER_PROFILE;
     return JSON.parse(raw);
   } catch (e) {
@@ -242,7 +246,7 @@ export function saveStoredProfile(profile: RequesterProfile): void {
 }
 
 export function getStoredApiKey(): string {
-  return localStorage.getItem(STORAGE_KEYS.API_KEY) || '';
+  return localStorage.getItem(STORAGE_KEYS.API_KEY) || localStorage.getItem(STORAGE_KEYS.LEGACY_API_KEY) || '';
 }
 
 export function saveStoredApiKey(key: string): void {
