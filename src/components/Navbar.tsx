@@ -324,6 +324,11 @@ export default function Navbar() {
                 className="submenu-link">
                 Case Dashboard
               </Link>
+              <Link 
+                href="/products/inquest/pricing" 
+                className={`submenu-link ${pathname === "/products/inquest/pricing" ? "active-cyan" : ""}`}>
+                Plans & Pricing
+              </Link>
             </div>
           )}
         </div>

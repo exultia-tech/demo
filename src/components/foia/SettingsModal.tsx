@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, User, Key, Save, Download, Upload, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, User, Key, Save, Download, Upload, ShieldCheck, CheckCircle2, Scale } from 'lucide-react';
 import { RequesterProfile, FilingCase } from '@/types/foia';
 import { saveStoredProfile, saveStoredApiKey, saveStoredCases, getStoredCases } from '@/lib/foia/storageService';
 
@@ -328,6 +328,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <input type="file" accept=".json" onChange={handleImportData} style={{ display: 'none' }} />
             </label>
           </div>
+        </div>
+
+        {/* Section 5: Subscription & Active Plan */}
+        <div style={{ marginBottom: '24px', borderTop: '1px solid var(--border-glass)', paddingTop: '18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Scale size={16} color="#06B6D4" /> Active Plan & Capabilities
+            </h3>
+            <span style={{ fontSize: '0.7rem', color: '#34D399', background: 'rgba(52, 211, 153, 0.15)', border: '1px solid rgba(52, 211, 153, 0.3)', padding: '2px 8px', borderRadius: '999px', fontWeight: 700 }}>
+              Civic Baseline (Free Forever)
+            </span>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: '1.5' }}>
+            Your workspace is running the permanent free Civic tier with local privacy custody, 50-state sunshine coverage, and zero token fees.
+          </p>
+          <a
+            href="/products/inquest/pricing"
+            target="_blank"
+            rel="noreferrer"
+            style={{ fontSize: '0.82rem', color: '#67E8F9', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+          >
+            Explore Investigator Pro (50-State Sweeps) & Newsroom Suite →
+          </a>
         </div>
 
         {/* Actions */}

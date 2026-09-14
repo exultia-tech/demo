@@ -68,6 +68,7 @@ export default function Footer() {
           <h4>Inquest</h4>
           <ul>
             <li><Link href="/products/inquest">Product Overview</Link></li>
+            <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
             <li><Link href="/inquest">Request Wizard</Link></li>
             <li><Link href="/inquest?tab=agencies">50-State Agency Directory</Link></li>
             <li><Link href="/inquest?tab=analyzer">Exemption & Denial Analyzer</Link></li>

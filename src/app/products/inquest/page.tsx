@@ -209,6 +209,179 @@ export default function InquestProductLandingPage() {
         </div>
       </section>
 
+      {/* PRICING TIERS PREVIEW */}
+      <section style={{ maxWidth: "1180px", margin: "5rem auto 0 auto", padding: "0 2rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+          <div style={{ fontSize: "0.8rem", color: "#67E8F9", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem" }}>
+            Transparent Plans & Civic Guarantee
+          </div>
+          <h2 style={{ fontSize: "2.2rem", fontWeight: 800, letterSpacing: "-0.02em" }}>
+            Free for Civic Use · Scaled for Newsrooms & Legal Teams
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "680px", margin: "0.5rem auto 0 auto" }}>
+            Our open civic charter ensures the core deterministic sunshine engine is permanently free. Upgrade whenever you need campaign sweeps, team dockets, and automated follow-ups.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          {/* Civic Card */}
+          <div style={{
+            background: "rgba(10, 15, 26, 0.7)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "16px",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Civic Baseline</h3>
+                <span style={{ fontSize: "0.7rem", color: "#34D399", background: "rgba(52, 211, 153, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
+                  Free Forever
+                </span>
+              </div>
+              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
+                $0 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ forever</span>
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
+                Complete access to 50-state sunshine laws, deterministic drafting, and local client custody.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#CBD5E1" }}>
+                <li>✓ All 50 state sunshine laws + 5 U.S.C. § 552</li>
+                <li>✓ Mandatory segregability clause injection</li>
+                <li>✓ Bring-Your-Own Gemini API Key (0 token fees)</li>
+                <li>✓ Cryptographic SHA-256 fingerprint verification</li>
+              </ul>
+            </div>
+            <Link 
+              href="/inquest" 
+              style={{
+                marginTop: "1.75rem",
+                display: "block",
+                textAlign: "center",
+                padding: "0.75rem 1rem",
+                borderRadius: "8px",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "#FFFFFF",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                textDecoration: "none"
+              }}>
+              Start Free Workspace →
+            </Link>
+          </div>
+
+          {/* Pro Card */}
+          <div style={{
+            background: "linear-gradient(180deg, rgba(6, 182, 212, 0.12) 0%, rgba(10, 15, 26, 0.8) 100%)",
+            border: "2px solid #06B6D4",
+            borderRadius: "16px",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            boxShadow: "0 15px 30px -10px rgba(6, 182, 212, 0.3)"
+          }}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Investigator Pro</h3>
+                <span style={{ fontSize: "0.7rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
+                  Most Popular
+                </span>
+              </div>
+              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
+                $39 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
+                Multi-agency sweeps, automated statutory follow-ups, and inbound reply parsing.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#F1F5F9" }}>
+                <li>✓ Multi-Agency Campaign Blasts (50 states)</li>
+                <li>✓ Automated Statutory Escalation Bot</li>
+                <li>✓ Inbound Email Relay (@inquest.exultia.tech)</li>
+                <li>✓ Encrypted Cloud Docket Sync & Calendar Alerts</li>
+              </ul>
+            </div>
+            <Link 
+              href="/products/inquest/pricing" 
+              className="btn-primary"
+              style={{
+                marginTop: "1.75rem",
+                display: "block",
+                textAlign: "center",
+                padding: "0.75rem 1rem",
+                borderRadius: "8px",
+                background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
+                color: "#041019",
+                fontSize: "0.88rem",
+                fontWeight: 800,
+                textDecoration: "none"
+              }}>
+              View Pro Details →
+            </Link>
+          </div>
+
+          {/* Newsroom Card */}
+          <div style={{
+            background: "rgba(10, 15, 26, 0.7)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "16px",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Newsroom & Legal</h3>
+                <span style={{ fontSize: "0.7rem", color: "#A78BFA", background: "rgba(167, 139, 250, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
+                  10 Seats
+                </span>
+              </div>
+              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
+                $199 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
+                Collaborative team docket, deduplication alerts, and court-admissible evidence packages.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#CBD5E1" }}>
+                <li>✓ Collaborative Docket (10 seats included)</li>
+                <li>✓ Cross-Bureau Deduplication Shield</li>
+                <li>✓ Judicial Precedent Citation Engine</li>
+                <li>✓ Court-Ready Certified Evidence Dossiers</li>
+              </ul>
+            </div>
+            <Link 
+              href="/products/inquest/pricing" 
+              style={{
+                marginTop: "1.75rem",
+                display: "block",
+                textAlign: "center",
+                padding: "0.75rem 1rem",
+                borderRadius: "8px",
+                background: "rgba(167, 139, 250, 0.15)",
+                border: "1px solid rgba(167, 139, 250, 0.3)",
+                color: "#E2E8F0",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                textDecoration: "none"
+              }}>
+              View Team Suite →
+            </Link>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          <Link 
+            href="/products/inquest/pricing" 
+            style={{ color: "#67E8F9", fontSize: "0.95rem", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            Compare complete feature matrix, add-on services, & FAQ →
+          </Link>
+        </div>
+      </section>
+
       {/* BOTTOM CTA */}
       <section style={{ maxWidth: "1000px", margin: "5rem auto 3rem auto", padding: "0 2rem" }}>
         <div style={{
