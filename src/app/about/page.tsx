@@ -42,16 +42,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* THREE PILLARS */}
-      <section style={{ maxWidth: "1200px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
+      {/* FOUR PILLARS */}
+      <section style={{ maxWidth: "1300px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-            Our 3 Core Domains
+            Our 4 Core Domains
           </span>
-          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Three Pillars of Exultia</h2>
+          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Four Pillars of Exultia</h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
           
           <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(59, 130, 246, 0.25)" }}>
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🛡️</div>
@@ -86,6 +86,17 @@ export default function AboutPage() {
             </p>
           </div>
 
+          <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
+            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🏛️</div>
+            <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>4. Municipal Transparency</h3>
+            <div style={{ fontSize: "0.85rem", color: "#34D399", fontWeight: 600, marginBottom: "0.75rem" }}>
+              CivicPulse Foundation
+            </div>
+            <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
+              Over 90% of public civic information does not require formal FOIA filings, yet remains buried in legacy city portals. CivicPulse enables citizens to query council minutes, ordinances, and roll-call votes on demand—with human researcher backup.
+            </p>
+          </div>
+
         </div>
       </section>
 
@@ -109,8 +120,11 @@ export default function AboutPage() {
             <Link href="/threat-feed" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               UVI Threat Feed
             </Link>
-            <Link href="/foia" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+            <Link href="/inquest" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               Exultia Inquest
+            </Link>
+            <Link href="/civic-pulse" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#34D399", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+              Exultia CivicPulse
             </Link>
           </div>
         </div>

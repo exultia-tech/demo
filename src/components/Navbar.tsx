@@ -27,8 +27,14 @@ export default function Navbar() {
     pathname.startsWith("/foia") || 
     pathname.startsWith("/products/foia");
 
+  const isCivicPulseContext = 
+    pathname.startsWith("/civic-pulse") || 
+    pathname.startsWith("/products/civic-pulse") || 
+    pathname.startsWith("/civicpulse") || 
+    pathname.startsWith("/products/civicpulse");
+
   // The horizontal subnav only appears once a user visits a product page
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -87,7 +93,7 @@ export default function Navbar() {
           >
             <button 
               type="button"
-              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
+              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext ? "active" : ""}`}
               style={{
                 background: "transparent",
                 border: "none",
@@ -199,6 +205,30 @@ export default function Navbar() {
                     <div>
                       <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
                       <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous FOIA & statutory compliance platform</div>
+                    </div>
+                  </Link>
+
+                  <Link 
+                    href="/products/civic-pulse" 
+                    onClick={() => setIsProductsOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "12px",
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                      transition: "background 0.15s ease",
+                      background: isCivicPulseContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #10B981, #059669)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>CivicPulse</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Deterministic municipal records & council minutes</div>
                     </div>
                   </Link>
                 </div>
@@ -329,6 +359,34 @@ export default function Navbar() {
                 className={`submenu-link ${pathname === "/products/inquest/pricing" ? "active-cyan" : ""}`}>
                 Plans & Pricing
               </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 4: CIVICPULSE SUBMENU */}
+          {isCivicPulseContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                CivicPulse
+              </span>
+
+              <Link 
+                href="/products/civic-pulse" 
+                className={`submenu-link ${pathname === "/products/civic-pulse" || pathname === "/products/civicpulse" ? "active-green" : ""}`}
+                style={{ color: pathname === "/products/civic-pulse" ? "#34D399" : undefined }}>
+                Overview
+              </Link>
+              <Link 
+                href="/civic-pulse" 
+                className={`submenu-link ${pathname === "/civic-pulse" || pathname === "/civicpulse" ? "active-green" : ""}`}
+                style={{ color: pathname === "/civic-pulse" ? "#34D399" : undefined }}>
+                Terminal Workspace
+              </Link>
+              <a 
+                href="/products/civic-pulse#interactive-terminal" 
+                className="submenu-link">
+                Query Portals
+              </a>
             </div>
           )}
         </div>

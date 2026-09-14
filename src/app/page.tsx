@@ -189,6 +189,55 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* PRODUCT 4: EXULTIA CIVICPULSE */}
+          <div className="glass-card" style={{
+            padding: "2.5rem 2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            borderRadius: "18px",
+            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
+            marginBottom: 0
+          }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+                <div style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #10B981, #059669)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#FFFFFF",
+                  boxShadow: "0 0 20px rgba(16, 185, 129, 0.4)"
+                }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                </div>
+                <span className="badge badge-green" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.3)" }}>Product 04</span>
+              </div>
+
+              <h2 style={{ fontSize: "1.75rem", marginBottom: "0.4rem", color: "#FFFFFF", fontWeight: 700 }}>CivicPulse</h2>
+              <div style={{ color: "#34D399", fontWeight: 600, fontSize: "0.92rem", marginBottom: "1rem" }}>
+                Deterministic Municipal Intelligence
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "2rem" }}>
+                Instant on-demand access to city council meeting minutes, ordinances, and roll-call votes across thousands of US cities—with human research desk backup.
+              </p>
+            </div>
+
+            <div>
+              <Link 
+                href="/products/civic-pulse" 
+                className="btn-primary" 
+                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.9rem", fontSize: "0.95rem", fontWeight: 600, background: "linear-gradient(135deg, #10B981, #059669)" }}>
+                Explore CivicPulse →
+              </Link>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>

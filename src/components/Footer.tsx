@@ -76,6 +76,17 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* COLUMN 4: MUNICIPAL INTELLIGENCE */}
+        <div className="footer-col">
+          <h4>CivicPulse</h4>
+          <ul>
+            <li><Link href="/products/civic-pulse">Product Overview</Link></li>
+            <li><Link href="/civic-pulse">Terminal Workspace</Link></li>
+            <li><a href="/products/civic-pulse#interactive-terminal">Query Portals</a></li>
+            <li><Link href="/about">Civic Desk Guarantee</Link></li>
+          </ul>
+        </div>
+
       </div>
 
       {/* FOOTER BOTTOM */}
