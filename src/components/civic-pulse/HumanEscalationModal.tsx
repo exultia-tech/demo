@@ -11,6 +11,7 @@ interface HumanEscalationModalProps {
   city: string;
   state: string;
   query: string;
+  customPortalUrl?: string;
   reason?: string;
   onTicketCreated?: (ticket: CivicDeskTicket) => void;
 }
@@ -21,6 +22,7 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
   city,
   state,
   query,
+  customPortalUrl,
   reason = "Portal architecture requires manual researcher extraction",
   onTicketCreated
 }) => {
@@ -40,7 +42,8 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
         state || "US",
         query || details || "Municipal Records Inquiry",
         email,
-        reason
+        reason,
+        customPortalUrl
       );
       setCreatedTicket(ticket);
       setIsSubmitting(false);
@@ -131,6 +134,11 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
               <div style={{ color: '#E2E8F0', marginBottom: '4px' }}>
                 <strong>Requested Information:</strong> {query || "Municipal Records"}
               </div>
+              {customPortalUrl && (
+                <div style={{ color: '#67E8F9', marginBottom: '4px', wordBreak: 'break-all' }}>
+                  <strong>Citizen Portal Link:</strong> {customPortalUrl}
+                </div>
+              )}
               <div style={{ color: '#F59E0B', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px' }}>
                 <ShieldAlert size={14} /> {reason}
               </div>
@@ -231,6 +239,12 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
                 <span style={{ color: '#94A3B8' }}>Assigned Specialist:</span>
                 <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{createdTicket.humanSpecialistAssigned}</span>
               </div>
+              {createdTicket.customPortalUrl && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', wordBreak: 'break-all' }}>
+                  <span style={{ color: '#94A3B8' }}>Supplied Link:</span>
+                  <span style={{ color: '#67E8F9', fontSize: '0.8rem', textAlign: 'right', maxWidth: '65%' }}>{createdTicket.customPortalUrl}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#94A3B8' }}>Estimated Resolution:</span>
                 <span style={{ color: '#FBBF24', fontWeight: 600 }}>Within {createdTicket.estimatedHours} hours</span>

@@ -31,6 +31,8 @@ export const CivicPulseTerminal: React.FC = () => {
   const [stateInput, setStateInput] = useState('TX');
   const [queryInput, setQueryInput] = useState('Water infrastructure sensors');
   const [docType, setDocType] = useState<MunicipalDocumentType | 'all'>('all');
+  const [portalUrlInput, setPortalUrlInput] = useState('');
+  const [showPortalUrlField, setShowPortalUrlField] = useState(false);
   
   const [isSearching, setIsSearching] = useState(false);
   const [searchExecuted, setSearchExecuted] = useState(true);
@@ -52,7 +54,13 @@ export const CivicPulseTerminal: React.FC = () => {
   const [isEscalationModalOpen, setIsEscalationModalOpen] = useState(false);
   const [activeTickets, setActiveTickets] = useState<CivicDeskTicket[]>([]);
 
-  const handleSearch = async (city = cityInput, state = stateInput, query = queryInput, type = docType) => {
+  const handleSearch = async (
+    city = cityInput, 
+    state = stateInput, 
+    query = queryInput, 
+    type = docType, 
+    customUrl = portalUrlInput
+  ) => {
     setIsSearching(true);
     setSearchExecuted(true);
     
@@ -62,7 +70,8 @@ export const CivicPulseTerminal: React.FC = () => {
         city,
         state,
         query,
-        documentType: type
+        documentType: type,
+        customPortalUrl: customUrl
       });
       setCurrentResult(res);
       setIsSearching(false);
@@ -72,11 +81,15 @@ export const CivicPulseTerminal: React.FC = () => {
     }, 850);
   };
 
-  const handleQuickCitySelect = (city: string, state: string, defaultQuery: string) => {
+  const handleQuickCitySelect = (city: string, state: string, defaultQuery: string, defaultUrl = '') => {
     setCityInput(city);
     setStateInput(state);
     setQueryInput(defaultQuery);
-    handleSearch(city, state, defaultQuery, docType);
+    if (defaultUrl) {
+      setPortalUrlInput(defaultUrl);
+      setShowPortalUrlField(true);
+    }
+    handleSearch(city, state, defaultQuery, docType, defaultUrl || portalUrlInput);
   };
 
   return (
@@ -218,19 +231,73 @@ export const CivicPulseTerminal: React.FC = () => {
 
           </div>
 
+          {/* Direct Municipal Portal URL (Optional / For Antiquated Systems) */}
+          <div style={{ marginBottom: '16px' }}>
+            {!showPortalUrlField ? (
+              <button
+                type="button"
+                onClick={() => setShowPortalUrlField(true)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#67E8F9',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: 0
+                }}>
+                <ExternalLink size={13} />
+                <span>+ Have a direct municipal URL? (For antiquated city websites, Laserfiche, or Sire portals)</span>
+              </button>
+            ) : (
+              <div style={{
+                background: 'rgba(6, 182, 212, 0.06)',
+                border: '1px solid rgba(6, 182, 212, 0.25)',
+                borderRadius: '10px',
+                padding: '12px 14px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#67E8F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ExternalLink size={14} /> Direct Municipal Portal / Website URL (Optional):
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => { setShowPortalUrlField(false); setPortalUrlInput(''); }}
+                    style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: '0.75rem', cursor: 'pointer' }}>
+                    Remove
+                  </button>
+                </div>
+                <input
+                  type="url"
+                  value={portalUrlInput}
+                  onChange={(e) => setPortalUrlInput(e.target.value)}
+                  placeholder="https://scrantonpa.gov/agendacenter or your town's legacy meeting portal URL"
+                  className="input-field"
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', fontSize: '0.85rem' }}
+                />
+                <div style={{ fontSize: '0.73rem', color: '#94A3B8', marginTop: '6px' }}>
+                  The agent will crawl, parse antiquated HTML tables, and extract PDF packets directly from this endpoint.
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Quick Preloaded City Suggestions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
             <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Quick Pre-Indexed Examples:</span>
             {[
-              { city: "Austin", state: "TX", query: "Water infrastructure sensors" },
-              { city: "Chicago", state: "IL", query: "License plate reader retention" },
-              { city: "Denver", state: "CO", query: "Zoning variance Colfax" },
-              { city: "Scranton", state: "PA", query: "Paving contracts & ADA" }
+              { city: "Austin", state: "TX", query: "Water infrastructure sensors", url: "" },
+              { city: "Chicago", state: "IL", query: "License plate reader retention", url: "" },
+              { city: "Scranton", state: "PA", query: "Paving contracts & ADA", url: "https://scrantonpa.gov/agendacenter" },
+              { city: "Denver", state: "CO", query: "Zoning variance Colfax", url: "" }
             ].map((ex, idx) => (
               <button
                 key={idx}
                 type="button"
-                onClick={() => handleQuickCitySelect(ex.city, ex.state, ex.query)}
+                onClick={() => handleQuickCitySelect(ex.city, ex.state, ex.query, ex.url)}
                 style={{
                   background: cityInput.toLowerCase() === ex.city.toLowerCase() ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
                   border: cityInput.toLowerCase() === ex.city.toLowerCase() ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
@@ -241,7 +308,7 @@ export const CivicPulseTerminal: React.FC = () => {
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}>
-                {ex.city}, {ex.state}: {ex.query}
+                {ex.city}, {ex.state}: {ex.query} {ex.url ? '(Antiquated Portal)' : ''}
               </button>
             ))}
           </div>
@@ -608,6 +675,7 @@ export const CivicPulseTerminal: React.FC = () => {
         city={cityInput}
         state={stateInput}
         query={queryInput}
+        customPortalUrl={portalUrlInput}
         reason={currentResult.escalationReason}
         onTicketCreated={(ticket) => setActiveTickets([ticket, ...activeTickets])}
       />

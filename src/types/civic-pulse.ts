@@ -53,6 +53,7 @@ export interface CivicDeskTicket {
   state: string;
   query: string;
   requesterEmail: string;
+  customPortalUrl?: string;
   status: 'dispatched_to_researcher' | 'in_progress' | 'resolved';
   estimatedHours: number;
   reasonForEscalation: string;
