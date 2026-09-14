@@ -18,10 +18,11 @@ import {
   BookOpen
 } from 'lucide-react';
 import { ALPR_CSF_FRAMEWORK } from '@/lib/governance/alprFrameworkData';
+import { RAIJ_CSF_FRAMEWORK } from '@/lib/governance/raijFrameworkData';
 
 export const metadata = {
   title: 'Experimental Governance Frameworks | Exultia',
-  description: 'Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering for civic technology and municipal surveillance.',
+  description: 'Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering for civic technology, surveillance, and responsible AI.',
 };
 
 export default function GovernanceHubPage() {
@@ -76,7 +77,7 @@ export default function GovernanceHubPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '0.75rem 1.8rem',
+                padding: '0.75rem 1.6rem',
                 borderRadius: '8px',
                 background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
                 color: '#FFFFFF',
@@ -84,7 +85,26 @@ export default function GovernanceHubPage() {
                 textDecoration: 'none',
                 boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)'
               }}>
-              <span>Explore ALPR-CSF v1.0</span>
+              <span>ALPR-CSF (Surveillance)</span>
+              <ArrowRight size={16} />
+            </Link>
+
+            <Link 
+              href="/governance/raij-csf"
+              className="btn-primary"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '0.75rem 1.6rem',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                textDecoration: 'none',
+                boxShadow: '0 0 20px rgba(139, 92, 246, 0.4)'
+              }}>
+              <span>RAIJ-CSF (Responsible AI)</span>
               <ArrowRight size={16} />
             </Link>
 
@@ -94,7 +114,7 @@ export default function GovernanceHubPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '0.75rem 1.6rem',
+                padding: '0.75rem 1.4rem',
                 borderRadius: '8px',
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -103,7 +123,7 @@ export default function GovernanceHubPage() {
                 textDecoration: 'none'
               }}>
               <Layers size={16} />
-              <span>Catalog & Pipeline</span>
+              <span>Frameworks Catalog</span>
             </a>
           </div>
 
@@ -116,10 +136,10 @@ export default function GovernanceHubPage() {
             textAlign: 'left'
           }}>
             {[
-              { label: 'Control Pillars', val: '8 Architecture Pillars', desc: 'Identity, physical safety & legal gates' },
-              { label: 'Granular Controls', val: '35+ Standard Controls', desc: 'Mandatory, prohibited & compensating' },
-              { label: 'Cross-Walk Mapping', val: '100% Industry Mapped', desc: 'NIST 800-53, FBI CJIS & ISO 27001' },
-              { label: 'Engineering Rigor', val: 'AASHTO MASH-16', desc: 'Roadside crash safety & wind loading' }
+              { label: 'Published Standards', val: '2 Active Frameworks', desc: 'Surveillance & Responsible AI' },
+              { label: 'Control Pillars', val: '16 Architecture Pillars', desc: '8 domains per framework' },
+              { label: 'Standard Controls', val: '67+ Granular Controls', desc: 'Constitutional, cyber & engineering' },
+              { label: 'Harmonization', val: '100% Industry Mapped', desc: 'NIST AI RMF, ISO 42001, CJIS, OMB' }
             ].map((stat, i) => (
               <div key={i} style={{
                 background: 'rgba(15, 23, 42, 0.6)',
@@ -318,6 +338,172 @@ export default function GovernanceHubPage() {
                   boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)'
                 }}>
                 <span>Read Full ALPR-CSF Standard</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+
+        </div>
+
+        {/* FEATURED FRAMEWORK CARD 2: RAIJ-CSF */}
+        <div style={{
+          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 28, 0.95) 100%)',
+          border: '1px solid rgba(139, 92, 246, 0.35)',
+          borderRadius: '16px',
+          padding: '2.5rem',
+          boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(139, 92, 246, 0.15)',
+          marginBottom: '4rem',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '260px',
+            height: '260px',
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%)',
+            pointerEvents: 'none'
+          }} />
+
+          {/* Top badges */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{
+                background: 'rgba(139, 92, 246, 0.2)',
+                color: '#A78BFA',
+                padding: '4px 12px',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                letterSpacing: '0.05em',
+                border: '1px solid rgba(139, 92, 246, 0.4)'
+              }}>
+                RAIJ-CSF v1.0
+              </span>
+              <span style={{
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#34D399',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                border: '1px solid rgba(16, 185, 129, 0.3)'
+              }}>
+                ● Active Standard
+              </span>
+            </div>
+
+            <div style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+              Applies to: <strong style={{ color: '#E2E8F0' }}>Municipal LLMs, Agentic Tools, Benefits Scoring, Judicial Risk</strong>
+            </div>
+          </div>
+
+          {/* Framework Title */}
+          <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem', lineHeight: '1.25' }}>
+            Responsible AI Jurisprudence & Secure Deployment Control Framework
+          </h3>
+
+          <p style={{ fontSize: '1rem', color: '#CBD5E1', lineHeight: '1.65', maxWidth: '950px', marginBottom: '2rem' }}>
+            The baseline standard for municipal and civic artificial intelligence. Spanning 8 architecture pillars—from mandatory algorithmic due process and human-in-the-loop gates, cryptographic checkpoint signatures, and AIBOM supply chain disclosures, to prompt injection semantic firewalls, differential privacy bounds, and Title VII four-fifths disparate impact audits.
+          </p>
+
+          {/* 8 PILLARS PREVIEW GRID */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '12px',
+            marginBottom: '2.5rem'
+          }}>
+            {RAIJ_CSF_FRAMEWORK.pillars.map((pillar) => (
+              <div key={pillar.code} style={{
+                background: 'rgba(2, 6, 23, 0.6)',
+                border: `1px solid ${pillar.borderColor}`,
+                borderRadius: '10px',
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px'
+              }}>
+                <div style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  background: pillar.accentBg,
+                  color: pillar.color,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
+                  flexShrink: 0
+                }}>
+                  {pillar.code}
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#FFFFFF' }}>
+                    {pillar.name}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '2px', lineHeight: '1.4' }}>
+                    {pillar.description.slice(0, 75)}...
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Action Footer */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            paddingTop: '1.5rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '0.82rem' }}>
+              <Scale size={16} color="#A78BFA" />
+              <span>Includes cross-walks to NIST AI RMF 1.0, ISO/IEC 42001:2023, White House OMB M-24-10, and EU AI Act</span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <Link 
+                href="/governance/raij-csf#ai-compliance-assessment"
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#E2E8F0',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                <CheckCircle2 size={14} color="#10B981" />
+                <span>Audit Self-Assessment</span>
+              </Link>
+
+              <Link 
+                href="/governance/raij-csf"
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                  color: '#FFFFFF',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)'
+                }}>
+                <span>Read Full RAIJ-CSF Standard</span>
                 <ArrowRight size={14} />
               </Link>
             </div>

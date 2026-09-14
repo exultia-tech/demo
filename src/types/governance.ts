@@ -1,8 +1,12 @@
 export type RequirementLevel = 'MUST' | 'MANDATORY' | 'PROHIBITED' | 'REQUIRED' | 'COMPENSATING';
 
+export type PillarCode = 
+  | 'AC' | 'DG' | 'NA' | 'AU' | 'PT' | 'PS' | 'LE' | 'PR' // ALPR-CSF
+  | 'DP' | 'DI' | 'AR' | 'IA' | 'BA'; // RAIJ-CSF additions (PS, LE, PT are shared)
+
 export interface ControlSpecification {
-  id: string; // e.g. "AC-01", "PS-01"
-  pillarCode: 'AC' | 'DG' | 'NA' | 'AU' | 'PT' | 'PS' | 'LE' | 'PR';
+  id: string; // e.g. "AC-01", "DP-01"
+  pillarCode: string;
   title: string;
   requirementLevel: RequirementLevel;
   statement: string;
@@ -14,13 +18,14 @@ export interface ControlSpecification {
   crossWalk: {
     nist: string;
     iso: string;
-    cjis: string;
+    cjis?: string;
+    omb?: string;
     statutory: string;
   };
 }
 
 export interface FrameworkPillar {
-  code: 'AC' | 'DG' | 'NA' | 'AU' | 'PT' | 'PS' | 'LE' | 'PR';
+  code: string;
   number: number;
   name: string;
   shortName: string;
@@ -38,7 +43,8 @@ export interface CrossWalkItem {
   pillar: string;
   nist: string;
   iso: string;
-  cjis: string;
+  cjis?: string;
+  omb?: string;
   statutory: string;
 }
 

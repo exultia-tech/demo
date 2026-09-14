@@ -67,8 +67,8 @@ export default function AlprCsfPage() {
         c.title.toLowerCase().includes(q) || 
         c.statement.toLowerCase().includes(q) ||
         (c.detailedNotes && c.detailedNotes.some(n => n.toLowerCase().includes(q))) ||
-        c.crossWalk.nist.toLowerCase().includes(q) ||
-        c.crossWalk.cjis.toLowerCase().includes(q) ||
+        c.crossWalk.nist.toLowerCase().includes(q) || 
+        (c.crossWalk.cjis && c.crossWalk.cjis.toLowerCase().includes(q)) || 
         c.crossWalk.statutory.toLowerCase().includes(q);
 
       return matchesPillar && matchesLevel && matchesSearch;

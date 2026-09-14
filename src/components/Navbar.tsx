@@ -415,18 +415,24 @@ export default function Navbar() {
                 href="/governance/alpr-csf" 
                 className={`submenu-link ${pathname === "/governance/alpr-csf" || pathname === "/frameworks/alpr-csf" ? "active-blue" : ""}`}
                 style={{ color: pathname === "/governance/alpr-csf" ? "#60A5FA" : undefined }}>
-                ALPR-CSF Standard
+                ALPR-CSF (Surveillance)
               </Link>
-              <a 
-                href="/governance/alpr-csf#cross-walk-matrix" 
+              <Link 
+                href="/governance/raij-csf" 
+                className={`submenu-link ${pathname === "/governance/raij-csf" || pathname === "/frameworks/raij-csf" ? "active-purple" : ""}`}
+                style={{ color: pathname === "/governance/raij-csf" ? "#A78BFA" : undefined }}>
+                RAIJ-CSF (Responsible AI)
+              </Link>
+              <Link 
+                href={pathname.includes("raij") ? "/governance/raij-csf#ai-cross-walk-matrix" : "/governance/alpr-csf#cross-walk-matrix"} 
                 className="submenu-link">
-                NIST / CJIS Matrix
-              </a>
-              <a 
-                href="/governance/alpr-csf#compliance-assessment" 
+                NIST / ISO Matrix
+              </Link>
+              <Link 
+                href={pathname.includes("raij") ? "/governance/raij-csf#ai-compliance-assessment" : "/governance/alpr-csf#compliance-assessment"} 
                 className="submenu-link">
-                Audit Self-Assessment
-              </a>
+                Self-Assessment
+              </Link>
             </div>
           )}
         </div>

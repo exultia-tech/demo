@@ -92,10 +92,10 @@ export default function Footer() {
           <h4>Governance</h4>
           <ul>
             <li><Link href="/governance">Frameworks Hub</Link></li>
-            <li><Link href="/governance/alpr-csf">ALPR-CSF Standard v1.0</Link></li>
-            <li><Link href="/governance/alpr-csf#cross-walk-matrix">NIST / CJIS Matrix</Link></li>
-            <li><Link href="/governance/alpr-csf#compliance-assessment">Compliance Audit Tool</Link></li>
-            <li><Link href="/governance#frameworks-catalog">Incubation Roadmap</Link></li>
+            <li><Link href="/governance/alpr-csf">ALPR-CSF (Surveillance)</Link></li>
+            <li><Link href="/governance/raij-csf">RAIJ-CSF (Responsible AI)</Link></li>
+            <li><Link href="/governance/raij-csf#ai-cross-walk-matrix">NIST / ISO / OMB Matrix</Link></li>
+            <li><Link href="/governance/raij-csf#ai-compliance-assessment">AI Safety Audit Tool</Link></li>
           </ul>
         </div>
 
