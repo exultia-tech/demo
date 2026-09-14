@@ -23,7 +23,7 @@ export interface MunicipalMeetingRecord {
   title: string;
   itemNumber: string; // e.g. "Item 42", "Resolution 2026-0814"
   summary: string;
-  outcome: 'PASSED' | 'FAILED' | 'TABLED' | 'AMENDED' | 'PUBLIC_COMMENT';
+  outcome: 'PASSED' | 'FAILED' | 'TABLED' | 'AMENDED' | 'PUBLIC_COMMENT' | 'AGENDA_POSTED' | 'MINUTES_APPROVED';
   voteTally?: {
     ayes: number;
     nays: number;

@@ -64,8 +64,7 @@ export const CivicPulseTerminal: React.FC = () => {
     setIsSearching(true);
     setSearchExecuted(true);
     
-    // Simulate deterministic agent processing
-    setTimeout(async () => {
+    try {
       const res = await executeMunicipalQuery({
         city,
         state,
@@ -74,11 +73,20 @@ export const CivicPulseTerminal: React.FC = () => {
         customPortalUrl: customUrl
       });
       setCurrentResult(res);
-      setIsSearching(false);
+      if (res.city && (!city || city.toLowerCase() === 'unknown')) {
+        setCityInput(res.city);
+      }
+      if (res.state && (!state || state === 'US')) {
+        setStateInput(res.state);
+      }
       if (res.records.length > 0) {
         setExpandedVoteId(res.records[0].id);
       }
-    }, 850);
+    } catch (err) {
+      console.error("Search execution failed:", err);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleQuickCitySelect = (city: string, state: string, defaultQuery: string, defaultUrl = '') => {
@@ -287,28 +295,30 @@ export const CivicPulseTerminal: React.FC = () => {
 
           {/* Quick Preloaded City Suggestions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Quick Pre-Indexed Examples:</span>
+            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Quick Examples:</span>
             {[
-              { city: "Austin", state: "TX", query: "Water infrastructure sensors", url: "" },
-              { city: "Chicago", state: "IL", query: "License plate reader retention", url: "" },
-              { city: "Scranton", state: "PA", query: "Paving contracts & ADA", url: "https://scrantonpa.gov/agendacenter" },
-              { city: "Denver", state: "CO", query: "Zoning variance Colfax", url: "" }
+              { city: "Roswell", state: "GA", query: "Planning", url: "https://roswellcityga.iqm2.com/Services/RSS.aspx?Feed=Calendar", tag: "Live IQM2 Feed" },
+              { city: "Scranton", state: "PA", query: "Paving contracts & ADA", url: "https://scrantonpa.gov/agendacenter", tag: "CivicPlus Portal" },
+              { city: "Austin", state: "TX", query: "Water infrastructure sensors", url: "", tag: "Legistar" },
+              { city: "Chicago", state: "IL", query: "License plate reader retention", url: "", tag: "Granicus" },
+              { city: "Denver", state: "CO", query: "Zoning variance Colfax", url: "", tag: "Legistar" }
             ].map((ex, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleQuickCitySelect(ex.city, ex.state, ex.query, ex.url)}
                 style={{
-                  background: cityInput.toLowerCase() === ex.city.toLowerCase() ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                  border: cityInput.toLowerCase() === ex.city.toLowerCase() ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: cityInput.toLowerCase() === ex.city.toLowerCase() ? '#34D399' : '#CBD5E1',
+                  background: (cityInput.toLowerCase() === ex.city.toLowerCase() && (!ex.url || portalUrlInput === ex.url)) ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  border: (cityInput.toLowerCase() === ex.city.toLowerCase() && (!ex.url || portalUrlInput === ex.url)) ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
+                  color: (cityInput.toLowerCase() === ex.city.toLowerCase() && (!ex.url || portalUrlInput === ex.url)) ? '#34D399' : '#CBD5E1',
                   borderRadius: '6px',
                   padding: '4px 10px',
                   fontSize: '0.75rem',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}>
-                {ex.city}, {ex.state}: {ex.query} {ex.url ? '(Antiquated Portal)' : ''}
+                {ex.city}, {ex.state}: {ex.query} <span style={{ opacity: 0.65, fontSize: '0.7rem' }}>({ex.tag})</span>
               </button>
             ))}
           </div>
@@ -444,11 +454,29 @@ export const CivicPulseTerminal: React.FC = () => {
                           fontWeight: 800,
                           padding: '4px 10px',
                           borderRadius: '6px',
-                          background: rec.outcome === 'PASSED' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                          color: rec.outcome === 'PASSED' ? '#34D399' : '#F87171',
-                          border: rec.outcome === 'PASSED' ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)'
+                          background: (rec.outcome === 'PASSED' || rec.outcome === 'MINUTES_APPROVED')
+                            ? 'rgba(16, 185, 129, 0.2)' 
+                            : rec.outcome === 'AGENDA_POSTED'
+                              ? 'rgba(6, 182, 212, 0.2)'
+                              : rec.outcome === 'PUBLIC_COMMENT' || rec.outcome === 'TABLED'
+                                ? 'rgba(245, 158, 11, 0.2)'
+                                : 'rgba(239, 68, 68, 0.2)',
+                          color: (rec.outcome === 'PASSED' || rec.outcome === 'MINUTES_APPROVED')
+                            ? '#34D399' 
+                            : rec.outcome === 'AGENDA_POSTED'
+                              ? '#67E8F9'
+                              : rec.outcome === 'PUBLIC_COMMENT' || rec.outcome === 'TABLED'
+                                ? '#FBBF24'
+                                : '#F87171',
+                          border: (rec.outcome === 'PASSED' || rec.outcome === 'MINUTES_APPROVED')
+                            ? '1px solid rgba(16, 185, 129, 0.4)' 
+                            : rec.outcome === 'AGENDA_POSTED'
+                              ? '1px solid rgba(6, 182, 212, 0.4)'
+                              : rec.outcome === 'PUBLIC_COMMENT' || rec.outcome === 'TABLED'
+                                ? '1px solid rgba(245, 158, 11, 0.4)'
+                                : '1px solid rgba(239, 68, 68, 0.4)'
                         }}>
-                          {rec.outcome}
+                          {rec.outcome.replace('_', ' ')}
                         </span>
                       </div>
                     </div>

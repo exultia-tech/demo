@@ -27,6 +27,24 @@ export async function executeMunicipalQuery(params: SearchQueryParams): Promise<
   const normQuery = params.query.trim().toLowerCase();
   const hasCustomUrl = !!params.customPortalUrl && params.customPortalUrl.trim().length > 0;
 
+  // If citizen provided a direct portal URL, execute live server-side crawler
+  if (hasCustomUrl) {
+    try {
+      const endpoint = typeof window !== 'undefined' ? '/api/civic-pulse/crawl' : 'http://localhost:3000/api/civic-pulse/crawl';
+      const liveRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+      if (liveRes.ok) {
+        const liveData: AgentQueryResult = await liveRes.json();
+        return liveData;
+      }
+    } catch (crawlErr) {
+      console.warn("Live municipal crawler request failed, falling back to simulated engine:", crawlErr);
+    }
+  }
+
   // Determine if this municipality is pre-indexed in our automated portal cluster
   const matchedCity = SUPPORTED_CITIES.find(
     c => c.city.toLowerCase() === normCity && (normState === '' || c.state === normState)
