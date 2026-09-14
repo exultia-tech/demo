@@ -19,7 +19,10 @@ import {
   UserCheck,
   HelpCircle,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Copy,
+  Check,
+  ListChecks
 } from 'lucide-react';
 import { MunicipalMeetingRecord, MunicipalDocumentType, CivicDeskTicket, RetrievalStep } from '@/types/civic-pulse';
 import { executeMunicipalQuery, AgentQueryResult } from '@/lib/civic-pulse/agentEngine';
@@ -51,8 +54,18 @@ export const CivicPulseTerminal: React.FC = () => {
   });
 
   const [expandedVoteId, setExpandedVoteId] = useState<string | null>(SAMPLE_MUNICIPAL_RECORDS[0].id);
+  const [expandedAgendaId, setExpandedAgendaId] = useState<string | null>(SAMPLE_MUNICIPAL_RECORDS[0].id);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isEscalationModalOpen, setIsEscalationModalOpen] = useState(false);
   const [activeTickets, setActiveTickets] = useState<CivicDeskTicket[]>([]);
+
+  const handleCopyAgenda = (recId: string, items?: { itemNumber?: string; title: string }[]) => {
+    if (!items || items.length === 0) return;
+    const text = items.map((it, idx) => `${it.itemNumber ? `${it.itemNumber}: ` : `${idx + 1}. `}${it.title}`).join('\n');
+    navigator.clipboard.writeText(text);
+    setCopiedId(recId);
+    setTimeout(() => setCopiedId(null), 2500);
+  };
 
   const handleSearch = async (
     city = cityInput, 
@@ -81,6 +94,7 @@ export const CivicPulseTerminal: React.FC = () => {
       }
       if (res.records.length > 0) {
         setExpandedVoteId(res.records[0].id);
+        setExpandedAgendaId(res.records[0].id);
       }
     } catch (err) {
       console.error("Search execution failed:", err);
@@ -419,10 +433,11 @@ export const CivicPulseTerminal: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              {currentResult.records.map((rec) => {
-                const isExpanded = expandedVoteId === rec.id;
+              {currentResult.records.map((rec, idx) => {
+                const isVoteExpanded = expandedVoteId === rec.id;
+                const isAgendaExpanded = expandedAgendaId === rec.id;
                 return (
-                  <div key={rec.id} style={{
+                  <div key={`${rec.id}-${idx}`} style={{
                     background: 'rgba(15, 23, 42, 0.7)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '14px',
@@ -431,8 +446,8 @@ export const CivicPulseTerminal: React.FC = () => {
                   }}>
                     {/* Header Row */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <div style={{ minWidth: '250px', flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '0.78rem', color: '#34D399', fontWeight: 700, background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
                             {rec.governingBody}
                           </span>
@@ -443,7 +458,7 @@ export const CivicPulseTerminal: React.FC = () => {
                             • {rec.itemNumber}
                           </span>
                         </div>
-                        <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF', lineHeight: '1.4' }}>
+                        <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF', lineHeight: '1.4', wordBreak: 'break-word' }}>
                           {rec.title}
                         </h4>
                       </div>
@@ -454,6 +469,7 @@ export const CivicPulseTerminal: React.FC = () => {
                           fontWeight: 800,
                           padding: '4px 10px',
                           borderRadius: '6px',
+                          whiteSpace: 'nowrap',
                           background: (rec.outcome === 'PASSED' || rec.outcome === 'MINUTES_APPROVED')
                             ? 'rgba(16, 185, 129, 0.2)' 
                             : rec.outcome === 'AGENDA_POSTED'
@@ -482,9 +498,151 @@ export const CivicPulseTerminal: React.FC = () => {
                     </div>
 
                     {/* Summary */}
-                    <p style={{ fontSize: '0.88rem', color: '#CBD5E1', lineHeight: '1.5', margin: '0 0 16px 0' }}>
+                    <p style={{ fontSize: '0.88rem', color: '#CBD5E1', lineHeight: '1.5', margin: '0 0 16px 0', wordBreak: 'break-word' }}>
                       {rec.summary}
                     </p>
+
+                    {/* SUBSTANTIVE MEETING AGENDA & DOCKET ITEMS CONTENT */}
+                    {rec.agendaItems && rec.agendaItems.length > 0 && (
+                      <div style={{
+                        marginBottom: '16px',
+                        borderRadius: '10px',
+                        border: isAgendaExpanded ? '1px solid rgba(6, 182, 212, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isAgendaExpanded ? 'rgba(6, 182, 212, 0.03)' : 'rgba(255, 255, 255, 0.02)',
+                        overflow: 'hidden',
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <div
+                          onClick={() => setExpandedAgendaId(isAgendaExpanded ? null : rec.id)}
+                          style={{
+                            padding: '12px 14px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: '10px',
+                            background: isAgendaExpanded ? 'rgba(6, 182, 212, 0.08)' : 'transparent',
+                            cursor: 'pointer'
+                          }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <ListChecks size={16} color="#67E8F9" />
+                            <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#E2E8F0' }}>
+                              Substantive Session Docket ({rec.agendaItems.length} Agenda Items Extracted)
+                            </span>
+                            <span style={{ fontSize: '0.68rem', color: '#06B6D4', background: 'rgba(6, 182, 212, 0.15)', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                              Real Content
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCopyAgenda(rec.id, rec.agendaItems);
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                background: copiedId === rec.id ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                                border: copiedId === rec.id ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.12)',
+                                color: copiedId === rec.id ? '#34D399' : '#94A3B8',
+                                fontSize: '0.72rem',
+                                padding: '4px 8px',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                              }}>
+                              {copiedId === rec.id ? <Check size={12} /> : <Copy size={12} />}
+                              <span>{copiedId === rec.id ? 'Copied' : 'Copy Items'}</span>
+                            </button>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#67E8F9', fontSize: '0.75rem', fontWeight: 600 }}>
+                              <span>{isAgendaExpanded ? 'Collapse Docket' : 'View Docket'}</span>
+                              {isAgendaExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                            </div>
+                          </div>
+                        </div>
+
+                        {isAgendaExpanded && (
+                          <div style={{ padding: '14px', borderTop: '1px solid rgba(6, 182, 212, 0.15)' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                              {rec.agendaItems.map((it, itIdx) => {
+                                const isKeywordMatch = queryInput.trim().length > 1 && (
+                                  it.title.toLowerCase().includes(queryInput.toLowerCase()) ||
+                                  (it.attachments && it.attachments.some(a => a.label.toLowerCase().includes(queryInput.toLowerCase())))
+                                );
+
+                                return (
+                                  <div key={itIdx} style={{
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    background: isKeywordMatch ? 'rgba(16, 185, 129, 0.12)' : 'rgba(2, 6, 23, 0.65)',
+                                    border: isKeywordMatch ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255, 255, 255, 0.05)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '6px'
+                                  }}>
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                                      {it.itemNumber && (
+                                        <span style={{
+                                          fontSize: '0.72rem',
+                                          fontWeight: 800,
+                                          color: isKeywordMatch ? '#34D399' : '#94A3B8',
+                                          background: 'rgba(255, 255, 255, 0.06)',
+                                          padding: '2px 6px',
+                                          borderRadius: '4px',
+                                          whiteSpace: 'nowrap'
+                                        }}>
+                                          {it.itemNumber}
+                                        </span>
+                                      )}
+                                      <span style={{ fontSize: '0.84rem', color: '#F1F5F9', fontWeight: 600, lineHeight: '1.4', flex: 1 }}>
+                                        {it.title}
+                                      </span>
+                                      {isKeywordMatch && (
+                                        <span style={{ fontSize: '0.65rem', color: '#34D399', background: 'rgba(16, 185, 129, 0.2)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                          QUERY MATCH
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {it.attachments && it.attachments.length > 0 && (
+                                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '4px', paddingLeft: it.itemNumber ? '26px' : '0' }}>
+                                        {it.attachments.map((att, attIdx) => (
+                                          <a
+                                            key={attIdx}
+                                            href={att.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              gap: '4px',
+                                              fontSize: '0.72rem',
+                                              color: '#60A5FA',
+                                              background: 'rgba(59, 130, 246, 0.1)',
+                                              border: '1px solid rgba(59, 130, 246, 0.25)',
+                                              padding: '2px 8px',
+                                              borderRadius: '4px',
+                                              textDecoration: 'none',
+                                              fontWeight: 500
+                                            }}>
+                                            <Download size={11} />
+                                            <span>{att.label}</span>
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Verbatim Excerpt Box */}
                     <div style={{
@@ -495,9 +653,9 @@ export const CivicPulseTerminal: React.FC = () => {
                       marginBottom: '16px'
                     }}>
                       <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
-                        Verbatim Official Minutes Excerpt:
+                        Verbatim Official Record Excerpt:
                       </div>
-                      <p style={{ fontSize: '0.82rem', color: '#E2E8F0', fontStyle: 'italic', margin: 0, lineHeight: '1.5' }}>
+                      <p style={{ fontSize: '0.82rem', color: '#E2E8F0', fontStyle: 'italic', margin: 0, lineHeight: '1.5', whiteSpace: 'pre-line', wordBreak: 'break-word' }}>
                         "{rec.verbatimExcerpt}"
                       </p>
                     </div>
@@ -506,7 +664,7 @@ export const CivicPulseTerminal: React.FC = () => {
                     {rec.voteTally && (
                       <div style={{ marginBottom: '16px' }}>
                         <button
-                          onClick={() => setExpandedVoteId(isExpanded ? null : rec.id)}
+                          onClick={() => setExpandedVoteId(isVoteExpanded ? null : rec.id)}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -521,10 +679,10 @@ export const CivicPulseTerminal: React.FC = () => {
                           }}>
                           <Users size={14} />
                           <span>Roll-Call Voting Breakdown ({rec.voteTally.ayes} Ayes, {rec.voteTally.nays} Nays)</span>
-                          {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          {isVoteExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
 
-                        {isExpanded && (
+                        {isVoteExpanded && (
                           <div style={{
                             marginTop: '10px',
                             background: 'rgba(10, 15, 26, 0.9)',

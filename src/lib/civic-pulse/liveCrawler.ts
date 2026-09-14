@@ -1,4 +1,4 @@
-import { MunicipalMeetingRecord, MunicipalDocumentType, RetrievalStep } from '@/types/civic-pulse';
+import { MunicipalMeetingRecord, MunicipalDocumentType, RetrievalStep, AgendaItemDetail } from '@/types/civic-pulse';
 import { SearchQueryParams, AgentQueryResult } from './agentEngine';
 
 interface LiveParsedItem {
@@ -164,19 +164,49 @@ export async function crawlMunicipalEndpoint(params: SearchQueryParams): Promise
   // If query didn't match anything, fall back to showing recent items so the citizen gets real data
   const finalItems = filtered.length > 0 ? filtered : parsedItems.slice(0, 10);
 
-  // 4. Map to MunicipalMeetingRecord
-  const records: MunicipalMeetingRecord[] = finalItems.slice(0, 20).map((item, idx) => {
+  // 4. Enrich top matching records with actual meeting agenda items and proceedings from detail pages
+  const itemsToEnrich = finalItems.slice(0, 8);
+  const enrichedItems = await Promise.all(
+    itemsToEnrich.map(async (item) => {
+      const details = await fetchMeetingSubstantiveContent(item.webLink, targetUrl);
+      return {
+        ...item,
+        agendaItems: details.agendaItems,
+        fullProceedingsText: details.fullText,
+        enhancedSummary: details.enhancedSummary || item.summary,
+        enhancedExcerpt: details.enhancedExcerpt || item.verbatimExcerpt
+      };
+    })
+  );
+
+  const remainingItems = finalItems.slice(8).map(item => ({
+    ...item,
+    agendaItems: [] as AgendaItemDetail[],
+    fullProceedingsText: '',
+    enhancedSummary: item.summary,
+    enhancedExcerpt: item.verbatimExcerpt
+  }));
+
+  const allProcessed = [...enrichedItems, ...remainingItems];
+
+  // 5. Map to MunicipalMeetingRecord with guaranteed unique IDs
+  const records: MunicipalMeetingRecord[] = allProcessed.slice(0, 20).map((item, idx) => {
+    // Guaranteed unique ID preventing React key collisions
+    const uniqueId = `LIVE-${inferredCity.toUpperCase().slice(0, 3)}-${item.id}-${item.docType}-${idx + 1}`;
+
     return {
-      id: item.id || `LIVE-${inferredCity.toUpperCase().slice(0, 3)}-${idx + 1}`,
+      id: uniqueId,
       city: inferredCity,
       state: inferredState,
       governingBody: item.governingBody,
       meetingDate: item.meetingDate,
       documentType: item.docType,
       title: item.title,
-      itemNumber: item.itemNumber || `Meeting Record #${idx + 1}`,
-      summary: item.summary,
+      itemNumber: item.itemNumber || `Session Record #${idx + 1}`,
+      summary: item.enhancedSummary || item.summary,
       outcome: item.outcome,
+      agendaItems: item.agendaItems && item.agendaItems.length > 0 ? item.agendaItems : undefined,
+      fullProceedingsText: item.fullProceedingsText || undefined,
       voteTally: item.outcome === 'MINUTES_APPROVED' || item.outcome === 'PASSED'
         ? {
             ayes: 6,
@@ -195,14 +225,16 @@ export async function crawlMunicipalEndpoint(params: SearchQueryParams): Promise
         directPdfUrl: item.downloadLink || item.webLink || targetUrl,
         scannedDocConfidence: 99.4
       },
-      verbatimExcerpt: item.verbatimExcerpt
+      verbatimExcerpt: item.enhancedExcerpt || item.verbatimExcerpt
     };
   });
+
+  const enrichedCount = records.filter(r => r.agendaItems && r.agendaItems.length > 0).length;
 
   steps.push({
     step: "Deterministic Source Verification & Link Attestation",
     status: "completed",
-    detail: `Anchored extracted proceedings directly to official municipal domain (${parsedUrl.hostname}). Certified by Exultia CivicBot.`
+    detail: `Anchored extracted proceedings directly to official municipal domain (${parsedUrl.hostname}). Extracted substantive agenda content for ${enrichedCount} sessions. Certified by Exultia CivicBot.`
   });
 
   const requiresHumanEscalation = records.length === 0;
@@ -219,6 +251,130 @@ export async function crawlMunicipalEndpoint(params: SearchQueryParams): Promise
       : undefined,
     detectedVendorPlatform: detectedPlatform
   };
+}
+
+// -------------------------------------------------------------
+// SUBSTANTIVE MEETING CONTENT EXTRACTION
+// -------------------------------------------------------------
+
+async function fetchMeetingSubstantiveContent(
+  webLink: string,
+  baseUrl: string
+): Promise<{
+  agendaItems: AgendaItemDetail[];
+  fullText: string;
+  enhancedSummary?: string;
+  enhancedExcerpt?: string;
+}> {
+  try {
+    if (!webLink || webLink === baseUrl || !webLink.startsWith('http')) {
+      return { agendaItems: [], fullText: '' };
+    }
+
+    const res = await fetch(webLink, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache'
+      },
+      signal: AbortSignal.timeout(6000)
+    });
+
+    if (!res.ok) return { agendaItems: [], fullText: '' };
+
+    const html = await res.text();
+    const agendaItems: AgendaItemDetail[] = [];
+
+    // Parse IQM2 Detail_Meeting.aspx table rows
+    const allTrs = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+    const titleTrs = allTrs.filter(tr => tr[1].includes('class="Title"') || tr[1].includes("class='Title'"));
+
+    for (const tr of titleTrs) {
+      const raw = tr[1];
+      const tds = [...raw.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)]
+        .map(td => td[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+
+      const title = tds[tds.length - 1] || '';
+      const lower = title.toLowerCase();
+
+      // Skip non-agenda header rows
+      if (
+        title.length > 4 &&
+        !lower.includes('downloads:') &&
+        !lower.includes('agenda item printout') &&
+        !lower.includes('agenda packet') &&
+        !lower.includes('welcome') &&
+        !lower.includes('possible quorum')
+      ) {
+        // Extract any attached documents in this row
+        const linkMatches = [...raw.matchAll(/<a\s+href=['"]([^'"]+)['"][^>]*>([^<]+)<\/a>/gi)];
+        const attachments: { label: string; url: string }[] = [];
+
+        for (const lm of linkMatches) {
+          const lHref = lm[1];
+          const lText = lm[2].trim();
+          if (
+            lText.length > 2 &&
+            !lText.toLowerCase().includes('web agenda') &&
+            !lText.toLowerCase().includes('agenda item printout')
+          ) {
+            try {
+              attachments.push({
+                label: lText,
+                url: new URL(lHref, baseUrl).href
+              });
+            } catch {
+              attachments.push({ label: lText, url: lHref });
+            }
+          }
+        }
+
+        // Determine item number if available in previous column
+        const itemNumber = tds.length > 1 && tds[tds.length - 2].length < 12 
+          ? tds[tds.length - 2] 
+          : undefined;
+
+        agendaItems.push({
+          itemNumber,
+          title,
+          attachments: attachments.length > 0 ? attachments : undefined
+        });
+      }
+    }
+
+    // Deduplicate items by title
+    const uniqueItems = agendaItems.filter((item, index, self) =>
+      index === self.findIndex(t => t.title.toLowerCase() === item.title.toLowerCase())
+    );
+
+    let enhancedSummary: string | undefined = undefined;
+    let enhancedExcerpt: string | undefined = undefined;
+
+    if (uniqueItems.length > 0) {
+      const topItemsStr = uniqueItems
+        .slice(0, 4)
+        .map((it, idx) => `${it.itemNumber ? `${it.itemNumber} ` : `${idx + 1}. `}${it.title}`)
+        .join('; ');
+
+      enhancedSummary = `Official Agenda Proceedings (${uniqueItems.length} Total Docket Items): ${topItemsStr}${uniqueItems.length > 4 ? ` (+${uniqueItems.length - 4} additional items)` : ''}.`;
+      enhancedExcerpt = `Docket of Public Action Items:\n` + uniqueItems.slice(0, 6).map((it, idx) => `• [Item ${it.itemNumber || idx + 1}] ${it.title}${it.attachments ? ` (Attached: ${it.attachments.map(a => a.label).join(', ')})` : ''}`).join('\n');
+    }
+
+    const fullText = uniqueItems
+      .map((it, idx) => `${it.itemNumber ? `${it.itemNumber}. ` : `${idx + 1}. `}${it.title}`)
+      .join('\n');
+
+    return {
+      agendaItems: uniqueItems,
+      fullText,
+      enhancedSummary,
+      enhancedExcerpt
+    };
+  } catch {
+    return { agendaItems: [], fullText: '' };
+  }
 }
 
 // -------------------------------------------------------------

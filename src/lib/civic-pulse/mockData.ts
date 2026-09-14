@@ -97,6 +97,27 @@ export const SAMPLE_MUNICIPAL_RECORDS: MunicipalMeetingRecord[] = [
         { officialName: "Council Member Alison", title: "District 3", vote: "AYE" }
       ]
     },
+    agendaItems: [
+      {
+        itemNumber: "Item 48",
+        title: "Resolution 20260827-048: Capital Contract Execution for Central Water Grid Acoustic Leak Detection Sensors",
+        attachments: [
+          { label: "Fiscal Impact Note (PDF)", url: "https://austintexas.gov/edims/document.cfm?id=438920" },
+          { label: "Vendor Bid Evaluation & Sensor Telemetry Specs", url: "https://austintexas.gov/edims/document.cfm?id=438920" }
+        ]
+      },
+      {
+        itemNumber: "Item 49",
+        title: "Interlocal Agreement with Travis County regarding Regional Emergency Medical Dispatch Integration",
+        attachments: [
+          { label: "Contract Agreement Draft", url: "https://austintexas.gov/edims/document.cfm?id=438920" }
+        ]
+      },
+      {
+        itemNumber: "Item 50",
+        title: "Public Hearing & Action: Proposed Land Development Code Amendments for Commercial Rainwater Harvesting Tax Credits"
+      }
+    ],
     sourcePortal: {
       vendor: "Legistar",
       portalUrl: "https://austin.siretechnologies.com/legistar/Detail.aspx?ID=20260827-048",

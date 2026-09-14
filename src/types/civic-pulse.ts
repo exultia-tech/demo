@@ -13,6 +13,14 @@ export interface RollCallVote {
   vote: 'AYE' | 'NAY' | 'ABSTAIN' | 'ABSENT';
 }
 
+export interface AgendaItemDetail {
+  itemNumber?: string;
+  title: string;
+  category?: string;
+  actionTaken?: string;
+  attachments?: { label: string; url: string }[];
+}
+
 export interface MunicipalMeetingRecord {
   id: string;
   city: string;
@@ -24,6 +32,8 @@ export interface MunicipalMeetingRecord {
   itemNumber: string; // e.g. "Item 42", "Resolution 2026-0814"
   summary: string;
   outcome: 'PASSED' | 'FAILED' | 'TABLED' | 'AMENDED' | 'PUBLIC_COMMENT' | 'AGENDA_POSTED' | 'MINUTES_APPROVED';
+  agendaItems?: AgendaItemDetail[];
+  fullProceedingsText?: string;
   voteTally?: {
     ayes: number;
     nays: number;
