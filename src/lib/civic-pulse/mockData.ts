@@ -118,6 +118,39 @@ export const SAMPLE_MUNICIPAL_RECORDS: MunicipalMeetingRecord[] = [
         title: "Public Hearing & Action: Proposed Land Development Code Amendments for Commercial Rainwater Harvesting Tax Credits"
       }
     ],
+    formattedMinutes: {
+      sessionType: "Regular City Council Session",
+      presidingOfficer: "Mayor Kirk Watson",
+      rollCallAttendance: {
+        officialsPresent: ["Mayor Watson", "CM Alter", "CM Fuentes", "CM Vela", "CM Pool", "CM Ellis", "CM Qadri", "CM Harper-Madison", "CM Alison"],
+        officialsAbsent: ["CM Kelly (Excused)", "CM Ryan (Excused)"]
+      },
+      executiveSummary: {
+        keyActions: [
+          "Approved $14,200,000 capital contract for real-time acoustic leak detection sensors across central water grid.",
+          "Authorized Interlocal Agreement with Travis County for regional emergency dispatch telemetry.",
+          "Conducted public hearing on commercial rainwater harvesting tax credit amendments."
+        ],
+        financialAuthorizations: [
+          "$14,200,000 — Central municipal water grid acoustic sensor installation contract"
+        ],
+        ordinancesEnacted: [
+          "Resolution No. 20260827-048 (Acoustic Telemetry Capital Expenditure)"
+        ]
+      },
+      proceduralTimeline: [
+        { phase: "Call to Order", title: "Call to Order & Roll Call", actionTaken: "Quorum Certified by Clerk (9 Present, 2 Absent)" },
+        { phase: "Ceremonial", title: "Pledge of Allegiance & National Water Quality Week Proclamation", actionTaken: "Proclamation Issued" },
+        { phase: "Regular Agenda", title: "Item 48: Resolution 20260827-048 ($14.2M Capital Sensor Contract)", description: "Authorized execution of $14.2M contract with FluidTech Telemetry. Quarterly reporting mandated.", actionTaken: "Passed 9-2", financialAmount: "$14,200,000", vote: { ayes: 9, nays: 2, status: "Passed" } },
+        { phase: "Public Hearing", title: "Public Hearing: Proposed Amendments to Commercial Rainwater Harvesting Credits", description: "Four registered citizens addressed council on commercial incentive thresholds.", actionTaken: "Hearing Concluded" },
+        { phase: "Adjournment", title: "Formal Adjournment of City Council", actionTaken: "Meeting Adjourned at 8:45 PM" }
+      ],
+      publicCommentPeriod: {
+        summary: "Citizen testimony presented regarding utility ratepayer impact and contractor telemetry disclosure rules.",
+        topicsCovered: ["Water Infrastructure", "Contractor Disclosures", "Rainwater Harvesting"]
+      },
+      markdownTranscript: `# Official Journal of Austin City Council Proceedings\n**Date:** August 27, 2026\n\n## Executive Summary\n- Authorized $14,200,000 for advanced acoustic water grid sensors.\n- Motion carried 9-2.\n\n## Procedural Chronology\n1. **Call to Order:** Quorum established.\n2. **Item 48:** Resolution 20260827-048 approved ($14,200,000).`
+    },
     sourcePortal: {
       vendor: "Legistar",
       portalUrl: "https://austin.siretechnologies.com/legistar/Detail.aspx?ID=20260827-048",

@@ -1,5 +1,6 @@
 import { MunicipalMeetingRecord, MunicipalDocumentType, RetrievalStep, AgendaItemDetail } from '@/types/civic-pulse';
 import { SearchQueryParams, AgentQueryResult } from './agentEngine';
+import { formatAndTranscribeMinutes } from './minutesFormatter';
 
 interface LiveParsedItem {
   id: string;
@@ -206,6 +207,18 @@ export async function crawlMunicipalEndpoint(params: SearchQueryParams): Promise
       summary: item.enhancedSummary || item.summary,
       outcome: item.outcome,
       agendaItems: item.agendaItems && item.agendaItems.length > 0 ? item.agendaItems : undefined,
+      formattedMinutes: formatAndTranscribeMinutes({
+        city: inferredCity,
+        state: inferredState,
+        governingBody: item.governingBody,
+        meetingDate: item.meetingDate,
+        title: item.title,
+        summary: item.enhancedSummary || item.summary,
+        rawItems: item.agendaItems || [],
+        outcome: item.outcome,
+        directPdfUrl: item.downloadLink || item.webLink || targetUrl,
+        portalUrl: item.webLink || targetUrl
+      }),
       fullProceedingsText: item.fullProceedingsText || undefined,
       voteTally: item.outcome === 'MINUTES_APPROVED' || item.outcome === 'PASSED'
         ? {

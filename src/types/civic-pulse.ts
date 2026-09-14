@@ -21,6 +21,42 @@ export interface AgendaItemDetail {
   attachments?: { label: string; url: string }[];
 }
 
+export interface ProceduralPhaseItem {
+  phase: 'Call to Order' | 'Ceremonial' | 'Public Hearing' | 'Consent Agenda' | 'Regular Agenda' | 'Executive Session' | 'Adjournment';
+  title: string;
+  description?: string;
+  actionTaken?: string;
+  financialAmount?: string;
+  attachments?: { label: string; url: string }[];
+  vote?: { ayes: number; nays: number; status: 'Passed' | 'Failed' | 'Tabled' };
+}
+
+export interface FormattedMinutes {
+  sessionType: string;
+  presidingOfficer?: string;
+  rollCallAttendance?: {
+    officialsPresent: string[];
+    officialsAbsent?: string[];
+  };
+  executiveSummary: {
+    keyActions: string[];
+    financialAuthorizations?: string[];
+    ordinancesEnacted?: string[];
+    appointmentsConfirmed?: string[];
+    variancesConsidered?: string[];
+  };
+  proceduralTimeline: ProceduralPhaseItem[];
+  publicCommentPeriod?: {
+    summary: string;
+    topicsCovered: string[];
+  };
+  markdownTranscript: string;
+  clerkAttestation?: {
+    clerkName: string;
+    certifiedAt: string;
+  };
+}
+
 export interface MunicipalMeetingRecord {
   id: string;
   city: string;
@@ -33,6 +69,7 @@ export interface MunicipalMeetingRecord {
   summary: string;
   outcome: 'PASSED' | 'FAILED' | 'TABLED' | 'AMENDED' | 'PUBLIC_COMMENT' | 'AGENDA_POSTED' | 'MINUTES_APPROVED';
   agendaItems?: AgendaItemDetail[];
+  formattedMinutes?: FormattedMinutes;
   fullProceedingsText?: string;
   voteTally?: {
     ayes: number;
