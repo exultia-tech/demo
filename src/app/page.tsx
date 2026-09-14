@@ -239,6 +239,71 @@ export default function HomePage() {
           </div>
 
         </div>
+
+        {/* EXPERIMENTAL GOVERNANCE FRAMEWORKS CALLOUT BANNER */}
+        <div style={{
+          marginTop: "3.5rem",
+          background: "linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.95) 100%)",
+          border: "1px solid rgba(59, 130, 246, 0.3)",
+          borderRadius: "18px",
+          padding: "2.5rem",
+          boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.15)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "2rem"
+        }}>
+          <div style={{ maxWidth: "720px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "6px", padding: "3px 10px", marginBottom: "0.75rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "#60A5FA", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Exultia Standards Lab
+              </span>
+            </div>
+            <h3 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+              Experimental Governance Frameworks
+            </h3>
+            <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>
+              Vendor-agnostic baseline standards and physical safety engineering for civic technology. Explore <strong>ALPR-CSF v1.0</strong>—the 8-pillar control framework covering Flock/Vigilant cameras, AASHTO MASH breakaway crash testing, 30-day auto-purge caps, and DPPA statutory firewalls.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            <Link 
+              href="/governance/alpr-csf"
+              className="btn-primary" 
+              style={{
+                textDecoration: "none",
+                padding: "0.85rem 1.6rem",
+                fontSize: "0.92rem",
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)",
+                boxShadow: "0 0 15px rgba(59, 130, 246, 0.35)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px"
+              }}>
+              <span>View ALPR-CSF Spec →</span>
+            </Link>
+            <Link 
+              href="/governance"
+              style={{
+                textDecoration: "none",
+                padding: "0.85rem 1.4rem",
+                fontSize: "0.92rem",
+                fontWeight: 600,
+                color: "#E2E8F0",
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: "8px",
+                display: "inline-flex",
+                alignItems: "center"
+              }}>
+              <span>All Frameworks</span>
+            </Link>
+          </div>
+        </div>
+
       </section>
     </div>
   );

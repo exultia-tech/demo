@@ -33,8 +33,12 @@ export default function Navbar() {
     pathname.startsWith("/civicpulse") || 
     pathname.startsWith("/products/civicpulse");
 
-  // The horizontal subnav only appears once a user visits a product page
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext;
+  const isGovernanceContext = 
+    pathname.startsWith("/governance") || 
+    pathname.startsWith("/frameworks");
+
+  // The horizontal subnav only appears once a user visits a product or governance page
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext || isGovernanceContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -236,6 +240,9 @@ export default function Navbar() {
             )}
           </div>
 
+          <Link href="/governance" className={`nav-link ${pathname.startsWith("/governance") || pathname.startsWith("/frameworks") ? "active" : ""}`}>
+            Governance
+          </Link>
           <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
             About
           </Link>
@@ -386,6 +393,39 @@ export default function Navbar() {
                 href="/products/civic-pulse#interactive-terminal" 
                 className="submenu-link">
                 Query Portals
+              </a>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 5: GOVERNANCE FRAMEWORKS SUBMENU */}
+          {isGovernanceContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Governance
+              </span>
+
+              <Link 
+                href="/governance" 
+                className={`submenu-link ${pathname === "/governance" || pathname === "/frameworks" ? "active-blue" : ""}`}
+                style={{ color: pathname === "/governance" ? "#60A5FA" : undefined }}>
+                Frameworks Hub
+              </Link>
+              <Link 
+                href="/governance/alpr-csf" 
+                className={`submenu-link ${pathname === "/governance/alpr-csf" || pathname === "/frameworks/alpr-csf" ? "active-blue" : ""}`}
+                style={{ color: pathname === "/governance/alpr-csf" ? "#60A5FA" : undefined }}>
+                ALPR-CSF Standard
+              </Link>
+              <a 
+                href="/governance/alpr-csf#cross-walk-matrix" 
+                className="submenu-link">
+                NIST / CJIS Matrix
+              </a>
+              <a 
+                href="/governance/alpr-csf#compliance-assessment" 
+                className="submenu-link">
+                Audit Self-Assessment
               </a>
             </div>
           )}
