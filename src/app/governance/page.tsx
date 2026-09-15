@@ -21,8 +21,8 @@ import { ALPR_CSF_FRAMEWORK } from '@/lib/governance/alprFrameworkData';
 import { RAIJ_CSF_FRAMEWORK } from '@/lib/governance/raijFrameworkData';
 
 export const metadata = {
-  title: 'Experimental Governance Frameworks | Exultia',
-  description: 'Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering for civic technology, surveillance, and responsible AI.',
+  title: 'Open Security & Governance Frameworks | Exultia',
+  description: 'Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering across enterprise campuses, logistics, critical infrastructure, and public environments.',
 };
 
 export default function GovernanceHubPage() {
@@ -42,7 +42,7 @@ export default function GovernanceHubPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '20px', background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.3)', marginBottom: '1.5rem' }}>
             <Sparkles size={14} color="#60A5FA" />
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#93C5FD', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-              Civic Technology Standards Lab
+              Open Security & Governance Standards Lab
             </span>
           </div>
 
@@ -56,17 +56,17 @@ export default function GovernanceHubPage() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            Experimental Governance Frameworks
+            Open Security & Governance Frameworks
           </h1>
 
           <p style={{
             fontSize: '1.15rem',
             lineHeight: '1.65',
             color: '#94A3B8',
-            maxWidth: '760px',
+            maxWidth: '780px',
             margin: '0 auto 2rem auto'
           }}>
-            Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering guidelines developed to govern emerging municipal surveillance, AI sensors, and civic technologies before federal standards exist.
+            Vendor-agnostic baseline standards, technical control frameworks, and physical safety engineering guidelines developed to govern vehicular surveillance sensors, agentic AI models, and critical infrastructure across enterprise, campus, logistics, and public sector environments.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
@@ -175,7 +175,7 @@ export default function GovernanceHubPage() {
             Flagship Governance Framework
           </h2>
           <p style={{ color: '#94A3B8', maxWidth: '750px', fontSize: '0.98rem' }}>
-            The primary control standard ready for adoption by City Councils, Police Commissions, and Municipal IT Directors.
+            Baseline standards ready for adoption by enterprise security directors, corporate campus managers, infrastructure operators, and public agencies.
           </p>
         </div>
 
@@ -230,7 +230,7 @@ export default function GovernanceHubPage() {
             </div>
 
             <div style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
-              Applies to: <strong style={{ color: '#E2E8F0' }}>Flock Safety, Motorola/Vigilant, Rekor, Genetec</strong>
+              Applies to: <strong style={{ color: '#E2E8F0' }}>Flock Safety, Motorola/Vigilant, Rekor, Genetec AutoVu, Axis, Open-Source & Custom Models</strong>
             </div>
           </div>
 
@@ -240,7 +240,7 @@ export default function GovernanceHubPage() {
           </h3>
 
           <p style={{ fontSize: '1rem', color: '#CBD5E1', lineHeight: '1.65', maxWidth: '950px', marginBottom: '2rem' }}>
-            The definitive open baseline standard for municipal license plate readers. Spanning 8 architecture pillars—from mandatory CAD incident justification, 30-day auto-purge caps, and non-transitive mutual aid sharing, to AASHTO MASH-16 roadway clear-zone crash engineering and Driver’s Privacy Protection Act (DPPA) statutory firewalls.
+            The definitive open baseline standard for automated license plate recognition and vehicular monitoring systems. Spanning 8 architecture pillars—from mandatory incident justification, 30-day auto-purge caps, and non-transitive sharing firewalls, to AASHTO MASH-16 roadway clear-zone crash engineering and Driver’s Privacy Protection Act (DPPA) statutory safeguards across enterprise campuses, logistics depots, and public roadways.
           </p>
 
           {/* 8 PILLARS PREVIEW GRID */}
@@ -396,7 +396,7 @@ export default function GovernanceHubPage() {
             </div>
 
             <div style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
-              Applies to: <strong style={{ color: '#E2E8F0' }}>Municipal LLMs, Agentic Tools, Benefits Scoring, Judicial Risk</strong>
+              Applies to: <strong style={{ color: '#E2E8F0' }}>Enterprise LLMs, Autonomous Agents, Underwriting Engines, Frontier APIs, On-Prem Models</strong>
             </div>
           </div>
 
@@ -406,7 +406,7 @@ export default function GovernanceHubPage() {
           </h3>
 
           <p style={{ fontSize: '1rem', color: '#CBD5E1', lineHeight: '1.65', maxWidth: '950px', marginBottom: '2rem' }}>
-            The baseline standard for municipal and civic artificial intelligence. Spanning 8 architecture pillars—from mandatory algorithmic due process and human-in-the-loop gates, cryptographic checkpoint signatures, and AIBOM supply chain disclosures, to prompt injection semantic firewalls, differential privacy bounds, and Title VII four-fifths disparate impact audits.
+            The open baseline standard for responsible artificial intelligence and autonomous agent governance. Spanning 8 architecture pillars—from mandatory algorithmic due process and human-in-the-loop gates, cryptographic checkpoint signatures, and AIBOM supply chain disclosures, to prompt injection semantic firewalls, differential privacy bounds, and Title VII four-fifths disparate impact audits across commercial platforms and public sector enclaves.
           </p>
 
           {/* 8 PILLARS PREVIEW GRID */}
@@ -551,15 +551,15 @@ export default function GovernanceHubPage() {
                 </span>
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                Municipal Drone & Aerial Systems (UAS-CSF)
+                Autonomous Aerial & Drone Systems Baseline (UAS-CSF)
               </h3>
               <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: '1.6' }}>
-                Airspace governance, pre-programmed flight path bounds, sensor resolution ceilings over residential curtilage, and mandatory real-time public telemetry broadcast.
+                Airspace governance, pre-programmed geo-fenced flight bounds, sensor resolution ceilings over sensitive facilities, and mandatory real-time operational telemetry broadcast.
               </p>
             </div>
 
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1rem', marginTop: '1.5rem', fontSize: '0.78rem', color: '#64748B' }}>
-              Target Review: Q4 2026 • Scope: First Responder Drone Deployments
+              Target Review: Q4 2026 • Scope: Enterprise Campus, Logistics & Public Safety UAS Deployments
             </div>
           </div>
 
@@ -583,15 +583,15 @@ export default function GovernanceHubPage() {
                 </span>
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                Public Computer Vision & Biometrics Baseline
+                Computer Vision & Visual Biometrics Baseline
               </h3>
               <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: '1.6' }}>
-                Ban on ambient 1:N real-time facial identification in public squares, demographic bias rate thresholds, algorithmic drift auditing, and video redaction for open records.
+                Ban on unconsented ambient 1:N real-time facial identification, demographic bias rate thresholds, algorithmic drift auditing, and video redaction boundaries.
               </p>
             </div>
 
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1rem', marginTop: '1.5rem', fontSize: '0.78rem', color: '#64748B' }}>
-              Target Review: Q1 2027 • Scope: Real-Time Crime Centers (RTCC)
+              Target Review: Q1 2027 • Scope: Corporate Facilities, Transit Hubs, Industrial Depots & Security Enclaves
             </div>
           </div>
 
@@ -615,15 +615,15 @@ export default function GovernanceHubPage() {
                 </span>
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                Municipal IoT & Sensor Enclave Security
+                Industrial IoT, SCADA & Sensor Enclave Security
               </h3>
               <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: '1.6' }}>
-                Zero-trust hardware authentication, mutual TLS micro-segmentation for municipal SCADA/water systems, and firmware attestation against supply-chain tampering.
+                Zero-trust hardware authentication, mutual TLS micro-segmentation for industrial SCADA/water/energy telemetry, and firmware attestation against supply-chain tampering.
               </p>
             </div>
 
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1rem', marginTop: '1.5rem', fontSize: '0.78rem', color: '#64748B' }}>
-              Target Review: Q2 2027 • Scope: Smart City IoT & Water Telemetry
+              Target Review: Q2 2027 • Scope: Manufacturing, Energy Grids, Data Centers & Critical Infrastructure
             </div>
           </div>
 
@@ -641,7 +641,7 @@ export default function GovernanceHubPage() {
             The Four Tenets of Exultia Governance Architecture
           </h3>
           <p style={{ color: '#94A3B8', maxWidth: '700px', margin: '0 auto 2rem auto', fontSize: '0.92rem' }}>
-            Every framework published under Exultia is built to withstand federal constitutional scrutiny, physical roadway hazards, and statutory public accountability.
+            Every framework published under Exultia is built to withstand rigorous adversarial testing, physical hazard engineering, and statutory legal compliance across commercial and public deployments.
           </p>
 
           <div style={{
@@ -654,12 +654,12 @@ export default function GovernanceHubPage() {
               {
                 icon: ShieldCheck,
                 title: 'Vendor-Agnostic Openness',
-                desc: '100% municipal data ownership. Strict bans on vendor data pooling, cross-customer AI model training, and private resale of civic telemetry.'
+                desc: '100% customer data sovereignty. Strict bans on vendor data pooling, unauthorized cross-customer AI model training, and commercial telemetry resale.'
               },
               {
                 icon: Scale,
-                title: 'Constitutional Grounding',
-                desc: 'Direct integration with 18 U.S.C. § 2721 (DPPA), Fourth Amendment geofencing limits, state purge mandates, and non-transitive sharing firewalls.'
+                title: 'Statutory & Due Process Grounding',
+                desc: 'Direct integration with 18 U.S.C. § 2721 (DPPA), privacy protections, strict purge mandates, and non-transitive sharing firewalls.'
               },
               {
                 icon: AlertTriangle,

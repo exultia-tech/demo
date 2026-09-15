@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const pathname = usePathname();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
+  const [isFoiaMenuOpen, setIsFoiaMenuOpen] = useState(false);
 
   // Determine current active product context
   const isSecureIdeContext = 
@@ -37,7 +38,7 @@ export default function Navbar() {
     pathname.startsWith("/governance") || 
     pathname.startsWith("/frameworks");
 
-  // The horizontal subnav only appears once a user visits a product or governance page
+  // The horizontal subnav only appears once a user visits a product, tool, or governance page
   const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext || isGovernanceContext;
 
   return (
@@ -89,7 +90,7 @@ export default function Navbar() {
 
         {/* CENTER COLUMN: NAV LINKS (Centered in the viewport) */}
         <nav className="nav-links" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
-          {/* PRODUCTS DROPDOWN */}
+          {/* PRODUCTS DROPDOWN: CORE INFRASTRUCTURE PLATFORMS */}
           <div 
             style={{ position: "relative" }}
             onMouseEnter={() => setIsProductsOpen(true)}
@@ -97,7 +98,7 @@ export default function Navbar() {
           >
             <button 
               type="button"
-              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext ? "active" : ""}`}
+              className={`nav-link ${isSecureIdeContext || isThreatFeedContext ? "active" : ""}`}
               style={{
                 background: "transparent",
                 border: "none",
@@ -119,7 +120,7 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* FLYOUT MENU (Centered below Products button) */}
+            {/* FLYOUT MENU: CORE PLATFORMS */}
             {isProductsOpen && (
               <div 
                 style={{
@@ -140,6 +141,10 @@ export default function Navbar() {
                   padding: "8px",
                   boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2)"
                 }}>
+                  <div style={{ padding: "6px 12px 4px 12px", fontSize: "0.68rem", fontWeight: 800, color: "#60A5FA", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    Core Infrastructure Platforms
+                  </div>
+
                   <Link 
                     href="/products/pure-ide" 
                     onClick={() => setIsProductsOpen(false)}
@@ -187,10 +192,69 @@ export default function Navbar() {
                       <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>55 synchronized public intelligence feeds</div>
                     </div>
                   </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* STANDALONE FOIA & TOOLS DROPDOWN */}
+          <div 
+            style={{ position: "relative" }}
+            onMouseEnter={() => setIsFoiaMenuOpen(true)}
+            onMouseLeave={() => setIsFoiaMenuOpen(false)}
+          >
+            <button 
+              type="button"
+              className={`nav-link ${isFoiaContext || isCivicPulseContext ? "active" : ""}`}
+              style={{
+                background: "transparent",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                fontSize: "0.95rem",
+                fontWeight: 500,
+                padding: "6px 10px",
+                borderRadius: "8px"
+              }}
+              onClick={() => setIsFoiaMenuOpen(!isFoiaMenuOpen)}
+            >
+              <span>FOIA Tools</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isFoiaMenuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}>
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            {/* FLYOUT MENU: STANDALONE UTILITIES */}
+            {isFoiaMenuOpen && (
+              <div 
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "350px",
+                  paddingTop: "8px",
+                  zIndex: 150
+                }}
+              >
+                <div style={{
+                  background: "rgba(10, 15, 26, 0.98)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  borderRadius: "14px",
+                  padding: "8px",
+                  boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.2)"
+                }}>
+                  <div style={{ padding: "6px 12px 4px 12px", fontSize: "0.68rem", fontWeight: 800, color: "#06B6D4", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    Standalone Public & Civic Utilities
+                  </div>
 
                   <Link 
                     href="/products/inquest" 
-                    onClick={() => setIsProductsOpen(false)}
+                    onClick={() => setIsFoiaMenuOpen(false)}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
@@ -214,7 +278,7 @@ export default function Navbar() {
 
                   <Link 
                     href="/products/civic-pulse" 
-                    onClick={() => setIsProductsOpen(false)}
+                    onClick={() => setIsFoiaMenuOpen(false)}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
@@ -333,7 +397,7 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Inquest
+                Standalone Tool: Inquest
               </span>
 
               <Link 
@@ -374,7 +438,7 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
-                CivicPulse
+                Standalone Tool: CivicPulse
               </span>
 
               <Link 
@@ -402,7 +466,7 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Governance
+                Open Standards
               </span>
 
               <Link 

@@ -29,18 +29,19 @@ export default function Footer() {
           </div>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", maxWidth: "300px" }}>
-            High-assurance deterministic infrastructure for zero-trust software engineering, global threat intelligence, and statutory public accountability.
+            High-assurance deterministic infrastructure for zero-trust developer workstations, global cyber threat intelligence, and open governance standards.
           </p>
 
           <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
             <span className="github-badge">✓ 100% Deterministic</span>
             <span className="github-badge">✓ Zero Ambient Telemetry</span>
-            <span className="github-badge">✓ 50-State Statutory</span>
+            <span className="github-badge">✓ Vendor-Agnostic</span>
           </div>
         </div>
 
-        {/* COLUMN 1: PRODUCTS */}
+        {/* COLUMN 1: CORE PLATFORMS - PUREIDE */}
         <div className="footer-col">
+          <div style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Core Platform</div>
           <h4>PureIDE</h4>
           <ul>
             <li><Link href="/products/pure-ide">Product Overview</Link></li>
@@ -51,8 +52,9 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* COLUMN 2: CYBER & THREAT INTEL */}
+        {/* COLUMN 2: CORE PLATFORMS - THREAT INTEL */}
         <div className="footer-col">
+          <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
           <h4>UVI Threat Feed</h4>
           <ul>
             <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
@@ -63,39 +65,30 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* COLUMN 3: CIVIC & FOIA INTELLIGENCE */}
+        {/* COLUMN 3: STANDALONE FOIA & CIVIC UTILITIES */}
         <div className="footer-col">
-          <h4>Inquest</h4>
+          <div style={{ fontSize: "0.72rem", color: "#06B6D4", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Standalone Utility</div>
+          <h4>Inquest FOIA</h4>
           <ul>
-            <li><Link href="/products/inquest">Product Overview</Link></li>
-            <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
+            <li><Link href="/products/inquest">Utility Overview</Link></li>
+            <li><Link href="/products/inquest/pricing">Access & Subscriptions</Link></li>
             <li><Link href="/inquest">Request Wizard</Link></li>
             <li><Link href="/inquest?tab=agencies">50-State Agency Directory</Link></li>
-            <li><Link href="/inquest?tab=analyzer">Exemption & Denial Analyzer</Link></li>
-            <li><Link href="/about">The Exultia Standard</Link></li>
+            <li><Link href="/inquest?tab=analyzer">Denial & Exemption Analyzer</Link></li>
+            <li><Link href="/products/civic-pulse">CivicPulse Terminal</Link></li>
           </ul>
         </div>
 
-        {/* COLUMN 4: MUNICIPAL INTELLIGENCE */}
+        {/* COLUMN 4: OPEN GOVERNANCE STANDARDS */}
         <div className="footer-col">
-          <h4>CivicPulse</h4>
-          <ul>
-            <li><Link href="/products/civic-pulse">Product Overview</Link></li>
-            <li><Link href="/civic-pulse">Terminal Workspace</Link></li>
-            <li><a href="/products/civic-pulse#interactive-terminal">Query Portals</a></li>
-            <li><Link href="/about">Civic Desk Guarantee</Link></li>
-          </ul>
-        </div>
-
-        {/* COLUMN 5: GOVERNANCE STANDARDS */}
-        <div className="footer-col">
-          <h4>Governance</h4>
+          <div style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Standards Lab</div>
+          <h4>Governance Standards</h4>
           <ul>
             <li><Link href="/governance">Frameworks Hub</Link></li>
-            <li><Link href="/governance/alpr-csf">ALPR-CSF (Surveillance)</Link></li>
-            <li><Link href="/governance/raij-csf">RAIJ-CSF (Responsible AI)</Link></li>
-            <li><Link href="/governance/raij-csf#ai-cross-walk-matrix">NIST / ISO / OMB Matrix</Link></li>
-            <li><Link href="/governance/raij-csf#ai-compliance-assessment">AI Safety Audit Tool</Link></li>
+            <li><Link href="/governance/alpr-csf">ALPR-CSF (Surveillance Standard)</Link></li>
+            <li><Link href="/governance/raij-csf">RAIJ-CSF (Responsible AI Standard)</Link></li>
+            <li><Link href="/governance/raij-csf#ai-cross-walk-matrix">NIST / ISO / OMB Cross-Walks</Link></li>
+            <li><Link href="/governance/raij-csf#ai-compliance-assessment">Interactive Compliance Audits</Link></li>
           </ul>
         </div>
 

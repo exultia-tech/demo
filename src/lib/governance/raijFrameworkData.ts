@@ -12,7 +12,7 @@ export const RAIJ_PILLARS: FrameworkPillar[] = [
     number: 1,
     name: 'Algorithmic Due Process & Explainability',
     shortName: 'Due Process',
-    description: 'Right to explanation, contestability, anti-blackbox mandates, and human-in-the-loop (HITL) overrides for civic decisions.',
+    description: 'Right to explanation, contestability, anti-blackbox mandates, and human-in-the-loop (HITL) overrides for high-impact decisions.',
     color: '#3B82F6',
     accentBg: 'rgba(59, 130, 246, 0.12)',
     borderColor: 'rgba(59, 130, 246, 0.3)',
@@ -96,7 +96,7 @@ export const RAIJ_PILLARS: FrameworkPillar[] = [
     number: 8,
     name: 'Public Records, Model Registry & Transparency',
     shortName: 'Public Registry & FOIA',
-    description: 'Public Municipal AI Algorithm Registry, AI System Cards, FOIA readiness for prompt/decision logs, and proprietary weights exemption boundaries.',
+    description: 'Centralized AI Algorithm & System Registry, AI System Cards, regulatory audit readiness for prompt/decision logs, and proprietary weights exemption boundaries.',
     color: '#14B8A6',
     accentBg: 'rgba(20, 184, 166, 0.12)',
     borderColor: 'rgba(20, 184, 166, 0.3)',
@@ -112,10 +112,10 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'DP',
     title: 'Right to Meaningful Explanation & Adjudicative Contestability',
     requirementLevel: 'MUST',
-    statement: 'Any public algorithmic system affecting civil liberties, benefits eligibility, housing, child welfare, or criminal sentencing MUST output human-comprehensible, deterministic rationales identifying the decisive legal and factual factors.',
+    statement: 'Any algorithmic system affecting civil liberties, benefits eligibility, housing, employment, or legal determinations MUST output human-comprehensible, deterministic rationales identifying decisive factors.',
     detailedNotes: [
       'Explanations must state the specific input variables that would need to change for an adverse determination to be reversed (counterfactual explainability).',
-      'Proprietary machine-learning weights cannot be invoked by municipal agencies or vendors to evade statutory explanation obligations.'
+      'Proprietary machine-learning weights cannot be invoked by deploying entities or vendors to evade statutory explanation obligations.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (GOVERN 1.2, MAP 3.1)',
@@ -163,9 +163,9 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'DP',
     title: 'Adversarial Citizen Appeal & Rebuttal Protocol',
     requirementLevel: 'REQUIRED',
-    statement: 'Municipalities must provide affected individuals with a standardized, cost-free mechanism to appeal algorithmic decisions to an administrative law judge or civilian tribunal within 30 days of notification.',
+    statement: 'Deploying entities must provide affected individuals with a standardized, cost-free mechanism to appeal algorithmic decisions to an administrative law judge, independent tribunal, or human arbiter within 30 days of notification.',
     detailedNotes: [
-      'Upon filing an appeal, the full audit package (prompt, model version, feature inputs, and confidence intervals) must be provided to the citizen or public defender.',
+      'Upon filing an appeal, the full audit package (prompt, model version, feature inputs, and confidence intervals) must be provided to the individual or legal counsel.',
       'Tolling of statutory deadlines occurs automatically until the algorithmic audit file is certified and delivered.'
     ],
     crossWalk: {
@@ -182,9 +182,9 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'PS',
     title: 'Cryptographic Checkpoint Signing & Tamper Verification',
     requirementLevel: 'MUST',
-    statement: 'All model weights, LoRA adapters, and embedding matrices deployed in municipal infrastructure MUST be signed with cryptographic keys (Ed25519) and verified against public ledger checkpoint hashes prior to runtime initialization.',
+    statement: 'All model weights, LoRA adapters, and embedding matrices deployed in production infrastructure MUST be signed with cryptographic keys (Ed25519) and verified against authorized ledger checkpoint hashes prior to runtime initialization.',
     detailedNotes: [
-      'Execution runtimes must verify the SHA-256 weight hash against the municipal procurement registry; mismatched weights abort system boot.',
+      'Execution runtimes must verify the SHA-256 weight hash against the authorized model registry; mismatched weights abort system boot.',
       'Prevents post-procurement weight poisoning, silent vendor drift, and unauthorized backdoor insertion.'
     ],
     crossWalk: {
@@ -201,8 +201,8 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     requirementLevel: 'MANDATORY',
     statement: 'Vendors must deliver a machine-readable AI Software Bill of Materials (CycloneDX 1.5 or SPDX AI profile) detailing foundation model ancestry, pre-training dataset hashes, fine-tuning checkpoints, and third-party orchestration dependencies.',
     detailedNotes: [
-      'AIBOMs must be deposited in an escrow or public municipal software repository prior to contract execution.',
-      'Failure to disclose proprietary sub-model dependencies voids municipal liability indemnification clauses.'
+      'AIBOMs must be deposited in an escrow or certified software repository prior to contract execution.',
+      'Failure to disclose proprietary sub-model dependencies voids vendor liability indemnification clauses.'
     ],
     crossWalk: {
       nist: 'NIST SP 800-161 Rev. 1 / SA-12',
@@ -231,11 +231,11 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
   {
     id: 'PS-04',
     pillarCode: 'PS',
-    title: 'Open-Weights Sandboxing & Model Registry Mandate',
+    title: 'Model Registry Mandate & Isolated Runtime Sandboxing',
     requirementLevel: 'REQUIRED',
-    statement: 'Municipal agencies must maintain a centralized, version-controlled model registry cataloging every production AI artifact, deployment location, API endpoint, and containerized runtime sandbox.',
+    statement: 'Deploying organizations must maintain a centralized, version-controlled model registry cataloging every production AI artifact, deployment location, API endpoint, and containerized runtime sandbox.',
     detailedNotes: [
-      'No shadow AI models or unsanctioned external API endpoints may be connected to municipal databases or dispatch systems.',
+      'No shadow AI models or unsanctioned external API endpoints may be connected to production databases or operational systems.',
       'Open-weights models must be hosted in air-gapped or VPC-isolated enclaves with disabled ambient telemetry.'
     ],
     crossWalk: {
@@ -252,7 +252,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'DI',
     title: 'Training & Retrieval Corpus Sanitization',
     requirementLevel: 'MUST',
-    statement: 'Retrieval-Augmented Generation (RAG) vector stores and fine-tuning corpora containing municipal data MUST be cryptographically scrubbed of unredacted juvenile records, sealed criminal dockets, and PII before embedding generation.',
+    statement: 'Retrieval-Augmented Generation (RAG) vector stores and fine-tuning corpora containing sensitive data MUST be cryptographically scrubbed of unredacted juvenile records, sealed dockets, and PII before embedding generation.',
     detailedNotes: [
       'Automated PII detection pipelines must scan documents for SSNs, medical records, and domestic violence shelter addresses.',
       'Vector index updates must enforce immediate mathematical purging upon court-ordered expungements.'
@@ -286,9 +286,9 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'DI',
     title: 'Synthetic Data Degradation & Lineage Limits',
     requirementLevel: 'REQUIRED',
-    statement: 'The use of synthetic training data must be explicitly labeled, cataloged, and capped to prevent model collapse, synthetic data loops, and statistical bias reinforcement in municipal scoring engines.',
+    statement: 'The use of synthetic training data must be explicitly labeled, cataloged, and capped to prevent model collapse, synthetic data loops, and statistical bias reinforcement in decision engines.',
     detailedNotes: [
-      'Synthetic datasets must be validated against ground-truth empirical census and municipal benchmarks.',
+      'Synthetic datasets must be validated against ground-truth empirical baselines and certified benchmarks.',
       'Models trained primarily on recursive synthetic data are prohibited from high-stakes adjudicative use.'
     ],
     crossWalk: {
@@ -303,7 +303,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'DI',
     title: 'Anti-Poisoning & Out-of-Distribution Validation',
     requirementLevel: 'REQUIRED',
-    statement: 'Municipal RAG pipelines and continuous-learning pipelines must deploy out-of-distribution (OOD) anomaly filters to prevent adversarial data injection into municipal knowledge bases.',
+    statement: 'Production RAG pipelines and continuous-learning pipelines must deploy out-of-distribution (OOD) anomaly filters to prevent adversarial data injection into operational knowledge bases.',
     detailedNotes: [
       'Cryptographic hashing and digital signatures required for all external documents ingested into citizen-facing vector stores.',
       'Anomalous document clusters exceeding semantic distance thresholds must be quarantined for human review.'
@@ -356,10 +356,10 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'AR',
     title: 'Continuous Adversarial Red-Teaming & Stress Testing',
     requirementLevel: 'MANDATORY',
-    statement: 'Before deployment and semi-annually thereafter, municipal AI systems must undergo adversarial red-teaming conducted by certified independent third parties to probe for jailbreaks, policy violations, and civil rights harms.',
+    statement: 'Before deployment and semi-annually thereafter, production AI systems must undergo adversarial red-teaming conducted by certified independent third parties to probe for jailbreaks, policy violations, and safety harms.',
     detailedNotes: [
       'Red-team assessments must test for safety bypasses regarding hazardous materials, voter suppression, and unconstitutional search recommendations.',
-      'Executive summaries of red-team reports must be filed with the municipal oversight committee.'
+      'Executive summaries of red-team reports must be filed with the executive oversight committee.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (MEASURE 2.5, MANAGE 4.1)',
@@ -373,10 +373,10 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'AR',
     title: 'Hallucination Rate Upper Bounds & Faithfulness Auditing',
     requirementLevel: 'REQUIRED',
-    statement: 'Civic AI systems providing legal, tax, or statutory guidance must maintain a measured factual hallucination rate below 1.5% across standardized benchmark suites, with mandatory real-time grounding verification against official municipal codes.',
+    statement: 'High-assurance AI systems providing legal, tax, or statutory guidance must maintain a measured factual hallucination rate below 1.5% across standardized benchmark suites, with mandatory real-time grounding verification against certified statutes or regulations.',
     detailedNotes: [
-      'Responses must cite exact section numbers from certified municipal municipal codes or official statutes.',
-      'Un-grounded assertions must be filtered and replaced with a standard disclaimer referring the citizen to the municipal clerk.'
+      'Responses must cite exact section numbers from certified regulatory codes or official statutes.',
+      'Un-grounded assertions must be filtered and replaced with a standard disclaimer referring the user to qualified human review.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (MEASURE 2.1, MAP 1.4)',
@@ -392,7 +392,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'IA',
     title: 'Principle of Least Privilege for Autonomous Agents',
     requirementLevel: 'MUST',
-    statement: 'Autonomous AI agents MUST be provisioned with granular, role-scoped API tokens with read-only permissions by default. Write and delete permissions to municipal databases require explicit supervisor authorization.',
+    statement: 'Autonomous AI agents MUST be provisioned with granular, role-scoped API tokens with read-only permissions by default. Write and delete permissions to production databases require explicit supervisor authorization.',
     detailedNotes: [
       'Agents are prohibited from possessing superuser credentials or unrestricted database connection strings.',
       'Tool execution parameters must be restricted to pre-compiled allowlists matching current workflow needs.'
@@ -409,7 +409,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'IA',
     title: 'Strict Separation of User Prompt & System Instruction',
     requirementLevel: 'MANDATORY',
-    statement: 'Agentic architectures must physically separate system configuration instructions from untrusted citizen inputs using sandboxed context channels, preventing context bleeding or instruction contamination.',
+    statement: 'Agentic architectures must physically separate system configuration instructions from untrusted user inputs using sandboxed context channels, preventing context bleeding or instruction contamination.',
     detailedNotes: [
       'User-provided content cannot modify core behavioral guidelines or access authorization tokens.',
       'Instruction boundaries must be enforced at the runtime harness level rather than relying solely on LLM prompt obedience.'
@@ -462,9 +462,9 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'BA',
     title: 'Four-Fifths (80%) Rule Disparate Impact Threshold',
     requirementLevel: 'MUST',
-    statement: 'Municipal AI systems utilized for scoring, prioritization, or resource allocation MUST be tested for disparate impact across protected classes (race, gender, age, disability). A selection or approval rate for any protected group below four-fifths (80%) of the highest group constitutes actionable non-compliance.',
+    statement: 'AI systems utilized for scoring, employment, credit, prioritization, or resource allocation MUST be tested for disparate impact across protected classes (race, gender, age, disability). A selection or approval rate for any protected group below four-fifths (80%) of the highest group constitutes actionable non-compliance.',
     detailedNotes: [
-      'Testing must evaluate demographic parity, equalized odds, and predictive parity against official municipal demographic baselines.',
+      'Testing must evaluate demographic parity, equalized odds, and predictive parity against relevant demographic baselines.',
       'Systems failing the four-fifths rule must be immediately suspended from autonomous production use.'
     ],
     crossWalk: {
@@ -479,7 +479,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'BA',
     title: 'Pre-Deployment Demographic Parity Validation',
     requirementLevel: 'MANDATORY',
-    statement: 'Prior to municipal deployment, systems must pass synthetic demographic stress tests demonstrating consistent performance across diverse socio-economic, linguistic, and disability demographics.',
+    statement: 'Prior to operational deployment, systems must pass synthetic demographic stress tests demonstrating consistent performance across diverse socio-economic, linguistic, and disability demographics.',
     detailedNotes: [
       'Evaluation benchmarks must include non-standard dialects (e.g., AAVE), non-native English queries, and screen-reader accessibility inputs.',
       'Validation results must be signed by a qualified data ethics statistician.'
@@ -499,7 +499,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     statement: 'Production systems must feature automated statistical telemetry continuously tracking output distribution drift, false-positive rate divergence, and demographic classification disparities on a weekly rolling basis.',
     detailedNotes: [
       'Statistical drift exceeding 5% triggers automated administrative warnings and queues the system for human re-calibration.',
-      'Longitudinal trend charts must be made accessible to the municipal chief equity officer.'
+      'Longitudinal trend charts must be made accessible to compliance officers and governance auditors.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (MANAGE 4.2, MEASURE 2.4)',
@@ -511,12 +511,12 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
   {
     id: 'BA-04',
     pillarCode: 'BA',
-    title: 'Independent Civilian Bias & Disparity Audits',
+    title: 'Independent Algorithmic Bias & Disparity Audits',
     requirementLevel: 'MANDATORY',
-    statement: 'Annual independent algorithmic audits must be commissioned by the city council or civilian human rights commission, examining the live real-world outcomes of the deployed model on local residents.',
+    statement: 'Annual independent algorithmic audits must be commissioned by the board of directors, audit committee, or oversight body, examining the live real-world outcomes of the deployed model.',
     detailedNotes: [
       'Auditors must have full access to raw input logs, output scores, and ground-truth human adjudications.',
-      'Audit reports must be delivered directly to the city council in open public session without prior vendor censorship.'
+      'Audit reports must be delivered directly to the governing oversight body without prior vendor censorship.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (GOVERN 5.2, MANAGE 2.4)',
@@ -530,11 +530,11 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
   {
     id: 'LE-01',
     pillarCode: 'LE',
-    title: 'High-Risk Civic AI Classification & Tiering',
+    title: 'High-Risk AI System Classification & Tiering',
     requirementLevel: 'MUST',
-    statement: 'Municipal agencies must formally classify all algorithmic systems into statutory risk tiers aligned with the EU AI Act and White House OMB M-24-10. Systems affecting critical infrastructure, law enforcement, or statutory entitlements are classified High-Risk by law.',
+    statement: 'Deploying organizations must formally classify all algorithmic systems into statutory risk tiers aligned with the EU AI Act, NIST AI RMF, and White House OMB M-24-10. Systems affecting critical infrastructure, law enforcement, or statutory entitlements are classified High-Risk by law.',
     detailedNotes: [
-      'High-Risk systems require mandatory pre-deployment conformity assessments and ongoing municipal legal oversight.',
+      'High-Risk systems require mandatory pre-deployment conformity assessments and ongoing legal/compliance oversight.',
       'Unacceptable Risk systems (e.g. social credit scoring, real-time public biometric identification) are prohibited.'
     ],
     crossWalk: {
@@ -549,10 +549,10 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'LE',
     title: 'Vendor vs. Deployer Joint & Several Liability Allocation',
     requirementLevel: 'MANDATORY',
-    statement: 'Municipal AI procurement contracts MUST contain express indemnification provisions holding vendors financially and legally liable for algorithmic errors resulting from flawed training data, algorithmic bias, or false arrest recommendations.',
+    statement: 'AI procurement and licensing contracts MUST contain express indemnification provisions holding vendors financially and legally liable for algorithmic errors resulting from flawed training data, algorithmic bias, or defective model architecture.',
     detailedNotes: [
-      'Vendors cannot disclaim warranties of fitness for law enforcement or adjudicative use in municipal contracts.',
-      'Contractual clauses attempting to shift constitutional liability entirely onto municipal taxpayers are void.'
+      'Vendors cannot disclaim warranties of fitness for high-assurance, commercial, or adjudicative use in enterprise contracts.',
+      'Contractual clauses attempting to shift product liability or constitutional non-compliance entirely onto deployers are void.'
     ],
     crossWalk: {
       nist: 'NIST SP 800-53 (SA-9)',
@@ -583,9 +583,9 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     pillarCode: 'LE',
     title: 'Copyright & Training Data Infringement Indemnification',
     requirementLevel: 'REQUIRED',
-    statement: 'Commercial AI vendors must provide municipal clients with full intellectual property defense and indemnification against third-party copyright, trade secret, or privacy infringement claims arising from model training or outputs.',
+    statement: 'Commercial AI vendors must provide clients with full intellectual property defense and indemnification against third-party copyright, trade secret, or privacy infringement claims arising from model training or outputs.',
     detailedNotes: [
-      'Protects municipal budgets against costly copyright class actions regarding foundation model training datasets.',
+      'Protects deployer budgets against costly copyright class actions regarding foundation model training datasets.',
       'Vendor must maintain active errors and omissions (E&O) insurance covering algorithmic outputs.'
     ],
     crossWalk: {
@@ -600,12 +600,12 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
   {
     id: 'PT-01',
     pillarCode: 'PT',
-    title: 'Public Municipal AI Algorithm & System Registry',
+    title: 'Centralized AI Algorithm & System Registry',
     requirementLevel: 'MUST',
-    statement: 'Every municipality MUST maintain a publicly accessible, searchable online registry cataloging all automated decision systems, predictive algorithms, and LLM implementations deployed across city departments.',
+    statement: 'Every deploying organization MUST maintain a centralized, searchable registry cataloging all automated decision systems, predictive algorithms, and LLM implementations deployed across operational departments.',
     detailedNotes: [
       'Registry listings must include vendor name, contract cost, policy objective, input data sources, and date of last bias audit.',
-      'Citizens must be able to search the registry by city department (e.g. Police, Housing, Health, Revenue).'
+      'Stakeholders must be able to search the registry by operating department or business unit.'
     ],
     crossWalk: {
       nist: 'NIST AI RMF (GOVERN 5.1, MAP 3.2)',
@@ -639,7 +639,7 @@ export const RAIJ_CONTROLS: ControlSpecification[] = [
     statement: 'System prompts, retrieval embeddings indices, and administrative execution logs MUST be structured to allow rapid, automated public disclosure under state Freedom of Information Acts (FOIA / Public Records Acts).',
     detailedNotes: [
       'Deterministic masking engines must sanitize PII while releasing the substantive scoring logic and administrative rationale.',
-      'Municipalities cannot enter into vendor contracts that restrict open records disclosure of system prompts or evaluation metrics.'
+      'Deploying organizations cannot enter into vendor contracts that restrict regulatory or statutory disclosure of system prompts or evaluation metrics.'
     ],
     crossWalk: {
       nist: 'NIST SP 800-53 (PT-2, SC-28)',
@@ -886,10 +886,10 @@ export const RAIJ_ROLLOUT_PHASES: RolloutPhase[] = [
 ];
 
 export const RAIJ_RAW_MARKDOWN = `# Responsible AI Jurisprudence & Secure Deployment Control Framework (RAIJ-CSF)
-**Baseline Security, Algorithmic Due Process, Model Provenance, and Statutory Accountability Standard for Civic and High-Assurance AI Deployments**
+**Baseline Security, Algorithmic Due Process, Model Provenance, and Agentic Safety Standard for High-Assurance AI Deployments (Enterprise, Defense, Autonomous Systems & Public Enclaves)**
 
 ## 1. Executive Summary & Purpose
-The Responsible AI Jurisprudence & Secure Deployment Control Framework (RAIJ-CSF) provides municipal governments, judicial bodies, law enforcement agencies, and civic technology auditors with an open, vendor-agnostic control standard for procuring, evaluating, and operating artificial intelligence systems. By synthesizing technical cybersecurity, algorithmic due process, anti-poisoning defenses, disparate impact jurisprudence, and statutory accountability (EU AI Act, White House OMB M-24-10, NIST AI RMF 1.0), RAIJ-CSF ensures that public-sector AI operates strictly within constitutional, statutory, and ethical boundaries.
+The Responsible AI Jurisprudence & Secure Deployment Control Framework (RAIJ-CSF) provides enterprise engineering leaders, security architects, legal/GRC compliance officers, and public sector auditors with an open, vendor-agnostic control standard for developing, procuring, evaluating, and operating artificial intelligence and agentic systems. By synthesizing technical cybersecurity, algorithmic due process, anti-poisoning defenses, disparate impact jurisprudence, and statutory accountability (EU AI Act, White House OMB M-24-10, NIST AI RMF 1.0, ISO/IEC 42001), RAIJ-CSF ensures that high-assurance AI operates strictly within provable safety, statutory compliance, and ethical boundaries across both commercial and public deployments.
 
 ---
 
@@ -991,19 +991,19 @@ export const RAIJ_CSF_FRAMEWORK: GovernanceFrameworkMeta = {
   id: 'raij-csf',
   code: 'RAIJ-CSF',
   title: 'Responsible AI Jurisprudence & Secure Deployment Control Framework',
-  subtitle: 'Baseline Security, Algorithmic Due Process, Model Provenance, and Statutory Accountability Standard for Civic and High-Assurance AI Deployments',
+  subtitle: 'Baseline Security, Algorithmic Due Process, Model Provenance, and Agentic Safety Standard for High-Assurance AI Deployments (Enterprise, Defense, Autonomous Systems & Public Enclaves)',
   version: '1.0.0 (Experimental)',
   status: 'Active Standard',
   category: 'Computer Vision & AI',
-  executiveSummary: 'The Responsible AI Jurisprudence & Secure Deployment Control Framework (RAIJ-CSF) provides municipal governments, judicial bodies, law enforcement agencies, and civic technology auditors with an open, vendor-agnostic control standard for procuring, evaluating, and operating artificial intelligence systems. By synthesizing technical cybersecurity, algorithmic due process, anti-poisoning defenses, disparate impact jurisprudence, and statutory accountability (EU AI Act, White House OMB M-24-10, NIST AI RMF 1.0), RAIJ-CSF ensures that public-sector AI operates strictly within constitutional, statutory, and ethical boundaries.',
-  scope: 'Applicable to all municipal, county, and state deployments of foundation models, agentic LLM workflows, automated benefits prioritization engines, predictive policing risk assessment tools, municipal customer-service conversational agents, and civic decision algorithms.',
+  executiveSummary: 'The Responsible AI Jurisprudence & Secure Deployment Control Framework (RAIJ-CSF) provides enterprise engineering leaders, security architects, legal/GRC compliance officers, and public sector auditors with an open, vendor-agnostic control standard for developing, procuring, evaluating, and operating artificial intelligence and agentic systems. By synthesizing technical cybersecurity, algorithmic due process, anti-poisoning defenses, disparate impact jurisprudence, and statutory accountability (EU AI Act, White House OMB M-24-10, NIST AI RMF 1.0, ISO/IEC 42001), RAIJ-CSF ensures that high-assurance AI operates strictly within provable safety, statutory compliance, and ethical boundaries across both commercial and public deployments.',
+  scope: 'Applicable to enterprise foundation models, autonomous agentic workflows, automated decisioning/underwriting engines, predictive risk assessment tools, mission-critical workflow agents, and public sector algorithmic enclaves. Fully vendor-agnostic (OpenAI, Anthropic, Google Vertex, AWS Bedrock, HuggingFace, self-hosted open-weights models like Llama/Mistral, or proprietary neural networks).',
   targetAudience: [
-    'City Attorneys & Municipal Legal Counsel',
-    'Municipal Chief Information / Technology Officers (CIO/CTO)',
-    'Agency AI Ethics & Compliance Officers',
-    'City Council Members & County Commissioners',
-    'Civilian Human Rights & Algorithmic Oversight Boards',
-    'Public Defenders & Civil Liberties Litigators'
+    'Chief Technology Officers & VP of Engineering',
+    'Chief Information Security Officers & AI Red Teams',
+    'General Counsels, GRC Directors & AI Compliance Officers',
+    'Enterprise Architects & Machine Learning Operations (MLOps) Leads',
+    'Public Sector CIOs, Agency Regulators & Oversight Bodies',
+    'Civil Liberties, Legal Advocates & Risk Auditors'
   ],
   pillars: RAIJ_PILLARS,
   controls: RAIJ_CONTROLS,

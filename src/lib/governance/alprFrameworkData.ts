@@ -267,12 +267,12 @@ export const ALPR_CONTROLS: ControlSpecification[] = [
   {
     id: 'NA-02',
     pillarCode: 'NA',
-    title: 'Vendor Isolation & 100% Municipal Data Ownership',
+    title: 'Vendor Isolation & 100% Customer Data Sovereignty',
     requirementLevel: 'MANDATORY',
-    statement: 'Contractual guarantees that raw data, analytics, and metadata remain 100% municipal property, with strict bans on vendor data pooling, cross-customer AI training, or commercial monetization.',
+    statement: 'Contractual guarantees that raw data, analytics, and metadata remain 100% deployer property, with strict bans on vendor data pooling, cross-customer AI training, or commercial monetization.',
     detailedNotes: [
-      'Vendors are legally designated as technology service processors, never owners or co-owners of civic telemetry.',
-      'Vendors are prohibited from training foundation machine learning models across aggregated municipal plate scans without explicit municipal council approval.'
+      'Vendors are legally designated as technology service processors, never owners or co-owners of deployer vehicular telemetry.',
+      'Vendors are prohibited from training foundation machine learning models across aggregated plate scans without explicit deployer and legal authorization.'
     ],
     crossWalk: {
       nist: 'SA-9, PS-7',
@@ -337,18 +337,18 @@ export const ALPR_CONTROLS: ControlSpecification[] = [
   {
     id: 'AU-03',
     pillarCode: 'AU',
-    title: 'Periodic Civilian Compliance Audits',
+    title: 'Periodic Independent Compliance Audits',
     requirementLevel: 'MANDATORY',
-    statement: 'Bi-annual sampling (minimum 5% random audit of all search logs) conducted by an independent auditor or civilian oversight body.',
+    statement: 'Bi-annual sampling (minimum 5% random audit of all search logs) conducted by an independent auditor, corporate GRC team, or civilian oversight body.',
     detailedNotes: [
-      'Auditors verify that each queried CAD/RMS case number matches an actual open criminal incident in the agency RMS matching the suspect vehicle description.',
-      'Audit findings must be published in an annual public oversight report presented to the city council.'
+      'Auditors verify that each queried CAD/RMS or security incident case number matches an actual open incident matching the suspect vehicle description.',
+      'Audit findings must be published in an annual oversight report presented to executive leadership, governing boards, or civilian oversight.'
     ],
     crossWalk: {
       nist: 'AU-6(1)',
       iso: 'A.5.35',
       cjis: 'Area 5.4 (Audit & Accountability)',
-      statutory: 'Civic Oversight Standard'
+      statutory: 'Independent Oversight Standard'
     }
   },
 
@@ -547,16 +547,16 @@ export const ALPR_CONTROLS: ControlSpecification[] = [
     pillarCode: 'PS',
     title: 'Co-Location on Compliant Infrastructure (Compensating Control)',
     requirementLevel: 'COMPENSATING',
-    statement: 'Municipalities can meet crash-safety compliance without standalone breakaway poles by co-locating hardware on pre-approved roadside infrastructure (traffic signal mast arms, utility poles, or behind concrete barriers), provided dead-load/wind-load checks and clearance requirements are satisfied.',
+    statement: 'Deploying entities can meet crash-safety compliance without standalone breakaway poles by co-locating hardware on pre-approved existing roadside infrastructure (traffic signal mast arms, utility poles, facility lighting, or behind concrete barriers), provided dead-load/wind-load checks and clearance requirements are satisfied.',
     detailedNotes: [
-      'Allows agencies to avoid costly new pole installations while remaining 100% compliant with roadside safety regulations.',
+      'Allows operators and agencies to avoid costly new pole installations while remaining 100% compliant with roadside safety regulations.',
       'Hardware placed behind existing concrete jersey barriers or W-beam guardrails meets roadside safety requirements without frangible couplings.'
     ],
     crossWalk: {
       nist: 'PE-18',
       iso: 'A.7.2, A.7.7',
       cjis: 'Area 5.8 (Physical Protection)',
-      statutory: 'State DOT Attachment Rules'
+      statutory: 'DOT / Facility Attachment Rules'
     }
   },
 
@@ -953,10 +953,10 @@ export const ALPR_ROLLOUT_PHASES: RolloutPhase[] = [
 ];
 
 export const ALPR_RAW_MARKDOWN = `# ALPR Security & Governance Control Framework (ALPR-CSF)
-**Baseline Security, Physical Safety, and Data Governance Standard for Automated License Plate Recognition and Civic Surveillance Systems**
+**Baseline Security, Physical Safety, and Data Governance Standard for Automated License Plate Recognition Systems (Enterprise, Logistics, Campus, Critical Infrastructure & Public Deployments)**
 
 ## 1. Executive Summary & Purpose
-The Automated License Plate Recognition Control Security Framework (ALPR-CSF) provides law enforcement agencies, municipal IT departments, and civic oversight bodies with a vendor-agnostic, open baseline standard for deploying, operating, and auditing ALPR technology. By bridging technical cybersecurity, physical roadway safety, civil liberties protection, and statutory compliance, ALPR-CSF ensures that public safety technology operates within strict constitutional, statutory, and engineering boundaries.
+The Automated License Plate Recognition Control Security Framework (ALPR-CSF) provides enterprise security directors, corporate campus operators, logistics hubs, critical infrastructure facilities, and public sector agencies with a vendor-agnostic, open baseline standard for deploying, operating, and auditing ALPR technology. By bridging technical cybersecurity, physical roadway safety, privacy protection, and statutory compliance, ALPR-CSF ensures that vehicular monitoring technology operates within strict constitutional, privacy, and structural engineering boundaries regardless of operating environment or vendor.
 
 ---
 
@@ -1064,19 +1064,19 @@ export const ALPR_CSF_FRAMEWORK: GovernanceFrameworkMeta = {
   id: 'alpr-csf',
   code: 'ALPR-CSF',
   title: 'ALPR Security & Governance Control Framework',
-  subtitle: 'Baseline Security, Physical Safety, and Data Governance Standard for Automated License Plate Recognition and Civic Surveillance Systems',
+  subtitle: 'Baseline Security, Physical Safety, and Data Governance Standard for Automated License Plate Recognition Systems (Enterprise, Logistics, Campus, Critical Infrastructure & Public Deployments)',
   version: '1.0.0 (Experimental)',
   status: 'Active Standard',
   category: 'Surveillance & Sensors',
-  executiveSummary: 'The Automated License Plate Recognition Control Security Framework (ALPR-CSF) provides law enforcement agencies, municipal IT departments, and civic oversight bodies with a vendor-agnostic, open baseline standard for deploying, operating, and auditing ALPR technology. By bridging technical cybersecurity, physical roadway safety, civil liberties protection, and statutory compliance, ALPR-CSF ensures that public safety technology operates within strict constitutional, statutory, and engineering boundaries.',
-  scope: 'Applicable to all municipal, county, and state deployments of fixed, solar-powered, mobile, and vehicle-mounted automated license plate recognition systems, including commercial networks (Flock Safety, Motorola Solutions / Vigilant Solutions, Rekor Systems, Genetec AutoVu) integrated into municipal dispatch centers.',
+  executiveSummary: 'The Automated License Plate Recognition Control Security Framework (ALPR-CSF) provides enterprise security directors, corporate campus operators, logistics hubs, critical infrastructure facilities, and public sector agencies with a vendor-agnostic, open baseline standard for deploying, operating, and auditing ALPR technology. By bridging technical cybersecurity, physical roadway safety, privacy protection, and statutory compliance, ALPR-CSF ensures that vehicular monitoring technology operates within strict constitutional, privacy, and structural engineering boundaries regardless of operating environment or vendor.',
+  scope: 'Applicable to all deployments of fixed, solar-powered, mobile, and vehicle-mounted automated license plate recognition systems across corporate campuses, logistics depots, critical infrastructure perimeters, private tolling/parking facilities, and public agency roadways. Fully agnostic of hardware and software vendors (including Flock Safety, Motorola/Vigilant Solutions, Rekor Systems, Genetec AutoVu, Axis Communications, open-source or custom neural models).',
   targetAudience: [
-    'Police Chiefs, Sheriffs & Command Staff',
-    'City Managers & Municipal Attorneys',
-    'City Council Members & County Commissioners',
-    'Civilian Oversight Boards & Police Auditors',
-    'State DOT & Public Works Roadside Engineers',
-    'Civil Liberties & Privacy Advocates'
+    'Corporate Security Directors & Physical Security Teams',
+    'Enterprise Facility, Campus & Logistics Fleet Managers',
+    'Critical Infrastructure & Port Security Operators',
+    'Public Safety Agencies, Sheriffs & Municipal Engineers',
+    'Privacy Officers, GRC Auditors & General Counsels',
+    'Civil Liberties, Oversight Boards & Compliance Advocates'
   ],
   pillars: ALPR_PILLARS,
   controls: ALPR_CONTROLS,

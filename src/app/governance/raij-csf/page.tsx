@@ -85,8 +85,8 @@ export default function RaijCsfPage() {
       { id: 'IA-01', label: 'IA-01: Principle of Least Privilege for Autonomous Agents (Read-Only Default)' },
       { id: 'IA-04', label: 'IA-04: Immutable WORM Logging of Intermediate Agentic Reasoning Steps' },
       { id: 'BA-01', label: 'BA-01: Four-Fifths (80%) Rule Disparate Impact Threshold Enforced' },
-      { id: 'LE-01', label: 'LE-01: Statutory High-Risk Civic AI Classification & Impact Assessment' },
-      { id: 'PT-01', label: 'PT-01: Public Municipal AI Algorithm & System Registry Published' }
+      { id: 'LE-01', label: 'LE-01: High-Risk AI System Classification & Pre-Deployment Impact Assessment' },
+      { id: 'PT-01', label: 'PT-01: Centralized AI Algorithm & System Registry Published' }
     ];
   }, []);
 
@@ -126,13 +126,13 @@ export default function RaijCsfPage() {
   };
 
   const handleCopyOrdinance = () => {
-    const ordinanceText = `// MODEL MUNICIPAL ALGORITHMIC DUE PROCESS & ACCOUNTABILITY ORDINANCE (EXULTIA RAIJ-CSF COMPLIANT)
-SECTION 1. STANDARDS FOR MUNICIPAL ARTIFICIAL INTELLIGENCE SYSTEMS.
-(a) Mandatory Due Process & Meaningful Explanation. No municipal agency shall deploy an automated decision system or artificial intelligence model affecting personal liberty, benefits eligibility, housing, or child welfare without providing affected individuals with a plain-language counterfactual explanation of decisive factors and a cost-free administrative right of appeal.
-(b) Mandatory Human Adjudicative Gate. Autonomous algorithmic decision-making without independent substantive human review is strictly prohibited in all adjudicative, criminal justice, and regulatory enforcement determinations.
-(c) AI Software Bill of Materials (AIBOM). Commercial vendors providing algorithmic tools to the City shall deliver a machine-readable AIBOM cataloging foundation model ancestry, training dataset hashes, and third-party orchestration libraries.
-(d) Four-Fifths Rule Disparate Impact Prohibition. Any municipal algorithmic system demonstrating an adverse selection or classification rate for a protected demographic class below eighty percent (80%) of the highest group shall be immediately suspended.
-(e) Prohibition of Trade Secret Concealment. Vendors are prohibited from asserting trade secret or intellectual property privilege to conceal scoring formulas, weighting factors, or training data distributions in public proceedings.`;
+    const ordinanceText = `// MODEL ENTERPRISE & PUBLIC AI GOVERNANCE POLICY (EXULTIA RAIJ-CSF COMPLIANT)
+SECTION 1. STANDARDS FOR HIGH-ASSURANCE ARTIFICIAL INTELLIGENCE & AGENTIC SYSTEMS.
+(a) Mandatory Due Process & Meaningful Explanation. Deploying entities shall not deploy an automated decision system or AI model affecting legal rights, employment, credit, benefits eligibility, or housing without providing affected individuals with a plain-language counterfactual explanation of decisive factors and a standardized right of appeal.
+(b) Mandatory Human Adjudicative Gate. Autonomous algorithmic decision-making without independent substantive human review is strictly prohibited in all high-impact, adjudicative, and regulatory determinations.
+(c) AI Software Bill of Materials (AIBOM). Commercial vendors and model providers shall deliver a machine-readable AIBOM cataloging foundation model ancestry, pre-training dataset hashes, and third-party orchestration dependencies.
+(d) Four-Fifths Rule Disparate Impact Prohibition. Any algorithmic system demonstrating an adverse selection or classification rate for a protected demographic class below eighty percent (80%) of the highest group shall be immediately suspended from automated execution.
+(e) Prohibition of Trade Secret Concealment. Commercial vendors are prohibited from asserting trade secret or intellectual property privilege to conceal scoring formulas, weighting factors, or training data distributions in high-impact determinations.`;
 
     navigator.clipboard.writeText(ordinanceText);
     setIsCopiedOrdinance(true);
@@ -969,7 +969,7 @@ Cross-Walk: NIST ${control.crossWalk.nist} | ISO ${control.crossWalk.iso} | OMB 
           </div>
         </section>
 
-        {/* SECTION 6: MODEL MUNICIPAL ORDINANCE TEMPLATE */}
+        {/* SECTION 6: MODEL POLICY & ORDINANCE TEMPLATE */}
         <section style={{ marginBottom: '4rem' }}>
           <div style={{
             background: 'rgba(2, 6, 23, 0.75)',
@@ -980,10 +980,10 @@ Cross-Walk: NIST ${control.crossWalk.nist} | ISO ${control.crossWalk.iso} | OMB 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '1rem' }}>
               <div>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Model Legislation
+                  Model Policy Standard
                 </div>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: '2px 0 0 0' }}>
-                  Model Municipal Algorithmic Due Process Ordinance
+                  Model Responsible AI Governance Policy & Regulatory Clause
                 </h3>
               </div>
 
@@ -1004,12 +1004,12 @@ Cross-Walk: NIST ${control.crossWalk.nist} | ISO ${control.crossWalk.iso} | OMB 
                   cursor: 'pointer'
                 }}>
                 {isCopiedOrdinance ? <Check size={13} /> : <Copy size={13} />}
-                <span>{isCopiedOrdinance ? 'Copied Legislative Text' : 'Copy Ordinance Language'}</span>
+                <span>{isCopiedOrdinance ? 'Copied Policy Text' : 'Copy Governance Clause'}</span>
               </button>
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#94A3B8', marginBottom: '1rem' }}>
-              Statutory clauses ready for adoption by City Councils, County Boards, or State Legislatures establishing enforceable algorithmic due process and anti-bias protections.
+              Standard clauses ready for adoption by enterprise engineering teams, corporate GRC departments, and public agencies establishing enforceable algorithmic due process and anti-bias protections.
             </p>
 
             <pre style={{
@@ -1024,13 +1024,13 @@ Cross-Walk: NIST ${control.crossWalk.nist} | ISO ${control.crossWalk.iso} | OMB 
               margin: 0,
               fontFamily: 'monospace'
             }}>
-{`// MODEL MUNICIPAL ALGORITHMIC DUE PROCESS & ACCOUNTABILITY ORDINANCE
-SECTION 1. STANDARDS FOR MUNICIPAL ARTIFICIAL INTELLIGENCE SYSTEMS.
-(a) Mandatory Due Process & Meaningful Explanation. No municipal agency shall deploy an automated decision system affecting personal liberty, benefits eligibility, housing, or child welfare without providing a plain-language counterfactual explanation of decisive factors and an administrative right of appeal.
+{`// MODEL ENTERPRISE & PUBLIC AI GOVERNANCE POLICY (EXULTIA RAIJ-CSF COMPLIANT)
+SECTION 1. STANDARDS FOR HIGH-ASSURANCE ARTIFICIAL INTELLIGENCE & AGENTIC SYSTEMS.
+(a) Mandatory Due Process & Meaningful Explanation. Deploying entities shall not deploy an automated decision system affecting legal rights, credit, employment, or benefits without providing a counterfactual explanation and an administrative right of appeal.
 (b) Mandatory Human Adjudicative Gate. Autonomous algorithmic decision-making without independent substantive human review is strictly prohibited in all adjudicative and regulatory enforcement determinations.
-(c) AI Software Bill of Materials (AIBOM). Commercial vendors shall deliver a machine-readable AIBOM cataloging foundation model ancestry, training dataset hashes, and third-party dependencies.
+(c) AI Software Bill of Materials (AIBOM). Commercial vendors and model providers shall deliver a machine-readable AIBOM cataloging foundation model ancestry, training dataset hashes, and third-party dependencies.
 (d) Four-Fifths Rule Disparate Impact Prohibition. Any system demonstrating an adverse selection rate for a protected demographic class below 80% of the highest group shall be immediately suspended.
-(e) Prohibition of Trade Secret Concealment. Vendors are prohibited from asserting trade secret privilege to conceal scoring formulas or weighting factors in public proceedings.`}
+(e) Prohibition of Trade Secret Concealment. Vendors are prohibited from asserting trade secret privilege to conceal scoring formulas or weighting factors in high-impact proceedings.`}
             </pre>
           </div>
         </section>

@@ -42,61 +42,91 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* FOUR PILLARS */}
+      {/* THREE CORE PILLARS OF EXULTIA */}
       <section style={{ maxWidth: "1300px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-            Our 4 Core Domains
+            Core Architectural Thesis
           </span>
-          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Four Pillars of Exultia</h2>
+          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Three Pillars of Exultia</h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.75rem" }}>
           
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(59, 130, 246, 0.25)" }}>
+          <div className="glass-card" style={{ padding: "2.25rem", borderRadius: "14px", border: "1px solid rgba(59, 130, 246, 0.25)" }}>
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🛡️</div>
             <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>1. Toolchain Determinism</h3>
             <div style={{ fontSize: "0.85rem", color: "#60A5FA", fontWeight: 600, marginBottom: "0.75rem" }}>
               PureIDE Foundation
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-              Workstations must be hermetically sealed. Extensions cannot open clandestine telemetry sockets, binaries must compile into bit-for-bit reproducible artifacts, and every dependency must be cryptographically attested in a CycloneDX SBOM.
+              Workstations must be hermetically sealed. Extensions cannot open clandestine telemetry sockets, binaries must compile into bit-for-bit reproducible artifacts, and every dependency must be cryptographically attested in a verifiable CycloneDX 1.5 SBOM.
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(139, 92, 246, 0.25)" }}>
+          <div className="glass-card" style={{ padding: "2.25rem", borderRadius: "14px", border: "1px solid rgba(139, 92, 246, 0.25)" }}>
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚡</div>
             <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>2. Epistemic Verification</h3>
             <div style={{ fontSize: "0.85rem", color: "#A78BFA", fontWeight: 600, marginBottom: "0.75rem" }}>
               UVI Threat Feed Foundation
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-              Threat intelligence cannot rely on lagging commercial feeds alone. By synchronizing 55 upstream streams into pre-assigned UVI records with dual-perspective impact scoring, security teams gain unambiguous truth on both server and workstation exposure.
+              Threat intelligence cannot rely on lagging commercial feeds alone. By synchronizing 55 upstream feeds into pre-assigned UVI records with dual-perspective impact scoring, security teams gain unambiguous ground truth on both server and workstation exposure.
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(6, 182, 212, 0.25)" }}>
+          <div className="glass-card" style={{ padding: "2.25rem", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚖️</div>
-            <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>3. Statutory Mandates</h3>
-            <div style={{ fontSize: "0.85rem", color: "#06B6D4", fontWeight: 600, marginBottom: "0.75rem" }}>
-              Inquest Foundation
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-              The Freedom of Information Act and state sunshine laws are not guidelines—they are statutory mandates with mandatory segregability, fee limits, and 20-day clocks. Inquest translates open records statutes into automated, verifiable enforcement code.
-            </p>
-          </div>
-
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🏛️</div>
-            <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>4. Municipal Transparency</h3>
+            <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "#FFFFFF" }}>3. Open Governance Standards</h3>
             <div style={{ fontSize: "0.85rem", color: "#34D399", fontWeight: 600, marginBottom: "0.75rem" }}>
-              CivicPulse Foundation
+              Standards Lab (ALPR-CSF & RAIJ-CSF)
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-              Over 90% of public civic information does not require formal FOIA filings, yet remains buried in legacy city portals. CivicPulse enables citizens to query council minutes, ordinances, and roll-call votes on demand—with human researcher backup.
+              Bridging engineering rigor and algorithmic due process. We publish vendor-agnostic baseline standards governing surveillance sensors (AASHTO MASH crash testing, clear-zone setbacks, DPPA gates) and responsible artificial intelligence (cryptographic weights, prompt firewalls, 4/5ths disparate impact testing).
             </p>
           </div>
 
+        </div>
+      </section>
+
+      {/* DEDICATED STANDALONE UTILITIES SECTION */}
+      <section style={{ maxWidth: "1100px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
+        <div className="glass-card" style={{ padding: "2.5rem", borderRadius: "16px", border: "1px solid rgba(6, 182, 212, 0.3)", background: "linear-gradient(180deg, rgba(8, 20, 35, 0.7) 0%, rgba(5, 12, 22, 0.9) 100%)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(6, 182, 212, 0.15)", border: "1px solid rgba(6, 182, 212, 0.3)", borderRadius: "6px", padding: "3px 10px", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "0.75rem", color: "#22D3EE", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Independent Open-Access Utilities
+            </span>
+          </div>
+
+          <h2 style={{ fontSize: "1.85rem", marginBottom: "0.75rem", color: "#FFFFFF" }}>
+            Standalone Public Records & Statutory Transparency Tools
+          </h2>
+
+          <p style={{ color: "#CBD5E1", fontSize: "0.98rem", lineHeight: 1.7, marginBottom: "1.75rem" }}>
+            In addition to our core commercial platforms and open control frameworks, Exultia maintains independent open-access tools for public records discovery and statutory compliance. These tools operate as standalone utilities outside our commercial developer workstation pipelines:
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
+            <div style={{ padding: "1.5rem", borderRadius: "12px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <h3 style={{ fontSize: "1.2rem", color: "#22D3EE", marginBottom: "0.35rem" }}>Inquest FOIA Autopilot</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1rem 0" }}>
+                Translates federal FOIA (5 U.S.C. § 552) and all 50 state sunshine statutes into an automated enforcement engine with fee segregation and administrative appeal generators.
+              </p>
+              <Link href="/products/inquest" style={{ fontSize: "0.85rem", color: "#22D3EE", fontWeight: 600, textDecoration: "none" }}>
+                View Inquest Utility →
+              </Link>
+            </div>
+
+            <div style={{ padding: "1.5rem", borderRadius: "12px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <h3 style={{ fontSize: "1.2rem", color: "#34D399", marginBottom: "0.35rem" }}>CivicPulse Terminal</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1rem 0" }}>
+                Instant on-demand discovery across thousands of municipal meeting agendas, transcribed minutes, roll-call voting records, and local ordinances.
+              </p>
+              <Link href="/products/civic-pulse" style={{ fontSize: "0.85rem", color: "#34D399", fontWeight: 600, textDecoration: "none" }}>
+                View CivicPulse Terminal →
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -109,9 +139,9 @@ export default function AboutPage() {
           padding: "3rem 2rem",
           textAlign: "center"
         }}>
-          <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Explore Our Product Portfolio</h2>
-          <p style={{ color: "#94A3B8", maxWidth: "540px", margin: "0 auto 2rem auto", fontSize: "1.05rem" }}>
-            See how Exultia (exultia.tech) brings deterministic certainty to developers, security operations, and investigative researchers.
+          <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Explore Our Systems & Standards</h2>
+          <p style={{ color: "#94A3B8", maxWidth: "560px", margin: "0 auto 2rem auto", fontSize: "1.05rem" }}>
+            See how Exultia (exultia.tech) brings provable certainty to developers, security operations, and governance engineers.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
             <Link href="/console" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "1rem", textDecoration: "none" }}>
@@ -120,11 +150,8 @@ export default function AboutPage() {
             <Link href="/threat-feed" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               UVI Threat Feed
             </Link>
-            <Link href="/inquest" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              Exultia Inquest
-            </Link>
-            <Link href="/civic-pulse" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#34D399", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              Exultia CivicPulse
+            <Link href="/governance" style={{ padding: "0.9rem 1.6rem", borderRadius: "10px", background: "rgba(59, 130, 246, 0.12)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+              Governance Standards Lab
             </Link>
           </div>
         </div>

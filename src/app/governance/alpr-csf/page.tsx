@@ -78,18 +78,18 @@ export default function AlprCsfPage() {
   // Self-Assessment Score Calculation
   const keyAuditControls = useMemo(() => {
     return [
-      { id: 'AC-01', label: 'AC-01: Mandatory CAD/RMS Incident Justification Required' },
+      { id: 'AC-01', label: 'AC-01: Mandatory CAD/RMS or Security Incident Justification Required' },
       { id: 'AC-03', label: 'AC-03: Mandatory Multi-Factor Authentication (MFA) Enabled' },
       { id: 'DG-01', label: 'DG-01: 30-Day Default Auto-Purge Cap for Passive Scans' },
-      { id: 'DG-03', label: 'DG-03: Real-Time NCIC Hotlist Sync & Visual Confirmation Required' },
-      { id: 'NA-01', label: 'NA-01: Non-Transitive Mutual Aid Sharing Agreements Only' },
-      { id: 'NA-02', label: 'NA-02: 100% Municipal Data Ownership & Vendor AI Training Ban' },
+      { id: 'DG-03', label: 'DG-03: Real-Time Hotlist Sync & Visual Confirmation Required' },
+      { id: 'NA-01', label: 'NA-01: Non-Transitive Mutual Aid / External Sharing Agreements Only' },
+      { id: 'NA-02', label: 'NA-02: 100% Customer Data Sovereignty & Vendor AI Training Ban' },
       { id: 'AU-01', label: 'AU-01: Write-Once/Read-Many (WORM) Immutable Query Logging' },
       { id: 'AU-02', label: 'AU-02: Automated Anomaly Alerts for Off-Shift / Broad Sweeps' },
-      { id: 'PT-01', label: 'PT-01: Public Open Metrics Dashboard for Hits, Scans & Queries' },
+      { id: 'PT-01', label: 'PT-01: Public/Operator Metrics Dashboard for Hits, Scans & Queries' },
       { id: 'PS-01', label: 'PS-01: AASHTO MASH-16 Breakaway Poles in Clear Zones (or Co-Location)' },
       { id: 'LE-01', label: 'LE-01: DPPA DMV Lookup Gate (Blocked for Passive Bulk Scans)' },
-      { id: 'PR-01', label: 'PR-01: Open Records Exemption for Bulk Scans + Officer Pseudonymization' }
+      { id: 'PR-01', label: 'PR-01: Bulk Scan Redaction Boundaries & Operator Pseudonymization' }
     ];
   }, []);
 
@@ -129,13 +129,13 @@ export default function AlprCsfPage() {
   };
 
   const handleCopyOrdinance = () => {
-    const ordinanceText = `// MODEL MUNICIPAL ALPR REGULATION ORDINANCE (EXULTIA ALPR-CSF COMPLIANT)
-SECTION 1. AUTOMATED LICENSE PLATE RECOGNITION SURVEILLANCE STANDARDS.
-(a) Mandatory Incident Justification. No law enforcement officer or municipal employee shall execute a query or search of any automated license plate recognition (ALPR) database without first entering an active Computer Aided Dispatch (CAD) or Records Management System (RMS) incident number.
-(b) Data Retention Cap. All passive license plate scan data and associated optical character recognition records shall be automatically hard-deleted after thirty (30) calendar days, unless explicitly designated as physical evidence in an active criminal prosecution.
-(c) Mutual Aid & Non-Transitive Sharing. Any sharing of municipal ALPR telemetry with external law enforcement agencies requires a formal, publicly disclosed Memorandum of Understanding. Secondary or downstream sharing by recipient agencies is strictly prohibited.
-(d) Roadside Crash & Clear-Zone Safety. All standalone ALPR poles located within the roadway clear zone shall comply with AASHTO Manual for Assessing Safety Hardware (MASH-16) breakaway requirements.
-(e) Prohibition on Commercial Exploitation. All license plate telemetry remains 100% municipal property. Vendors are prohibited from pooling municipal records, training artificial intelligence foundation models, or monetizing scan data.`;
+    const ordinanceText = `// MODEL ENTERPRISE & PUBLIC ALPR OPERATING POLICY (EXULTIA ALPR-CSF COMPLIANT)
+SECTION 1. AUTOMATED VEHICULAR SURVEILLANCE & ALPR OPERATING STANDARDS.
+(a) Mandatory Incident Justification. No operator, security personnel, or authorized user shall execute a query or search of any automated license plate recognition (ALPR) database without first entering an active security incident number, CAD/RMS dispatch record, or authorized investigation identifier.
+(b) Data Retention Cap. All passive license plate scan data and associated optical character recognition records shall be automatically hard-deleted after thirty (30) calendar days, unless explicitly designated as evidence in an active legal or security investigation.
+(c) Mutual Aid & Non-Transitive Sharing. Any sharing of ALPR telemetry with external agencies or commercial networks requires a formal, signed agreement. Downstream secondary sharing by recipient parties is strictly prohibited.
+(d) Roadside Crash & Clear-Zone Safety. All standalone ALPR poles located within roadway clear zones shall comply with AASHTO Manual for Assessing Safety Hardware (MASH-16) breakaway requirements or rated barrier shielding.
+(e) Prohibition on Commercial Exploitation. All license plate telemetry remains 100% deployer property. Vendors are contractually barred from pooling customer records, training commercial artificial intelligence models, or reselling scan telemetry.`;
     
     navigator.clipboard.writeText(ordinanceText);
     setIsCopiedOrdinance(true);
@@ -1007,7 +1007,7 @@ Cross-Walk: NIST ${control.crossWalk.nist} | CJIS ${control.crossWalk.cjis} | St
           </div>
         </section>
 
-        {/* SECTION 6: MODEL CITY ORDINANCE TEMPLATE */}
+        {/* SECTION 6: MODEL POLICY & ORDINANCE TEMPLATE */}
         <section style={{ marginBottom: '4rem' }}>
           <div style={{
             background: 'rgba(2, 6, 23, 0.75)',
@@ -1018,10 +1018,10 @@ Cross-Walk: NIST ${control.crossWalk.nist} | CJIS ${control.crossWalk.cjis} | St
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '1rem' }}>
               <div>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Model Legislation
+                  Model Policy Standard
                 </div>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: '2px 0 0 0' }}>
-                  Model Municipal ALPR Surveillance Ordinance Clause
+                  Model ALPR Operating Policy & Regulatory Clause
                 </h3>
               </div>
 
@@ -1042,12 +1042,12 @@ Cross-Walk: NIST ${control.crossWalk.nist} | CJIS ${control.crossWalk.cjis} | St
                   cursor: 'pointer'
                 }}>
                 {isCopiedOrdinance ? <Check size={13} /> : <Copy size={13} />}
-                <span>{isCopiedOrdinance ? 'Copied Legislative Text' : 'Copy Ordinance Language'}</span>
+                <span>{isCopiedOrdinance ? 'Copied Policy Text' : 'Copy Operating Clause'}</span>
               </button>
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#94A3B8', marginBottom: '1rem' }}>
-              Ready for adoption by City Councils, Town Boards, or County Commissions seeking to codify ALPR-CSF controls into binding municipal code.
+              Ready for adoption by enterprise campuses, logistics operators, facility managers, and public agencies seeking to codify ALPR-CSF controls into binding operational policies.
             </p>
 
             <pre style={{
@@ -1062,13 +1062,13 @@ Cross-Walk: NIST ${control.crossWalk.nist} | CJIS ${control.crossWalk.cjis} | St
               margin: 0,
               fontFamily: 'monospace'
             }}>
-{`// MODEL MUNICIPAL ALPR REGULATION ORDINANCE (EXULTIA ALPR-CSF COMPLIANT)
-SECTION 1. AUTOMATED LICENSE PLATE RECOGNITION SURVEILLANCE STANDARDS.
-(a) Mandatory Incident Justification. No law enforcement officer or municipal employee shall execute a query of any ALPR database without first entering an active CAD or RMS incident number.
-(b) Data Retention Cap. All passive license plate scan data shall automatically hard-delete after thirty (30) calendar days, unless tagged as evidence in an active criminal investigation.
-(c) Mutual Aid & Non-Transitive Sharing. Any sharing with external agencies requires an opt-in MOU; downstream re-sharing is strictly prohibited.
-(d) Roadside Crash Safety. All standalone ALPR poles located in the roadway clear zone shall comply with AASHTO MASH-16 breakaway requirements.
-(e) Prohibition on Commercial Exploitation. Telemetry remains 100% municipal property; vendor pooling or AI foundation model training across civic data is strictly banned.`}
+{`// MODEL ENTERPRISE & PUBLIC ALPR OPERATING POLICY (EXULTIA ALPR-CSF COMPLIANT)
+SECTION 1. AUTOMATED VEHICULAR SURVEILLANCE & ALPR OPERATING STANDARDS.
+(a) Mandatory Incident Justification. No operator or user shall execute a search without entering an active incident number or authorized investigation identifier.
+(b) Data Retention Cap. All passive license plate scan data shall automatically hard-delete after thirty (30) calendar days, unless tagged as evidence in an active case.
+(c) Mutual Aid & Non-Transitive Sharing. Any sharing with external entities requires a formal agreement; downstream re-sharing is strictly prohibited.
+(d) Roadside Crash Safety. All standalone ALPR poles located in roadway clear zones shall comply with AASHTO MASH-16 breakaway requirements or barrier shielding.
+(e) Prohibition on Commercial Exploitation. Telemetry remains 100% deployer property; vendor pooling or AI model training across client telemetry is strictly banned.`}
             </pre>
           </div>
         </section>
