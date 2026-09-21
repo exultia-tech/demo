@@ -3639,7 +3639,7 @@ build_hardened_ide:
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }}>
             <div className="glass-card">
               <h2>Editor Sandbox & Supply-Chain Hardening</h2>
-              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>Deterministic binary controls baked directly into the IDE runtime distribution.</p>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>Security controls built directly into your custom IDE distribution.</p>
 
               <div className="toggle-wrapper">
                 <div className="toggle-info">

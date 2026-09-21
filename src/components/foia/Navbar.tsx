@@ -89,11 +89,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Inquest
               </span>
               <span className="badge badge-blue" style={{ fontSize: '0.65rem', padding: '2px 7px' }}>
-                <Sparkles size={10} /> FOIA Autopilot
+                <Sparkles size={10} /> FOIA Assistant
               </span>
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-              Deterministic Open Records & Compliance Engine
+              Public Records & Compliance Engine
             </p>
           </div>
         </div>

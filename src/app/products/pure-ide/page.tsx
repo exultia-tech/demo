@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Exultia PureIDE | Zero-Trust Development, On-Demand",
-  description: "Compile, harden and distribute secure dev environments in seconds with Exultia PureIDE. Eliminate ambient telemetry, enforce air-gapped extension sandboxes, and export verifiable CycloneDX 1.5 SBOMs.",
+  title: "Exultia PureIDE | Secure Developer Workstations, On-Demand",
+  description: "Package, customize, and deploy secure developer IDEs in seconds with Exultia PureIDE. Block telemetry, audit plugins, and generate full SBOM reports.",
 };
 
 export default function PureIdeLandingPage() {
@@ -12,12 +12,12 @@ export default function PureIdeLandingPage() {
       {/* PRODUCT HERO */}
       <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.025em", lineHeight: 1.1 }}>
-          Zero-Trust Development, <br />
+          Secure Development, <br />
           <span className="gradient-text">On-Demand</span>
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "720px", margin: "0 auto 2.25rem auto", fontSize: "1.25rem", lineHeight: "1.6", color: "#94A3B8" }}>
-          Compile, harden and distribute secure dev environments in seconds with Exultia PureIDE.
+          Package, customize, and distribute secure developer environments in seconds with Exultia PureIDE.
         </p>
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
@@ -38,11 +38,6 @@ export default function PureIdeLandingPage() {
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
             Pricing Plans
           </Link>
-          <Link 
-            href="/docs" 
-            style={{ padding: "0.95rem 1.5rem", borderRadius: "10px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", color: "#CBD5E1", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            Documentation
-          </Link>
         </div>
       </section>
 
@@ -51,7 +46,7 @@ export default function PureIdeLandingPage() {
         <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-              Deterministic Workflow
+              Simple 3-Step Process
             </span>
             <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>How PureIDE Works in 3 Steps</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "600px", margin: "0 auto" }}>
@@ -131,11 +126,11 @@ export default function PureIdeLandingPage() {
             <div className="feature-icon-wrapper">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Zero Ambient Telemetry</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Zero Background Telemetry</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Excises proprietary analytics probes at compilation<br/>
-              • Hard-coded DNS blackholing for vendor reporting endpoints<br/>
-              • Guaranteed compliance for classified & HIPAA workloads
+              • Strips vendor tracking and analytics probes from builds<br/>
+              • Local DNS blackholing for reporting endpoints<br/>
+              • Built for privacy-conscious and air-gapped workloads
             </p>
           </div>
 
@@ -146,8 +141,8 @@ export default function PureIdeLandingPage() {
             <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Automated CycloneDX SBOM</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
               • CycloneDX 1.5 JSON specification compliance<br/>
-              • SHA-256 binary digests for all packaged components<br/>
-              • Meets Executive Order 14028 software supply chain criteria
+              • SHA-256 digests for all packaged components<br/>
+              • Clear audit trail for enterprise security reviews
             </p>
           </div>
 
@@ -188,10 +183,10 @@ export default function PureIdeLandingPage() {
           boxShadow: "0 20px 40px -15px rgba(0,0,0,0.8)"
         }}>
           <h2 style={{ fontSize: "2.2rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-            Ready to Build Your Hardened Workstation?
+            Ready to Build Your Custom Workstation?
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "600px", margin: "0 auto 2rem auto" }}>
-            Launch a zero-trust custom build in under 60 seconds with our interactive web console.
+            Build a clean, custom IDE package in under 60 seconds with our interactive web console.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/console" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none" }}>
@@ -199,9 +194,6 @@ export default function PureIdeLandingPage() {
             </Link>
             <Link href="/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               View Pricing Plans
-            </Link>
-            <Link href="/docs" style={{ padding: "0.95rem 1.6rem", borderRadius: "10px", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "#CBD5E1", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              Read Technical Docs
             </Link>
           </div>
         </div>

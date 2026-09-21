@@ -304,6 +304,13 @@ export default function ThreatFeedPage() {
       }}>
         {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(139, 92, 246, 0.15)", border: "1px solid rgba(139, 92, 246, 0.35)", borderRadius: "999px", padding: "4px 12px", marginBottom: "0.6rem", width: "fit-content" }}>
+            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#C084FC", boxShadow: "0 0 8px #C084FC" }} />
+            <span style={{ fontSize: "0.78rem", color: "#E9D5FF", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              UVI Intelligence Engine
+            </span>
+          </div>
 
           <h1 style={{ 
             fontSize: "2.35rem", 
@@ -313,10 +320,10 @@ export default function ThreatFeedPage() {
             marginBottom: "0.5rem",
             lineHeight: 1.2
           }}>
-            Universal Vulnerability Intelligence (UVI) Threat Feed
+            Universal Vulnerability Intelligence (UVI)
           </h1>
-          <p style={{ fontSize: "1rem", color: "var(--text-muted)", maxWidth: "720px", lineHeight: 1.6, margin: 0 }}>
-            Consolidated real-time threat intelligence synthesizing official CVEs, active zero-days, and supply chain malware into standardized records.
+          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: 0 }}>
+            Real-time multi-source threat consensus across {UVI_PUBLIC_FEED_SOURCES.length} synchronized global feeds, active zero-days, and supply chain malware.
           </p>
         </div>
 

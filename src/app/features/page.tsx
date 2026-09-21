@@ -107,7 +107,7 @@ const PUBLIC_FEEDS = [
     badge: "SUPPLY CHAIN POSTURE",
     badgeColor: "#60A5FA",
     target: "api.securityscorecards.dev",
-    description: "Measures upstream repository health, maintenance cadence, branch protection rules, and deterministic dependency pinning."
+    description: "Measures upstream repository health, maintenance cadence, branch protection rules, and verified dependency pinning."
   }
 ];
 

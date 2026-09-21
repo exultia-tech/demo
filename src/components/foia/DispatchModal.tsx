@@ -126,7 +126,7 @@ export const DispatchModal: React.FC<DispatchModalProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h2 style={{ fontSize: '1.35rem', fontWeight: 700 }}>
-                Deterministic Filing & Dispatch Hub
+                Filing & Dispatch Hub
               </h2>
               <span className="badge badge-blue">
                 {compiledPackage.trackingNumber}

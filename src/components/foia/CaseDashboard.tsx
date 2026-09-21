@@ -417,7 +417,7 @@ export const CaseDashboard: React.FC<CaseDashboardProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <ShieldAlert size={20} color="var(--accent-rose)" />
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-                    Deterministic Administrative Appeal Generator
+                    Administrative Appeal Generator
                   </h3>
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>

@@ -46,10 +46,10 @@ export default function InquestPricingPage() {
     setTrialSuccess(true);
   };
 
-  const proMonthly = 49;
-  const proAnnualMonthly = 39;
-  const newsroomMonthly = 249;
-  const newsroomAnnualMonthly = 199;
+  const proMonthly = 119;
+  const proAnnualMonthly = 99;
+  const newsroomMonthly = 599;
+  const newsroomAnnualMonthly = 499;
 
   return (
     <div className="fade-in" style={{ padding: "3rem 1.5rem 6rem 1.5rem", maxWidth: "1360px", margin: "0 auto" }}>
@@ -74,10 +74,10 @@ export default function InquestPricingPage() {
         </div>
 
         <h1 style={{ fontSize: "3.2rem", fontWeight: 800, marginBottom: "1rem", letterSpacing: "-0.03em" }}>
-          Deterministic Transparency, <span style={{ color: "#06B6D4" }}>Predictable Pricing</span>
+          Transparent Tools, <span style={{ color: "#06B6D4" }}>Predictable Pricing</span>
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: "1.15rem", maxWidth: "750px", margin: "0 auto 2.25rem auto", lineHeight: "1.6" }}>
-          Permanent free civic access for citizens, journalists, and grassroots researchers. Scaled multi-jurisdiction sweeps, automated statutory escalation, and case law precedent engines for investigative newsrooms and litigation firms.
+          Free access for individual citizens, journalists, and researchers. Scaled multi-agency sweeps, automated follow-up reminders, and team collaboration for investigative newsrooms and legal teams.
         </p>
 
         {/* Billing Toggle */}
@@ -187,7 +187,7 @@ export default function InquestPricingPage() {
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
                   "Federal 5 U.S.C. § 552 + all 50 state sunshine statutes",
-                  "Deterministic initial request compiler with statutory citations",
+                  "Initial request drafting assistant with statutory citations",
                   "Automatic fee waiver arguments (public interest & news media)",
                   "Mandatory statutory segregability clause injection",
                   "Bring-Your-Own Gemini API Key (100% private, 0 token fees)",
@@ -286,7 +286,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#67E8F9", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($468/yr) · 14-day free trial" : "Billed monthly · Cancel anytime"}
+                {billingCycle === "annual" ? "Billed annually ($1,188/yr) · 14-day free trial" : "Billed monthly · Cancel anytime"}
               </div>
             </div>
 
@@ -360,7 +360,7 @@ export default function InquestPricingPage() {
                 borderRadius: "999px", 
                 fontWeight: 700 
               }}>
-                10 Seats Included
+                5 Licenses Included
               </span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: "1.5", minHeight: "42px", margin: "0 0 1.5rem 0" }}>
@@ -376,7 +376,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#A78BFA", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($2,388/yr) · 10 team seats" : "Billed monthly · 10 team seats"}
+                {billingCycle === "annual" ? "Billed annually ($5,988/yr) · 5 team licenses" : "Billed monthly · 5 team licenses"}
               </div>
             </div>
 
@@ -387,7 +387,7 @@ export default function InquestPricingPage() {
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
-                  "Collaborative Newsroom Docket with 10 user seats included",
+                  "Collaborative Newsroom & Legal Docket with 5 licenses included",
                   "Cross-Bureau Request Deduplication Shield (avoids overlap)",
                   "Role-based access: Reporters, Senior Editors, General Counsel",
                   "Judicial Precedent Engine: Weaves state appellate case law into briefs",
@@ -661,10 +661,10 @@ export default function InquestPricingPage() {
                 </td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Team Seats Included</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 User</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 User</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#A78BFA" }}>10 Users included</td>
+                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Team Licenses Included</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 License</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 License</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#A78BFA" }}>5 Licenses included</td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
                 <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Cross-Bureau Deduplication Shield</td>
@@ -698,7 +698,7 @@ export default function InquestPricingPage() {
           {[
             {
               q: "Why is the Civic Tier guaranteed to be free forever?",
-              a: "Access to public records is a fundamental civic right. Exultia's company founding charter commits to maintaining deterministic open records tools at zero cost for individual citizens, freelancers, and students. The Civic Tier runs entirely in your browser with zero server compute, ensuring we never have an economic reason to paywall it."
+              a: "Access to public records is a fundamental civic right. Exultia's company charter commits to maintaining open records tools at zero cost for individual citizens, freelancers, and students. The Civic Tier runs entirely in your browser with zero server compute, ensuring we never have an economic reason to paywall it."
             },
             {
               q: "How does Bring-Your-Own-Key (BYOK) work for free users?",
@@ -706,7 +706,7 @@ export default function InquestPricingPage() {
             },
             {
               q: "Are my investigative inquiries and drafts kept confidential?",
-              a: "Yes. For Civic users, everything is stored strictly inside client-side browser storage (zero ambient telemetry). For Pro and Newsroom users, case dockets are encrypted end-to-end with zero-knowledge cryptography. Exultia staff never access, read, or monetize your investigative reporting."
+              a: "Yes. For Civic users, everything is stored strictly inside client-side browser storage with zero tracking. For Pro and Newsroom users, case dockets are encrypted end-to-end with zero-knowledge cryptography. Exultia staff never access, read, or monetize your investigative reporting."
             },
             {
               q: "What is a 'Multi-Agency Campaign Blast'?",
@@ -744,7 +744,7 @@ export default function InquestPricingPage() {
           boxShadow: "0 25px 50px -15px rgba(0, 0, 0, 0.8)"
         }}>
           <h2 style={{ fontSize: "2.4rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-            Start Filing Deterministic Public Records Today
+            Start Filing Public Records Requests Today
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", maxWidth: "620px", margin: "0 auto 2rem auto", lineHeight: "1.6" }}>
             Draft your first 50-state compliant request in under 2 minutes with our permanent free Civic workspace. Upgrade whenever you need campaign sweeps and team collaboration.

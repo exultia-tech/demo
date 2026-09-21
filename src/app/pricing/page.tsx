@@ -484,7 +484,7 @@ export default function PricingPage() {
               Can we customize branding, extensions, and policies across our organization?
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', margin: 0 }}>
-              Yes. Team and Enterprise tiers allow you to publish organization-wide blueprints, custom themes, strict extension whitelists, and deterministic governance policies across all developer workstations.
+              Yes. Team and Enterprise tiers allow you to publish organization-wide blueprints, custom themes, strict extension allowlists, and centralized security policies across all developer workstations.
             </p>
           </div>
 

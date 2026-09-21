@@ -7,14 +7,12 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const pathname = usePathname();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
-  const [isFoiaMenuOpen, setIsFoiaMenuOpen] = useState(false);
 
   // Determine current active product context
   const isSecureIdeContext = 
     pathname.startsWith("/products/pure-ide") || 
     pathname.startsWith("/products/secure-ide") || 
     pathname === "/pricing" || 
-    pathname === "/docs" || 
     pathname === "/features" || 
     pathname === "/console";
 
@@ -28,18 +26,8 @@ export default function Navbar() {
     pathname.startsWith("/foia") || 
     pathname.startsWith("/products/foia");
 
-  const isCivicPulseContext = 
-    pathname.startsWith("/civic-pulse") || 
-    pathname.startsWith("/products/civic-pulse") || 
-    pathname.startsWith("/civicpulse") || 
-    pathname.startsWith("/products/civicpulse");
-
-  const isGovernanceContext = 
-    pathname.startsWith("/governance") || 
-    pathname.startsWith("/frameworks");
-
-  // The horizontal subnav only appears once a user visits a product, tool, or governance page
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isCivicPulseContext || isGovernanceContext;
+  // The horizontal subnav appears once a user visits any of the 3 product pages
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -89,8 +77,8 @@ export default function Navbar() {
         </div>
 
         {/* CENTER COLUMN: NAV LINKS (Centered in the viewport) */}
-        <nav className="nav-links" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
-          {/* PRODUCTS DROPDOWN: CORE INFRASTRUCTURE PLATFORMS */}
+        <nav className="nav-links" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.75rem" }}>
+          {/* PRODUCTS DROPDOWN: ALL 3 CORE PLATFORMS */}
           <div 
             style={{ position: "relative" }}
             onMouseEnter={() => setIsProductsOpen(true)}
@@ -98,7 +86,7 @@ export default function Navbar() {
           >
             <button 
               type="button"
-              className={`nav-link ${isSecureIdeContext || isThreatFeedContext ? "active" : ""}`}
+              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
               style={{
                 background: "transparent",
                 border: "none",
@@ -120,7 +108,7 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* FLYOUT MENU: CORE PLATFORMS */}
+            {/* FLYOUT MENU: 3 CORE PRODUCTS */}
             {isProductsOpen && (
               <div 
                 style={{
@@ -128,7 +116,7 @@ export default function Navbar() {
                   top: "100%",
                   left: "50%",
                   transform: "translateX(-50%)",
-                  width: "350px",
+                  width: "370px",
                   paddingTop: "8px",
                   zIndex: 150
                 }}
@@ -142,9 +130,10 @@ export default function Navbar() {
                   boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2)"
                 }}>
                   <div style={{ padding: "6px 12px 4px 12px", fontSize: "0.68rem", fontWeight: 800, color: "#60A5FA", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    Core Infrastructure Platforms
+                    Core Product Platforms
                   </div>
 
+                  {/* PRODUCT 1: PUREIDE */}
                   <Link 
                     href="/products/pure-ide" 
                     onClick={() => setIsProductsOpen(false)}
@@ -169,6 +158,7 @@ export default function Navbar() {
                     </div>
                   </Link>
 
+                  {/* PRODUCT 2: UVI */}
                   <Link 
                     href="/threat-feed" 
                     onClick={() => setIsProductsOpen(false)}
@@ -188,73 +178,15 @@ export default function Navbar() {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>UVI Threat Feed</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>55 synchronized public intelligence feeds</div>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>UVI</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal vulnerability intelligence & threat feed</div>
                     </div>
                   </Link>
-                </div>
-              </div>
-            )}
-          </div>
 
-          {/* STANDALONE FOIA & TOOLS DROPDOWN */}
-          <div 
-            style={{ position: "relative" }}
-            onMouseEnter={() => setIsFoiaMenuOpen(true)}
-            onMouseLeave={() => setIsFoiaMenuOpen(false)}
-          >
-            <button 
-              type="button"
-              className={`nav-link ${isFoiaContext || isCivicPulseContext ? "active" : ""}`}
-              style={{
-                background: "transparent",
-                border: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                fontSize: "0.95rem",
-                fontWeight: 500,
-                padding: "6px 10px",
-                borderRadius: "8px"
-              }}
-              onClick={() => setIsFoiaMenuOpen(!isFoiaMenuOpen)}
-            >
-              <span>FOIA Tools</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isFoiaMenuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}>
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </button>
-
-            {/* FLYOUT MENU: STANDALONE UTILITIES */}
-            {isFoiaMenuOpen && (
-              <div 
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: "350px",
-                  paddingTop: "8px",
-                  zIndex: 150
-                }}
-              >
-                <div style={{
-                  background: "rgba(10, 15, 26, 0.98)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  borderRadius: "14px",
-                  padding: "8px",
-                  boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.2)"
-                }}>
-                  <div style={{ padding: "6px 12px 4px 12px", fontSize: "0.68rem", fontWeight: 800, color: "#06B6D4", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    Standalone Public & Civic Utilities
-                  </div>
-
+                  {/* PRODUCT 3: INQUEST */}
                   <Link 
                     href="/products/inquest" 
-                    onClick={() => setIsFoiaMenuOpen(false)}
+                    onClick={() => setIsProductsOpen(false)}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
@@ -272,31 +204,7 @@ export default function Navbar() {
                     </div>
                     <div>
                       <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous FOIA & statutory compliance platform</div>
-                    </div>
-                  </Link>
-
-                  <Link 
-                    href="/products/civic-pulse" 
-                    onClick={() => setIsFoiaMenuOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      textDecoration: "none",
-                      transition: "background 0.15s ease",
-                      background: isCivicPulseContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
-                    }}
-                    className="dropdown-item"
-                  >
-                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #10B981, #059669)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>CivicPulse</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Deterministic municipal records & council minutes</div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
                     </div>
                   </Link>
                 </div>
@@ -304,14 +212,8 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/governance" className={`nav-link ${pathname.startsWith("/governance") || pathname.startsWith("/frameworks") ? "active" : ""}`}>
-            Governance
-          </Link>
           <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
             About
-          </Link>
-          <Link href="/docs" className={`nav-link ${pathname === "/docs" ? "active" : ""}`}>
-            Docs
           </Link>
         </nav>
 
@@ -346,11 +248,6 @@ export default function Navbar() {
                 Pricing
               </Link>
               <Link 
-                href="/docs" 
-                className={`submenu-link ${pathname === "/docs" ? "active-blue" : ""}`}>
-                Docs
-              </Link>
-              <Link 
                 href="/console" 
                 className={`submenu-link ${pathname === "/console" ? "active-blue" : ""}`}
                 style={{ fontWeight: 600 }}>
@@ -359,12 +256,12 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 2: UVI THREAT FEED SUBMENU */}
+          {/* SUBMENU OPTION 2: UVI SUBMENU */}
           {isThreatFeedContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                UVI Threat Feed
+                UVI
               </span>
 
               <Link 
@@ -372,15 +269,10 @@ export default function Navbar() {
                 className={`submenu-link ${pathname === "/threat-feed" ? "active-purple" : ""}`}>
                 Feed Registry
               </Link>
-              <a 
-                href="/threat-feed#sources" 
-                className="submenu-link">
-                Upstream Sources (55)
-              </a>
               <Link 
-                href="/docs#threat-intel" 
-                className="submenu-link">
-                Threat Docs
+                href="/threat-feed/stats" 
+                className={`submenu-link ${pathname === "/threat-feed/stats" ? "active-purple" : ""}`}>
+                Global Statistics
               </Link>
               <a 
                 href="/api/threat-feed" 
@@ -397,7 +289,7 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Standalone Tool: Inquest
+                Inquest
               </span>
 
               <Link 
@@ -406,96 +298,20 @@ export default function Navbar() {
                 Overview
               </Link>
               <Link 
-                href="/inquest" 
-                className={`submenu-link ${pathname === "/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}>
-                Request Wizard
-              </Link>
-              <Link 
-                href="/inquest?tab=agencies" 
-                className="submenu-link">
-                Agency Directory
-              </Link>
-              <Link 
-                href="/inquest?tab=analyzer" 
-                className="submenu-link">
-                Denial Analyzer
-              </Link>
-              <Link 
-                href="/inquest?tab=cases" 
-                className="submenu-link">
-                Case Dashboard
+                href="/products/inquest/features" 
+                className={`submenu-link ${pathname === "/products/inquest/features" ? "active-cyan" : ""}`}>
+                Features
               </Link>
               <Link 
                 href="/products/inquest/pricing" 
                 className={`submenu-link ${pathname === "/products/inquest/pricing" ? "active-cyan" : ""}`}>
-                Plans & Pricing
-              </Link>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION 4: CIVICPULSE SUBMENU */}
-          {isCivicPulseContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
-                Standalone Tool: CivicPulse
-              </span>
-
-              <Link 
-                href="/products/civic-pulse" 
-                className={`submenu-link ${pathname === "/products/civic-pulse" || pathname === "/products/civicpulse" ? "active-green" : ""}`}
-                style={{ color: pathname === "/products/civic-pulse" ? "#34D399" : undefined }}>
-                Overview
+                Pricing
               </Link>
               <Link 
-                href="/civic-pulse" 
-                className={`submenu-link ${pathname === "/civic-pulse" || pathname === "/civicpulse" ? "active-green" : ""}`}
-                style={{ color: pathname === "/civic-pulse" ? "#34D399" : undefined }}>
-                Terminal Workspace
-              </Link>
-              <a 
-                href="/products/civic-pulse#interactive-terminal" 
-                className="submenu-link">
-                Query Portals
-              </a>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION 5: GOVERNANCE FRAMEWORKS SUBMENU */}
-          {isGovernanceContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Open Standards
-              </span>
-
-              <Link 
-                href="/governance" 
-                className={`submenu-link ${pathname === "/governance" || pathname === "/frameworks" ? "active-blue" : ""}`}
-                style={{ color: pathname === "/governance" ? "#60A5FA" : undefined }}>
-                Frameworks Hub
-              </Link>
-              <Link 
-                href="/governance/alpr-csf" 
-                className={`submenu-link ${pathname === "/governance/alpr-csf" || pathname === "/frameworks/alpr-csf" ? "active-blue" : ""}`}
-                style={{ color: pathname === "/governance/alpr-csf" ? "#60A5FA" : undefined }}>
-                ALPR-CSF (Surveillance)
-              </Link>
-              <Link 
-                href="/governance/raij-csf" 
-                className={`submenu-link ${pathname === "/governance/raij-csf" || pathname === "/frameworks/raij-csf" ? "active-purple" : ""}`}
-                style={{ color: pathname === "/governance/raij-csf" ? "#A78BFA" : undefined }}>
-                RAIJ-CSF (Responsible AI)
-              </Link>
-              <Link 
-                href={pathname.includes("raij") ? "/governance/raij-csf#ai-cross-walk-matrix" : "/governance/alpr-csf#cross-walk-matrix"} 
-                className="submenu-link">
-                NIST / ISO Matrix
-              </Link>
-              <Link 
-                href={pathname.includes("raij") ? "/governance/raij-csf#ai-compliance-assessment" : "/governance/alpr-csf#compliance-assessment"} 
-                className="submenu-link">
-                Self-Assessment
+                href="/inquest" 
+                className={`submenu-link ${pathname === "/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Inquest Workspace
               </Link>
             </div>
           )}

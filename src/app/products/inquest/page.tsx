@@ -4,8 +4,8 @@ import { JURISDICTIONS_LIST } from "@/lib/foia/statutes";
 import { AGENCIES_DATABASE } from "@/lib/foia/agencies";
 
 export const metadata: Metadata = {
-  title: "Exultia Inquest | Deterministic Open Records Autopilot",
-  description: "Autonomous statutory open records platform. Codifies 50-state sunshine laws and federal FOIA to eliminate bureaucratic delays, mandate segregability, and synthesize administrative appeal briefs.",
+  title: "Exultia Inquest | Public Records & FOIA Assistant",
+  description: "Automated public records assistant. Covers 50-state sunshine laws and federal FOIA to help you cite relevant statutes, track deadlines, and generate appeal letters.",
 };
 
 export default function InquestProductLandingPage() {
@@ -26,18 +26,18 @@ export default function InquestProductLandingPage() {
         }}>
           <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#06B6D4", boxShadow: "0 0 8px #06B6D4" }} />
           <span style={{ fontSize: "0.8rem", color: "#67E8F9", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Product 03: Deterministic Open Records Autopilot
+            Public Records & FOIA Assistant
           </span>
         </div>
 
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.12 }}>
           Exultia <span style={{ color: "#06B6D4" }}>Inquest</span>
           <br />
-          <span className="gradient-text">Statutory Open Records, Automated</span>
+          <span className="gradient-text">Public Records, Simplified</span>
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "780px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.65", color: "#94A3B8" }}>
-          Autonomous public records intelligence platform. Codifies {JURISDICTIONS_LIST.length} statutory sunshine frameworks to mandate legal segregability, track mandatory 20-day countdowns, and synthesize ironclad administrative appeal briefs.
+          A modern public records assistant. Covers {JURISDICTIONS_LIST.length} state and federal sunshine frameworks to help you cite the right laws, track statutory deadlines, and draft formal appeals.
         </p>
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
@@ -61,49 +61,43 @@ export default function InquestProductLandingPage() {
         </div>
       </section>
 
-      {/* STATUTORY NUMBERS BANNER */}
-      <section style={{ maxWidth: "1180px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
-        <div style={{
-          background: "rgba(10, 15, 26, 0.7)",
-          border: "1px solid rgba(6, 182, 212, 0.25)",
-          borderRadius: "16px",
-          padding: "2rem 2.5rem",
-          boxShadow: "0 20px 40px -15px rgba(0,0,0,0.7)"
-        }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem" }}>
+      {/* QUICK STATS BANNER */}
+      <section style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid var(--border-color)", borderBottom: "1px solid var(--border-color)", padding: "3rem 2rem", marginBottom: "5rem" }}>
+        <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem", textAlign: "center" }}>
             <div>
               <div style={{ fontSize: "0.75rem", color: "#67E8F9", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Jurisdictions Codified
+                Legal Coverage
               </div>
               <div style={{ fontSize: "2.3rem", fontWeight: 900, color: "#FFFFFF", marginTop: "0.25rem" }}>
-                {JURISDICTIONS_LIST.length}
+                50 States + FOIA
               </div>
               <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "0.25rem" }}>
-                Federal 5 U.S.C. § 552 + 50 State Sunshine Laws
+                Federal 5 U.S.C. § 552 and all state sunshine statutes
               </div>
             </div>
 
             <div>
               <div style={{ fontSize: "0.75rem", color: "#60A5FA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Government Agencies
+                Agency Directory
               </div>
               <div style={{ fontSize: "2.3rem", fontWeight: 900, color: "#FFFFFF", marginTop: "0.25rem" }}>
-                {AGENCIES_DATABASE.length}+ Preloaded
+                {AGENCIES_DATABASE.length}+
               </div>
               <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "0.25rem" }}>
-                Verified FOIA officer emails, portals, & fee schedule addresses
+                Federal departments, state bureaus, and municipal offices
               </div>
             </div>
 
             <div>
               <div style={{ fontSize: "0.75rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Audit Fingerprints
+                Privacy Model
               </div>
               <div style={{ fontSize: "2.3rem", fontWeight: 900, color: "#FFFFFF", marginTop: "0.25rem" }}>
-                SHA-256
+                100% Local
               </div>
               <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "0.25rem" }}>
-                Cryptographic timestamp & delivery attestation receipts
+                Case drafts and files stay directly in your browser
               </div>
             </div>
 
@@ -112,7 +106,7 @@ export default function InquestProductLandingPage() {
                 Statutory Timers
               </div>
               <div style={{ fontSize: "2.3rem", fontWeight: 900, color: "#FFFFFF", marginTop: "0.25rem" }}>
-                100% Deterministic
+                Auto-Tracked
               </div>
               <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "0.25rem" }}>
                 Calculates working days excluding federal & state holidays
@@ -126,11 +120,11 @@ export default function InquestProductLandingPage() {
       <section style={{ maxWidth: "1240px", margin: "0 auto 6rem auto", padding: "0 2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <span style={{ fontSize: "0.8rem", color: "#06B6D4", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-            Legal Determinism
+            Key Features
           </span>
-          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>The Inquest Advantage</h2>
+          <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>How Inquest Helps You</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "650px", margin: "0 auto" }}>
-            Transforming adversarial bureaucracy into enforceable legal code.
+            Tools to make requesting public records faster, clearer, and more effective.
           </p>
         </div>
 
@@ -139,11 +133,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Codified Sunshine Frameworks</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Accurate Legal Citations</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Exact statutory citations for all 50 states + Federal FOIA<br/>
-              • Mandatory segregability enforcement (5 U.S.C. § 552(b))<br/>
-              • Automatic fee waiver justification for journalists and non-profits
+              • Exact legal citations for all 50 states + Federal FOIA<br/>
+              • Built-in segregability clauses requesting partial release<br/>
+              • Fee waiver justifications for journalists, non-profits, and educators
             </p>
           </div>
 
@@ -151,11 +145,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Denial Letter NLP Analyzer</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Denial Letter Analyzer</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Instant extraction of cited exemptions (b)(4), (b)(5), (b)(7)<br/>
-              • Evaluates pretextual redactions against DOJ FOIA guidelines<br/>
-              • Synthesizes complete administrative appeal briefs with case law
+              • Paste agency denial letters to identify cited exemptions<br/>
+              • Explains why an exemption was claimed in plain English<br/>
+              • Drafts complete administrative appeal letters with legal arguments
             </p>
           </div>
 
@@ -163,11 +157,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Statutory Deadline Timers</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Response Deadline Timers</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Precision countdown tracking (e.g. 20 working days for federal)<br/>
-              • Automatic adjustment for state legal holidays and weekends<br/>
-              • Auto-generates constructive denial notices when deadlines lapse
+              • Tracks statutory countdowns (e.g. 20 working days under FOIA)<br/>
+              • Automatically adjusts for weekends and official holidays<br/>
+              • Follow-up letter templates when agencies miss deadlines
             </p>
           </div>
 
@@ -175,11 +169,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Zero-Custody Local Storage</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Private Local Storage</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • All case notes, drafts, and receipts stored in your browser's IndexedDB<br/>
-              • Zero telemetry or ambient data leakage to third parties<br/>
-              • Export portable, encrypted JSON backups at any time
+              • Case drafts and notes are stored directly in your browser<br/>
+              • No tracking or third-party data sharing<br/>
+              • Export encrypted JSON backups whenever you want
             </p>
           </div>
 
@@ -187,11 +181,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Cryptographic SHA-256 Attestation</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>Verification & Proof of Filing</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Computes immutable cryptographic hash for every sent letter<br/>
-              • Verifiable audit trails establishing exact filing dates and wording<br/>
-              • Admissible proof in state and federal FOIA judicial challenges
+              • Generates cryptographic timestamps for all outgoing requests<br/>
+              • Verifiable logs establishing filing dates and exact wording<br/>
+              • Organized documentation for formal appeals or legal records
             </p>
           </div>
 
@@ -199,11 +193,11 @@ export default function InquestProductLandingPage() {
             <div className="feature-icon-wrapper" style={{ color: "#06B6D4" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
-            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>1-Click Mailto & PDF Dispatch</h3>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.5rem" }}>1-Click Email & PDF Export</h3>
             <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: "1.5", margin: 0 }}>
-              • Opens pre-populated emails with correct agency subject headers<br/>
-              • Generates court-ready PDF documents formatted with statutory headers<br/>
-              • Clipboard copy for government web portals (FOIA.gov, NextRequest)
+              • Pre-populates email drafts with proper subject lines and agency contacts<br/>
+              • Exports clean, formatted PDF letters ready to mail or upload<br/>
+              • Quick copy for government web portals (FOIA.gov, NextRequest)
             </p>
           </div>
         </div>
@@ -213,13 +207,13 @@ export default function InquestProductLandingPage() {
       <section style={{ maxWidth: "1180px", margin: "5rem auto 0 auto", padding: "0 2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
           <div style={{ fontSize: "0.8rem", color: "#67E8F9", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem" }}>
-            Transparent Plans & Civic Guarantee
+            Plans & Pricing
           </div>
           <h2 style={{ fontSize: "2.2rem", fontWeight: 800, letterSpacing: "-0.02em" }}>
-            Free for Civic Use · Scaled for Newsrooms & Legal Teams
+            Free for Individuals · Scaled for Newsrooms & Teams
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "680px", margin: "0.5rem auto 0 auto" }}>
-            Our open civic charter ensures the core deterministic sunshine engine is permanently free. Upgrade whenever you need campaign sweeps, team dockets, and automated follow-ups.
+            The core request builder and 50-state database are completely free for individuals. Upgrade for multi-agency campaigns and collaborative team dockets.
           </p>
         </div>
 
@@ -245,13 +239,13 @@ export default function InquestProductLandingPage() {
                 $0 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ forever</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
-                Complete access to 50-state sunshine laws, deterministic drafting, and local client custody.
+                Full access to all 50 state sunshine laws, letter drafting, and private local storage.
               </p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#CBD5E1" }}>
-                <li>✓ All 50 state sunshine laws + 5 U.S.C. § 552</li>
-                <li>✓ Mandatory segregability clause injection</li>
+                <li>✓ All 50 state sunshine laws + Federal FOIA</li>
+                <li>✓ Built-in segregability and fee-waiver clauses</li>
                 <li>✓ Bring-Your-Own Gemini API Key (0 token fees)</li>
-                <li>✓ Cryptographic SHA-256 fingerprint verification</li>
+                <li>✓ Verifiable request timestamps and receipts</li>
               </ul>
             </div>
             <Link 
@@ -292,16 +286,16 @@ export default function InquestProductLandingPage() {
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $39 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+                $99 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
-                Multi-agency sweeps, automated statutory follow-ups, and inbound reply parsing.
+                Multi-agency sweeps, automated follow-up scheduling, and inbound reply parsing.
               </p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#F1F5F9" }}>
-                <li>✓ Multi-Agency Campaign Blasts (50 states)</li>
-                <li>✓ Automated Statutory Escalation Bot</li>
-                <li>✓ Inbound Email Relay (@inquest.exultia.tech)</li>
-                <li>✓ Encrypted Cloud Docket Sync & Calendar Alerts</li>
+                <li>✓ Multi-Agency Campaign Sweeps (all 50 states)</li>
+                <li>✓ Automated Deadline Follow-Up Reminders</li>
+                <li>✓ Inbound Email Tracking (@inquest.exultia.tech)</li>
+                <li>✓ Cloud Docket Sync & Calendar Reminders</li>
               </ul>
             </div>
             <Link 
@@ -337,20 +331,20 @@ export default function InquestProductLandingPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Newsroom & Legal</h3>
                 <span style={{ fontSize: "0.7rem", color: "#A78BFA", background: "rgba(167, 139, 250, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
-                  10 Seats
+                  5 Licenses
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $199 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+                $499 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
-                Collaborative team docket, deduplication alerts, and court-admissible evidence packages.
+                Shared team docket, duplicate request warnings, and exportable evidence packages.
               </p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#CBD5E1" }}>
-                <li>✓ Collaborative Docket (10 seats included)</li>
-                <li>✓ Cross-Bureau Deduplication Shield</li>
-                <li>✓ Judicial Precedent Citation Engine</li>
-                <li>✓ Court-Ready Certified Evidence Dossiers</li>
+                <li>✓ Collaborative Team Docket (5 licenses included)</li>
+                <li>✓ Duplicate Request Warning Alerts</li>
+                <li>✓ Legal Precedent & Exemption Citations</li>
+                <li>✓ Exportable Certified Documentation Dossiers</li>
               </ul>
             </div>
             <Link 
@@ -377,7 +371,7 @@ export default function InquestProductLandingPage() {
           <Link 
             href="/products/inquest/pricing" 
             style={{ color: "#67E8F9", fontSize: "0.95rem", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            Compare complete feature matrix, add-on services, & FAQ →
+            Compare complete feature matrix & FAQ →
           </Link>
         </div>
       </section>
@@ -393,10 +387,10 @@ export default function InquestProductLandingPage() {
           boxShadow: "0 20px 40px -15px rgba(0,0,0,0.8)"
         }}>
           <h2 style={{ fontSize: "2.2rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-            Draft Your First Deterministic FOIA Request
+            Draft Your First Public Records Request
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "600px", margin: "0 auto 2rem auto" }}>
-            Experience automated statutory citation, fee waiver arguments, and segregability protection in under 2 minutes.
+            Automated statutory citations, fee waiver arguments, and partial-release clauses in under 2 minutes.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/inquest" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" }}>

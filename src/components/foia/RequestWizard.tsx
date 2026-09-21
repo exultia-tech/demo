@@ -139,10 +139,10 @@ export const RequestWizard: React.FC<RequestWizardProps> = ({
             <Sparkles size={12} /> Natural Language to Legally Binding Filing
           </span>
           <h1 style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.25, marginBottom: '8px' }}>
-            Deterministic Open Records & FOIA Autopilot
+            Public Records & FOIA Request Assistant
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
-            Enter what records you are seeking in plain English. The AI and legal engine resolves the statutory jurisdiction, matches official custodians, pre-empts boilerplate exemption rejections, and compiles an enforceable request letter.
+            Describe the records you need in plain English. Inquest identifies the proper jurisdiction, looks up agency contact details, incorporates standard statutory protections, and formats an official request letter.
           </p>
         </div>
 
@@ -225,7 +225,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sliders size={18} color="var(--accent-primary)" />
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Deterministic Legal Parameters</h3>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Legal Parameters & Guidelines</h3>
               </div>
               <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>
                 Verified Schema

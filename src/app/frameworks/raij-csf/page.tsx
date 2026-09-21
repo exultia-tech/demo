@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function RaijCsfRedirect() {
-  redirect('/governance/raij-csf');
+export default function FrameworksRaijRedirect() {
+  redirect('/');
 }

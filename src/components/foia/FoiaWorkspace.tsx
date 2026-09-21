@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { RequestWizard } from './RequestWizard';
 import { CaseDashboard } from './CaseDashboard';
 import { ResponseAnalyzer } from './ResponseAnalyzer';
@@ -30,6 +31,7 @@ interface FoiaWorkspaceProps {
 }
 
 export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wizard' }) => {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<'wizard' | 'cases' | 'analyzer' | 'directory'>(initialTab);
   const [cases, setCases] = useState<FilingCase[]>([]);
   const [profile, setProfile] = useState<RequesterProfile>({
@@ -46,6 +48,22 @@ export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wiza
   const [apiKey, setApiKey] = useState<string>('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Sync tab with URL search parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      if (tabParam === 'agencies' || tabParam === 'directory') {
+        setActiveTab('directory');
+      } else if (tabParam === 'analyzer' || tabParam === 'appeals') {
+        setActiveTab('analyzer');
+      } else if (tabParam === 'cases' || tabParam === 'dashboard') {
+        setActiveTab('cases');
+      } else if (tabParam === 'wizard') {
+        setActiveTab('wizard');
+      }
+    }
+  }, [searchParams]);
 
   // Load initial cases and profile in client-side effect
   useEffect(() => {
@@ -111,14 +129,14 @@ export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wiza
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1rem', fontWeight: 800, letterSpacing: '-0.01em', color: '#F8FAFC' }}>
-                Inquest <span style={{ color: '#06B6D4' }}>Autopilot</span>
+                Inquest <span style={{ color: '#06B6D4' }}>Workspace</span>
               </span>
               <span className="badge badge-blue" style={{ fontSize: '0.65rem', padding: '2px 7px' }}>
-                Deterministic Engine
+                50-State Sunshine Engine
               </span>
             </div>
             <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
-              Statutory 50-State & Federal Open Records Automation
+              Statutory Open Records, Custodian Directory & Appeals
             </div>
           </div>
         </div>

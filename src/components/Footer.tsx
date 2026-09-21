@@ -29,13 +29,13 @@ export default function Footer() {
           </div>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", maxWidth: "300px" }}>
-            High-assurance deterministic infrastructure for zero-trust developer workstations, global cyber threat intelligence, and open governance standards.
+            Practical tools for developer workstation security, global threat intelligence, and public records transparency.
           </p>
 
           <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-            <span className="github-badge">✓ 100% Deterministic</span>
-            <span className="github-badge">✓ Zero Ambient Telemetry</span>
-            <span className="github-badge">✓ Vendor-Agnostic</span>
+            <span className="github-badge">✓ Open & Auditable</span>
+            <span className="github-badge">✓ Privacy-First</span>
+            <span className="github-badge">✓ Multi-Platform</span>
           </div>
         </div>
 
@@ -48,47 +48,30 @@ export default function Footer() {
             <li><Link href="/console">Builder Console</Link></li>
             <li><Link href="/features">Architecture & Specs</Link></li>
             <li><Link href="/pricing">Plans & Pricing</Link></li>
-            <li><Link href="/docs">Technical Docs</Link></li>
           </ul>
         </div>
 
-        {/* COLUMN 2: CORE PLATFORMS - THREAT INTEL */}
+        {/* COLUMN 2: CORE PLATFORMS - UVI */}
         <div className="footer-col">
           <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
-          <h4>UVI Threat Feed</h4>
+          <h4>UVI</h4>
           <ul>
             <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
+            <li><Link href="/threat-feed/stats">Global Statistics</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
             <li><Link href="/features#sandbox">Air-Gapped Sandboxing</Link></li>
-            <li><Link href="/features#hardening">Workstation Binary Hardening</Link></li>
-            <li><Link href="/docs#sbom">CycloneDX 1.5 JSON SBOMs</Link></li>
           </ul>
         </div>
 
-        {/* COLUMN 3: STANDALONE FOIA & CIVIC UTILITIES */}
+        {/* COLUMN 3: CORE PLATFORMS - INQUEST */}
         <div className="footer-col">
-          <div style={{ fontSize: "0.72rem", color: "#06B6D4", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Standalone Utility</div>
-          <h4>Inquest FOIA</h4>
+          <div style={{ fontSize: "0.72rem", color: "#06B6D4", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Statutory Compliance</div>
+          <h4>Inquest</h4>
           <ul>
-            <li><Link href="/products/inquest">Utility Overview</Link></li>
-            <li><Link href="/products/inquest/pricing">Access & Subscriptions</Link></li>
-            <li><Link href="/inquest">Request Wizard</Link></li>
-            <li><Link href="/inquest?tab=agencies">50-State Agency Directory</Link></li>
-            <li><Link href="/inquest?tab=analyzer">Denial & Exemption Analyzer</Link></li>
-            <li><Link href="/products/civic-pulse">CivicPulse Terminal</Link></li>
-          </ul>
-        </div>
-
-        {/* COLUMN 4: OPEN GOVERNANCE STANDARDS */}
-        <div className="footer-col">
-          <div style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Standards Lab</div>
-          <h4>Governance Standards</h4>
-          <ul>
-            <li><Link href="/governance">Frameworks Hub</Link></li>
-            <li><Link href="/governance/alpr-csf">ALPR-CSF (Surveillance Standard)</Link></li>
-            <li><Link href="/governance/raij-csf">RAIJ-CSF (Responsible AI Standard)</Link></li>
-            <li><Link href="/governance/raij-csf#ai-cross-walk-matrix">NIST / ISO / OMB Cross-Walks</Link></li>
-            <li><Link href="/governance/raij-csf#ai-compliance-assessment">Interactive Compliance Audits</Link></li>
+            <li><Link href="/products/inquest">Product Overview</Link></li>
+            <li><Link href="/products/inquest/features">Features & Tools</Link></li>
+            <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
+            <li><Link href="/inquest">Inquest Workspace</Link></li>
           </ul>
         </div>
 
@@ -113,9 +96,8 @@ export default function Footer() {
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/about" style={{ color: "#94A3B8", textDecoration: "none" }}>About</Link>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
-          <Link href="/docs" style={{ color: "#94A3B8", textDecoration: "none" }}>Docs</Link>
-          <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>Threat Feed</Link>
-          <Link href="/foia" style={{ color: "#94A3B8", textDecoration: "none" }}>FOIA</Link>
+          <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>UVI</Link>
+          <Link href="/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
         </div>
       </div>
     </footer>
