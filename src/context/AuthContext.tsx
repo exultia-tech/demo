@@ -1,0 +1,190 @@
+"use client";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
+
+export interface SubscribedProduct {
+  product: string;
+  tier: string;
+  status: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  subscriptions: SubscribedProduct[];
+}
+
+interface PaymentModalOptions {
+  product: "inquest" | "pureide" | "uvi";
+  tier: "pro" | "legal" | "enterprise";
+  price: number;
+  billingCycle: "monthly" | "annual";
+  planName: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  
+  // Modals
+  isAuthModalOpen: boolean;
+  authModalMode: "login" | "register";
+  openAuthModal: (mode?: "login" | "register") => void;
+  closeAuthModal: () => void;
+  
+  isPaymentModalOpen: boolean;
+  paymentOptions: PaymentModalOptions | null;
+  openPaymentModal: (options: PaymentModalOptions) => void;
+  closePaymentModal: () => void;
+  
+  // Helpers
+  getUserTier: (product: "inquest" | "pureide" | "uvi") => string;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<"login" | "register">("login");
+
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState<PaymentModalOptions | null>(null);
+
+  const refreshUser = async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      const data = await res.json();
+      if (data.authenticated && data.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Failed to check auth state:", err);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || "Failed to sign in" };
+      }
+      setUser(data.user);
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || "Failed to create account" };
+      }
+      setUser(data.user);
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setUser(null);
+    } catch (err) {
+      console.error("Failed to sign out:", err);
+    }
+  };
+
+  const openAuthModal = (mode: "login" | "register" = "login") => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => setIsAuthModalOpen(false);
+
+  const openPaymentModal = (options: PaymentModalOptions) => {
+    if (!user) {
+      openAuthModal("register");
+      return;
+    }
+    setPaymentOptions(options);
+    setIsPaymentModalOpen(true);
+  };
+
+  const closePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setPaymentOptions(null);
+  };
+
+  const getUserTier = (product: "inquest" | "pureide" | "uvi"): string => {
+    if (!user) return "free";
+    const sub = user.subscriptions?.find(s => s.product === product && s.status === "active");
+    return sub ? sub.tier : "free";
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        refreshUser,
+        isAuthModalOpen,
+        authModalMode,
+        openAuthModal,
+        closeAuthModal,
+        isPaymentModalOpen,
+        paymentOptions,
+        openPaymentModal,
+        closePaymentModal,
+        getUserTier,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}

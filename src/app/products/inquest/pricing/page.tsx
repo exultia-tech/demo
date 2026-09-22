@@ -23,33 +23,26 @@ import {
   X
 } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function InquestPricingPage() {
+  const { openPaymentModal } = useAuth();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
-  
-  // Interactive Checkout / Trial Modal State
-  const [selectedPlanModal, setSelectedPlanModal] = useState<"pro" | "newsroom" | null>(null);
-  const [orgName, setOrgName] = useState("");
-  const [workEmail, setWorkEmail] = useState("");
-  const [trialSuccess, setTrialSuccess] = useState(false);
-  const [generatedLicense, setGeneratedLicense] = useState("");
-
-  const handleStartTrial = (plan: "pro" | "newsroom") => {
-    setSelectedPlanModal(plan);
-    setTrialSuccess(false);
-  };
-
-  const handleProcessTrial = (e: React.FormEvent) => {
-    e.preventDefault();
-    const prefix = selectedPlanModal === "pro" ? "INQ-PRO" : "INQ-TEAM";
-    const licenseKey = `${prefix}-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-    setGeneratedLicense(licenseKey);
-    setTrialSuccess(true);
-  };
 
   const proMonthly = 119;
   const proAnnualMonthly = 99;
   const newsroomMonthly = 599;
   const newsroomAnnualMonthly = 499;
+
+  const handleStartTrial = (plan: "pro" | "newsroom") => {
+    openPaymentModal({
+      product: "inquest",
+      tier: plan === "pro" ? "pro" : "legal",
+      price: plan === "pro" ? (billingCycle === "annual" ? proAnnualMonthly : proMonthly) : (billingCycle === "annual" ? newsroomAnnualMonthly : newsroomMonthly),
+      billingCycle,
+      planName: plan === "pro" ? "Inquest Investigator Pro" : "Inquest Newsroom & Legal (5 Seats)"
+    });
+  };
 
   return (
     <div className="fade-in" style={{ padding: "3rem 1.5rem 6rem 1.5rem", maxWidth: "1360px", margin: "0 auto" }}>
@@ -747,182 +740,6 @@ export default function InquestPricingPage() {
           </div>
         </div>
       </section>
-
-      {/* INTERACTIVE TRIAL / SUBSCRIPTION MODAL */}
-      {selectedPlanModal && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0, 0, 0, 0.85)",
-          backdropFilter: "blur(10px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 200,
-          padding: "20px"
-        }}>
-          <div style={{
-            background: "rgba(15, 23, 42, 0.95)",
-            border: "1px solid rgba(6, 182, 212, 0.4)",
-            borderRadius: "18px",
-            width: "100%",
-            maxWidth: "540px",
-            padding: "2.25rem",
-            position: "relative",
-            boxShadow: "0 25px 50px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(6, 182, 212, 0.2)"
-          }}>
-            <button 
-              onClick={() => setSelectedPlanModal(null)}
-              style={{
-                position: "absolute",
-                top: "16px",
-                right: "16px",
-                background: "transparent",
-                border: "none",
-                color: "#94A3B8",
-                cursor: "pointer",
-                padding: "6px"
-              }}>
-              <X size={20} />
-            </button>
-
-            {!trialSuccess ? (
-              <form onSubmit={handleProcessTrial}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-                  <div style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "10px",
-                    background: selectedPlanModal === "pro" ? "linear-gradient(135deg, #06B6D4, #3B82F6)" : "linear-gradient(135deg, #8B5CF6, #6366F1)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#FFFFFF"
-                  }}>
-                    <Sparkles size={20} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800 }}>
-                      {selectedPlanModal === "pro" ? "Start 14-Day Investigator Pro Trial" : "Deploy Newsroom & Legal Suite"}
-                    </h3>
-                    <div style={{ fontSize: "0.8rem", color: "#06B6D4", fontWeight: 600 }}>
-                      Instant activation · No credit card required for trial
-                    </div>
-                  </div>
-                </div>
-
-                <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.5rem" }}>
-                  Unlock multi-jurisdiction campaign blasts, automated statutory escalation notices, and case law precedent citations.
-                </p>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.75rem" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#E2E8F0", marginBottom: "6px" }}>
-                      Work Email Address:
-                    </label>
-                    <input 
-                      type="email" 
-                      required 
-                      value={workEmail}
-                      onChange={(e) => setWorkEmail(e.target.value)}
-                      placeholder="reporter@newsroom.org" 
-                      className="input-field" 
-                      style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "8px" }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#E2E8F0", marginBottom: "6px" }}>
-                      Organization or Newsroom:
-                    </label>
-                    <input 
-                      type="text" 
-                      required 
-                      value={orgName}
-                      onChange={(e) => setOrgName(e.target.value)}
-                      placeholder="Midwest Investigative Bureau / Law Office" 
-                      className="input-field" 
-                      style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "8px" }}
-                    />
-                  </div>
-
-                  <div style={{
-                    padding: "12px 14px",
-                    borderRadius: "8px",
-                    background: "rgba(6, 182, 212, 0.08)",
-                    border: "1px solid rgba(6, 182, 212, 0.2)",
-                    fontSize: "0.78rem",
-                    color: "#67E8F9"
-                  }}>
-                    ✓ Includes full 50-state campaign dispatch tools and encrypted cloud docket sync.
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
-                  <button 
-                    type="button" 
-                    onClick={() => setSelectedPlanModal(null)}
-                    style={{ padding: "0.75rem 1.25rem", borderRadius: "8px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#CBD5E1", cursor: "pointer", fontWeight: 600 }}>
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="btn-primary" 
-                    style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)", color: "#041019", fontWeight: 800, cursor: "pointer" }}>
-                    Activate Instant Trial →
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div style={{ textAlign: "center", padding: "1rem 0" }}>
-                <div style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  background: "rgba(16, 185, 129, 0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#10B981",
-                  margin: "0 auto 1.25rem auto"
-                }}>
-                  <CheckCircle2 size={32} />
-                </div>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                  Trial Activated Successfully!
-                </h3>
-                <p style={{ fontSize: "0.88rem", color: "#94A3B8", marginBottom: "1.5rem", lineHeight: "1.5" }}>
-                  Welcome to Exultia Inquest Pro for <strong>{orgName || "your team"}</strong>. Your 14-day trial license has been provisioned:
-                </p>
-
-                <div style={{
-                  background: "rgba(2, 6, 23, 0.8)",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  fontFamily: "monospace",
-                  fontSize: "1rem",
-                  color: "#67E8F9",
-                  border: "1px solid rgba(6, 182, 212, 0.3)",
-                  marginBottom: "1.75rem",
-                  letterSpacing: "0.05em"
-                }}>
-                  {generatedLicense}
-                </div>
-
-                <Link 
-                  href="/inquest" 
-                  onClick={() => setSelectedPlanModal(null)}
-                  className="btn-primary" 
-                  style={{ display: "inline-block", padding: "0.85rem 2rem", borderRadius: "8px", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)", color: "#041019", fontWeight: 800 }}>
-                  Enter Inquest Workspace →
-                </Link>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
