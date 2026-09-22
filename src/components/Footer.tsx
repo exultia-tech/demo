@@ -54,7 +54,7 @@ export default function Footer() {
         {/* COLUMN 2: CORE PLATFORMS - UVI */}
         <div className="footer-col">
           <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
-          <h4>UVI</h4>
+          <h4>Universal Vulnerability Intelligence (UVI)</h4>
           <ul>
             <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
             <li><Link href="/threat-feed/stats">Global Statistics</Link></li>
@@ -95,7 +95,7 @@ export default function Footer() {
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
-          <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>UVI</Link>
+          <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>Universal Vulnerability Intelligence (UVI)</Link>
           <Link href="/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
         </div>
       </div>

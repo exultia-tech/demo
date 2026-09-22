@@ -116,7 +116,7 @@ export default function HomePage() {
                 <span className="badge badge-purple">Product 02</span>
               </div>
 
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>UVI</h3>
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Universal Vulnerability Intelligence (UVI)</h3>
               <div style={{ color: "#A78BFA", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
                 Universal Threat Feed
               </div>
@@ -130,7 +130,7 @@ export default function HomePage() {
                 href="/threat-feed" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}>
-                Explore UVI →
+                Explore Threat Intelligence →
               </Link>
             </div>
           </div>
