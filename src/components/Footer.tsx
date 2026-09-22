@@ -44,9 +44,9 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Core Platform</div>
           <h4>PureIDE</h4>
           <ul>
-            <li><Link href="/products/pure-ide">Product Overview</Link></li>
+            <li><Link href="/products/pure-ide">Product Overview & Features</Link></li>
+            <li><Link href="/products/pure-ide#architecture">Security Architecture</Link></li>
             <li><Link href="/console">Builder Console</Link></li>
-            <li><Link href="/features">Architecture & Specs</Link></li>
             <li><Link href="/pricing">Plans & Pricing</Link></li>
           </ul>
         </div>
@@ -59,7 +59,7 @@ export default function Footer() {
             <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
             <li><Link href="/threat-feed/stats">Global Statistics</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
-            <li><Link href="/features#sandbox">Air-Gapped Sandboxing</Link></li>
+            <li><Link href="/products/pure-ide#sandbox">Air-Gapped Sandboxing</Link></li>
           </ul>
         </div>
 

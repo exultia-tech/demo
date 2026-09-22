@@ -231,13 +231,13 @@ export default function Navbar() {
               <Link 
                 href="/products/pure-ide" 
                 className={`submenu-link ${pathname === "/products/pure-ide" || pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
-                Overview
+                Overview & Features
               </Link>
-              <Link 
-                href="/features" 
-                className={`submenu-link ${pathname === "/features" ? "active-blue" : ""}`}>
-                Features
-              </Link>
+              <a 
+                href="/products/pure-ide#architecture" 
+                className="submenu-link">
+                Architecture
+              </a>
               <Link 
                 href="/pricing" 
                 className={`submenu-link ${pathname === "/pricing" ? "active-blue" : ""}`}>

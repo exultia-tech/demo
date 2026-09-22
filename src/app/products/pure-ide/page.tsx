@@ -3,21 +3,21 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Exultia PureIDE | Secure Developer Workstations, On-Demand",
-  description: "Package, customize, and deploy secure developer IDEs in seconds with Exultia PureIDE. Block telemetry, audit plugins, and generate full SBOM reports.",
+  description: "Package, customize, and deploy secure developer IDEs in seconds with Exultia PureIDE. Block telemetry, audit plugins, enforce zero-trust policies, and generate full SBOM reports.",
 };
 
 export default function PureIdeLandingPage() {
   return (
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* PRODUCT HERO */}
-      <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
+      <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.025em", lineHeight: 1.1 }}>
           Secure Development, <br />
           <span className="gradient-text">On-Demand</span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: "720px", margin: "0 auto 2.25rem auto", fontSize: "1.25rem", lineHeight: "1.6", color: "#94A3B8" }}>
-          Package, customize, and distribute secure developer environments in seconds with Exultia PureIDE.
+        <p className="hero-desc" style={{ maxWidth: "760px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.65", color: "#94A3B8" }}>
+          Package, customize, and distribute hardened developer environments in seconds with Exultia PureIDE. Block untrusted plugins, eliminate unwanted background telemetry, and automatically generate full software bill-of-materials (SBOMs).
         </p>
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
@@ -28,11 +28,11 @@ export default function PureIdeLandingPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Launch Builder Console →
           </Link>
-          <Link 
-            href="/features" 
+          <a 
+            href="#architecture" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
             Explore Architecture
-          </Link>
+          </a>
           <Link 
             href="/pricing" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
@@ -45,9 +45,6 @@ export default function PureIdeLandingPage() {
       <section style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid var(--border-color)", borderBottom: "1px solid var(--border-color)", padding: "4.5rem 2rem", marginBottom: "5.5rem" }}>
         <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <span style={{ fontSize: "0.8rem", color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-              Simple 3-Step Process
-            </span>
             <h2 style={{ fontSize: "2.2rem", marginTop: "0.35rem", marginBottom: "0.5rem" }}>How PureIDE Works in 3 Steps</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "600px", margin: "0 auto" }}>
               From stack curation and threat validation to signed workstation distribution.
@@ -71,7 +68,7 @@ export default function PureIdeLandingPage() {
               </div>
               <strong style={{ fontSize: "1.05rem", display: "block", marginBottom: "0.35rem" }}>Cloud Sandbox Compilation</strong>
               <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5", margin: 0 }}>
-                Our stateless cloud runner correlates UVI threat signals, strips telemetry, and compiles sealed binaries for Win, Mac, and Linux.
+                Our stateless cloud runner correlates threat signals, strips telemetry, and compiles sealed binaries for Windows, macOS, and Linux.
               </p>
             </div>
 
@@ -88,8 +85,181 @@ export default function PureIdeLandingPage() {
         </div>
       </section>
 
+      {/* SECTION 1: 4 DEFENSE-IN-DEPTH CONTAINMENT LAYERS */}
+      <section id="architecture" style={{ maxWidth: "1280px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
+        <div id="security" style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <h2 style={{ fontSize: "2.3rem", marginBottom: "0.75rem" }}>The 4 Defense-in-Depth Containment Layers</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "780px", margin: "0 auto" }}>
+            A four-tier containment architecture ensuring developer releases cannot be tampered with on disk, bypassed locally, or compromised via unvetted marketplace access.
+          </p>
+        </div>
+
+        <div className="containment-layers-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.5rem" }}>
+          
+          <div id="hardening" className="glass-card" style={{ padding: "2rem", marginBottom: 0 }}>
+            <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60A5FA", fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.25rem" }}>
+              1
+            </div>
+            <h3 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>Immutable Binary Encapsulation</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6" }}>
+              Governance rules, air-gap registry routes, and core security boundaries are sealed directly into the native runtime binary, eliminating editable plaintext configurations on disk.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: "2rem", marginBottom: 0 }}>
+            <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(52, 211, 153, 0.15)", border: "1px solid rgba(52, 211, 153, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#34D399", fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.25rem" }}>
+              2
+            </div>
+            <h3 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>OS-Protected Directory Scopes</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6" }}>
+              Installers target root system directories (<code>Program Files</code> / <code>Applications</code>), enforcing standard non-admin read-only permissions so users cannot modify bundled extension payloads.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: "2rem", marginBottom: 0 }}>
+            <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#A78BFA", fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.25rem" }}>
+              3
+            </div>
+            <h3 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>Code-Signing & EDR Integrity</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6" }}>
+              Cryptographic signatures bind binary contents. Any disk-level modification invalidates the digital signature, triggering immediate Windows Defender WDAC and macOS Gatekeeper execution blocks.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: "2rem", marginBottom: 0 }}>
+            <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(251, 191, 36, 0.15)", border: "1px solid rgba(251, 191, 36, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FBBF24", fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.25rem" }}>
+              4
+            </div>
+            <h3 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>Network Egress Sandboxing</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6" }}>
+              Default public marketplace endpoints are removed. Editor network traffic is restricted to your private internal registry proxy (e.g. JFrog Artifactory) or completely air-gapped from outbound traffic.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* SECTION 2: STRICT ZERO TELEMETRY PROTOCOL */}
+      <section style={{ maxWidth: "1280px", margin: "0 auto 5rem auto", padding: "0 2rem" }}>
+        <div id="telemetry" className="glass-card" style={{ padding: "2.5rem", background: "rgba(52, 211, 153, 0.03)", border: "1px solid rgba(52, 211, 153, 0.25)", borderRadius: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+            <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "rgba(52, 211, 153, 0.15)", display: "grid", placeItems: "center", color: "#34D399", fontSize: "1.35rem" }}>
+              🛡️
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: "1.35rem" }}>Strict Zero Outbound Telemetry Protocol</h3>
+              <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--text-muted)" }}>Engineered for air-gapped financial institutions, defense contractors, and regulated environments.</p>
+            </div>
+          </div>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.94rem", lineHeight: "1.65", margin: 0 }}>
+            All upstream telemetry modules, usage analytics probes, remote crash reporting daemons, and Microsoft/Google tracking endpoints are permanently excised from the source tree during compilation. Your engineering team&apos;s keystrokes, repository names, file structures, and code remain 100% private to your workstations.
+          </p>
+        </div>
+      </section>
+
+      {/* SECTION 3: WIDESCREEN DUAL SECTION: EXTENSION SANDBOXING & CLOUD PIPELINE */}
+      <section style={{ maxWidth: "1280px", margin: "0 auto 6rem auto", padding: "0 2rem" }}>
+        <div className="widescreen-duo-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "2rem" }}>
+          
+          {/* CARD 1: SUPPLY CHAIN SANDBOXING & UNIVERSAL ENGINES */}
+          <div id="sandbox" className="glass-card" style={{ padding: "2.5rem", marginBottom: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", borderRadius: "16px" }}>
+            <div>
+              <h2 style={{ fontSize: "1.85rem", marginBottom: "0.6rem", letterSpacing: "-0.01em" }}>
+                Zero-Trust Extension Sandboxing Across 6 IDE Engines
+              </h2>
+              <p style={{ color: "var(--text-muted)", lineHeight: "1.6", fontSize: "0.92rem", marginBottom: "1.75rem" }}>
+                Standard IDEs allow arbitrary marketplace plugins to execute native code with root-level access. PureIDE enforces strict policy boundaries and pre-approved extension toolchains across 6 engines.
+              </p>
+
+              {/* CHECKLIST HIGHLIGHTS */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#34D399", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Strict 0 Open CVEs Baseline</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>Any extension with active CVEs is blocked from bundling.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#60A5FA", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Universal IDE Matrix</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>VS Code, Theia, Zed (Rust), Neovim, JupyterLab, and VSCodium.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#A78BFA", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Air-Gapped Localization (i18n)</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>12+ verified language packs pre-provisioned for offline use.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#FBBF24", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Auto-Included Remote-SSH</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>Secure remote development bridges bundled across all toolchains.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 2: CLOUD PIPELINE, SBOMs & ZERO CUSTODY */}
+          <div id="pipeline" className="glass-card" style={{ padding: "2.5rem", marginBottom: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", borderRadius: "16px" }}>
+            <div>
+              <h2 style={{ fontSize: "1.85rem", marginBottom: "0.6rem", letterSpacing: "-0.01em" }}>
+                Isolated Multi-OS Cloud Pipeline & Attestation
+              </h2>
+              <p style={{ color: "var(--text-muted)", lineHeight: "1.6", fontSize: "0.92rem", marginBottom: "1.75rem" }}>
+                Builds execute inside dedicated, ephemeral cloud runners. Each sandbox is provisioned on-demand, compiles sealed binaries, and is permanently destroyed upon completion.
+              </p>
+
+              {/* PIPELINE CAPABILITIES CHECKLIST */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#34D399", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Zero Local Server Overhead</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>No dedicated build hardware or local OS runners required.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#60A5FA", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Zero Customer Code Custody</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>We never store customer source code, keys, or build logs.</p>
+                  </div>
+                </div>
+
+                <div id="sbom" style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#A78BFA", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>CycloneDX 1.5 JSON SBOMs</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>SLSA-compliant Software Bill of Materials with SHA-256 binary digests.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem 1.1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                  <span style={{ color: "#FBBF24", fontSize: "1.1rem", lineHeight: "1.3" }}>✓</span> 
+                  <div>
+                    <strong style={{ fontSize: "0.9rem", color: "#fff" }}>Multi-OS Cross-Compilation & REST API</strong>
+                    <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-muted)", fontSize: "0.82rem", lineHeight: "1.4" }}>Simultaneous output for Windows, macOS, and Linux with CI/CD triggers.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* CORE PRODUCT CAPABILITIES (POINT-BY-POINT GRID) */}
-      <section style={{ maxWidth: "1240px", margin: "0 auto 6rem auto", padding: "0 2rem" }}>
+      <section style={{ maxWidth: "1280px", margin: "0 auto 6rem auto", padding: "0 2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 style={{ fontSize: "2.2rem", marginBottom: "0.5rem" }}>Product Capabilities Breakdown</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "650px", margin: "0 auto" }}>
