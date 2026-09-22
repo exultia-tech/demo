@@ -17,7 +17,7 @@ export async function GET() {
 
   try {
     const startTime = Date.now();
-    const result = await client.execute('SELECT 1 as is_connected, datetime("now") as db_time');
+    const result = await client.execute("SELECT 1 as is_connected, datetime('now') as db_time");
     const latencyMs = Date.now() - startTime;
 
     return NextResponse.json({
