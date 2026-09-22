@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { UVI_PUBLIC_FEED_SOURCES } from "@/lib/threat-feed-data";
+import { UviIcon } from "@/components/BrandIcons";
 
 export default function ThreatFeedStatsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
@@ -107,6 +108,9 @@ export default function ThreatFeedStatsPage() {
         background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(139, 92, 246, 0.15) 0%, rgba(10, 15, 26, 0) 80%)"
       }}>
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+            <UviIcon size={56} glow={true} />
+          </div>
           <h1 style={{
             fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
             fontWeight: 900,

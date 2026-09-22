@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
@@ -51,19 +52,7 @@ export default function HomePage() {
           }}>
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #3B82F6, #2563EB)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#FFFFFF",
-                  boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)"
-                }}>
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
+                <PureIdeIcon size={52} glow={true} />
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>PureIDE</h3>
@@ -99,19 +88,7 @@ export default function HomePage() {
           }}>
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #8B5CF6, #7C3AED)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#FFFFFF",
-                  boxShadow: "0 0 20px rgba(139, 92, 246, 0.4)"
-                }}>
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                </div>
+                <UviIcon size={52} glow={true} />
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Universal Vulnerability Intelligence (UVI)</h3>
@@ -147,19 +124,7 @@ export default function HomePage() {
           }}>
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #06B6D4, #0891B2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#FFFFFF",
-                  boxShadow: "0 0 20px rgba(6, 182, 212, 0.4)"
-                }}>
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
+                <InquestIcon size={52} glow={true} />
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h3>

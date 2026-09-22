@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { PureIdeIcon } from "@/components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "Exultia PureIDE | Secure Developer Workstations, On-Demand",
@@ -11,6 +12,9 @@ export default function PureIdeLandingPage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* PRODUCT HERO */}
       <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+          <PureIdeIcon size={64} glow={true} />
+        </div>
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.025em", lineHeight: 1.1 }}>
           Secure Development, <br />
           <span className="gradient-text">On-Demand</span>

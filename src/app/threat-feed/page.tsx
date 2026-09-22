@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import VirtualCisoView from "@/components/VirtualCisoView";
+import { UviIcon } from "@/components/BrandIcons";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -304,16 +305,19 @@ export default function ThreatFeedPage() {
       }}>
         {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <h1 style={{ 
-            fontSize: "2.35rem", 
-            fontWeight: 800, 
-            letterSpacing: "-0.03em", 
-            color: "#F8FAFC",
-            marginBottom: "0.5rem",
-            lineHeight: 1.2
-          }}>
-            Universal Vulnerability Intelligence (UVI)
-          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+            <UviIcon size={40} glow={true} />
+            <h1 style={{ 
+              fontSize: "2.35rem", 
+              fontWeight: 800, 
+              letterSpacing: "-0.03em", 
+              color: "#F8FAFC",
+              margin: 0,
+              lineHeight: 1.2
+            }}>
+              Universal Vulnerability Intelligence (UVI)
+            </h1>
+          </div>
           <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: 0 }}>
             Real-time multi-source threat consensus across {UVI_PUBLIC_FEED_SOURCES.length} synchronized global feeds, active zero-days, and supply chain malware.
           </p>

@@ -5,29 +5,36 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown } from "lucide-react";
+import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import AuthModal from "@/components/auth/AuthModal";
+import PaymentModal from "@/components/billing/PaymentModal";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { user, loading, logout, openAuthModal } = useAuth();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "inquest">("pureide");
 
-  // Determine current active product context
+  // Determine subnav contexts
   const isSecureIdeContext = 
-    pathname.startsWith("/products/pure-ide") || 
-    pathname.startsWith("/products/secure-ide") || 
-    pathname === "/pricing" || 
+    pathname === "/console" || 
     pathname === "/features" || 
-    pathname === "/console";
-
+    pathname === "/pricing" || 
+    pathname.startsWith("/products/pure-ide") || 
+    pathname.startsWith("/docs") ||
+    pathname.startsWith("/products/secure-ide");
+  
   const isThreatFeedContext = 
     pathname.startsWith("/threat-feed") || 
+    pathname.startsWith("/products/uvi") || 
     pathname.startsWith("/products/threat-feed");
 
   const isFoiaContext = 
     pathname.startsWith("/inquest") || 
     pathname.startsWith("/products/inquest") || 
-    pathname.startsWith("/foia") || 
+    pathname.startsWith("/foia") ||
     pathname.startsWith("/products/foia");
 
   // The horizontal subnav appears once a user visits any of the 3 product pages
@@ -42,22 +49,8 @@ export default function Navbar() {
       <header className="public-nav">
         {/* LEFT COLUMN: BRAND / LOGO */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <div style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "10px",
-              background: "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #06B6D4 100%)",
-              display: "grid",
-              placeItems: "center",
-              color: "white",
-              boxShadow: "0 0 15px rgba(59, 130, 246, 0.4)"
-            }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-                <line x1="12" y1="22" x2="12" y2="15.5" />
-              </svg>
-            </div>
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <ExultiaLogo size={36} />
             <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
               <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
                 Exultia
@@ -136,8 +129,8 @@ export default function Navbar() {
                     }}
                     className="dropdown-item"
                   >
-                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #3B82F6, #2563EB)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <div style={{ flexShrink: 0 }}>
+                      <PureIdeIcon size={32} />
                     </div>
                     <div>
                       <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureIDE</div>
@@ -161,8 +154,8 @@ export default function Navbar() {
                     }}
                     className="dropdown-item"
                   >
-                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #8B5CF6, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    <div style={{ flexShrink: 0 }}>
+                      <UviIcon size={32} />
                     </div>
                     <div>
                       <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Universal Vulnerability Intelligence (UVI)</div>
@@ -186,8 +179,8 @@ export default function Navbar() {
                     }}
                     className="dropdown-item"
                   >
-                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #06B6D4, #0891B2)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <div style={{ flexShrink: 0 }}>
+                      <InquestIcon size={32} />
                     </div>
                     <div>
                       <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
@@ -336,8 +329,8 @@ export default function Navbar() {
           {/* SUBMENU OPTION 1: PUREIDE SUBMENU */}
           {isSecureIdeContext && (
             <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <PureIdeIcon size={16} glow={false} />
                 PureIDE
               </span>
 
@@ -368,8 +361,8 @@ export default function Navbar() {
           {/* SUBMENU OPTION 2: UVI SUBMENU */}
           {isThreatFeedContext && (
             <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <UviIcon size={16} glow={false} />
                 UVI
               </span>
 
@@ -396,8 +389,8 @@ export default function Navbar() {
           {/* SUBMENU OPTION 3: INQUEST SUBMENU */}
           {isFoiaContext && (
             <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <InquestIcon size={16} glow={false} />
                 Inquest
               </span>
 

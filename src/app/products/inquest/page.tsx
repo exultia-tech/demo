@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { InquestIcon } from "@/components/BrandIcons";
 import { JURISDICTIONS_LIST } from "@/lib/foia/statutes";
 import { AGENCIES_DATABASE } from "@/lib/foia/agencies";
 
@@ -13,6 +14,9 @@ export default function InquestProductLandingPage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* PRODUCT HERO */}
       <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+          <InquestIcon size={64} glow={true} />
+        </div>
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.12 }}>
           Exultia <span style={{ color: "#06B6D4" }}>Inquest</span>
           <br />
