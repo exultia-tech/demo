@@ -11,12 +11,6 @@ export default function AboutPage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* HERO */}
       <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3rem" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(59, 130, 246, 0.12)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "999px", padding: "4px 14px", marginBottom: "1.5rem" }}>
-          <span style={{ fontSize: "0.8rem", color: "#93C5FD", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-            Our Mission
-          </span>
-        </div>
-
         <h1 className="hero-title" style={{ fontSize: "3.4rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.15 }}>
           Software Built for <span className="gradient-text">Clarity & Trust</span>
         </h1>

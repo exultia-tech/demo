@@ -19,28 +19,6 @@ export default function InquestFeaturesPage() {
         background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6, 182, 212, 0.15) 0%, rgba(10, 15, 26, 0) 80%)"
       }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(6, 182, 212, 0.12)",
-            border: "1px solid rgba(6, 182, 212, 0.3)",
-            padding: "5px 14px",
-            borderRadius: "999px",
-            fontSize: "0.82rem",
-            color: "#67E8F9",
-            fontWeight: 700,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "1.25rem"
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-            Inquest Capabilities
-          </div>
-
           <h1 style={{
             fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
             fontWeight: 900,

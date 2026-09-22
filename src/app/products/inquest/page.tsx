@@ -13,23 +13,6 @@ export default function InquestProductLandingPage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* PRODUCT HERO */}
       <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "rgba(6, 182, 212, 0.12)",
-          border: "1px solid rgba(6, 182, 212, 0.3)",
-          borderRadius: "999px",
-          padding: "5px 16px",
-          marginBottom: "1.5rem",
-          boxShadow: "0 0 15px rgba(6, 182, 212, 0.2)"
-        }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#06B6D4", boxShadow: "0 0 8px #06B6D4" }} />
-          <span style={{ fontSize: "0.8rem", color: "#67E8F9", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Public Records & FOIA Assistant
-          </span>
-        </div>
-
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.12 }}>
           Exultia <span style={{ color: "#06B6D4" }}>Inquest</span>
           <br />

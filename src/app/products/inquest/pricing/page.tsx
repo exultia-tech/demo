@@ -56,23 +56,6 @@ export default function InquestPricingPage() {
       
       {/* HEADER SECTION */}
       <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "rgba(6, 182, 212, 0.12)",
-          border: "1px solid rgba(6, 182, 212, 0.3)",
-          borderRadius: "999px",
-          padding: "5px 16px",
-          marginBottom: "1.25rem",
-          boxShadow: "0 0 15px rgba(6, 182, 212, 0.2)"
-        }}>
-          <Scale size={14} color="#06B6D4" />
-          <span style={{ fontSize: "0.8rem", color: "#67E8F9", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Exultia Inquest · Transparent Pricing
-          </span>
-        </div>
-
         <h1 style={{ fontSize: "3.2rem", fontWeight: 800, marginBottom: "1rem", letterSpacing: "-0.03em" }}>
           Transparent Tools, <span style={{ color: "#06B6D4" }}>Predictable Pricing</span>
         </h1>

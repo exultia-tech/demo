@@ -11,23 +11,6 @@ export default function HomePage() {
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* COMPACT SPLASH HERO */}
       <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3rem" }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "rgba(59, 130, 246, 0.1)",
-          border: "1px solid rgba(59, 130, 246, 0.25)",
-          borderRadius: "999px",
-          padding: "5px 16px",
-          marginBottom: "1.5rem",
-          boxShadow: "0 0 20px rgba(59, 130, 246, 0.15)"
-        }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3B82F6", boxShadow: "0 0 8px #3B82F6" }} />
-          <span style={{ fontSize: "0.82rem", color: "#93C5FD", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Secure Toolchains & Intelligence
-          </span>
-        </div>
-
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.035em", lineHeight: 1.12 }}>
           Security You Can Audit. <br/>
           <span className="gradient-text">Data You Can Trust.</span>

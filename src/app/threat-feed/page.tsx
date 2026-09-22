@@ -304,14 +304,6 @@ export default function ThreatFeedPage() {
       }}>
         {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(139, 92, 246, 0.15)", border: "1px solid rgba(139, 92, 246, 0.35)", borderRadius: "999px", padding: "4px 12px", marginBottom: "0.6rem", width: "fit-content" }}>
-            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#C084FC", boxShadow: "0 0 8px #C084FC" }} />
-            <span style={{ fontSize: "0.78rem", color: "#E9D5FF", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-              UVI Intelligence Engine
-            </span>
-          </div>
-
           <h1 style={{ 
             fontSize: "2.35rem", 
             fontWeight: 800, 
