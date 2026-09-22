@@ -94,7 +94,6 @@ export default function Footer() {
           © {new Date().getFullYear()} Exultia (exultia.tech). All rights reserved. CC-BY-4.0 Open Intelligence.
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
-          <Link href="/about" style={{ color: "#94A3B8", textDecoration: "none" }}>About</Link>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
           <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>UVI</Link>
           <Link href="/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>

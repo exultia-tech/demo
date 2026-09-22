@@ -211,10 +211,6 @@ export default function Navbar() {
               </div>
             )}
           </div>
-
-          <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
-            About
-          </Link>
         </nav>
 
         {/* RIGHT COLUMN (Balancing empty div to keep the center nav mathematically centered) */}
