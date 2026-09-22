@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const limitParam = searchParams.get('limit') || 'all'; // default 'all' or integer
   const isLimitAll = limitParam.toLowerCase() === 'all';
-  const limit = isLimitAll ? 5000 : (parseInt(limitParam, 10) || 50);
+  const limit = isLimitAll ? 50000 : (parseInt(limitParam, 10) || 50);
 
   // Fetch live aggregated dataset (curated + CISA KEV + OSV) and global catalog metrics
   const allAdvisories = await getAggregatedUviAdvisories();

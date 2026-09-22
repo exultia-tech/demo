@@ -31,8 +31,8 @@ export default function ThreatFeedPage() {
 
   // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
-  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(884);
-  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(72);
+  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(9203);
+  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(107);
 
   // AI CTI Research Agent Background Telemetry
   const [agentTelemetry, setAgentTelemetry] = useState<{
@@ -90,10 +90,10 @@ export default function ThreatFeedPage() {
 
   // Live Aggregated Data State
   const [advisories, setAdvisories] = useState<UviAdvisoryRecord[]>(CONSOLIDATED_UVI_ADVISORIES);
-  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(2723);
-  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(989);
-  const [matchedCount, setMatchedCount] = useState<number>(2723);
-  const [totalPages, setTotalPages] = useState<number>(55);
+  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(11090);
+  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(5307);
+  const [matchedCount, setMatchedCount] = useState<number>(11090);
+  const [totalPages, setTotalPages] = useState<number>(222);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLiveSynced, setHasLiveSynced] = useState<boolean>(false);
 

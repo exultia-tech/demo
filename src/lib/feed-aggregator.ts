@@ -732,7 +732,7 @@ function parseOsvGitHubActionsAdvisories(zipBuf: Buffer): UviAdvisoryRecord[] {
 // ==========================================
 // 4. URLhaus (abuse.ch) Malware Dropper Parser
 // ==========================================
-function parseUrlhausAdvisories(data: Record<string, any[]>, limit = 250): UviAdvisoryRecord[] {
+function parseUrlhausAdvisories(data: Record<string, any[]>, limit = 2500): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!data || typeof data !== 'object') return records;
 
@@ -834,7 +834,7 @@ function parseUrlhausAdvisories(data: Record<string, any[]>, limit = 250): UviAd
 // ==========================================
 // 5. ThreatFox (abuse.ch) IoC Parser
 // ==========================================
-function parseThreatfoxAdvisories(data: Record<string, any[]>, limit = 150): UviAdvisoryRecord[] {
+function parseThreatfoxAdvisories(data: Record<string, any[]>, limit = 2000): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!data || typeof data !== 'object') return records;
 
@@ -1028,7 +1028,7 @@ function parseFeodoTrackerAdvisories(data: any[]): UviAdvisoryRecord[] {
 // ==========================================
 // 7. OpenPhish Zero-Day Phishing Parser
 // ==========================================
-function parseOpenPhishAdvisories(text: string, limit = 120): UviAdvisoryRecord[] {
+function parseOpenPhishAdvisories(text: string, limit = 300): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!text) return records;
   const lines = text.split("\n").map(l => l.trim()).filter(l => l.startsWith("http"));
@@ -1125,7 +1125,7 @@ function parseOpenPhishAdvisories(text: string, limit = 120): UviAdvisoryRecord[
 // ==========================================
 // 8. IPSum Multi-Blacklist Scored IP Parser
 // ==========================================
-function parseIpsumAdvisories(text: string, limit = 150): UviAdvisoryRecord[] {
+function parseIpsumAdvisories(text: string, limit = 2500): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!text) return records;
   const lines = text.split("\n").map(l => l.trim()).filter(l => l && !l.startsWith("#"));
@@ -1139,7 +1139,7 @@ function parseIpsumAdvisories(text: string, limit = 150): UviAdvisoryRecord[] {
     if (parts.length < 2) continue;
     const ip = parts[0];
     const score = parseInt(parts[1], 10) || 0;
-    if (score < 6) continue; // High confidence only (listed on 6+ independent blacklists)
+    if (score < 4) continue; // Multi-blacklist presence (listed on 4+ independent threat blacklists)
 
     const cleanIp = ip.replace(/[^a-zA-Z0-9]/g, "-");
     const uviId = `UVI-IPSUM-${cleanIp}`;
@@ -1224,7 +1224,7 @@ function parseIpsumAdvisories(text: string, limit = 150): UviAdvisoryRecord[] {
 // ==========================================
 // 9. Blocklist.de Fail2ban SSH Attacker Parser
 // ==========================================
-function parseBlocklistDeAdvisories(text: string, limit = 100): UviAdvisoryRecord[] {
+function parseBlocklistDeAdvisories(text: string, limit = 1200): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!text) return records;
   const lines = text.split("\n").map(l => l.trim()).filter(l => l && !l.startsWith("#"));
@@ -1315,7 +1315,7 @@ function parseBlocklistDeAdvisories(text: string, limit = 100): UviAdvisoryRecor
 // ==========================================
 // 10. Emerging Threats Compromised IP Parser
 // ==========================================
-function parseEmergingThreatsAdvisories(text: string, limit = 60): UviAdvisoryRecord[] {
+function parseEmergingThreatsAdvisories(text: string, limit = 650): UviAdvisoryRecord[] {
   const records: UviAdvisoryRecord[] = [];
   if (!text) return records;
   const lines = text.split("\n").map(l => l.trim()).filter(l => l && !l.startsWith("#"));
@@ -1427,7 +1427,7 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     // Parallel multi-feed live ingestion across CISA KEV, OSV, abuse.ch, OpenPhish, IPSum, Blocklist.de, and Emerging Threats
     const [
@@ -1594,11 +1594,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 4. Process URLhaus Active Malware Delivery URLs
+    // 4. Process URLhaus Active Malware Delivery URLs (Up to 2,500 entries)
     if (urlhausRes.status === "fulfilled" && urlhausRes.value.ok) {
       try {
         const data = await urlhausRes.value.json();
-        const records = parseUrlhausAdvisories(data, 250);
+        const records = parseUrlhausAdvisories(data, 2500);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
@@ -1610,11 +1610,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 5. Process ThreatFox Active Indicators of Compromise
+    // 5. Process ThreatFox Active Indicators of Compromise (Up to 2,000 entries)
     if (threatfoxRes.status === "fulfilled" && threatfoxRes.value.ok) {
       try {
         const data = await threatfoxRes.value.json();
-        const records = parseThreatfoxAdvisories(data, 150);
+        const records = parseThreatfoxAdvisories(data, 2000);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
@@ -1642,11 +1642,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 7. Process OpenPhish Zero-Day Phishing Campaigns
+    // 7. Process OpenPhish Zero-Day Phishing Campaigns (Up to 300 entries)
     if (openphishRes.status === "fulfilled" && openphishRes.value.ok) {
       try {
         const text = await openphishRes.value.text();
-        const records = parseOpenPhishAdvisories(text, 120);
+        const records = parseOpenPhishAdvisories(text, 300);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
@@ -1658,11 +1658,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 8. Process IPSum Multi-Blacklist Aggressor IPs
+    // 8. Process IPSum Multi-Blacklist Aggressor IPs (Up to 2,500 entries)
     if (ipsumRes.status === "fulfilled" && ipsumRes.value.ok) {
       try {
         const text = await ipsumRes.value.text();
-        const records = parseIpsumAdvisories(text, 150);
+        const records = parseIpsumAdvisories(text, 2500);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
@@ -1674,11 +1674,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 9. Process Blocklist.de SSH Brute-Force Telemetry
+    // 9. Process Blocklist.de SSH Brute-Force Telemetry (Up to 1,200 entries)
     if (blocklistRes.status === "fulfilled" && blocklistRes.value.ok) {
       try {
         const text = await blocklistRes.value.text();
-        const records = parseBlocklistDeAdvisories(text, 100);
+        const records = parseBlocklistDeAdvisories(text, 1200);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
@@ -1690,11 +1690,11 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       }
     }
 
-    // 10. Process Emerging Threats Compromised Hosts
+    // 10. Process Emerging Threats Compromised Hosts (Up to 650 entries)
     if (etRes.status === "fulfilled" && etRes.value.ok) {
       try {
         const text = await etRes.value.text();
-        const records = parseEmergingThreatsAdvisories(text, 60);
+        const records = parseEmergingThreatsAdvisories(text, 650);
         for (const rec of records) {
           if (!existingUviIdSet.has(rec.uviId.toUpperCase())) {
             existingUviIdSet.add(rec.uviId.toUpperCase());
