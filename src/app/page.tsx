@@ -50,7 +50,7 @@ export default function HomePage() {
             marginBottom: 0
           }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+              <div style={{ marginBottom: "1.5rem" }}>
                 <div style={{
                   width: "48px",
                   height: "48px",
@@ -64,7 +64,6 @@ export default function HomePage() {
                 }}>
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
-                <span className="badge badge-blue">Product 01</span>
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>PureIDE</h3>
@@ -99,7 +98,7 @@ export default function HomePage() {
             marginBottom: 0
           }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+              <div style={{ marginBottom: "1.5rem" }}>
                 <div style={{
                   width: "48px",
                   height: "48px",
@@ -113,7 +112,6 @@ export default function HomePage() {
                 }}>
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 </div>
-                <span className="badge badge-purple">Product 02</span>
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Universal Vulnerability Intelligence (UVI)</h3>
@@ -148,7 +146,7 @@ export default function HomePage() {
             marginBottom: 0
           }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+              <div style={{ marginBottom: "1.5rem" }}>
                 <div style={{
                   width: "48px",
                   height: "48px",
@@ -162,7 +160,6 @@ export default function HomePage() {
                 }}>
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 </div>
-                <span className="badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE", border: "1px solid rgba(6, 182, 212, 0.3)" }}>Product 03</span>
               </div>
 
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h3>
