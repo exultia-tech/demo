@@ -82,6 +82,11 @@ export async function syncUviThreatsToDb(force = false): Promise<ThreatSyncResul
       throw new Error('Feed aggregator returned zero advisories');
     }
 
+    // On force sync, clear table to cleanly reload fresh schema & IDs
+    if (force) {
+      await client.execute('DELETE FROM uvi_threats');
+    }
+
     // 3. Batch insert in chunks of 100
     const CHUNK_SIZE = 100;
     let syncedCount = 0;

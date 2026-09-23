@@ -47,7 +47,7 @@ export const inquiries = sqliteTable('inquiries', {
 // ============================================================================
 
 export const uviThreats = sqliteTable('uvi_threats', {
-  uviId: text('uvi_id').primaryKey(), // e.g. UVI-2026-09-000001
+  uviId: text('uvi_id').primaryKey(), // e.g. UVI-2026-09-00000001
   legacyUviId: text('legacy_uvi_id'),
   title: text('title').notNull(),
   headline: text('headline').notNull(),

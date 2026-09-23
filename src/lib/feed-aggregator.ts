@@ -1723,9 +1723,9 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
 }
 
 /**
- * Standardize all UVI advisories to the unified format: UVI-YYYY-MM-000001
+ * Standardize all UVI advisories to the unified format: UVI-YYYY-MM-00000001
  * Deterministically buckets by publication year-month, prioritizes critical/milestone
- * threats within each month, and assigns continuous zero-padded 6-digit sequences.
+ * threats within each month, and assigns continuous zero-padded 8-digit sequences (up to 100M/month).
  */
 export function standardizeUviAdvisories(advisories: UviAdvisoryRecord[]): UviAdvisoryRecord[] {
   const ymBuckets = new Map<string, UviAdvisoryRecord[]>();
@@ -1759,7 +1759,7 @@ export function standardizeUviAdvisories(advisories: UviAdvisoryRecord[]): UviAd
     });
 
     items.forEach((item, index) => {
-      const seq = String(index + 1).padStart(6, "0");
+      const seq = String(index + 1).padStart(8, "0");
       const uviId = `UVI-${ym}-${seq}`;
       const originalId = item.uviId;
 

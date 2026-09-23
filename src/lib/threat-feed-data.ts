@@ -96,7 +96,7 @@ export interface InformationalSynthesis {
 }
 
 export interface UviAdvisoryRecord {
-  uviId: string; // Standardized: UVI-YYYY-MM-000001
+  uviId: string; // Standardized: UVI-YYYY-MM-00000001
   legacyUviId?: string; // Original cross-reference or legacy identifier (e.g. UVI-2024-3094, UVI-MAL-2025-0104)
   title: string;
   headline: string;

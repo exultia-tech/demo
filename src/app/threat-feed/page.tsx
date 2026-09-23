@@ -2916,7 +2916,7 @@ export default function ThreatFeedPage() {
               alignItems: "center"
             }}>
               <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
-                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-MM-000001</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
+                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-MM-00000001</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
               </span>
 
               <button
