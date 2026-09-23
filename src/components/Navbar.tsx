@@ -8,6 +8,7 @@ import { LogOut, User as UserIcon, Shield, ChevronDown } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
+import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -17,27 +18,39 @@ export default function Navbar() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "inquest">("pureide");
 
+  // Determine isolation mode (Standalone / Isolated Threat Feed)
+  const isIsolated = isIsolatedThreatFeed(
+    pathname,
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+  );
+
+  const isStandaloneRoute = pathname?.startsWith("/threat-feed/standalone") || pathname?.startsWith("/threat-feed/isolated");
+  const threatFeedHome = isStandaloneRoute ? "/threat-feed/standalone" : "/threat-feed";
+  const threatFeedStats = isStandaloneRoute ? "/threat-feed/standalone/stats" : "/threat-feed/stats";
+
   // Determine subnav contexts
-  const isSecureIdeContext = 
+  const isSecureIdeContext = !isIsolated && (
     pathname === "/console" || 
     pathname === "/features" || 
     pathname === "/pricing" || 
     pathname.startsWith("/products/pure-ide") || 
     pathname.startsWith("/docs") ||
-    pathname.startsWith("/products/secure-ide");
+    pathname.startsWith("/products/secure-ide")
+  );
   
   const isThreatFeedContext = 
     pathname.startsWith("/threat-feed") || 
     pathname.startsWith("/products/uvi") || 
     pathname.startsWith("/products/threat-feed");
 
-  const isFoiaContext = 
+  const isFoiaContext = !isIsolated && (
     pathname.startsWith("/inquest") || 
     pathname.startsWith("/products/inquest") || 
     pathname.startsWith("/foia") ||
-    pathname.startsWith("/products/foia");
+    pathname.startsWith("/products/foia")
+  );
 
-  // The horizontal subnav appears once a user visits any of the 3 product pages
+  // The horizontal subnav appears once a user visits any of the product pages
   const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext;
 
   // Active subscription helper
@@ -49,7 +62,10 @@ export default function Navbar() {
       <header className="public-nav">
         {/* LEFT COLUMN: BRAND / LOGO */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.85rem" }}>
+          <Link 
+            href={isIsolated ? threatFeedHome : "/"} 
+            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.85rem" }}
+          >
             <ExultiaLogo size={36} />
             <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
               <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
@@ -58,140 +74,185 @@ export default function Navbar() {
               <span style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 700, textTransform: "lowercase", letterSpacing: "0.04em" }}>
                 .tech
               </span>
+              {isIsolated && (
+                <span style={{
+                  marginLeft: "4px",
+                  fontSize: "0.65rem",
+                  background: "rgba(139, 92, 246, 0.2)",
+                  color: "#C084FC",
+                  border: "1px solid rgba(139, 92, 246, 0.4)",
+                  padding: "1px 6px",
+                  borderRadius: "4px",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  textTransform: "uppercase"
+                }}>
+                  UVI
+                </span>
+              )}
             </div>
           </Link>
         </div>
 
-        {/* CENTER COLUMN: MAIN NAVIGATION (Direct Products Dropdown) */}
-        <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-          
-          {/* PRODUCTS DROPDOWN */}
-          <div 
-            style={{ position: "relative" }}
-            onMouseEnter={() => setIsProductsOpen(true)}
-            onMouseLeave={() => setIsProductsOpen(false)}
-          >
-            <button 
-              className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "5px",
-                background: isProductsOpen ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                border: "none",
-                cursor: "pointer"
-              }}
-              onClick={() => setIsProductsOpen(!isProductsOpen)}
+        {/* CENTER COLUMN: MAIN NAVIGATION */}
+        {isIsolated ? (
+          /* ISOLATED / STANDALONE UVI NAVIGATION (No references to other unreleased products) */
+          <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
+            <Link 
+              href={threatFeedHome}
+              className={`nav-link ${pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "active" : ""}`}
+              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "#C084FC" : undefined }}
             >
-              Products
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}>
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {/* DROPDOWN MENU */}
-            {isProductsOpen && (
-              <div 
+              Feed Registry
+            </Link>
+            <Link 
+              href={threatFeedStats}
+              className={`nav-link ${pathname.includes("/stats") ? "active" : ""}`}
+              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname.includes("/stats") ? "#C084FC" : undefined }}
+            >
+              Global Statistics
+            </Link>
+            <a 
+              href="/api/threat-feed" 
+              target="_blank" 
+              rel="noreferrer"
+              className="nav-link"
+              style={{ fontWeight: 600, fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "4px" }}
+            >
+              REST API
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </nav>
+        ) : (
+          /* FULL SUITE PRODUCTS DROPDOWN */
+          <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+            <div 
+              style={{ position: "relative" }}
+              onMouseEnter={() => setIsProductsOpen(true)}
+              onMouseLeave={() => setIsProductsOpen(false)}
+            >
+              <button 
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
                 style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  paddingTop: "8px",
-                  zIndex: 1000
-                }}
-              >
-                <div style={{
-                  background: "rgba(10, 15, 26, 0.96)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  borderRadius: "14px",
-                  padding: "6px",
-                  minWidth: "300px",
-                  boxShadow: "0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px rgba(59, 130, 246, 0.15)",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "2px"
-                }}>
-                  {/* PRODUCT 1: PUREIDE */}
-                  <Link 
-                    href="/products/pure-ide" 
-                    onClick={() => setIsProductsOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      textDecoration: "none",
-                      transition: "background 0.15s ease",
-                      background: isSecureIdeContext ? "rgba(59, 130, 246, 0.15)" : "transparent"
-                    }}
-                    className="dropdown-item"
-                  >
-                    <div style={{ flexShrink: 0 }}>
-                      <PureIdeIcon size={32} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureIDE</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
-                    </div>
-                  </Link>
+                  alignItems: "center",
+                  gap: "5px",
+                  background: isProductsOpen ? "rgba(255, 255, 255, 0.08)" : "transparent",
+                  border: "none",
+                  cursor: "pointer"
+                }}
+                onClick={() => setIsProductsOpen(!isProductsOpen)}
+              >
+                Products
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
 
-                  {/* PRODUCT 2: UVI */}
-                  <Link 
-                    href="/threat-feed" 
-                    onClick={() => setIsProductsOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      textDecoration: "none",
-                      transition: "background 0.15s ease",
-                      background: isThreatFeedContext ? "rgba(139, 92, 246, 0.15)" : "transparent"
-                    }}
-                    className="dropdown-item"
-                  >
-                    <div style={{ flexShrink: 0 }}>
-                      <UviIcon size={32} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Universal Vulnerability Intelligence (UVI)</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal threat feed aggregating 110+ global registries</div>
-                    </div>
-                  </Link>
+              {/* DROPDOWN MENU */}
+              {isProductsOpen && (
+                <div 
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    paddingTop: "8px",
+                    zIndex: 1000
+                  }}
+                >
+                  <div style={{
+                    background: "rgba(10, 15, 26, 0.96)",
+                    backdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "14px",
+                    padding: "6px",
+                    minWidth: "300px",
+                    boxShadow: "0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px rgba(59, 130, 246, 0.15)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px"
+                  }}>
+                    {/* PRODUCT 1: PUREIDE */}
+                    <Link 
+                      href="/products/pure-ide" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isSecureIdeContext ? "rgba(59, 130, 246, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <PureIdeIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureIDE</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
+                      </div>
+                    </Link>
 
-                  {/* PRODUCT 3: INQUEST */}
-                  <Link 
-                    href="/products/inquest" 
-                    onClick={() => setIsProductsOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      textDecoration: "none",
-                      transition: "background 0.15s ease",
-                      background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
-                    }}
-                    className="dropdown-item"
-                  >
-                    <div style={{ flexShrink: 0 }}>
-                      <InquestIcon size={32} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
-                      <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
-                    </div>
-                  </Link>
+                    {/* PRODUCT 2: UVI */}
+                    <Link 
+                      href="/threat-feed" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isThreatFeedContext ? "rgba(139, 92, 246, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <UviIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Universal Vulnerability Intelligence (UVI)</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal threat feed aggregating 110+ global registries</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 3: INQUEST */}
+                    <Link 
+                      href="/products/inquest" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <InquestIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </nav>
+              )}
+            </div>
+          </nav>
+        )}
 
         {/* RIGHT COLUMN: AUTHENTICATION & USER STATUS */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.75rem" }}>
@@ -229,7 +290,7 @@ export default function Navbar() {
                   {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                 </div>
                 <span>{user.name || user.email.split("@")[0]}</span>
-                {activeInquestSub && activeInquestSub.tier !== "free" && (
+                {activeInquestSub && activeInquestSub.tier !== "free" && !isIsolated && (
                   <span style={{ fontSize: "0.68rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
                     {activeInquestSub.tier}
                   </span>
@@ -323,10 +384,10 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* TIER 2: HORIZONTAL PRODUCT SUBMENU (Centered in the viewport) */}
+      {/* TIER 2: HORIZONTAL PRODUCT SUBMENU */}
       {hasSubnav && (
         <div className="product-submenu-bar">
-          {/* SUBMENU OPTION 1: PUREIDE SUBMENU */}
+          {/* SUBMENU OPTION 1: PUREIDE SUBMENU (Hidden in Isolated Mode) */}
           {isSecureIdeContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -363,17 +424,17 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <UviIcon size={16} glow={false} />
-                UVI
+                {isIsolated ? "UVI Threat Intelligence" : "UVI"}
               </span>
 
               <Link 
-                href="/threat-feed" 
-                className={`submenu-link ${pathname === "/threat-feed" ? "active-purple" : ""}`}>
+                href={threatFeedHome} 
+                className={`submenu-link ${pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "active-purple" : ""}`}>
                 Feed Registry
               </Link>
               <Link 
-                href="/threat-feed/stats" 
-                className={`submenu-link ${pathname === "/threat-feed/stats" ? "active-purple" : ""}`}>
+                href={threatFeedStats} 
+                className={`submenu-link ${pathname.includes("/stats") ? "active-purple" : ""}`}>
                 Global Statistics
               </Link>
               <a 
@@ -386,7 +447,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 3: INQUEST SUBMENU */}
+          {/* SUBMENU OPTION 3: INQUEST SUBMENU (Hidden in Isolated Mode) */}
           {isFoiaContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -422,3 +483,4 @@ export default function Navbar() {
     </div>
   );
 }
+

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
   title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
@@ -8,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
+  if (SITE_CONFIG.isolatedThreatFeed) {
+    redirect("/threat-feed");
+  }
+
   return (
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* COMPACT SPLASH HERO */}
