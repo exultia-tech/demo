@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -44,7 +44,7 @@ interface SubscriptionItem {
   createdAt: string | null;
 }
 
-export default function AccountPage() {
+function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading, openAuthModal, refreshUser } = useAuth();
@@ -1411,5 +1411,18 @@ export default function AccountPage() {
       )}
 
     </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "75vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+        <div style={{ width: "40px", height: "40px", border: "3px solid rgba(59, 130, 246, 0.2)", borderTopColor: "#3B82F6", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+        <p style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Loading account details...</p>
+      </div>
+    }>
+      <AccountPageContent />
+    </Suspense>
   );
 }
