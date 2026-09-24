@@ -1,4 +1,5 @@
 import { client } from './index';
+import { hashPassword } from '@/lib/auth/crypto';
 
 export async function initializeDatabase(): Promise<void> {
   const ddlStatements = [
@@ -38,6 +39,18 @@ export async function initializeDatabase(): Promise<void> {
       tier TEXT,
       message TEXT,
       created_at INTEGER
+    );`,
+    `CREATE TABLE IF NOT EXISTS api_tokens (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      token_prefix TEXT NOT NULL,
+      token_hash TEXT NOT NULL,
+      scopes_json TEXT NOT NULL DEFAULT '["read:feeds"]',
+      last_used_at INTEGER,
+      expires_at INTEGER,
+      created_at INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`,
 
     // 2. Universal Vulnerability Intelligence (UVI)
@@ -221,7 +234,77 @@ export async function initializeDatabase(): Promise<void> {
     await client.execute(`ALTER TABLE inquest_cases ADD COLUMN jurisdiction TEXT;`).catch(() => {});
     await client.execute(`ALTER TABLE inquest_cases ADD COLUMN exemption_codes TEXT;`).catch(() => {});
     await client.execute(`ALTER TABLE inquest_cases ADD COLUMN estimated_timeline TEXT;`).catch(() => {});
+    // Normalize legacy millisecond timestamps to Unix epoch seconds
+    await client.execute(`UPDATE users SET created_at = CAST(created_at / 1000 AS INTEGER) WHERE created_at > 2000000000;`).catch(() => {});
+    await client.execute(`UPDATE users SET updated_at = CAST(updated_at / 1000 AS INTEGER) WHERE updated_at > 2000000000;`).catch(() => {});
   } catch (e: any) {
     console.warn('Inquest migration notice:', e?.message || e);
+  }
+
+  // Seed Default Preview / Admin Accounts (Upsert to ensure accurate hash)
+  try {
+    const adminId = 'usr_admin_default';
+    const adminHash = hashPassword('exultia2026');
+    const now = Math.floor(Date.now() / 1000);
+
+    await client.execute({
+      sql: `INSERT INTO users (id, email, name, password_hash, role, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(email) DO UPDATE SET password_hash = excluded.password_hash, role = excluded.role, updated_at = excluded.updated_at, created_at = excluded.created_at`,
+      args: [adminId, 'admin@exultia.tech', 'Exultia Administrator', adminHash, 'admin', now, now]
+    });
+
+    // Give admin full pro/enterprise access across all products
+    await client.execute({
+      sql: `INSERT OR REPLACE INTO subscriptions (id, user_id, product, tier, status, created_at) VALUES 
+        (?, ?, 'pureide', 'enterprise', 'active', ?),
+        (?, ?, 'uvi', 'enterprise', 'active', ?),
+        (?, ?, 'inquest', 'legal', 'active', ?)`,
+      args: [
+        `sub_pureide_${adminId}`, adminId, now,
+        `sub_uvi_${adminId}`, adminId, now,
+        `sub_inquest_${adminId}`, adminId, now
+      ]
+    });
+
+    // Seed a sample API token for the admin
+    await client.execute({
+      sql: `INSERT OR REPLACE INTO api_tokens (id, user_id, name, token_prefix, token_hash, scopes_json, last_used_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        'tok_admin_live_001',
+        adminId,
+        'UVI Telemetry Production Agent Key',
+        'exultia_pat_live_9a8f...',
+        hashPassword('exultia_pat_live_9a8f4c2e1b'),
+        JSON.stringify(['read:threats', 'read:stats', 'ingest:telemetry', 'builder:cli']),
+        now,
+        now
+      ]
+    });
+
+    const devId = 'usr_dev_default';
+    const devHash = hashPassword('exultia2026');
+
+    await client.execute({
+      sql: `INSERT INTO users (id, email, name, password_hash, role, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(email) DO UPDATE SET password_hash = excluded.password_hash, role = excluded.role, updated_at = excluded.updated_at, created_at = excluded.created_at`,
+      args: [devId, 'developer@exultia.tech', 'Preview Developer', devHash, 'user', now, now]
+    });
+
+    // Give developer baseline community/free access
+    await client.execute({
+      sql: `INSERT OR REPLACE INTO subscriptions (id, user_id, product, tier, status, created_at) VALUES 
+        (?, ?, 'pureide', 'free', 'active', ?),
+        (?, ?, 'uvi', 'free', 'active', ?),
+        (?, ?, 'inquest', 'free', 'active', ?)`,
+      args: [
+        `sub_pureide_${devId}`, devId, now,
+        `sub_uvi_${devId}`, devId, now,
+        `sub_inquest_${devId}`, devId, now
+      ]
+    });
+  } catch (e: any) {
+    console.warn('Account seed notice:', e?.message || e);
   }
 }

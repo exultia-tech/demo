@@ -42,6 +42,18 @@ export const inquiries = sqliteTable('inquiries', {
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+export const apiTokens = sqliteTable('api_tokens', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  tokenPrefix: text('token_prefix').notNull(), // e.g. "exultia_pat_..."
+  tokenHash: text('token_hash').notNull(),
+  scopesJson: text('scopes_json').notNull().default('["read:feeds"]'),
+  lastUsedAt: integer('last_used_at', { mode: 'timestamp' }),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // ============================================================================
 // 2. Universal Vulnerability Intelligence (UVI) Feed & Catalog
 // ============================================================================

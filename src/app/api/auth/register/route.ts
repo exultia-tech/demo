@@ -9,7 +9,18 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, inviteCode } = await req.json();
+
+    // Enforce Invite-Only / Registration Disabled policy during private development preview
+    const isInviteOnly = process.env.ALLOW_PUBLIC_REGISTRATION !== 'true';
+    const validInviteCodes = ['EXULTIA_DEV_2026', 'FOUNDER_PREVIEW', process.env.INVITE_CODE].filter(Boolean);
+
+    if (isInviteOnly && (!inviteCode || !validInviteCodes.includes(inviteCode.trim().toUpperCase()))) {
+      return NextResponse.json({
+        error: 'Account registration is currently invite-only during our private preview. Please contact an administrator or sign in with an authorized account.',
+        inviteRequired: true
+      }, { status: 403 });
+    }
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });

@@ -290,11 +290,15 @@ export default function Navbar() {
                   {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                 </div>
                 <span>{user.name || user.email.split("@")[0]}</span>
-                {activeInquestSub && activeInquestSub.tier !== "free" && !isIsolated && (
+                {user.role === "admin" ? (
+                  <span style={{ fontSize: "0.68rem", color: "#FCD34D", background: "rgba(245, 158, 11, 0.2)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
+                    ADMIN
+                  </span>
+                ) : activeInquestSub && activeInquestSub.tier !== "free" && !isIsolated ? (
                   <span style={{ fontSize: "0.68rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
                     {activeInquestSub.tier}
                   </span>
-                )}
+                ) : null}
                 <ChevronDown size={14} color="#94A3B8" />
               </button>
 
@@ -308,18 +312,67 @@ export default function Navbar() {
                     background: "rgba(10, 15, 26, 0.98)",
                     backdropFilter: "blur(16px)",
                     border: "1px solid rgba(255, 255, 255, 0.12)",
-                    borderRadius: "12px",
+                    borderRadius: "14px",
                     padding: "8px",
-                    minWidth: "220px",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.8)",
+                    minWidth: "240px",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.85), 0 0 20px rgba(59, 130, 246, 0.12)",
                     zIndex: 1000
                   }}
                   onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
-                  <div style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "4px" }}>
-                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#FFFFFF" }}>{user.name || "Exultia User"}</div>
+                  <div style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2px" }}>
+                      <div style={{ fontSize: "0.84rem", fontWeight: 700, color: "#FFFFFF" }}>{user.name || "Exultia User"}</div>
+                      <span style={{ fontSize: "0.65rem", color: user.role === "admin" ? "#FCD34D" : "#93C5FD", background: user.role === "admin" ? "rgba(245, 158, 11, 0.15)" : "rgba(59, 130, 246, 0.15)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
+                        {user.role}
+                      </span>
+                    </div>
                     <div style={{ fontSize: "0.72rem", color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis" }}>{user.email}</div>
                   </div>
+
+                  <Link
+                    href="/account"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "9px",
+                      padding: "8px 10px",
+                      color: "#CBD5E1",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      transition: "background 0.15s ease"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <UserIcon size={15} color="#60A5FA" />
+                    Profile & Account
+                  </Link>
+
+                  <Link
+                    href="/account/subscription"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "9px",
+                      padding: "8px 10px",
+                      color: "#CBD5E1",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      transition: "background 0.15s ease"
+                    }}
+                    className="dropdown-item"
+                  >
+                    <Shield size={15} color="#C084FC" />
+                    Subscriptions & Plans
+                  </Link>
+
+                  <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "4px 0" }} />
 
                   <button 
                     onClick={() => { logout(); setIsUserMenuOpen(false); }}
@@ -327,12 +380,12 @@ export default function Navbar() {
                       width: "100%",
                       display: "flex",
                       alignItems: "center",
-                      gap: "8px",
+                      gap: "9px",
                       padding: "8px 10px",
                       background: "transparent",
                       border: "none",
                       color: "#F87171",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       cursor: "pointer",
                       fontSize: "0.82rem",
                       fontWeight: 600,
@@ -340,7 +393,7 @@ export default function Navbar() {
                     }}
                     className="dropdown-item"
                   >
-                    <LogOut size={14} />
+                    <LogOut size={15} />
                     Sign Out
                   </button>
                 </div>
@@ -351,33 +404,18 @@ export default function Navbar() {
               <button 
                 onClick={() => openAuthModal("login")}
                 style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15))",
+                  border: "1px solid rgba(59, 130, 246, 0.4)",
                   borderRadius: "8px",
-                  padding: "6px 14px",
-                  color: "#CBD5E1",
-                  fontSize: "0.84rem",
-                  fontWeight: 600,
-                  cursor: "pointer"
+                  padding: "6px 16px",
+                  color: "#FFFFFF",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 0 15px rgba(59, 130, 246, 0.15)"
                 }}
               >
                 Sign In
-              </button>
-              <button 
-                onClick={() => openAuthModal("register")}
-                style={{
-                  background: "linear-gradient(135deg, #3B82F6, #2563EB)",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "6px 14px",
-                  color: "#FFFFFF",
-                  fontSize: "0.84rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  boxShadow: "0 0 15px rgba(59, 130, 246, 0.3)"
-                }}
-              >
-                Register
               </button>
             </div>
           )}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db, users, subscriptions } from '@/lib/db';
+import { initializeDatabase } from '@/lib/db/init';
 import { eq, and } from 'drizzle-orm';
 import { verifyPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
@@ -9,6 +10,8 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
+    await initializeDatabase();
+
     const { email, password } = await req.json();
 
     if (!email || !password) {
