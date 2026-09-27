@@ -21,9 +21,16 @@ import {
   Clock,
   Terminal,
   FileText,
-  Cpu
+  Cpu,
+  LayoutDashboard,
+  Radio,
+  Scale
 } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import CustomerOverview from "@/components/account/CustomerOverview";
+import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
+import UviCustomerTools from "@/components/account/UviCustomerTools";
+import InquestCustomerTools from "@/components/account/InquestCustomerTools";
 
 interface ApiTokenItem {
   id: string;
@@ -47,11 +54,11 @@ interface SubscriptionItem {
 function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading: authLoading, openAuthModal, refreshUser } = useAuth();
+  const { user, loading: authLoading, openAuthModal, openPaymentModal, refreshUser, getUserTier } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"profile" | "subscriptions" | "tokens" | "security">(
-    (tabParam as any) || "profile"
+  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "subscriptions" | "tokens" | "security">(
+    (tabParam as any) || "overview"
   );
 
   // Profile Form State
@@ -92,8 +99,12 @@ function AccountPageContent() {
     workstationsCount: 0,
   });
 
+  const pureIdeTier = getUserTier("pureide");
+  const uviTier = getUserTier("uvi");
+  const inquestTier = getUserTier("inquest");
+
   useEffect(() => {
-    if (tabParam && ["profile", "subscriptions", "tokens", "security"].includes(tabParam)) {
+    if (tabParam && ["overview", "pureide", "uvi", "inquest", "subscriptions", "tokens", "security"].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, [tabParam]);
@@ -304,7 +315,7 @@ function AccountPageContent() {
   return (
     <div style={{ minHeight: "90vh", padding: "2.5rem 1.5rem", maxWidth: "1200px", margin: "0 auto" }}>
       
-      {/* Top Banner / Account Header */}
+      {/* Top Banner / Customer Header */}
       <div style={{
         background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%)",
         border: "1px solid rgba(59, 130, 246, 0.25)",
@@ -336,7 +347,7 @@ function AccountPageContent() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#FFFFFF", margin: 0, letterSpacing: "-0.02em" }}>
-                {user.name || "Developer Account"}
+                {user.name || "Customer Portal"}
               </h1>
               <span style={{
                 fontSize: "0.72rem",
@@ -353,7 +364,10 @@ function AccountPageContent() {
               </span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: "4px 0 0 0" }}>
-              {user.email} • ID: <span style={{ fontFamily: "monospace", color: "#64748B" }}>{user.id}</span>
+              {user.email} • Active Tiers:{" "}
+              <span style={{ color: "#60A5FA", fontWeight: 700 }}>PureIDE ({pureIdeTier.toUpperCase()})</span> •{" "}
+              <span style={{ color: "#C084FC", fontWeight: 700 }}>UVI ({uviTier.toUpperCase()})</span> •{" "}
+              <span style={{ color: "#67E8F9", fontWeight: 700 }}>Inquest ({inquestTier.toUpperCase()})</span>
             </p>
           </div>
         </div>
@@ -362,15 +376,15 @@ function AccountPageContent() {
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "0.75rem 1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#60A5FA" }}>{stats.activeSubscriptionsCount || subscriptions.filter(s => s.status === "active").length}</div>
-            <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Active Plans</div>
+            <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Active Tiers</div>
           </div>
           <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "0.75rem 1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#A78BFA" }}>{tokens.length}</div>
             <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>API Tokens</div>
           </div>
           <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "0.75rem 1.25rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#34D399" }}>Secure</div>
-            <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Zero Telemetry</div>
+            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#34D399" }}>Zero-Telemetry</div>
+            <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Enclave Verified</div>
           </div>
         </div>
       </div>
@@ -385,25 +399,91 @@ function AccountPageContent() {
         paddingBottom: "2px"
       }}>
         <button
-          onClick={() => setActiveTab("profile")}
+          onClick={() => setActiveTab("overview")}
           style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
             padding: "0.85rem 1.25rem",
-            background: activeTab === "profile" ? "rgba(59, 130, 246, 0.15)" : "transparent",
+            background: activeTab === "overview" ? "rgba(59, 130, 246, 0.15)" : "transparent",
             border: "none",
-            borderBottom: activeTab === "profile" ? "2px solid #3B82F6" : "2px solid transparent",
-            color: activeTab === "profile" ? "#FFFFFF" : "#94A3B8",
-            fontWeight: activeTab === "profile" ? 700 : 500,
-            fontSize: "0.92rem",
+            borderBottom: activeTab === "overview" ? "2px solid #3B82F6" : "2px solid transparent",
+            color: activeTab === "overview" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "overview" ? 700 : 500,
+            fontSize: "0.9rem",
             cursor: "pointer",
             borderRadius: "8px 8px 0 0",
-            transition: "all 0.2s ease"
+            whiteSpace: "nowrap"
           }}
         >
-          <UserIcon size={16} color={activeTab === "profile" ? "#60A5FA" : "#94A3B8"} />
-          Profile & Identity
+          <LayoutDashboard size={16} color={activeTab === "overview" ? "#60A5FA" : "#94A3B8"} />
+          Customer Overview
+        </button>
+
+        <button
+          onClick={() => setActiveTab("pureide")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "pureide" ? "rgba(59, 130, 246, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "pureide" ? "2px solid #3B82F6" : "2px solid transparent",
+            color: activeTab === "pureide" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "pureide" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <PureIdeIcon size={16} glow={false} />
+          PureIDE Tools
+        </button>
+
+        <button
+          onClick={() => setActiveTab("uvi")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "uvi" ? "rgba(139, 92, 246, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "uvi" ? "2px solid #8B5CF6" : "2px solid transparent",
+            color: activeTab === "uvi" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "uvi" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <UviIcon size={16} glow={false} />
+          UVI Threat Intel
+        </button>
+
+        <button
+          onClick={() => setActiveTab("inquest")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "inquest" ? "rgba(6, 182, 212, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "inquest" ? "2px solid #06B6D4" : "2px solid transparent",
+            color: activeTab === "inquest" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "inquest" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <InquestIcon size={16} glow={false} />
+          Inquest Legal Vault
         </button>
 
         <button
@@ -418,14 +498,14 @@ function AccountPageContent() {
             borderBottom: activeTab === "subscriptions" ? "2px solid #8B5CF6" : "2px solid transparent",
             color: activeTab === "subscriptions" ? "#FFFFFF" : "#94A3B8",
             fontWeight: activeTab === "subscriptions" ? 700 : 500,
-            fontSize: "0.92rem",
+            fontSize: "0.9rem",
             cursor: "pointer",
             borderRadius: "8px 8px 0 0",
-            transition: "all 0.2s ease"
+            whiteSpace: "nowrap"
           }}
         >
           <Shield size={16} color={activeTab === "subscriptions" ? "#C084FC" : "#94A3B8"} />
-          Subscriptions & Entitlements
+          Subscriptions & Plans
         </button>
 
         <button
@@ -440,14 +520,14 @@ function AccountPageContent() {
             borderBottom: activeTab === "tokens" ? "2px solid #06B6D4" : "2px solid transparent",
             color: activeTab === "tokens" ? "#FFFFFF" : "#94A3B8",
             fontWeight: activeTab === "tokens" ? 700 : 500,
-            fontSize: "0.92rem",
+            fontSize: "0.9rem",
             cursor: "pointer",
             borderRadius: "8px 8px 0 0",
-            transition: "all 0.2s ease"
+            whiteSpace: "nowrap"
           }}
         >
           <KeyRound size={16} color={activeTab === "tokens" ? "#67E8F9" : "#94A3B8"} />
-          Personal Access Tokens ({tokens.length})
+          API Tokens ({tokens.length})
         </button>
 
         <button
@@ -462,198 +542,50 @@ function AccountPageContent() {
             borderBottom: activeTab === "security" ? "2px solid #F43F5E" : "2px solid transparent",
             color: activeTab === "security" ? "#FFFFFF" : "#94A3B8",
             fontWeight: activeTab === "security" ? 700 : 500,
-            fontSize: "0.92rem",
+            fontSize: "0.9rem",
             cursor: "pointer",
             borderRadius: "8px 8px 0 0",
-            transition: "all 0.2s ease"
+            whiteSpace: "nowrap"
           }}
         >
           <Lock size={16} color={activeTab === "security" ? "#FB7185" : "#94A3B8"} />
-          Security & Password
+          Profile & Security
         </button>
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: PROFILE & IDENTITY */}
+      {/* TAB 1: CUSTOMER OVERVIEW */}
       {/* ========================================================================= */}
-      {activeTab === "profile" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-          <div style={{
-            background: "rgba(15, 23, 42, 0.6)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "16px",
-            padding: "1.75rem"
-          }}>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              <UserIcon size={18} color="#60A5FA" />
-              Personal Profile
-            </h3>
-
-            {profileSuccess && (
-              <div style={{ background: "rgba(34, 197, 94, 0.15)", border: "1px solid rgba(34, 197, 94, 0.3)", borderRadius: "10px", padding: "0.75rem 1rem", color: "#86EFAC", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
-                {profileSuccess}
-              </div>
-            )}
-
-            {profileError && (
-              <div style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "10px", padding: "0.75rem 1rem", color: "#FCA5A5", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
-                {profileError}
-              </div>
-            )}
-
-            <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "#94A3B8", fontWeight: 600, marginBottom: "0.4rem" }}>
-                  Display Name / Organization
-                </label>
-                <input 
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="e.g. Lead Security Architect"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    background: "rgba(255, 255, 255, 0.04)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    borderRadius: "10px",
-                    color: "white",
-                    fontSize: "0.9rem",
-                    outline: "none"
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "#94A3B8", fontWeight: 600, marginBottom: "0.4rem" }}>
-                  Email Address (Primary Identity)
-                </label>
-                <input 
-                  type="email"
-                  value={user.email}
-                  disabled
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    background: "rgba(255, 255, 255, 0.02)",
-                    border: "1px solid rgba(255, 255, 255, 0.06)",
-                    borderRadius: "10px",
-                    color: "#64748B",
-                    fontSize: "0.9rem",
-                    cursor: "not-allowed"
-                  }}
-                />
-                <span style={{ fontSize: "0.72rem", color: "#64748B", marginTop: "4px", display: "block" }}>
-                  Email changes require security verification with support.
-                </span>
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "#94A3B8", fontWeight: 600, marginBottom: "0.4rem" }}>
-                  Account Role
-                </label>
-                <div style={{
-                  padding: "0.75rem 1rem",
-                  background: "rgba(255, 255, 255, 0.02)",
-                  border: "1px solid rgba(255, 255, 255, 0.06)",
-                  borderRadius: "10px",
-                  color: "#E2E8F0",
-                  fontSize: "0.88rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between"
-                }}>
-                  <span>{user.role === "admin" ? "Platform Administrator" : "Developer (Standard Access)"}</span>
-                  <span style={{ fontSize: "0.7rem", color: "#60A5FA", fontWeight: 700, textTransform: "uppercase" }}>
-                    {user.role}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isUpdatingProfile}
-                className="btn-primary"
-                style={{
-                  padding: "0.85rem",
-                  fontWeight: 700,
-                  fontSize: "0.9rem",
-                  marginTop: "0.5rem"
-                }}
-              >
-                {isUpdatingProfile ? "Saving Changes..." : "Save Profile Details"}
-              </button>
-            </form>
-          </div>
-
-          {/* Account Overview / Zero Telemetry Architecture Details */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            <div style={{
-              background: "rgba(15, 23, 42, 0.6)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "16px",
-              padding: "1.75rem"
-            }}>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                <Cpu size={18} color="#C084FC" />
-                Workstation & Ecosystem Status
-              </h3>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 600, color: "#FFFFFF" }}>PureIDE Workstation Build</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Custom compiler sandboxes</div>
-                  </div>
-                  <Link href="/console" style={{ fontSize: "0.8rem", color: "#60A5FA", textDecoration: "none", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
-                    Open Builder <ExternalLink size={12} />
-                  </Link>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 600, color: "#FFFFFF" }}>Universal Vulnerability Intel (UVI)</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>110+ aggregated intelligence feeds</div>
-                  </div>
-                  <Link href="/threat-feed" style={{ fontSize: "0.8rem", color: "#C084FC", textDecoration: "none", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
-                    View Feed <ExternalLink size={12} />
-                  </Link>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 600, color: "#FFFFFF" }}>Inquest FOIA Compliance Cases</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Statutory discovery & appeal builder</div>
-                  </div>
-                  <Link href="/inquest" style={{ fontSize: "0.8rem", color: "#67E8F9", textDecoration: "none", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
-                    Inquest App <ExternalLink size={12} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div style={{
-              background: "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)",
-              border: "1px solid rgba(59, 130, 246, 0.25)",
-              borderRadius: "16px",
-              padding: "1.5rem"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
-                <Sparkles size={16} color="#60A5FA" />
-                <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#93C5FD", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Zero-Telemetry Privacy Guarantee
-                </span>
-              </div>
-              <p style={{ color: "#CBD5E1", fontSize: "0.85rem", lineHeight: 1.5, margin: 0 }}>
-                Exultia builds compile with all outbound telemetry disabled at binary level. Your tokens, code repos, and legal filings are cryptographically isolated and never harvested.
-              </p>
-            </div>
-          </div>
-        </div>
+      {activeTab === "overview" && (
+        <CustomerOverview 
+          onSelectTab={setActiveTab} 
+          onOpenUpgradeModal={() => router.push("/account/subscription")} 
+        />
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 2: SUBSCRIPTIONS & ENTITLEMENTS */}
+      {/* TAB 2: PUREIDE CUSTOMER TOOLS */}
+      {/* ========================================================================= */}
+      {activeTab === "pureide" && (
+        <PureIdeCustomerTools />
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: UVI THREAT INTEL */}
+      {/* ========================================================================= */}
+      {activeTab === "uvi" && (
+        <UviCustomerTools />
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: INQUEST LEGAL VAULT */}
+      {/* ========================================================================= */}
+      {activeTab === "inquest" && (
+        <InquestCustomerTools />
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 5: SUBSCRIPTIONS & ENTITLEMENTS */}
       {/* ========================================================================= */}
       {activeTab === "subscriptions" && (
         <div>
@@ -694,8 +626,7 @@ function AccountPageContent() {
               borderRadius: "18px",
               padding: "1.75rem",
               display: "flex",
-              flexDirection: "column",
-              position: "relative"
+              flexDirection: "column"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -775,8 +706,7 @@ function AccountPageContent() {
               borderRadius: "18px",
               padding: "1.75rem",
               display: "flex",
-              flexDirection: "column",
-              position: "relative"
+              flexDirection: "column"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -856,8 +786,7 @@ function AccountPageContent() {
               borderRadius: "18px",
               padding: "1.75rem",
               display: "flex",
-              flexDirection: "column",
-              position: "relative"
+              flexDirection: "column"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -935,7 +864,7 @@ function AccountPageContent() {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: PERSONAL ACCESS TOKENS (PATS) */}
+      {/* TAB 6: PERSONAL ACCESS TOKENS (PATS) */}
       {/* ========================================================================= */}
       {activeTab === "tokens" && (
         <div>
@@ -1227,11 +1156,90 @@ function AccountPageContent() {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 4: SECURITY & PASSWORD */}
+      {/* TAB 7: PROFILE & SECURITY */}
       {/* ========================================================================= */}
       {activeTab === "security" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
           
+          {/* Edit Profile Card */}
+          <div style={{
+            background: "rgba(15, 23, 42, 0.6)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "16px",
+            padding: "1.75rem"
+          }}>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
+              <UserIcon size={18} color="#60A5FA" />
+              Customer Profile Information
+            </h3>
+
+            {profileSuccess && (
+              <div style={{ background: "rgba(34, 197, 94, 0.15)", border: "1px solid rgba(34, 197, 94, 0.3)", borderRadius: "10px", padding: "0.75rem 1rem", color: "#86EFAC", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
+                {profileSuccess}
+              </div>
+            )}
+
+            {profileError && (
+              <div style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "10px", padding: "0.75rem 1rem", color: "#FCA5A5", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
+                {profileError}
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "#94A3B8", fontWeight: 600, marginBottom: "0.4rem" }}>
+                  Display Name / Organization
+                </label>
+                <input 
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="e.g. Lead Security Architect"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    background: "rgba(255, 255, 255, 0.04)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "10px",
+                    color: "white",
+                    fontSize: "0.9rem",
+                    outline: "none"
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "#94A3B8", fontWeight: 600, marginBottom: "0.4rem" }}>
+                  Email Address (Primary Identity)
+                </label>
+                <input 
+                  type="email"
+                  value={user.email}
+                  disabled
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    background: "rgba(255, 255, 255, 0.02)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    borderRadius: "10px",
+                    color: "#64748B",
+                    fontSize: "0.9rem",
+                    cursor: "not-allowed"
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUpdatingProfile}
+                className="btn-primary"
+                style={{ padding: "0.85rem", fontWeight: 700, fontSize: "0.9rem" }}
+              >
+                {isUpdatingProfile ? "Saving Changes..." : "Save Profile Details"}
+              </button>
+            </form>
+          </div>
+
           {/* Change Password Card */}
           <div style={{
             background: "rgba(15, 23, 42, 0.6)",
@@ -1332,79 +1340,11 @@ function AccountPageContent() {
                 type="submit"
                 disabled={isChangingPassword}
                 className="btn-primary"
-                style={{
-                  padding: "0.85rem",
-                  fontWeight: 700,
-                  fontSize: "0.9rem",
-                  marginTop: "0.5rem"
-                }}
+                style={{ padding: "0.85rem", fontWeight: 700, fontSize: "0.9rem" }}
               >
                 {isChangingPassword ? "Updating Password..." : "Update Password"}
               </button>
             </form>
-          </div>
-
-          {/* Active Sessions & Security Audit */}
-          <div style={{
-            background: "rgba(15, 23, 42, 0.6)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "16px",
-            padding: "1.75rem"
-          }}>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Clock size={18} color="#F59E0B" />
-              Active Session Details
-            </h3>
-
-            <div style={{
-              background: "rgba(255, 255, 255, 0.03)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "1rem",
-              marginBottom: "1.25rem"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Current Browser Session</span>
-                <span style={{ fontSize: "0.68rem", background: "rgba(34, 197, 94, 0.2)", color: "#86EFAC", border: "1px solid rgba(34, 197, 94, 0.4)", padding: "1px 6px", borderRadius: "4px", fontWeight: 800 }}>
-                  ACTIVE NOW
-                </span>
-              </div>
-              <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                <div>Cookie: <span style={{ fontFamily: "monospace", color: "#60A5FA" }}>exultia_session</span></div>
-                <div>Storage: Turso Encrypted Sessions Table</div>
-                <div>Duration: 30-day sliding token rotation</div>
-              </div>
-            </div>
-
-            <div style={{
-              background: "rgba(239, 68, 68, 0.08)",
-              border: "1px solid rgba(239, 68, 68, 0.2)",
-              borderRadius: "12px",
-              padding: "1rem"
-            }}>
-              <h4 style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FCA5A5", margin: "0 0 0.35rem 0" }}>
-                Sign Out Everywhere
-              </h4>
-              <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "0 0 0.75rem 0" }}>
-                Terminating your session will revoke access on this browser and clear all session cookies from the database.
-              </p>
-              <button
-                onClick={() => router.push("/api/auth/logout")}
-                style={{
-                  background: "rgba(239, 68, 68, 0.2)",
-                  border: "1px solid rgba(239, 68, 68, 0.4)",
-                  color: "#FCA5A5",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Sign Out Current Session
-              </button>
-            </div>
-
           </div>
 
         </div>
@@ -1419,7 +1359,7 @@ export default function AccountPage() {
     <Suspense fallback={
       <div style={{ minHeight: "75vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
         <div style={{ width: "40px", height: "40px", border: "3px solid rgba(59, 130, 246, 0.2)", borderTopColor: "#3B82F6", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-        <p style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Loading account details...</p>
+        <p style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Loading customer portal...</p>
       </div>
     }>
       <AccountPageContent />
