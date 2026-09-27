@@ -4,15 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, User as UserIcon, Shield, ChevronDown } from "lucide-react";
+import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
+import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
 import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, loading, logout, openAuthModal } = useAuth();
+  const { user, loading, logout, openAuthModal, isImpersonating, revertImpersonation } = useAuth();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -58,6 +59,9 @@ export default function Navbar() {
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
+      {/* PERSISTENT ADMIN IMPERSONATION BANNER */}
+      <AdminImpersonationBanner />
+
       {/* TIER 1: PARENT NAVIGATION BAR (3-Column Grid for exact center alignment) */}
       <header className="public-nav">
         {/* LEFT COLUMN: BRAND / LOGO */}
@@ -371,6 +375,63 @@ export default function Navbar() {
                     <Shield size={15} color="#C084FC" />
                     Subscriptions & Plans
                   </Link>
+
+                  {(user.role === "admin" || isImpersonating) && (
+                    <Link
+                      href="/account?tab=personas"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "9px",
+                        padding: "8px 10px",
+                        color: "#FDE68A",
+                        background: "rgba(245, 158, 11, 0.1)",
+                        border: "1px solid rgba(245, 158, 11, 0.2)",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        marginTop: "2px",
+                        marginBottom: "2px",
+                        transition: "background 0.15s ease"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <Sparkles size={15} color="#F59E0B" />
+                      Admin Test Personas
+                    </Link>
+                  )}
+
+                  {isImpersonating && (
+                    <button
+                      onClick={async () => {
+                        await revertImpersonation();
+                        setIsUserMenuOpen(false);
+                      }}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "9px",
+                        padding: "8px 10px",
+                        background: "rgba(245, 158, 11, 0.15)",
+                        border: "1px solid rgba(245, 158, 11, 0.3)",
+                        color: "#FDE68A",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        textAlign: "left",
+                        marginTop: "2px",
+                        marginBottom: "2px"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <RotateCcw size={15} color="#F59E0B" />
+                      Exit Impersonation
+                    </button>
+                  )}
 
                   <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "4px 0" }} />
 

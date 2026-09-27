@@ -13,6 +13,8 @@ export interface User {
   email: string;
   name: string | null;
   role: string;
+  isImpersonating?: boolean;
+  impersonatedBy?: string | null;
   subscriptions: SubscribedProduct[];
 }
 
@@ -32,6 +34,12 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   
+  // Impersonation
+  isImpersonating: boolean;
+  impersonatedBy: string | null;
+  impersonate: (email: string) => Promise<{ success: boolean; error?: string }>;
+  revertImpersonation: () => Promise<{ success: boolean; error?: string }>;
+
   // Modals
   isAuthModalOpen: boolean;
   authModalMode: "login" | "register";
@@ -129,6 +137,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const impersonate = async (email: string) => {
+    try {
+      const res = await fetch("/api/admin/impersonate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetEmail: email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || "Failed to impersonate user" };
+      }
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        await refreshUser();
+      }
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
+  };
+
+  const revertImpersonation = async () => {
+    try {
+      const res = await fetch("/api/admin/impersonate", { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || "Failed to restore administrator session" };
+      }
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        await refreshUser();
+      }
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
+  };
+
   const openAuthModal = (mode: "login" | "register" = "login") => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
@@ -156,6 +206,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return sub ? sub.tier : "free";
   };
 
+  const isImpersonating = !!user?.isImpersonating;
+  const impersonatedBy = user?.impersonatedBy || null;
+
   return (
     <AuthContext.Provider
       value={{
@@ -165,6 +218,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         refreshUser,
+        isImpersonating,
+        impersonatedBy,
+        impersonate,
+        revertImpersonation,
         isAuthModalOpen,
         authModalMode,
         openAuthModal,

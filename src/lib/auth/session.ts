@@ -4,6 +4,7 @@ import { eq, and, gt } from 'drizzle-orm';
 import { generateToken } from './crypto';
 
 export const SESSION_COOKIE_NAME = 'exultia_session';
+export const IMPERSONATOR_COOKIE_NAME = 'exultia_impersonator';
 const SESSION_DURATION_DAYS = 30;
 
 export interface SessionUser {
@@ -11,6 +12,8 @@ export interface SessionUser {
   email: string;
   name: string | null;
   role: string;
+  isImpersonating?: boolean;
+  impersonatedBy?: string | null;
   subscriptions: Array<{
     product: string;
     tier: string;
@@ -42,6 +45,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    const impersonatorAdminId = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
 
     if (!token) return null;
 
@@ -68,11 +72,26 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
       ),
     });
 
+    let isImpersonating = false;
+    let impersonatedBy: string | null = null;
+
+    if (impersonatorAdminId) {
+      const adminRecord = await db.query.users.findFirst({
+        where: eq(users.id, impersonatorAdminId),
+      });
+      if (adminRecord && adminRecord.role === 'admin') {
+        isImpersonating = true;
+        impersonatedBy = adminRecord.email;
+      }
+    }
+
     return {
       id: userRecord.id,
       email: userRecord.email,
       name: userRecord.name,
       role: userRecord.role,
+      isImpersonating,
+      impersonatedBy,
       subscriptions: userSubs.map(s => ({
         product: s.product,
         tier: s.tier,
@@ -86,7 +105,72 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 }
 
 /**
- * Destroys the current session from Turso DB and deletes the cookie
+ * Switches the active session to a target user while persisting the admin identity
+ */
+export async function startImpersonation(adminUserId: string, targetUserId: string): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  
+  // Create a new session for the target persona
+  const { token, expiresAt } = await createSession(targetUserId);
+
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: expiresAt,
+    path: '/',
+  });
+
+  // Persist the admin impersonator cookie
+  cookieStore.set(IMPERSONATOR_COOKIE_NAME, adminUserId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    path: '/',
+  });
+
+  return getCurrentUser();
+}
+
+/**
+ * Stops persona impersonation and restores the root admin session
+ */
+export async function stopImpersonation(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  const impersonatorAdminId = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+  const currentToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  // Clean up current temporary impersonation session
+  if (currentToken) {
+    await db.delete(sessions).where(eq(sessions.id, currentToken)).catch(() => {});
+  }
+
+  // Clear impersonator cookie
+  cookieStore.delete(IMPERSONATOR_COOKIE_NAME);
+
+  if (impersonatorAdminId) {
+    const adminRecord = await db.query.users.findFirst({
+      where: eq(users.id, impersonatorAdminId),
+    });
+
+    if (adminRecord) {
+      const { token, expiresAt } = await createSession(adminRecord.id);
+      cookieStore.set(SESSION_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        expires: expiresAt,
+        path: '/',
+      });
+    }
+  }
+
+  return getCurrentUser();
+}
+
+/**
+ * Destroys the current session from Turso DB and deletes the cookies
  */
 export async function destroySession(): Promise<void> {
   try {
@@ -97,7 +181,9 @@ export async function destroySession(): Promise<void> {
       await db.delete(sessions).where(eq(sessions.id, token));
       cookieStore.delete(SESSION_COOKIE_NAME);
     }
+    cookieStore.delete(IMPERSONATOR_COOKIE_NAME);
   } catch (error) {
     console.error('Failed to destroy session:', error);
   }
 }
+
