@@ -192,6 +192,40 @@ export default function PureOSConfigurator() {
                   </div>
                 ))}
               </div>
+
+              {/* BYOS Entitlements Section */}
+              {['rhel-9', 'suse-15', 'oracle-9'].includes(baseImage) && (
+                <div style={{ marginTop: "2rem", padding: "1.5rem", background: "rgba(245, 158, 11, 0.05)", border: "1px solid rgba(245, 158, 11, 0.3)", borderRadius: "12px", animation: "fadeIn 0.3s ease" }}>
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+                    <div style={{ fontSize: "1.5rem", marginTop: "-2px" }}>🔑</div>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ margin: "0 0 0.5rem 0", color: "white", fontSize: "1.1rem" }}>Enterprise Entitlements (BYOS)</h3>
+                      <p style={{ margin: "0 0 1rem 0", color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: 1.5 }}>
+                        Building {baseImage.split('-')[0].toUpperCase()} with official package repositories requires an active subscription. Provide your subscription token to authorize the build worker.
+                      </p>
+                      
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          {baseImage === 'rhel-9' ? 'Red Hat Activation Key' : baseImage === 'suse-15' ? 'SUSE Customer Center Token' : 'Oracle Support Identifier (CSI)'}
+                        </label>
+                        <div style={{ display: "flex", gap: "1rem" }}>
+                          <input 
+                            type="password" 
+                            placeholder="Enter your subscription token..."
+                            style={{ flex: 1, padding: "0.75rem 1rem", borderRadius: "8px", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.3)", color: "white", fontFamily: "monospace" }}
+                          />
+                          <button style={{ padding: "0 1.5rem", borderRadius: "8px", background: "rgba(255,255,255,0.1)", color: "white", border: "1px solid var(--border-color)", cursor: "pointer", fontWeight: 600 }}>
+                            Validate
+                          </button>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.5rem" }}>
+                          Tokens are securely injected into the build container and <strong>never</strong> persisted to disk.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
