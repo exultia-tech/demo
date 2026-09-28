@@ -196,6 +196,16 @@ const PureOS_CATALOGUE: ContainerImage[] = [
     uviMitigations: 104,
     cisLevel: "Level 2",
   },
+  {
+    id: "PureOS-win-core-2022",
+    name: "exultia/pureos-windows-core",
+    tag: "ltsc2022-hardened",
+    baseOS: "Windows Server Core 2022",
+    sizeMB: 3500.4,
+    lastUpdated: "12 hours ago",
+    uviMitigations: 420,
+    cisLevel: "Level 2",
+  },
 ];
 
 export default function PureOSRegistryConsole() {

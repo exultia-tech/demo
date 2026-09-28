@@ -161,6 +161,9 @@ export default function PureOSConfigurator() {
                   { id: 'yocto', name: 'Yocto OpenEmbedded', desc: 'Custom IoT firmware builder', icon: '🛠️', available: isPro },
                   { id: 'freertos-build', name: 'FreeRTOS / Arduino Chain', desc: 'Hardened MCU compile env', icon: '📟', available: isPro },
 
+                  { id: 'win-nano', name: 'Windows Nano Server', desc: 'Minimal Windows container', icon: '🪟', available: isEnterprise },
+                  { id: 'win-core', name: 'Windows Server Core', desc: 'Legacy .NET & IIS support', icon: '🗄️', available: isEnterprise },
+
                   { id: 'amazon-2023', name: 'Amazon Linux 2023', desc: 'Optimized for AWS EC2', icon: '☁️', available: isPro },
                   { id: 'rocky-9', name: 'Rocky Linux 9', desc: 'Enterprise downstream, dnf', icon: '🪨', available: isPro },
                   { id: 'almalinux-9', name: 'AlmaLinux 9', desc: 'Enterprise downstream, dnf', icon: '💠', available: isPro },
