@@ -176,6 +176,26 @@ const PureOS_CATALOGUE: ContainerImage[] = [
     uviMitigations: 85,
     cisLevel: "Level 1",
   },
+  {
+    id: "PureOS-rpios-12",
+    name: "exultia/pureos-rpios",
+    tag: "12-arm64-hardened",
+    baseOS: "Raspberry Pi OS 12",
+    sizeMB: 72.1,
+    lastUpdated: "4 hours ago",
+    uviMitigations: 98,
+    cisLevel: "Level 1",
+  },
+  {
+    id: "PureOS-ubuntu-core-22",
+    name: "exultia/pureos-ubuntu-core",
+    tag: "22-iot-hardened",
+    baseOS: "Ubuntu Core 22",
+    sizeMB: 60.5,
+    lastUpdated: "5 hours ago",
+    uviMitigations: 104,
+    cisLevel: "Level 2",
+  },
 ];
 
 export default function PureOSRegistryConsole() {

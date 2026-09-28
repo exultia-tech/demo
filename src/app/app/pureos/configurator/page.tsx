@@ -155,6 +155,12 @@ export default function PureOSConfigurator() {
                   { id: 'ubuntu-24.04', name: 'Ubuntu 24.04 LTS', desc: 'Popular, glibc, apt', icon: '🟠', available: true },
                   { id: 'arch', name: 'Arch Linux', desc: 'Bleeding-edge, pacman', icon: '🦅', available: true },
                   { id: 'opensuse-15', name: 'openSUSE Leap 15', desc: 'Stable community release, zypper', icon: '🦎', available: true },
+                  
+                  { id: 'rpios-12', name: 'Raspberry Pi OS 12', desc: 'Debian-based ARM edge IoT', icon: '🍓', available: true },
+                  { id: 'ubuntu-core', name: 'Ubuntu Core 22', desc: 'Transactional IoT edge, snaps', icon: '⚙️', available: isPro },
+                  { id: 'yocto', name: 'Yocto OpenEmbedded', desc: 'Custom IoT firmware builder', icon: '🛠️', available: isPro },
+                  { id: 'freertos-build', name: 'FreeRTOS / Arduino Chain', desc: 'Hardened MCU compile env', icon: '📟', available: isPro },
+
                   { id: 'amazon-2023', name: 'Amazon Linux 2023', desc: 'Optimized for AWS EC2', icon: '☁️', available: isPro },
                   { id: 'rocky-9', name: 'Rocky Linux 9', desc: 'Enterprise downstream, dnf', icon: '🪨', available: isPro },
                   { id: 'almalinux-9', name: 'AlmaLinux 9', desc: 'Enterprise downstream, dnf', icon: '💠', available: isPro },
