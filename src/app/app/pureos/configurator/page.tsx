@@ -241,90 +241,81 @@ export default function PureOSConfigurator() {
           {activeTab === 'hardening' && (
             <div className="fade-in">
               <h2 style={{ fontSize: "1.5rem", margin: "0 0 1.5rem 0", color: "white" }}>CIS Hardening & Compliance Profile</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                
-                {/* Standard */}
-                <div 
-                  onClick={() => setHardeningLevel('standard')}
-                  style={{
-                    padding: "1.5rem",
-                    border: hardeningLevel === 'standard' ? "2px solid #10B981" : "1px solid var(--border-color)",
-                    borderRadius: "12px",
-                    background: hardeningLevel === 'standard' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)",
-                    cursor: "pointer",
-                    display: "flex",
-                    gap: "1.5rem",
-                    alignItems: "flex-start"
-                  }}
-                >
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'standard' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>
-                    {hardeningLevel === 'standard' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}
+              
+              {/* Windows Hardening Profiles */}
+              {baseImage.startsWith('win-') ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div onClick={() => setHardeningLevel('win-standard')} style={{ padding: "1.5rem", border: hardeningLevel === 'win-standard' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'win-standard' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: "pointer", display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'win-standard' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'win-standard' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Windows Baseline (CIS Level 1)</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Disables SMBv1, forces NTLMv2, disables weak cipher suites, and removes telemetry endpoints.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Standard Baseline (CIS Level 1)</h3>
-                    <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-                      Essential security configuration. Removes unused default packages, sets secure file permissions, and patches known vulnerabilities without breaking legacy application compatibility.
-                    </p>
+                  <div onClick={() => isPro && setHardeningLevel('win-strict')} style={{ padding: "1.5rem", border: hardeningLevel === 'win-strict' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'win-strict' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: isPro ? "pointer" : "not-allowed", opacity: isPro ? 1 : 0.5, display: "flex", gap: "1.5rem", alignItems: "flex-start", position: "relative" }}>
+                    {!isPro && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>PRO REQUIRED</div>}
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'win-strict' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'win-strict' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Strict Domain Guard (CIS Level 2)</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Enforces gMSA (Group Managed Service Accounts), PowerShell Constrained Language Mode, and AppLocker rules.</p>
+                    </div>
                   </div>
-                </div>
-
-                {/* Strict */}
-                <div 
-                  onClick={() => isPro && setHardeningLevel('strict')}
-                  style={{
-                    padding: "1.5rem",
-                    border: hardeningLevel === 'strict' ? "2px solid #10B981" : "1px solid var(--border-color)",
-                    borderRadius: "12px",
-                    background: hardeningLevel === 'strict' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)",
-                    cursor: isPro ? "pointer" : "not-allowed",
-                    opacity: isPro ? 1 : 0.5,
-                    display: "flex",
-                    gap: "1.5rem",
-                    alignItems: "flex-start",
-                    position: "relative"
-                  }}
-                >
-                  {!isPro && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>PRO REQUIRED</div>}
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'strict' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>
-                    {hardeningLevel === 'strict' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Strict Defense (CIS Level 2)</h3>
-                    <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-                      Defense-in-depth security. Highly restricted permissions, drops all ambient capabilities, enforces non-root execution, and requires tailored application configurations.
-                    </p>
+                  <div onClick={() => isEnterprise && setHardeningLevel('win-stig')} style={{ padding: "1.5rem", border: hardeningLevel === 'win-stig' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'win-stig' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: isEnterprise ? "pointer" : "not-allowed", opacity: isEnterprise ? 1 : 0.5, display: "flex", gap: "1.5rem", alignItems: "flex-start", position: "relative" }}>
+                    {!isEnterprise && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>ENTERPRISE REQUIRED</div>}
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'win-stig' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'win-stig' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>DoD STIG / High Security</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Full Department of Defense Security Technical Implementation Guide (STIG) compliance for container workloads.</p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Airgap */}
-                <div 
-                  onClick={() => isEnterprise && setHardeningLevel('airgap')}
-                  style={{
-                    padding: "1.5rem",
-                    border: hardeningLevel === 'airgap' ? "2px solid #10B981" : "1px solid var(--border-color)",
-                    borderRadius: "12px",
-                    background: hardeningLevel === 'airgap' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)",
-                    cursor: isEnterprise ? "pointer" : "not-allowed",
-                    opacity: isEnterprise ? 1 : 0.5,
-                    display: "flex",
-                    gap: "1.5rem",
-                    alignItems: "flex-start",
-                    position: "relative"
-                  }}
-                >
-                  {!isEnterprise && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>ENTERPRISE REQUIRED</div>}
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'airgap' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>
-                    {hardeningLevel === 'airgap' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}
+              ) : ['yocto', 'freertos-build', 'ubuntu-core', 'rpios-12'].includes(baseImage) ? (
+                /* IoT / Embedded Hardening Profiles */
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div onClick={() => setHardeningLevel('iot-standard')} style={{ padding: "1.5rem", border: hardeningLevel === 'iot-standard' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'iot-standard' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: "pointer", display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'iot-standard' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'iot-standard' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>IoT Minimal Footprint</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Removes all interactive shells, disables unnecessary hardware interfaces, and locks package managers.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Air-Gapped Paranoia (Custom)</h3>
-                    <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-                      Ultimate lockdown. Stripped package managers entirely, enforces read-only root filesystems, strict syscall filtering (seccomp), and prevents any outbound network connectivity at the kernel level.
-                    </p>
+                  <div onClick={() => isPro && setHardeningLevel('iot-strict')} style={{ padding: "1.5rem", border: hardeningLevel === 'iot-strict' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'iot-strict' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: isPro ? "pointer" : "not-allowed", opacity: isPro ? 1 : 0.5, display: "flex", gap: "1.5rem", alignItems: "flex-start", position: "relative" }}>
+                    {!isPro && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>PRO REQUIRED</div>}
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'iot-strict' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'iot-strict' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Transactional Edge Security</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Forces read-only root filesystems, AB boot rollback safeguards, and verifiable firmware signature checking.</p>
+                    </div>
                   </div>
                 </div>
-
-              </div>
+              ) : (
+                /* Linux Hardening Profiles */
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div onClick={() => setHardeningLevel('standard')} style={{ padding: "1.5rem", border: hardeningLevel === 'standard' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'standard' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: "pointer", display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'standard' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'standard' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Standard Baseline (CIS Level 1)</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Essential security configuration. Removes unused default packages, sets secure file permissions, and patches known vulnerabilities.</p>
+                    </div>
+                  </div>
+                  <div onClick={() => isPro && setHardeningLevel('strict')} style={{ padding: "1.5rem", border: hardeningLevel === 'strict' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'strict' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: isPro ? "pointer" : "not-allowed", opacity: isPro ? 1 : 0.5, display: "flex", gap: "1.5rem", alignItems: "flex-start", position: "relative" }}>
+                    {!isPro && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>PRO REQUIRED</div>}
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'strict' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'strict' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Strict Defense (CIS Level 2)</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Defense-in-depth security. Highly restricted permissions, drops all ambient capabilities, enforces non-root execution.</p>
+                    </div>
+                  </div>
+                  <div onClick={() => isEnterprise && setHardeningLevel('airgap')} style={{ padding: "1.5rem", border: hardeningLevel === 'airgap' ? "2px solid #10B981" : "1px solid var(--border-color)", borderRadius: "12px", background: hardeningLevel === 'airgap' ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.2)", cursor: isEnterprise ? "pointer" : "not-allowed", opacity: isEnterprise ? 1 : 0.5, display: "flex", gap: "1.5rem", alignItems: "flex-start", position: "relative" }}>
+                    {!isEnterprise && <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "0.7rem", padding: "0.2rem 0.5rem", background: "rgba(245, 158, 11, 0.2)", color: "#F59E0B", borderRadius: "8px", fontWeight: 600 }}>ENTERPRISE REQUIRED</div>}
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid " + (hardeningLevel === 'airgap' ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center", marginTop: "4px" }}>{hardeningLevel === 'airgap' && <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />}</div>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "white" }}>Air-Gapped Paranoia (Custom)</h3>
+                      <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.5 }}>Ultimate lockdown. Stripped package managers, read-only root filesystems, strict syscall filtering (seccomp).</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
