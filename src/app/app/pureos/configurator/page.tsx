@@ -153,9 +153,15 @@ export default function PureOSConfigurator() {
                   { id: 'alpine-3.19', name: 'Alpine Linux 3.19', desc: 'Minimalist, musl libc, apk', icon: '🏔️', available: true },
                   { id: 'debian-12', name: 'Debian 12 (Bookworm)', desc: 'Stable, glibc, apt', icon: '🌀', available: true },
                   { id: 'ubuntu-24.04', name: 'Ubuntu 24.04 LTS', desc: 'Popular, glibc, apt', icon: '🟠', available: true },
+                  { id: 'arch', name: 'Arch Linux', desc: 'Bleeding-edge, pacman', icon: '🦅', available: true },
+                  { id: 'opensuse-15', name: 'openSUSE Leap 15', desc: 'Stable community release, zypper', icon: '🦎', available: true },
+                  { id: 'amazon-2023', name: 'Amazon Linux 2023', desc: 'Optimized for AWS EC2', icon: '☁️', available: isPro },
                   { id: 'rocky-9', name: 'Rocky Linux 9', desc: 'Enterprise downstream, dnf', icon: '🪨', available: isPro },
+                  { id: 'almalinux-9', name: 'AlmaLinux 9', desc: 'Enterprise downstream, dnf', icon: '💠', available: isPro },
                   { id: 'centos-9', name: 'CentOS Stream 9', desc: 'Enterprise upstream, dnf', icon: '⚙️', available: isPro },
                   { id: 'rhel-9', name: 'Red Hat Ent Linux 9', desc: 'Commercial enterprise, dnf', icon: '🎩', available: isEnterprise },
+                  { id: 'suse-15', name: 'SUSE Linux Enterprise 15', desc: 'Commercial enterprise, zypper', icon: '🏢', available: isEnterprise },
+                  { id: 'oracle-9', name: 'Oracle Linux 9', desc: 'Commercial enterprise, dnf', icon: '🛡️', available: isEnterprise },
                 ].map(img => (
                   <div 
                     key={img.id}
