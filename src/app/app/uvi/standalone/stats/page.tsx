@@ -1,6 +1,6 @@
 "use client";
 
-import ThreatFeedStatsPage from "@/app/threat-feed/stats/page";
+import ThreatFeedStatsPage from "@/app/app/uvi/stats/page";
 
 /**
  * Persistent Standalone UVI Global Statistics Page
