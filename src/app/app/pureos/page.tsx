@@ -158,6 +158,12 @@ export default function PureOSRegistryConsole() {
               onChange={(e) => setSearch(e.target.value)}
               style={{ flex: 1, padding: "1rem 1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.3)", color: "white", fontSize: "1rem" }}
             />
+            <a 
+              href="/app/pureos/configurator" 
+              style={{ padding: "0 1.5rem", background: "linear-gradient(135deg, #10B981 0%, #059669 100%)", color: "white", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "12px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              Build Custom Image
+            </a>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
