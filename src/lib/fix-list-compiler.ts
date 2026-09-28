@@ -27,10 +27,10 @@ export function compileRemediationBlock(
 
   // 1. NETWORK / C2 / BOTNET / PHISHING → firewall handling (localhost or export)
   const isNetworkThreat =
-    domainCategory === 'MALWARE_C2_BOTNET' ||
-    domainCategory === 'IP_REPUTATION_NETWORK_TELEMETRY' ||
-    domainCategory === 'PHISHING_FRAUD' ||
+    advisory.upstreamSignals?.some(s => s.signalType === 'C2_BEACON' || s.signalType === 'IP_REPUTATION' || s.signalType === 'PHISHING_URL') ||
     attackVector === 'NETWORK';
+
+  const isPhishing = advisory.upstreamSignals?.some(s => s.signalType === 'PHISHING_URL');
 
   if (isNetworkThreat) {
     if (networkMode === 'export') {
@@ -40,7 +40,7 @@ export function compileRemediationBlock(
         `192.0.2.1   # ${uviId} C2 indicator`,
         `192.0.2.2   # ${uviId} botnet node`,
       ];
-      const domains = domainCategory === 'PHISHING_FRAUD'
+      const domains = isPhishing
         ? [`phish.example.com  # ${uviId} phishing domain`]
         : [];
 
@@ -53,7 +53,7 @@ export function compileRemediationBlock(
           lines.push(`  "indicators": [`);
           for (const ind of [...indicators, ...domains]) {
             const ip = ind.split(' ')[0];
-            lines.push(`    { "value": "${ip}", "type": "${domainCategory === 'PHISHING_FRAUD' ? 'domain' : 'ip'}" },`);
+            lines.push(`    { "value": "${ip}", "type": "${isPhishing ? 'domain' : 'ip'}" },`);
           }
           lines.push(`  ]`);
           lines.push(`}`);
@@ -95,7 +95,7 @@ export function compileRemediationBlock(
       }
     } else {
       // ── LOCALHOST MODE: apply rules directly on the endpoint ──
-      if (domainCategory === 'PHISHING_FRAUD') {
+      if (isPhishing) {
         lines.push(`log_msg "-> Phishing/fraud threat. Blocking associated domains at hosts level..."`);
         lines.push(`if [ -w /etc/hosts ]; then`);
         lines.push(`  echo "0.0.0.0 malicious-phishing-domain.example # ${uviId}" >> /etc/hosts 2>/dev/null || true`);
