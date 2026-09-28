@@ -26,7 +26,7 @@ export default function PureIdeLandingPage() {
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
           <Link 
-            href="/console" 
+            href="/app/pureide" 
             className="btn-primary" 
             style={{ padding: "0.95rem 2rem", fontSize: "1rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.55rem" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -38,7 +38,7 @@ export default function PureIdeLandingPage() {
             Explore Architecture
           </a>
           <Link 
-            href="/pricing" 
+            href="/products/pure-ide/pricing" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
             Pricing Plans
           </Link>
@@ -363,10 +363,10 @@ export default function PureIdeLandingPage() {
             Build a clean, custom IDE package in under 60 seconds with our interactive web console.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/console" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none" }}>
+            <Link href="/app/pureide" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none" }}>
               Launch Builder Console Free →
             </Link>
-            <Link href="/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+            <Link href="/products/pure-ide/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               View Pricing Plans
             </Link>
           </div>

@@ -116,7 +116,7 @@ export default function InquestCustomerTools() {
         </div>
 
         <Link
-          href="/inquest"
+          href="/app/inquest"
           style={{
             display: "inline-flex",
             alignItems: "center",

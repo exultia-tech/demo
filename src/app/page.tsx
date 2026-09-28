@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   if (SITE_CONFIG.isolatedThreatFeed) {
-    redirect("/threat-feed");
+    redirect("/app/uvi");
   }
 
   return (
@@ -108,7 +108,7 @@ export default function HomePage() {
 
             <div>
               <Link 
-                href="/threat-feed" 
+                href="/app/uvi" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}>
                 Explore Threat Intelligence →

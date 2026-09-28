@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon, FixListIcon, PureOsIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -25,34 +25,42 @@ export default function Navbar() {
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
   );
 
-  const isStandaloneRoute = pathname?.startsWith("/threat-feed/standalone") || pathname?.startsWith("/threat-feed/isolated");
-  const threatFeedHome = isStandaloneRoute ? "/threat-feed/standalone" : "/threat-feed";
-  const threatFeedStats = isStandaloneRoute ? "/threat-feed/standalone/stats" : "/threat-feed/stats";
+  const isStandaloneRoute = pathname?.startsWith("/app/uvi/standalone") || pathname?.startsWith("/app/uvi/isolated");
+  const threatFeedHome = isStandaloneRoute ? "/app/uvi/standalone" : "/app/uvi";
+  const threatFeedStats = isStandaloneRoute ? "/app/uvi/standalone/stats" : "/app/uvi/stats";
 
   // Determine subnav contexts
   const isSecureIdeContext = !isIsolated && (
-    pathname === "/console" || 
-    pathname === "/features" || 
-    pathname === "/pricing" || 
+    pathname === "/app/pureide" || 
     pathname.startsWith("/products/pure-ide") || 
     pathname.startsWith("/docs") ||
     pathname.startsWith("/products/secure-ide")
   );
   
   const isThreatFeedContext = 
-    pathname.startsWith("/threat-feed") || 
+    pathname.startsWith("/app/uvi") || 
     pathname.startsWith("/products/uvi") || 
     pathname.startsWith("/products/threat-feed");
 
   const isFoiaContext = !isIsolated && (
-    pathname.startsWith("/inquest") || 
+    pathname.startsWith("/app/inquest") || 
     pathname.startsWith("/products/inquest") || 
     pathname.startsWith("/foia") ||
     pathname.startsWith("/products/foia")
   );
 
+  const isFixListContext = !isIsolated && (
+    pathname.startsWith("/app/fixlist") || 
+    pathname.startsWith("/products/fix-list")
+  );
+
+  const isPureOsContext = !isIsolated && (
+    pathname.startsWith("/app/pureos") ||
+    pathname.startsWith("/products/pure-os")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isFixListContext || isPureOsContext;
 
   // Active subscription helper
   const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
@@ -104,8 +112,8 @@ export default function Navbar() {
           <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
             <Link 
               href={threatFeedHome}
-              className={`nav-link ${pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "active" : ""}`}
-              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "#C084FC" : undefined }}
+              className={`nav-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active" : ""}`}
+              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "#C084FC" : undefined }}
             >
               Feed Registry
             </Link>
@@ -204,7 +212,7 @@ export default function Navbar() {
 
                     {/* PRODUCT 2: UVI */}
                     <Link 
-                      href="/threat-feed" 
+                      href="/app/uvi" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -249,6 +257,56 @@ export default function Navbar() {
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 4: FIX LIST */}
+                    <Link 
+                      href="/app/fixlist" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isFixListContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <FixListIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Fix List</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Targeted remediation payloads from UVI</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 5: PureOS */}
+                    <Link 
+                      href="/products/pure-os" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isPureOsContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <PureOsIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureOS</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Pre-hardened OS container catalogue</div>
                       </div>
                     </Link>
                   </div>
@@ -505,13 +563,13 @@ export default function Navbar() {
                 Architecture
               </a>
               <Link 
-                href="/pricing" 
-                className={`submenu-link ${pathname === "/pricing" ? "active-blue" : ""}`}>
+                href="/products/pure-ide/pricing" 
+                className={`submenu-link ${pathname === "/products/pure-ide/pricing" ? "active-blue" : ""}`}>
                 Pricing
               </Link>
               <Link 
-                href="/console" 
-                className={`submenu-link ${pathname === "/console" ? "active-blue" : ""}`}
+                href="/app/pureide" 
+                className={`submenu-link ${pathname === "/app/pureide" ? "active-blue" : ""}`}
                 style={{ fontWeight: 600 }}>
                 Builder Console
               </Link>
@@ -528,13 +586,18 @@ export default function Navbar() {
 
               <Link 
                 href={threatFeedHome} 
-                className={`submenu-link ${pathname === "/threat-feed" || pathname === "/threat-feed/standalone" ? "active-purple" : ""}`}>
+                className={`submenu-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active-purple" : ""}`}>
                 Feed Registry
               </Link>
               <Link 
                 href={threatFeedStats} 
                 className={`submenu-link ${pathname.includes("/stats") ? "active-purple" : ""}`}>
                 Global Statistics
+              </Link>
+              <Link 
+                href="/app/uvi/best-practices" 
+                className={`submenu-link ${pathname.includes("/best-practices") ? "active-purple" : ""}`}>
+                Best Practices
               </Link>
               <a 
                 href="/api/threat-feed" 
@@ -570,10 +633,58 @@ export default function Navbar() {
                 Pricing
               </Link>
               <Link 
-                href="/inquest" 
-                className={`submenu-link ${pathname === "/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
+                href="/app/inquest" 
+                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
                 style={{ fontWeight: 600 }}>
                 Inquest Workspace
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 4: FIX LIST SUBMENU */}
+          {isFixListContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <FixListIcon size={16} glow={false} />
+                Fix List
+              </span>
+
+              <Link 
+                href="/app/fixlist" 
+                className={`submenu-link ${pathname === "/app/fixlist" ? "active-emerald" : ""}`}>
+                Client Generator
+              </Link>
+              <Link 
+                href="/products/fix-list/pricing" 
+                className={`submenu-link ${pathname === "/products/fix-list/pricing" ? "active-emerald" : ""}`}>
+                Enterprise Licensing
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 5: PureOS SUBMENU */}
+          {isPureOsContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24", borderColor: "rgba(245, 158, 11, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <PureOsIcon size={16} glow={false} />
+                PureOS
+              </span>
+
+              <Link 
+                href="/products/pure-os" 
+                className={`submenu-link ${pathname === "/products/pure-os" ? "active-amber" : ""}`}>
+                Overview
+              </Link>
+              <Link 
+                href="/products/pure-os/pricing" 
+                className={`submenu-link ${pathname === "/products/pure-os/pricing" ? "active-amber" : ""}`}>
+                Pricing
+              </Link>
+              <Link 
+                href="/app/pureos" 
+                className={`submenu-link ${pathname === "/app/pureos" ? "active-amber" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Catalogue
               </Link>
             </div>
           )}

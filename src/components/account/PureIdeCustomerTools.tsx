@@ -128,7 +128,7 @@ export default function PureIdeCustomerTools() {
         </div>
 
         <Link
-          href="/console"
+          href="/app/pureide"
           style={{
             display: "inline-flex",
             alignItems: "center",

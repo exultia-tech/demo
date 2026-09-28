@@ -27,8 +27,8 @@ export const SITE_CONFIG = {
       : ISOLATED_THREAT_FEED_DEFAULT,
   
   // Dedicated persistent standalone routes
-  standaloneThreatFeedPath: "/threat-feed/standalone",
-  standaloneStatsPath: "/threat-feed/standalone/stats",
+  standaloneThreatFeedPath: "/app/uvi/standalone",
+  standaloneStatsPath: "/app/uvi/standalone/stats",
 };
 
 /**
@@ -40,15 +40,15 @@ export function isIsolatedThreatFeed(pathname: string | null, searchParams?: URL
   
   // Explicit standalone / isolated path prefixes
   if (
-    pathname.startsWith("/threat-feed/standalone") ||
-    pathname.startsWith("/threat-feed/isolated") ||
+    pathname.startsWith("/app/uvi/standalone") ||
+    pathname.startsWith("/app/uvi/isolated") ||
     pathname.startsWith("/standalone/threat-feed")
   ) {
     return true;
   }
   
   // Query parameter override on threat feed routes (?standalone=true or ?isolated=true or ?mode=standalone)
-  if (pathname.startsWith("/threat-feed") && searchParams) {
+  if (pathname.startsWith("/app/uvi") && searchParams) {
     const standaloneParam = searchParams.get("standalone");
     const isolatedParam = searchParams.get("isolated");
     const modeParam = searchParams.get("mode");

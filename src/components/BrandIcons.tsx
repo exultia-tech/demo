@@ -345,3 +345,123 @@ export function InquestIcon({ size = 32, className = "", glow = true }: IconProp
     </svg>
   );
 }
+
+/**
+ * Fix List Product Icon
+ * Represents targeted remediation, wrench/tooling, and infrastructure healing.
+ */
+export function FixListIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))" : "none";
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: glowFilter }}
+    >
+      <defs>
+        <linearGradient id="fixlist-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#34D399" />
+          <stop offset="50%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#059669" />
+        </linearGradient>
+
+        <linearGradient id="fixlist-accent-grad" x1="24" y1="10" x2="40" y2="26" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#A7F3D0" />
+          <stop offset="100%" stopColor="#10B981" />
+        </linearGradient>
+      </defs>
+
+      {/* Hexagonal Nut Background */}
+      <polygon
+        points="24,6 40,15 40,33 24,42 8,33 8,15"
+        fill="rgba(5, 20, 15, 0.8)"
+        stroke="url(#fixlist-base-grad)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+
+      {/* Wrench Handle */}
+      <path
+        d="M16 32L26 22"
+        stroke="url(#fixlist-base-grad)"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+
+      {/* Wrench Head */}
+      <path
+        d="M32 14C35 17 35 21 32 24C29 27 25 27 22 24L32 14Z"
+        fill="url(#fixlist-accent-grad)"
+      />
+      <circle cx="27" cy="19" r="3" fill="rgba(5, 20, 15, 0.9)" />
+
+      {/* Healing Pulse/Plus Sign */}
+      <line x1="14" y1="18" x2="20" y2="18" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="17" y1="15" x2="17" y2="21" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * PureOS Registry Icon
+ * Represents secure, hardened OS containers (box/cube with shield elements).
+ */
+export function PureOsIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))" : "none";
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: glowFilter }}
+    >
+      <defs>
+        <linearGradient id="pureos-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FBBF24" />
+          <stop offset="50%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+
+        <linearGradient id="pureos-accent-grad" x1="24" y1="10" x2="24" y2="38" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="100%" stopColor="#F59E0B" />
+        </linearGradient>
+      </defs>
+
+      {/* Isometric Cube (Container) */}
+      <polygon
+        points="24,6 42,16 42,36 24,46 6,36 6,16"
+        fill="rgba(20, 10, 5, 0.8)"
+        stroke="url(#pureos-base-grad)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      
+      {/* Container Inner Lines */}
+      <polyline points="6,16 24,26 42,16" stroke="url(#pureos-base-grad)" strokeWidth="2.5" strokeLinejoin="round" />
+      <line x1="24" y1="26" x2="24" y2="46" stroke="url(#pureos-base-grad)" strokeWidth="2.5" strokeLinejoin="round" />
+
+      {/* Center Shield overlay */}
+      <path
+        d="M24 16 L32 20 V28 C32 32 28 36 24 38 C20 36 16 32 16 28 V20 L24 16 Z"
+        fill="url(#pureos-accent-grad)"
+        opacity="0.9"
+      />
+      <path
+        d="M24 20 L28 22.5 V27 C28 29.5 26 32 24 33 C22 32 20 29.5 20 27 V22.5 L24 20 Z"
+        fill="#111"
+        opacity="0.8"
+      />
+      <circle cx="24" cy="26" r="2" fill="#FBBF24" />
+    </svg>
+  );
+}

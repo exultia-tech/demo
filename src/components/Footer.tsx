@@ -13,9 +13,9 @@ export default function Footer() {
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
   );
 
-  const isStandaloneRoute = pathname?.startsWith("/threat-feed/standalone") || pathname?.startsWith("/threat-feed/isolated");
-  const threatFeedHome = isStandaloneRoute ? "/threat-feed/standalone" : "/threat-feed";
-  const threatFeedStats = isStandaloneRoute ? "/threat-feed/standalone/stats" : "/threat-feed/stats";
+  const isStandaloneRoute = pathname?.startsWith("/app/uvi/standalone") || pathname?.startsWith("/app/uvi/isolated");
+  const threatFeedHome = isStandaloneRoute ? "/app/uvi/standalone" : "/app/uvi";
+  const threatFeedStats = isStandaloneRoute ? "/app/uvi/standalone/stats" : "/app/uvi/stats";
 
   if (isIsolated) {
     return (
@@ -154,8 +154,8 @@ export default function Footer() {
           <ul>
             <li><Link href="/products/pure-ide">Product Overview & Features</Link></li>
             <li><Link href="/products/pure-ide#architecture">Security Architecture</Link></li>
-            <li><Link href="/console">Builder Console</Link></li>
-            <li><Link href="/pricing">Plans & Pricing</Link></li>
+            <li><Link href="/app/pureide">Builder Console</Link></li>
+            <li><Link href="/products/pure-ide/pricing">Plans & Pricing</Link></li>
           </ul>
         </div>
 
@@ -164,8 +164,8 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
           <h4>Universal Vulnerability Intelligence (UVI)</h4>
           <ul>
-            <li><Link href="/threat-feed">Threat Feed Registry</Link></li>
-            <li><Link href="/threat-feed/stats">Global Statistics</Link></li>
+            <li><Link href="/app/uvi">Threat Feed Registry</Link></li>
+            <li><Link href="/app/uvi/stats">Global Statistics</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
             <li><Link href="/products/pure-ide#sandbox">Air-Gapped Sandboxing</Link></li>
           </ul>
@@ -179,7 +179,19 @@ export default function Footer() {
             <li><Link href="/products/inquest">Product Overview</Link></li>
             <li><Link href="/products/inquest/features">Features & Tools</Link></li>
             <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
-            <li><Link href="/inquest">Inquest Workspace</Link></li>
+            <li><Link href="/app/inquest">Inquest Workspace</Link></li>
+          </ul>
+        </div>
+
+        {/* COLUMN 4: CORE PLATFORMS - SECURITY TOOLS */}
+        <div className="footer-col">
+          <div style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>DevSecOps Tooling</div>
+          <h4>Remediation & Hardening</h4>
+          <ul>
+            <li><Link href="/app/fixlist">Fix List Generator</Link></li>
+            <li><Link href="/products/fix-list/pricing">Fix List Licensing</Link></li>
+            <li><Link href="/app/pureos">PureOS</Link></li>
+            <li><Link href="/products/pure-os">PureOS Overview</Link></li>
           </ul>
         </div>
 
@@ -203,8 +215,8 @@ export default function Footer() {
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
-          <Link href="/threat-feed" style={{ color: "#94A3B8", textDecoration: "none" }}>Universal Vulnerability Intelligence (UVI)</Link>
-          <Link href="/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
+          <Link href="/app/uvi" style={{ color: "#94A3B8", textDecoration: "none" }}>Universal Vulnerability Intelligence (UVI)</Link>
+          <Link href="/app/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
         </div>
       </div>
     </footer>

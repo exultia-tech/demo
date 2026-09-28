@@ -188,7 +188,7 @@ export default function PricingPage() {
               </button>
             ) : (
               <Link 
-                href="/console" 
+                href="/app/pureide" 
                 className="btn-primary" 
                 style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid var(--border-color)', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}
               >
@@ -237,7 +237,7 @@ export default function PricingPage() {
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
-            <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
+            <Link href="/app/pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
               Start Team Trial →
             </Link>
           </div>
@@ -354,7 +354,7 @@ export default function PricingPage() {
                 Contact Us (100+ Orders) →
               </a>
             ) : (
-              <Link href="/console" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
+              <Link href="/app/pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
                 Launch Enterprise (1–100) →
               </Link>
             )}
@@ -443,7 +443,7 @@ export default function PricingPage() {
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <Link
-                    href="/console"
+                    href="/app/pureide"
                     onClick={() => setShowDonationModal(false)}
                     className="btn-primary"
                     style={{ flex: 1, padding: '0.75rem', textAlign: 'center', textDecoration: 'none', fontSize: '0.9rem' }}
@@ -512,7 +512,7 @@ export default function PricingPage() {
             Ready to configure and harden your team&apos;s development environment?
           </p>
           <Link 
-            href="/console"
+            href="/app/pureide"
             className="btn-primary" 
             style={{ padding: '0.75rem 1.75rem', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block' }}
           >

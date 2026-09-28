@@ -29,19 +29,19 @@ export default function InquestProductLandingPage() {
 
         <div className="hero-cta-group" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
           <Link 
-            href="/inquest" 
+            href="/app/inquest" 
             className="btn-primary" 
             style={{ padding: "0.95rem 2rem", fontSize: "1rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.55rem", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Launch Inquest Workspace →
           </Link>
           <Link 
-            href="/inquest?tab=agencies" 
+            href="/app/inquest?tab=agencies" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
             50-State Agency Directory
           </Link>
           <Link 
-            href="/inquest?tab=analyzer" 
+            href="/app/inquest?tab=analyzer" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
             Denial Letter Analyzer
           </Link>
@@ -236,7 +236,7 @@ export default function InquestProductLandingPage() {
               </ul>
             </div>
             <Link 
-              href="/inquest" 
+              href="/app/inquest" 
               style={{
                 marginTop: "1.75rem",
                 display: "block",
@@ -380,10 +380,10 @@ export default function InquestProductLandingPage() {
             Automated statutory citations, fee waiver arguments, and partial-release clauses in under 2 minutes.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/inquest" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" }}>
+            <Link href="/app/inquest" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" }}>
               Open Inquest Workspace Free →
             </Link>
-            <Link href="/inquest?tab=agencies" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+            <Link href="/app/inquest?tab=agencies" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
               Browse Agency Directory
             </Link>
           </div>

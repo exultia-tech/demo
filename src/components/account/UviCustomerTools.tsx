@@ -128,7 +128,7 @@ export default function UviCustomerTools() {
         </div>
 
         <Link
-          href="/threat-feed"
+          href="/app/uvi"
           style={{
             display: "inline-flex",
             alignItems: "center",

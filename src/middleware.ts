@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
     
     // Allow threat feed routes, API routes, internal assets
     if (
-      pathname.startsWith("/threat-feed") ||
+      pathname.startsWith("/app/uvi") ||
       pathname.startsWith("/api") ||
       pathname.startsWith("/_next") ||
       pathname.startsWith("/favicon") ||
@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
     
     // Redirect root and unreleased product paths to /threat-feed
     const url = request.nextUrl.clone();
-    url.pathname = "/threat-feed";
+    url.pathname = "/app/uvi";
     return NextResponse.redirect(url);
   }
 

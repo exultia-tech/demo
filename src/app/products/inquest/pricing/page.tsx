@@ -183,7 +183,7 @@ export default function InquestPricingPage() {
           </div>
 
           <Link 
-            href="/inquest" 
+            href="/app/inquest" 
             style={{
               display: "block",
               textAlign: "center",
@@ -727,7 +727,7 @@ export default function InquestPricingPage() {
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link 
-              href="/inquest" 
+              href="/app/inquest" 
               className="btn-primary" 
               style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)", color: "#041019", fontWeight: 800 }}>
               Launch Free Civic Workspace →

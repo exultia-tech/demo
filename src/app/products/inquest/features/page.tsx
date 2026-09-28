@@ -92,7 +92,7 @@ export default function InquestFeaturesPage() {
               </div>
 
               <Link 
-                href="/inquest?tab=wizard" 
+                href="/app/inquest?tab=wizard" 
                 className="btn btn-primary"
                 style={{
                   background: "linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)",
@@ -220,7 +220,7 @@ export default function InquestFeaturesPage() {
               </div>
 
               <Link 
-                href="/inquest?tab=agencies" 
+                href="/app/inquest?tab=agencies" 
                 className="btn btn-secondary"
                 style={{
                   display: "inline-flex",
@@ -273,7 +273,7 @@ export default function InquestFeaturesPage() {
               </div>
 
               <Link 
-                href="/inquest?tab=analyzer" 
+                href="/app/inquest?tab=analyzer" 
                 className="btn btn-secondary"
                 style={{
                   display: "inline-flex",
@@ -368,7 +368,7 @@ export default function InquestFeaturesPage() {
               </div>
 
               <Link 
-                href="/inquest?tab=cases" 
+                href="/app/inquest?tab=cases" 
                 className="btn btn-secondary"
                 style={{
                   display: "inline-flex",
@@ -440,7 +440,7 @@ export default function InquestFeaturesPage() {
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link 
-              href="/inquest" 
+              href="/app/inquest" 
               className="btn btn-primary"
               style={{
                 background: "linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)",

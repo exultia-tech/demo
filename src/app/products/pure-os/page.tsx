@@ -1,0 +1,64 @@
+import Link from "next/link";
+import { Metadata } from "next";
+import { PureOsIcon } from "@/components/BrandIcons";
+
+export const metadata: Metadata = {
+  title: "Exultia PureOS | Pre-Hardened OS Images",
+  description: "PureOS provides pre-hardened OS container images secured against the UVI Threat Feed and industry best practices.",
+};
+
+export default function PureOSMarketingPage() {
+  return (
+    <div className="fade-in" style={{ paddingBottom: "5rem" }}>
+      {/* PRODUCT HERO */}
+      <section className="hero-section" style={{ paddingTop: "3rem", paddingBottom: "3.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+          <PureOsIcon size={64} glow={true} />
+        </div>
+        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.12 }}>
+          <span className="gradient-text">PureOS Registry</span>
+        </h1>
+        <p className="hero-subtitle" style={{ maxWidth: "720px", margin: "0 auto 2.5rem auto", fontSize: "1.1rem", lineHeight: 1.5, color: "var(--text-muted)" }}>
+          Stop deploying vulnerable infrastructure. PureOS provides a catalogue of pre-hardened, zero-trust OS container images continuously synchronized with the Universal Vulnerability Intelligence (UVI) feed.
+        </p>
+
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/app/pureos" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" }}>
+            Browse Catalogue →
+          </Link>
+          <Link href="/products/pure-os/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+            View Licensing Plans
+          </Link>
+        </div>
+      </section>
+
+      {/* OVERVIEW CONTENT */}
+      <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1.5rem" }}>
+        <div className="glass-card" style={{ padding: "3rem", borderRadius: "24px" }}>
+          <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center" }}>Hardened from the Ground Up</h2>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
+            <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>UVI Synchronized</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                Every image in the PureOS registry is automatically rebuilt and verified against the latest UVI Threat Feed advisories. Zero-day mitigations are injected directly into the baseline OS configurations.
+              </p>
+            </div>
+            <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>CIS Benchmark Compliant</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                Images are hardened out-of-the-box using CIS Level 1 and Level 2 benchmarks. Default accounts are locked, vulnerable services are disabled, and network boundaries are sealed.
+              </p>
+            </div>
+            <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>Minimal Attack Surface</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                We strip non-essential binaries and package managers from production-ready images, dramatically reducing the surface area available for remote code execution and lateral movement.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
