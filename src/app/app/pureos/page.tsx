@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { PureOsIcon, UviIcon } from "@/components/BrandIcons";
-import { Shield, CheckCircle, Terminal, Download, Copy, AlertTriangle } from "lucide-react";
+import { Shield, CheckCircle, Terminal, Download, Copy, AlertTriangle, FileCode } from "lucide-react";
 
 interface ContainerImage {
   id: string;
@@ -211,6 +211,7 @@ const PureOS_CATALOGUE: ContainerImage[] = [
 export default function PureOSRegistryConsole() {
   const [search, setSearch] = useState("");
   const [selectedImage, setSelectedImage] = useState<ContainerImage | null>(null);
+  const [showSbomModal, setShowSbomModal] = useState(false);
 
   const filteredCatalogue = PureOS_CATALOGUE.filter(img => 
     img.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -354,7 +355,11 @@ export default function PureOSRegistryConsole() {
             </div>
 
             <div>
-              <button className="btn-primary" style={{ width: "100%", padding: "1rem", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", border: "none" }}>
+              <button 
+                className="btn-primary" 
+                onClick={() => setShowSbomModal(true)}
+                style={{ width: "100%", padding: "1rem", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", border: "none" }}
+              >
                 <Download size={18} /> View SBOM & Manifest
               </button>
             </div>
@@ -367,6 +372,65 @@ export default function PureOSRegistryConsole() {
         )}
 
       </div>
+
+      {showSbomModal && selectedImage && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "2rem" }}>
+          <div className="glass-card" style={{ width: "100%", maxWidth: "800px", maxHeight: "80vh", borderRadius: "16px", display: "flex", flexDirection: "column", animation: "scaleIn 0.2s ease" }}>
+            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                <FileCode size={20} color="#10B981" /> 
+                SBOM & Manifest - {selectedImage.name}:{selectedImage.tag}
+              </h2>
+              <button onClick={() => setShowSbomModal(false)} style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "1.5rem" }}>&times;</button>
+            </div>
+            <div style={{ padding: "1.5rem", overflowY: "auto", flex: 1, background: "#0D1117", fontFamily: "monospace", fontSize: "0.85rem", color: "#E6EDF3", whiteSpace: "pre-wrap" }}>
+{`{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "${new Date().toISOString()}",
+    "component": {
+      "type": "container",
+      "name": "${selectedImage.name}",
+      "version": "${selectedImage.tag}",
+      "description": "Exultia PureOS Hardened Image (${selectedImage.baseOS})"
+    }
+  },
+  "components": [
+    {
+      "type": "operating-system",
+      "name": "${selectedImage.baseOS}",
+      "version": "latest",
+      "properties": [
+        { "name": "cis_level", "value": "${selectedImage.cisLevel}" },
+        { "name": "uvi_mitigations", "value": "${selectedImage.uviMitigations}" }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "openssl",
+      "version": "3.0.2-0ubuntu1.10",
+      "cpe": "cpe:2.3:a:openssl:openssl:3.0.2:*:*:*:*:*:*:*"
+    },
+    {
+      "type": "library",
+      "name": "glibc",
+      "version": "2.35-0ubuntu3.1"
+    }
+  ],
+  "vulnerabilities": []
+}`}
+            </div>
+            <div style={{ padding: "1.5rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+              <button onClick={() => setShowSbomModal(false)} className="btn-secondary" style={{ padding: "0.75rem 1.5rem", borderRadius: "8px" }}>Close</button>
+              <button className="btn-primary" style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px" }}><Download size={16} /> Download JSON</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
