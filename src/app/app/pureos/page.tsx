@@ -408,17 +408,35 @@ export default function PureOSRegistryConsole() {
         { "name": "uvi_mitigations", "value": "${selectedImage.uviMitigations}" }
       ]
     },
+${selectedImage.baseOS.includes('Windows') ? `    {
+      "type": "framework",
+      "name": "Microsoft.NETCore.App",
+      "version": "8.0.0"
+    },
     {
       "type": "library",
+      "name": "msvcrt.dll",
+      "version": "10.0.20348.1"
+    }` : selectedImage.baseOS.includes('Pi') || selectedImage.baseOS.includes('Ubuntu Core') ? `    {
+      "type": "firmware",
+      "name": "raspberrypi-bootloader",
+      "version": "1.20230405-1"
+    },
+    {
+      "type": "library",
+      "name": "musl",
+      "version": "1.2.3"
+    }` : `    {
+      "type": "library",
       "name": "openssl",
-      "version": "3.0.2-0ubuntu1.10",
+      "version": "3.0.2",
       "cpe": "cpe:2.3:a:openssl:openssl:3.0.2:*:*:*:*:*:*:*"
     },
     {
       "type": "library",
       "name": "glibc",
-      "version": "2.35-0ubuntu3.1"
-    }
+      "version": "2.35"
+    }`}
   ],
   "vulnerabilities": []
 }`}
