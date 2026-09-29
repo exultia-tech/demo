@@ -266,17 +266,17 @@ export default function PureOSRegistryConsole() {
             </a>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1rem" }}>
             {filteredCatalogue.map(img => (
               <div 
                 key={img.id} 
                 className="glass-card" 
                 style={{ 
-                  padding: "1.5rem", 
-                  borderRadius: "16px", 
+                  padding: "1rem", 
+                  borderRadius: "12px", 
                   display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "space-between",
+                  flexDirection: "column",
+                  gap: "0.75rem",
                   cursor: "pointer",
                   border: selectedImage?.id === img.id ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid var(--border-color)",
                   background: selectedImage?.id === img.id ? "rgba(245, 158, 11, 0.05)" : "rgba(255,255,255,0.02)",
@@ -285,33 +285,20 @@ export default function PureOSRegistryConsole() {
                 onClick={() => setSelectedImage(img)}
               >
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "0.5rem" }}>
-                    <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                      {img.name}
-                      <span style={{ fontSize: "0.85rem", padding: "2px 8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", color: "#94A3B8" }}>:{img.tag}</span>
-                    </h3>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--text-muted)", fontSize: "0.9rem" }}>
-                    <span>{img.baseOS}</span>
-                    <span>•</span>
-                    <span>{img.sizeMB} MB</span>
-                    <span>•</span>
-                    <span>Updated {img.lastUpdated}</span>
-                  </div>
+                  <h3 style={{ margin: 0, fontSize: "1rem", color: "white", marginBottom: "4px" }}>
+                    {img.name.split('/')[1]}<span style={{ color: "var(--text-muted)", fontSize: "0.8rem", marginLeft: "6px" }}>:{img.tag}</span>
+                  </h3>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{img.baseOS}</div>
                 </div>
                 
-                <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: "0.85rem", color: "#FBBF24", display: "flex", alignItems: "center", gap: "4px", justifyContent: "flex-end", marginBottom: "4px" }}>
-                      <Shield size={14} /> CIS {img.cisLevel}
-                    </div>
-                    <div style={{ fontSize: "0.8rem", color: "#C084FC", display: "flex", alignItems: "center", gap: "4px", justifyContent: "flex-end" }}>
-                      <UviIcon size={12} glow={false} /> {img.uviMitigations} UVI Mitigations
-                    </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                    <span>{img.sizeMB} MB</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#FBBF24" }}><Shield size={12} /> {img.cisLevel}</span>
                   </div>
-                  <button className="btn-secondary" style={{ padding: "0.6rem 1rem", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "6px" }}>
-                    Select
-                  </button>
+                  <div style={{ fontSize: "0.75rem", color: "#C084FC", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <UviIcon size={10} glow={false} /> {img.uviMitigations}
+                  </div>
                 </div>
               </div>
             ))}
