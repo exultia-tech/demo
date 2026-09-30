@@ -9,19 +9,27 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Missing ID', { status: 400 });
   }
 
-  const script = scriptStore.get(id);
+  const scriptData = scriptStore.get(id);
 
-  if (!script) {
+  if (!scriptData) {
     return new NextResponse('Script not found or already executed.', { status: 404 });
   }
 
   // Delete from memory to ensure one-time transmission
   scriptStore.delete(id);
 
-  return new NextResponse(script, {
-    headers: {
-      'Content-Type': 'text/plain',
-      'Cache-Control': 'no-store'
-    }
+  const headers: Record<string, string> = {
+    'Content-Type': 'text/plain',
+    'Cache-Control': 'no-store'
+  };
+
+  if (scriptData.filenamePattern) {
+    // Basic sanitization of filename
+    const safeFilename = scriptData.filenamePattern.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+    headers['Content-Disposition'] = `attachment; filename="${safeFilename}"`;
+  }
+
+  return new NextResponse(scriptData.script, {
+    headers
   });
 }

@@ -59,6 +59,8 @@ export default function PraxisPage() {
   const [selectedClasses, setSelectedClasses] = useState<Set<string>>(new Set(['network']));
   const [networkMode, setNetworkMode] = useState<'localhost' | 'export'>('localhost');
   const [firewallFormat, setFirewallFormat] = useState('plain');
+  const [filenamePattern, setFilenamePattern] = useState('');
+  const [customShebang, setCustomShebang] = useState('#!/bin/sh');
 
   const [ready, setReady] = useState(false);
   const [baseUrl, setBaseUrl] = useState('https://exultia.tech');
@@ -92,7 +94,7 @@ export default function PraxisPage() {
             os, cron, proxy,
             preview: true,
             classes: Array.from(selectedClasses),
-            networkMode, firewallFormat
+            networkMode, firewallFormat, filenamePattern, customShebang
           }),
         });
         const data = await res.json();
@@ -110,7 +112,7 @@ export default function PraxisPage() {
 
     fetchPreview();
     return () => { cancelled = true; };
-  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, baseUrl]);
+  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl]);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -122,7 +124,7 @@ export default function PraxisPage() {
           os, cron, proxy,
           preview: false,
           classes: Array.from(selectedClasses),
-          networkMode, firewallFormat
+          networkMode, firewallFormat, filenamePattern, customShebang
         }),
       });
       const data = await res.json();
@@ -142,7 +144,9 @@ export default function PraxisPage() {
   };
 
   const command = generatedId
-    ? `curl -sL "${baseUrl}/api/fix-list/download?id=${generatedId}" | sh`
+    ? filenamePattern
+      ? `curl -sL -O -J "${baseUrl}/api/fix-list/download?id=${generatedId}"`
+      : `curl -sL "${baseUrl}/api/fix-list/download?id=${generatedId}" | sh`
     : '';
 
   return (
@@ -316,6 +320,34 @@ export default function PraxisPage() {
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Installs a frozen snapshot of this payload into crontab.</div>
                 </div>
               </label>
+            </div>
+          </div>
+
+          {/* Advanced Configuration */}
+          <div className="glass-card" style={{ padding: '1.5rem', border: '1px solid rgba(245, 158, 11, 0.3)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(245, 158, 11, 0.1)', padding: '0.2rem 0.5rem', borderBottomLeftRadius: '8px', color: '#F59E0B', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>PREMIUM</div>
+            <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+              Advanced Configuration
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Custom Shebang</label>
+                <input type="text" placeholder="#!/bin/sh" value={customShebang}
+                  onChange={e => setCustomShebang(e.target.value)} style={{
+                    width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
+                    border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
+                    color: 'var(--text-main)', fontSize: '0.875rem', fontFamily: 'monospace'
+                  }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Export Filename Pattern</label>
+                <input type="text" placeholder="praxis-fixlist-export.sh" value={filenamePattern}
+                  onChange={e => setFilenamePattern(e.target.value)} style={{
+                    width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
+                    border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
+                    color: 'var(--text-main)', fontSize: '0.875rem', fontFamily: 'monospace'
+                  }} />
+              </div>
             </div>
           </div>
 

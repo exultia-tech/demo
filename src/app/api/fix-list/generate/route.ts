@@ -14,9 +14,9 @@ const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?
 
 export async function POST(request: NextRequest) {
   try {
-    const { os, cron, proxy, preview, classes = [], networkMode = 'localhost', firewallFormat = 'plain' } = await request.json();
+    const { os, cron, proxy, preview, classes = [], networkMode = 'localhost', firewallFormat = 'plain', customShebang = '#!/bin/sh', filenamePattern } = await request.json();
 
-    let script = `#!/bin/sh\n`;
+    let script = `${customShebang}\n`;
     script += `# ============================================================\n`;
     script += `# Exultia Targeted Remediation Client\n`;
     script += `# OS Target: ${os}\n`;
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
 
     const id = crypto.randomUUID();
     if (!preview) {
-      scriptStore.set(id, script);
+      scriptStore.set(id, { script, filenamePattern });
     }
 
     return NextResponse.json({ id, script, threatCount: advisoriesToPatch.length });
