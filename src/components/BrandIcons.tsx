@@ -348,7 +348,7 @@ export function InquestIcon({ size = 32, className = "", glow = true }: IconProp
 
 /**
  * Praxis Product Icon
- * Represents targeted remediation, wrench/tooling, and infrastructure healing.
+ * Represents targeted precision, remediation, and surgical vulnerability patching.
  */
 export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))" : "none";
@@ -364,45 +364,33 @@ export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps
       style={{ filter: glowFilter }}
     >
       <defs>
-        <linearGradient id="fixlist-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+        <linearGradient id="praxis-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FBBF24" />
           <stop offset="50%" stopColor="#F59E0B" />
           <stop offset="100%" stopColor="#D97706" />
         </linearGradient>
 
-        <linearGradient id="fixlist-accent-grad" x1="24" y1="10" x2="40" y2="26" gradientUnits="userSpaceOnUse">
+        <linearGradient id="praxis-accent-grad" x1="24" y1="10" x2="40" y2="26" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FDE68A" />
           <stop offset="100%" stopColor="#F59E0B" />
         </linearGradient>
       </defs>
 
-      {/* Hexagonal Nut Background */}
-      <polygon
-        points="24,6 40,15 40,33 24,42 8,33 8,15"
-        fill="rgba(5, 20, 15, 0.8)"
-        stroke="url(#fixlist-base-grad)"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
+      {/* Outer Targeting Brackets */}
+      <path d="M14 20V14H20 M28 14H34V20 M34 28V34H28 M20 34H14V28" stroke="url(#praxis-base-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* Wrench Handle */}
-      <path
-        d="M16 32L26 22"
-        stroke="url(#fixlist-base-grad)"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
+      {/* Inner Precision Diamond */}
+      <path d="M24 14 L34 24 L24 34 L14 24 Z" fill="rgba(245, 158, 11, 0.15)" stroke="url(#praxis-base-grad)" strokeWidth="2" />
 
-      {/* Wrench Head */}
-      <path
-        d="M32 14C35 17 35 21 32 24C29 27 25 27 22 24L32 14Z"
-        fill="url(#fixlist-accent-grad)"
-      />
-      <circle cx="27" cy="19" r="3" fill="rgba(5, 20, 15, 0.9)" />
+      {/* Crosshair Laser Lines */}
+      <line x1="6" y1="24" x2="16" y2="24" stroke="url(#praxis-accent-grad)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="32" y1="24" x2="42" y2="24" stroke="url(#praxis-accent-grad)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="24" y1="6" x2="24" y2="16" stroke="url(#praxis-accent-grad)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="24" y1="32" x2="24" y2="42" stroke="url(#praxis-accent-grad)" strokeWidth="2" strokeLinecap="round" />
 
-      {/* Healing Pulse/Plus Sign */}
-      <line x1="14" y1="18" x2="20" y2="18" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="17" y1="15" x2="17" y2="21" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Glowing Core Node */}
+      <circle cx="24" cy="24" r="4" fill="url(#praxis-accent-grad)" />
+      <circle cx="24" cy="24" r="1.5" fill="#FFFFFF" />
     </svg>
   );
 }
