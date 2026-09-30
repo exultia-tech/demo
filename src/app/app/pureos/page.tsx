@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PureOsIcon } from '@/components/BrandIcons';
 import { Download, FileCode } from 'lucide-react';
 
@@ -29,6 +29,47 @@ export default function PureOSConfigurator() {
     setIncludeTools(prev => ({ ...prev, [tool]: !prev[tool] }));
   };
 
+  const [savedProfiles, setSavedProfiles] = useState<Record<string, any>>({});
+  const [profileNameInput, setProfileNameInput] = useState('');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  useEffect(() => {
+    const loaded = localStorage.getItem('pureos_saved_profiles');
+    if (loaded) {
+      try {
+        setSavedProfiles(JSON.parse(loaded));
+      } catch (e) {}
+    }
+  }, []);
+
+  const saveProfile = () => {
+    if (!profileNameInput.trim()) return;
+    const newProfiles = {
+      ...savedProfiles,
+      [profileNameInput]: { baseImage, hardeningLevel, includeTools }
+    };
+    setSavedProfiles(newProfiles);
+    localStorage.setItem('pureos_saved_profiles', JSON.stringify(newProfiles));
+    setProfileNameInput('');
+    setIsSavingProfile(false);
+  };
+
+  const loadProfile = (name: string) => {
+    const profile = savedProfiles[name];
+    if (profile) {
+      setBaseImage(profile.baseImage);
+      setHardeningLevel(profile.hardeningLevel);
+      setIncludeTools(profile.includeTools);
+    }
+  };
+
+  const deleteProfile = (name: string) => {
+    const newProfiles = { ...savedProfiles };
+    delete newProfiles[name];
+    setSavedProfiles(newProfiles);
+    localStorage.setItem('pureos_saved_profiles', JSON.stringify(newProfiles));
+  };
+
   const tabs = [
     { id: 'base', label: 'Base Image', icon: '💿' },
     { id: 'hardening', label: 'Hardening Profile', icon: '🛡️' },
@@ -53,11 +94,49 @@ export default function PureOSConfigurator() {
           </div>
         </div>
         
-        {/* Tier Selector */}
-        <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem", borderRadius: "12px" }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginRight: "0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>License:</span>
-          {['Free', 'Pro', 'Enterprise'].map(t => (
-            <button
+        {/* Right Header Section */}
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          
+          {/* Saved Profiles */}
+          <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", borderRadius: "12px", position: "relative" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Profile:</span>
+            <select 
+              onChange={(e) => {
+                if (e.target.value === '__new__') setIsSavingProfile(true);
+                else if (e.target.value) loadProfile(e.target.value);
+              }}
+              style={{ background: "transparent", border: "none", color: "white", outline: "none", cursor: "pointer", fontWeight: 600, fontSize: "0.85rem" }}
+              value=""
+            >
+              <option value="" disabled>Load Profile...</option>
+              {Object.keys(savedProfiles).map(p => (
+                <option key={p} value={p} style={{ color: "black" }}>{p}</option>
+              ))}
+              <option value="__new__" style={{ color: "black", fontWeight: "bold" }}>+ Save Current As...</option>
+            </select>
+            
+            {isSavingProfile && (
+              <div style={{ position: "absolute", top: "120%", right: 0, background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "1rem", borderRadius: "12px", zIndex: 100, display: "flex", gap: "0.5rem", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}>
+                <input 
+                  autoFocus
+                  type="text" 
+                  placeholder="Profile Name" 
+                  value={profileNameInput}
+                  onChange={e => setProfileNameInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && saveProfile()}
+                  style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.3)", color: "white" }}
+                />
+                <button onClick={saveProfile} style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "#10B981", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}>Save</button>
+                <button onClick={() => setIsSavingProfile(false)} style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", cursor: "pointer" }}>Cancel</button>
+              </div>
+            )}
+          </div>
+
+          {/* Tier Selector */}
+          <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem", borderRadius: "12px" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginRight: "0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>License:</span>
+            {['Free', 'Pro', 'Enterprise'].map(t => (
+              <button
               key={t}
               onClick={() => setTier(t as SubscriptionTier)}
               style={{
@@ -75,6 +154,7 @@ export default function PureOSConfigurator() {
               {t}
             </button>
           ))}
+          </div>
         </div>
       </header>
 
