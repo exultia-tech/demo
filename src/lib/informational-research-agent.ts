@@ -434,7 +434,7 @@ export const UNANALYZED_INFORMAL_DISPATCHES: RawInformalResearchFinding[] = [
 /**
  * Autonomous CTI Research Agent Engine.
  * Operates purely as a background process that continuously develops
- * and synthesizes informal findings into structured UVI threat feed entries without requiring user clicks.
+ * and synthesizes informal findings into structured Vantage threat feed entries without requiring user clicks.
  */
 export class InformationalResearchAgent {
   private static instance: InformationalResearchAgent;
@@ -469,7 +469,7 @@ export class InformationalResearchAgent {
   }
 
   /**
-   * Automatically develops all queued informal dispatches into canonical UVI entries.
+   * Automatically develops all queued informal dispatches into canonical Vantage entries.
    */
   public synthesizeInitialDispatches(): void {
     let addedCount = 0;
@@ -567,20 +567,20 @@ export class InformationalResearchAgent {
     }
 
     reasoningLog.push(`[Step 3: Workstation Impact Assessment] Evaluating developer workstation and local build environment exposure.`);
-    reasoningLog.push(`[Step 4: Synthesis] Formulating structured UVI advisory schema with primary source citations.`);
+    reasoningLog.push(`[Step 4: Synthesis] Formulating structured Vantage advisory schema with primary source citations.`);
 
     // Find highest existing sequence number to avoid collisions
     const year = new Date().getFullYear();
     let maxSeq = 37;
     for (const record of CURATED_INFORMATIONAL_DISCLOSURES) {
-      const match = record.uviId.match(/UVI-INFO-\d{4}-(\d+)/);
+      const match = record.uviId.match(/Vantage-INFO-\d{4}-(\d+)/);
       if (match) {
         const seq = parseInt(match[1], 10);
         if (seq > maxSeq) maxSeq = seq;
       }
     }
     const nextSeq = (maxSeq + 1).toString().padStart(4, "0");
-    const uviId = `UVI-INFO-${year}-${nextSeq}`;
+    const uviId = `Vantage-INFO-${year}-${nextSeq}`;
 
     let canonicalSourceId = raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_");
     if (canonicalSourceId.includes("hackerone") || canonicalSourceId.includes("hacktivity")) canonicalSourceId = "hackerone_hacktivity";
@@ -752,7 +752,7 @@ export class InformationalResearchAgent {
    */
   public getTelemetry(): AgentTelemetry {
     return {
-      agentName: "UVI Autonomous CTI Research Agent",
+      agentName: "Vantage Autonomous CTI Research Agent",
       version: "v2.4-background-agent",
       status: this.currentStatus,
       totalFindingsAnalyzed: this.totalAnalyzedCount,

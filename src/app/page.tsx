@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
   title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
-  description: "Exultia builds tools for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (UVI), and open-records request management (Inquest).",
+  description: "Exultia builds tools for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function HomePage() {
@@ -80,7 +80,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* PRODUCT 2: UVI */}
+          {/* PRODUCT 2: Vantage */}
           <div className="glass-card" style={{
             padding: "2.25rem 2rem",
             display: "flex",
@@ -94,10 +94,10 @@ export default function HomePage() {
           }}>
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <UviIcon size={52} glow={true} />
+                <VantageIcon size={52} glow={true} />
               </div>
 
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Universal Vulnerability Intelligence (UVI)</h3>
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Vantage</h3>
               <div style={{ color: "#A78BFA", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
                 Universal Threat Feed
               </div>

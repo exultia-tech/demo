@@ -4,7 +4,7 @@ import React, { ReactNode } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Lock, Sparkles, ShieldCheck, ArrowRight, Zap, KeyRound, Cpu, Terminal } from "lucide-react";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
 interface PlanGateProps {
   product: "pureide" | "uvi" | "inquest";
@@ -47,7 +47,7 @@ export function PlanGate({
 
   const productNames = {
     pureide: "PureIDE Workstations",
-    uvi: "Universal Vulnerability Intelligence",
+    uvi: "Vantage",
     inquest: "Inquest FOIA Discovery",
   };
 
@@ -234,7 +234,7 @@ export function PureIdeAirgapSigningGate() {
 }
 
 /**
- * Pro UVI Feature: Real-time Kafka / Webhook Ingestion Feed
+ * Pro Vantage Feature: Real-time Kafka / Webhook Ingestion Feed
  */
 export function UviWebhookStreamingGate() {
   return (
@@ -252,9 +252,9 @@ export function UviWebhookStreamingGate() {
         textAlign: "left"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.75rem" }}>
-          <UviIcon size={22} />
+          <VantageIcon size={22} />
           <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>
-            UVI Real-time Webhook Receiver
+            Vantage Real-time Webhook Receiver
           </h4>
           <span style={{ fontSize: "0.68rem", background: "rgba(139, 92, 246, 0.2)", color: "#C084FC", border: "1px solid rgba(139, 92, 246, 0.4)", padding: "1px 6px", borderRadius: "4px", fontWeight: 800 }}>
             ACTIVE (PRO FEED)

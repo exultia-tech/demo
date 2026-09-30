@@ -111,7 +111,7 @@ export default function AuthModal() {
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0 }}>
             {mode === "login" 
-              ? "Sign in to manage your workstation builds, UVI feeds, and Inquest cases" 
+              ? "Sign in to manage your workstation builds, Vantage feeds, and Inquest cases" 
               : "Access to developer security and intelligence services is currently invite-only"}
           </p>
         </div>

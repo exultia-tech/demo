@@ -44,7 +44,7 @@ export interface VirtualCisoBriefing {
 }
 
 /**
- * Generate high-fidelity Virtual CISO intelligence briefing for any UVI advisory.
+ * Generate high-fidelity Virtual CISO intelligence briefing for any Vantage advisory.
  */
 export function generateVirtualCisoBriefing(advisory: UviAdvisoryRecord): VirtualCisoBriefing {
   const id = advisory.uviId.toUpperCase();

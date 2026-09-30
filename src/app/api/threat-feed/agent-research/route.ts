@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       status: 'success',
-      message: 'Autonomous CTI research agent synthesized informal finding into UVI advisory.',
+      message: 'Autonomous CTI research agent synthesized informal finding into Vantage advisory.',
       result: synthesisResult,
       telemetry: updatedTelemetry
     });

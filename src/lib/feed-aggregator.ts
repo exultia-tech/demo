@@ -528,7 +528,7 @@ function parseOsvVsCodeAdvisories(zipBuf: Buffer): UviAdvisoryRecord[] {
 
     for (const entry of entries) {
       const item = JSON.parse(zip.readAsText(entry));
-      const uviId = `UVI-${item.id}`;
+      const uviId = `Vantage-${item.id}`;
       const firstAffected = item.affected && item.affected[0];
       const pkgName = firstAffected?.package?.name || "unnamed.extension";
       const versions = firstAffected?.versions && firstAffected.versions.length > 0
@@ -633,7 +633,7 @@ function parseOsvGitHubActionsAdvisories(zipBuf: Buffer): UviAdvisoryRecord[] {
 
     for (const entry of entries) {
       const item = JSON.parse(zip.readAsText(entry));
-      const uviId = `UVI-${item.id}`;
+      const uviId = `Vantage-${item.id}`;
       const firstAffected = item.affected && item.affected[0];
       const actionName = firstAffected?.package?.name || "GitHub Action";
       const cves = (item.aliases || []).filter((a: string) => a.startsWith("CVE-"));
@@ -740,7 +740,7 @@ function parseUrlhausAdvisories(data: Record<string, any[]>, limit = 2500): UviA
   for (const [id, items] of entries) {
     if (!Array.isArray(items) || items.length === 0) continue;
     const item = items[0];
-    const uviId = `UVI-URLHAUS-${id}`;
+    const uviId = `Vantage-URLHAUS-${id}`;
     const url = item.url || "";
     let hostname = "malware-host";
     try {
@@ -842,7 +842,7 @@ function parseThreatfoxAdvisories(data: Record<string, any[]>, limit = 2000): Uv
   for (const [id, items] of entries) {
     if (!Array.isArray(items) || items.length === 0) continue;
     const item = items[0];
-    const uviId = `UVI-TF-${id}`;
+    const uviId = `Vantage-TF-${id}`;
     const malwareName = item.malware_printable || item.malware || "Unknown Malware";
     const iocType = item.ioc_type || "indicator";
     const iocValue = item.ioc_value || "";
@@ -944,7 +944,7 @@ function parseFeodoTrackerAdvisories(data: any[]): UviAdvisoryRecord[] {
     const country = item.country || "XX";
     const status = item.status || "active";
     const cleanIp = String(ip).replace(/[^a-zA-Z0-9]/g, "-");
-    const uviId = `UVI-FEODO-${cleanIp}-${port}`;
+    const uviId = `Vantage-FEODO-${cleanIp}-${port}`;
     const dateAdded = item.first_seen ? item.first_seen.split(" ")[0] : "2025-01-01";
 
     const record: UviAdvisoryRecord = {
@@ -1042,7 +1042,7 @@ function parseOpenPhishAdvisories(text: string, limit = 300): UviAdvisoryRecord[
       hostname = url.slice(0, 30);
     }
     const cleanHost = hostname.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 40);
-    const uviId = `UVI-PHISH-${i + 1}-${cleanHost}`;
+    const uviId = `Vantage-PHISH-${i + 1}-${cleanHost}`;
     const today = new Date().toISOString().split("T")[0];
 
     const record: UviAdvisoryRecord = {
@@ -1142,7 +1142,7 @@ function parseIpsumAdvisories(text: string, limit = 2500): UviAdvisoryRecord[] {
     if (score < 4) continue; // Multi-blacklist presence (listed on 4+ independent threat blacklists)
 
     const cleanIp = ip.replace(/[^a-zA-Z0-9]/g, "-");
-    const uviId = `UVI-IPSUM-${cleanIp}`;
+    const uviId = `Vantage-IPSUM-${cleanIp}`;
 
     const record: UviAdvisoryRecord = {
       uviId,
@@ -1234,7 +1234,7 @@ function parseBlocklistDeAdvisories(text: string, limit = 1200): UviAdvisoryReco
 
   for (const ip of selectedIps) {
     const cleanIp = ip.replace(/[^a-zA-Z0-9]/g, "-");
-    const uviId = `UVI-BLK-${cleanIp}`;
+    const uviId = `Vantage-BLK-${cleanIp}`;
 
     const record: UviAdvisoryRecord = {
       uviId,
@@ -1325,7 +1325,7 @@ function parseEmergingThreatsAdvisories(text: string, limit = 650): UviAdvisoryR
 
   for (const ip of selectedIps) {
     const cleanIp = ip.replace(/[^a-zA-Z0-9]/g, "-");
-    const uviId = `UVI-ET-${cleanIp}`;
+    const uviId = `Vantage-ET-${cleanIp}`;
 
     const record: UviAdvisoryRecord = {
       uviId,
@@ -1444,44 +1444,44 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
     ] = await Promise.allSettled([
       fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" },
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" },
         next: { revalidate: 3600 }
       }),
       fetch("https://osv-vulnerabilities.storage.googleapis.com/VSCode/all.zip", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://osv-vulnerabilities.storage.googleapis.com/GitHub%20Actions/all.zip", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://urlhaus.abuse.ch/downloads/json_recent/", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://threatfox.abuse.ch/export/json/recent/", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://openphish.com/feed.txt", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://lists.blocklist.de/lists/ssh.txt", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       }),
       fetch("https://rules.emergingthreats.net/blockrules/compromised-ips.txt", {
         signal: controller.signal,
-        headers: { "User-Agent": "SecureIDE-UVI-Aggregator/3.0" }
+        headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" }
       })
     ]);
 
@@ -1505,7 +1505,7 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
             const severity: ThreatSeverity = isRansomware ? "CRITICAL" : "HIGH";
             const cvssScore = isRansomware ? 9.8 : 8.8;
 
-            const uviId = `UVI-${item.cveID.replace(/^CVE-/i, "")}`;
+            const uviId = `Vantage-${item.cveID.replace(/^CVE-/i, "")}`;
             if (existingUviIdSet.has(uviId.toUpperCase())) continue;
             existingUviIdSet.add(uviId.toUpperCase());
 
@@ -1723,7 +1723,7 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
 }
 
 /**
- * Standardize all UVI advisories to the unified format: UVI-YYYY-MM-00000001
+ * Standardize all Vantage advisories to the unified format: Vantage-YYYY-MM-00000001
  * Deterministically buckets by publication year-month, prioritizes critical/milestone
  * threats within each month, and assigns continuous zero-padded 8-digit sequences (up to 100M/month).
  */
@@ -1760,7 +1760,7 @@ export function standardizeUviAdvisories(advisories: UviAdvisoryRecord[]): UviAd
 
     items.forEach((item, index) => {
       const seq = String(index + 1).padStart(8, "0");
-      const uviId = `UVI-${ym}-${seq}`;
+      const uviId = `Vantage-${ym}-${seq}`;
       const originalId = item.uviId;
 
       standardized.push({

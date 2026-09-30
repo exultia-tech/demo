@@ -16,7 +16,7 @@ import {
   Zap,
   Lock
 } from "lucide-react";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
 interface PersonaCardProps {
   email: string;
@@ -81,7 +81,7 @@ const PERSONAS: PersonaCardProps[] = [
     role: "user",
     badge: "Pro Developer Workstation",
     themeColor: "#3B82F6",
-    headline: "PureIDE Pro & UVI Threat Intel Pro",
+    headline: "PureIDE Pro & Vantage Threat Intel Pro",
     description: "Tests dedicated developer capabilities: live egress socket firewall policies, automated token redaction, priority build runners, and 10,000 req/min CVSS feeds.",
     entitlements: {
       pureide: "pro",
@@ -357,8 +357,8 @@ export default function AdminPersonaSwitcher() {
                     borderRadius: "4px",
                     fontWeight: 700
                   }}>
-                    <UviIcon size={12} glow={false} />
-                    UVI: {p.entitlements.uvi.toUpperCase()}
+                    <VantageIcon size={12} glow={false} />
+                    Vantage: {p.entitlements.uvi.toUpperCase()}
                   </span>
 
                   <span style={{

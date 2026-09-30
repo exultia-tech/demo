@@ -48,7 +48,7 @@ export function compileRemediationBlock(
         case 'json':
           lines.push(`cat <<'EOJSON'`);
           lines.push(`{`);
-          lines.push(`  "source": "Exultia UVI",`);
+          lines.push(`  "source": "Exultia Vantage",`);
           lines.push(`  "advisory": "${uviId}",`);
           lines.push(`  "indicators": [`);
           for (const ind of [...indicators, ...domains]) {

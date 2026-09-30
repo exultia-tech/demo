@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const os = searchParams.get('os') || 'linux';
 
   // In a full implementation, this endpoint would query the Turso database
-  // for the latest patches associated with the UVI feed, filtering by the 
+  // for the latest patches associated with the Vantage feed, filtering by the 
   // requested operating system.
 
   // For now, we generate a mock remediation payload based on the OS.
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   switch (os.toLowerCase()) {
     case 'linux':
       payload = `
-# Remediation: [UVI-2026-09-00101]
+# Remediation: [Vantage-2026-09-00101]
 # Scope: Basic file permissions hardening
 echo "[Exultia] Applying Linux remediations..."
 chmod 600 /etc/shadow 2>/dev/null || true

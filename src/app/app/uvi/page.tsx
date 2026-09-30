@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import VirtualCisoView from "@/components/VirtualCisoView";
-import { UviIcon } from "@/components/BrandIcons";
+import { VantageIcon } from "@/components/BrandIcons";
 import { 
   CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
@@ -206,7 +206,7 @@ export default function ThreatFeedPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to fetch live aggregated UVI feed:", err);
+        console.error("Failed to fetch live aggregated Vantage feed:", err);
       } finally {
         if (!isCancelled) setIsLoading(false);
       }
@@ -306,7 +306,7 @@ export default function ThreatFeedPage() {
         {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
-            <UviIcon size={40} glow={true} />
+            <VantageIcon size={40} glow={true} />
             <h1 style={{ 
               fontSize: "2.35rem", 
               fontWeight: 800, 
@@ -315,7 +315,7 @@ export default function ThreatFeedPage() {
               margin: 0,
               lineHeight: 1.2
             }}>
-              Universal Vulnerability Intelligence (UVI)
+              Vantage
             </h1>
           </div>
           <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: 0 }}>
@@ -710,7 +710,7 @@ export default function ThreatFeedPage() {
                         textAlign: "left",
                         transition: "all 0.12s ease"
                       }}
-                      title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter UVI advisories`}
+                      title={`${feed.name} (${feed.category})\nScope: ${feed.scope}\nRecords: ${feed.recordsIngested.toLocaleString()}\nClick to filter Vantage advisories`}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", overflow: "hidden" }}>
                         <span style={{
@@ -1119,16 +1119,16 @@ export default function ThreatFeedPage() {
                   <option value="cvss_desc">Domain Urgency & Reality</option>
                   <option value="published_desc">Date (Newest First)</option>
                   <option value="published_asc">Date (Oldest First)</option>
-                  <option value="uvi_desc">UVI ID (Descending)</option>
-                  <option value="uvi_asc">UVI ID (Ascending)</option>
+                  <option value="uvi_desc">Vantage ID (Descending)</option>
+                  <option value="uvi_asc">Vantage ID (Ascending)</option>
                 </>
               ) : (
                 <>
                   <option value="cvss_desc">CVSS Score (Highest First)</option>
                   <option value="published_desc">Date (Newest First)</option>
                   <option value="published_asc">Date (Oldest First)</option>
-                  <option value="uvi_desc">UVI ID (Descending)</option>
-                  <option value="uvi_asc">UVI ID (Ascending)</option>
+                  <option value="uvi_desc">Vantage ID (Descending)</option>
+                  <option value="uvi_asc">Vantage ID (Ascending)</option>
                 </>
               )}
             </select>
@@ -1340,7 +1340,7 @@ export default function ThreatFeedPage() {
                                   color: copiedUviId === record.uviId ? "#34D399" : "var(--text-muted)",
                                   padding: "2px"
                                 }}
-                                title="Copy UVI identifier"
+                                title="Copy Vantage identifier"
                               >
                                 {copiedUviId === record.uviId ? "✓" : (
                                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1677,7 +1677,7 @@ export default function ThreatFeedPage() {
                   }}
                 >
                   <div>
-                    {/* Card Header: UVI ID + Severity */}
+                    {/* Card Header: Vantage ID + Severity */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
                         <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 800, color: "#60A5FA" }}>
@@ -2154,7 +2154,7 @@ export default function ThreatFeedPage() {
                     <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
                       <span>Vector: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{obs.vectorCategory}</strong></span>
                       <span>•</span>
-                      <span>Signal Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.informationalSynthesis?.primarySources[0]?.sourceName || selectedAdvisory.upstreamSignals[0]?.sourceName || "UVI Intelligence"}</strong></span>
+                      <span>Signal Source: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedAdvisory.informationalSynthesis?.primarySources[0]?.sourceName || selectedAdvisory.upstreamSignals[0]?.sourceName || "Vantage Intelligence"}</strong></span>
                       <span>•</span>
                       <span>Horizon: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{getExposureHorizonLabel(obs.exposureHorizon)}</strong></span>
                       <span>•</span>
@@ -2491,7 +2491,7 @@ export default function ThreatFeedPage() {
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
-                  Standardized under UVI Ordering Schema v3.0
+                  Standardized under Vantage Ordering Schema v3.0
                 </span>
                 <button
                   onClick={() => handleCopyModalCurl(selectedAdvisory)}
@@ -2898,7 +2898,7 @@ export default function ThreatFeedPage() {
                             transition: "all 0.15s ease"
                           }}
                         >
-                          {isSelectedInMainFeed ? "Clear Filter" : "Filter UVI Feed"}
+                          {isSelectedInMainFeed ? "Clear Filter" : "Filter Vantage Feed"}
                         </button>
                       </div>
                     </div>
@@ -2916,7 +2916,7 @@ export default function ThreatFeedPage() {
               alignItems: "center"
             }}>
               <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
-                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-MM-00000001</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
+                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>Vantage-YYYY-MM-00000001</code> schema and accessible via REST API: <code style={{ color: "#34D399" }}>/api/threat-feed?source=&lt;id&gt;</code>
               </span>
 
               <button

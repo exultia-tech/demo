@@ -200,7 +200,7 @@ export async function syncUviThreatsToDb(force = false): Promise<ThreatSyncResul
       durationMs
     };
   } catch (err: any) {
-    console.error('Failed to sync UVI threats to Turso database:', err);
+    console.error('Failed to sync Vantage threats to Turso database:', err);
     return {
       success: false,
       totalSynced: 0,

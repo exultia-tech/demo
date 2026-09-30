@@ -22,7 +22,7 @@ export default function Footer() {
       <footer className="public-footer no-print">
         <div className="footer-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2.5rem" }}>
           
-          {/* BRAND & MISSION - ISOLATED UVI FOCUS */}
+          {/* BRAND & MISSION - ISOLATED Vantage FOCUS */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
               <ExultiaLogo size={34} />
@@ -41,13 +41,13 @@ export default function Footer() {
                   letterSpacing: "0.04em",
                   textTransform: "uppercase"
                 }}>
-                  UVI
+                  Vantage
                 </span>
               </div>
             </div>
 
             <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", maxWidth: "320px" }}>
-              Universal Vulnerability Intelligence (UVI) aggregates 110+ authoritative security feeds, CVE databases, active zero-days, and real-time malware telemetry into a unified open intelligence platform.
+              Vantage aggregates 110+ authoritative security feeds, CVE databases, active zero-days, and real-time malware telemetry into a unified open intelligence platform.
             </p>
 
             <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
@@ -57,7 +57,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* COLUMN 1: UVI THREAT PLATFORM */}
+          {/* COLUMN 1: Vantage THREAT PLATFORM */}
           <div className="footer-col">
             <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Platform</div>
             <h4>Threat Intelligence</h4>
@@ -159,14 +159,14 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* COLUMN 2: CORE PLATFORMS - UVI */}
+        {/* COLUMN 2: CORE PLATFORMS - Vantage */}
         <div className="footer-col">
           <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
-          <h4>Universal Vulnerability Intelligence (UVI)</h4>
+          <h4>Vantage</h4>
           <ul>
             <li><Link href="/app/uvi">Threat Feed Registry</Link></li>
             <li><Link href="/app/uvi/stats">Global Statistics</Link></li>
-            <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">UVI REST API (JSON)</a></li>
+            <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">Vantage REST API (JSON)</a></li>
             <li><Link href="/products/pure-ide#sandbox">Air-Gapped Sandboxing</Link></li>
           </ul>
         </div>
@@ -188,8 +188,8 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>DevSecOps Tooling</div>
           <h4>Remediation & Hardening</h4>
           <ul>
-            <li><Link href="/app/fixlist">Fix List Generator</Link></li>
-            <li><Link href="/products/fix-list/pricing">Fix List Licensing</Link></li>
+            <li><Link href="/app/fixlist">Praxis Generator</Link></li>
+            <li><Link href="/products/fix-list/pricing">Praxis Licensing</Link></li>
             <li><Link href="/app/pureos">PureOS</Link></li>
             <li><Link href="/products/pure-os">PureOS Overview</Link></li>
           </ul>
@@ -215,7 +215,7 @@ export default function Footer() {
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
-          <Link href="/app/uvi" style={{ color: "#94A3B8", textDecoration: "none" }}>Universal Vulnerability Intelligence (UVI)</Link>
+          <Link href="/app/uvi" style={{ color: "#94A3B8", textDecoration: "none" }}>Vantage</Link>
           <Link href="/app/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
         </div>
       </div>

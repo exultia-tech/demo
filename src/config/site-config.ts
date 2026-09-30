@@ -5,8 +5,8 @@
  * When isolated mode is ACTIVE:
  * 1. Navbar removes product dropdowns and links to PureIDE / Inquest.
  * 2. Navbar brand logo links to the Threat Feed registry.
- * 3. Subnav displays only UVI Threat Intelligence navigation.
- * 4. Footer removes all references / links to PureIDE and Inquest, replacing them with UVI platform resources.
+ * 3. Subnav displays only Vantage Threat Intelligence navigation.
+ * 4. Footer removes all references / links to PureIDE and Inquest, replacing them with Vantage platform resources.
  * 5. Visiting the root `/` redirects to `/threat-feed` when global isolation is enabled.
  * 
  * To enable/disable:

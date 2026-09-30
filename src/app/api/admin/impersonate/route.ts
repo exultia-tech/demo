@@ -69,7 +69,7 @@ export const TEST_PERSONAS: TestPersonaMeta[] = [
       uvi: 'pro',
       inquest: 'free',
     },
-    headline: 'PureIDE Pro & UVI Threat Intel Pro Workstation',
+    headline: 'PureIDE Pro & Vantage Threat Intel Pro Workstation',
     description: 'Tests live socket egress firewall rules, automated token redaction, dedicated cloud compiler runners, and real-time CVSS v4 streaming.',
     keyFeatures: ['Live Egress Socket Firewall', 'Secrets Scanner & Token Redactor', '10,000 req/min Threat API', 'Automated SBOM Builder']
   },

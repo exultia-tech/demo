@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon, FixListIcon, PureOsIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -49,7 +49,7 @@ export default function Navbar() {
     pathname.startsWith("/products/foia")
   );
 
-  const isFixListContext = !isIsolated && (
+  const isPraxisContext = !isIsolated && (
     pathname.startsWith("/app/fixlist") || 
     pathname.startsWith("/products/fix-list")
   );
@@ -60,7 +60,7 @@ export default function Navbar() {
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isFixListContext || isPureOsContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext;
 
   // Active subscription helper
   const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
@@ -99,7 +99,7 @@ export default function Navbar() {
                   letterSpacing: "0.05em",
                   textTransform: "uppercase"
                 }}>
-                  UVI
+                  Vantage
                 </span>
               )}
             </div>
@@ -108,7 +108,7 @@ export default function Navbar() {
 
         {/* CENTER COLUMN: MAIN NAVIGATION */}
         {isIsolated ? (
-          /* ISOLATED / STANDALONE UVI NAVIGATION (No references to other unreleased products) */
+          /* ISOLATED / STANDALONE Vantage NAVIGATION (No references to other unreleased products) */
           <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
             <Link 
               href={threatFeedHome}
@@ -210,7 +210,7 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 2: UVI */}
+                    {/* PRODUCT 2: Vantage */}
                     <Link 
                       href="/app/uvi" 
                       onClick={() => setIsProductsOpen(false)}
@@ -227,10 +227,10 @@ export default function Navbar() {
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <UviIcon size={32} />
+                        <VantageIcon size={32} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Universal Vulnerability Intelligence (UVI)</div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Vantage</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal threat feed aggregating 110+ global registries</div>
                       </div>
                     </Link>
@@ -260,7 +260,7 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 4: FIX LIST */}
+                    {/* PRODUCT 4: praxis */}
                     <Link 
                       href="/app/fixlist" 
                       onClick={() => setIsProductsOpen(false)}
@@ -272,16 +272,16 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isFixListContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
+                        background: isPraxisContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <FixListIcon size={32} />
+                        <PraxisIcon size={32} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Fix List</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Targeted remediation payloads from UVI</div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Targeted remediation payloads from Vantage</div>
                       </div>
                     </Link>
 
@@ -576,12 +576,12 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 2: UVI SUBMENU */}
+          {/* SUBMENU OPTION 2: Vantage SUBMENU */}
           {isThreatFeedContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(139, 92, 246, 0.15)", color: "#C084FC", borderColor: "rgba(139, 92, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <UviIcon size={16} glow={false} />
-                {isIsolated ? "UVI Threat Intelligence" : "UVI"}
+                <VantageIcon size={16} glow={false} />
+                {isIsolated ? "Vantage Threat Intelligence" : "Vantage"}
               </span>
 
               <Link 
@@ -641,12 +641,12 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 4: FIX LIST SUBMENU */}
-          {isFixListContext && (
+          {/* SUBMENU OPTION 4: praxis SUBMENU */}
+          {isPraxisContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <FixListIcon size={16} glow={false} />
-                Fix List
+                <PraxisIcon size={16} glow={false} />
+                Praxis
               </span>
 
               <Link 

@@ -3,7 +3,7 @@ import { scriptStore } from '@/lib/fix-list-store';
 import { queryThreatFeedFromDb } from '@/lib/db/threats-query';
 import { compileRemediationBlock } from '@/lib/fix-list-compiler';
 
-// Map UI class IDs to UVI database query parameters
+// Map UI class IDs to Vantage database query parameters
 const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?: string }> = {
   network:   { scope: 'non-cve',       domain: 'MALWARE_C2_BOTNET' },
   config:    { action: 'PATCH',         scope: 'all' },
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       script += `log_msg "No active threats matched the selected remediation classes."\n`;
     } else {
       script += `# ============================================================\n`;
-      script += `# ${advisoriesToPatch.length} threat(s) identified from UVI registry\n`;
+      script += `# ${advisoriesToPatch.length} threat(s) identified from Vantage registry\n`;
       script += `# ============================================================\n\n`;
 
       for (const { advisory } of advisoriesToPatch) {
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id, script, threatCount: advisoriesToPatch.length });
 
   } catch (err) {
-    console.error('Fix list generation error:', err);
+    console.error('praxis generation error:', err);
     return NextResponse.json({ error: 'Failed to generate script' }, { status: 500 });
   }
 }

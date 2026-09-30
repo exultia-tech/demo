@@ -8,7 +8,7 @@ import PaymentModal from "@/components/billing/PaymentModal";
 
 export const metadata: Metadata = {
   title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
-  description: "Exultia builds tools for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (UVI), and open-records request management (Inquest).",
+  description: "Exultia builds tools for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function RootLayout({

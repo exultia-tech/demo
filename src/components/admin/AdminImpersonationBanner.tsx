@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { ShieldAlert, RotateCcw, ChevronDown, Check, UserCheck, Sparkles, ExternalLink } from "lucide-react";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
 interface PersonaOption {
   email: string;
@@ -153,8 +153,8 @@ export default function AdminImpersonationBanner() {
             fontWeight: 700,
             textTransform: "uppercase"
           }}>
-            <UviIcon size={11} glow={false} />
-            UVI: {currentUvi}
+            <VantageIcon size={11} glow={false} />
+            Vantage: {currentUvi}
           </span>
 
           <span style={{
@@ -249,7 +249,7 @@ export default function AdminImpersonationBanner() {
                         {p.name}
                       </div>
                       <div style={{ fontSize: "0.68rem", color: "#94A3B8", marginTop: "2px" }}>
-                        PureIDE: {p.pureide} • UVI: {p.uvi} • Inquest: {p.inquest}
+                        PureIDE: {p.pureide} • Vantage: {p.uvi} • Inquest: {p.inquest}
                       </div>
                     </div>
                     {isCurrent && <Check size={14} color="#34D399" />}

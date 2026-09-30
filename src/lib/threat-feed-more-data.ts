@@ -3,7 +3,7 @@ import { UviAdvisoryRecord } from './threat-feed-data';
 export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   // 7. Adversarial Model Context Protocol (MCP) Tool Poisoning & Shadow Server Registration
   {
-    uviId: "UVI-INFO-2025-0007",
+    uviId: "Vantage-INFO-2025-0007",
     title: "Informational: Adversarial Model Context Protocol (MCP) Tool Poisoning & Shadow Server Registration",
     headline: "Security research highlights untrusted schema injection in AI developer assistants connecting to local Model Context Protocol (MCP) endpoints.",
     summary: "As IDEs and coding agents adopt the Anthropic Model Context Protocol (MCP) to connect LLMs to local developer tools, researchers observe that malicious workspace repositories can define rogue MCP servers or poison tool JSON schemas to induce arbitrary shell execution.",
@@ -93,7 +93,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 8. Typosquatting HuggingFace & PyPI for Automated SafeTensors Pickling Bypasses
   {
-    uviId: "UVI-INFO-2025-0008",
+    uviId: "Vantage-INFO-2025-0008",
     title: "Informational: ML Supply Chain Typosquatting Bypassing SafeTensors Deserialization Guarantees",
     headline: "Public research alerts flag malicious Hugging Face model weights bundling companion preprocessing scripts that execute arbitrary Python code.",
     summary: "While the AI/ML community adopted the SafeTensors binary format to eliminate Pickle arbitrary code execution, security researchers report malicious actors bundling benign SafeTensors weights alongside poisoned tokenizer and preprocessing Python scripts.",
@@ -183,7 +183,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 9. BGP Hijacking Waves Targeting Regional Open-Source Package Mirrors
   {
-    uviId: "UVI-INFO-2025-0009",
+    uviId: "Vantage-INFO-2025-0009",
     title: "Informational: BGP Route Hijacking Campaigns Intercepting Regional Open-Source Package Mirrors",
     headline: "Network telemetry and underground chatter indicate localized BGP prefix hijacks intercepting package registry traffic to serve poisoned dependency tarballs.",
     summary: "BGP route anomalies observed across several international Tier-2 autonomous systems (ASNs) momentarily redirected traffic destined for regional npm and PyPI CDN edge mirrors to rogue servers serving cached packages with modified postinstall hooks.",
@@ -273,7 +273,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 10. VS Code Extension Shadow-Forking & Dormant Publisher Account Hijackings
   {
-    uviId: "UVI-INFO-2025-0010",
+    uviId: "Vantage-INFO-2025-0010",
     title: "Informational: VS Code Extension Shadow-Forking & Dormant Publisher Account Takeovers",
     headline: "Threat actors actively purchase expired domains linked to abandoned VS Code Marketplace extensions to push malicious automatic updates.",
     summary: "Cybersecurity researchers uncover targeted operations where adversaries identify popular but abandoned Visual Studio Marketplace extensions, buy their expired domain names, re-create the maintainer's MX records, and execute password resets to publish malicious updates.",
@@ -363,7 +363,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 11. Deepfake Audio Vishing Campaigns Targeting DevOps & Identity Helpdesks
   {
-    uviId: "UVI-INFO-2025-0011",
+    uviId: "Vantage-INFO-2025-0011",
     title: "Informational: Real-Time AI Voice Cloning Vishing Targeting Enterprise DevOps & IT Helpdesks",
     headline: "Security chatter and intelligence bulletins warn of sophisticated vishing attacks using generative AI voice models to reset engineer MFA credentials.",
     summary: "Threat actor groups (such as Scattered Spider affiliates) are leveraging real-time voice cloning software trained on executive conference calls and podcasts to call corporate IT helpdesks, impersonating lead engineers to request hardware token resets and new laptop provisioning.",
@@ -453,7 +453,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 12. Dormant GitHub Actions Pull Request Poisoning via Cache Eviction Race Conditions
   {
-    uviId: "UVI-INFO-2025-0012",
+    uviId: "Vantage-INFO-2025-0012",
     title: "Informational: GitHub Actions Runner Cache Poisoning via Cross-Branch Cache Key Collisions",
     headline: "Research teardowns reveal techniques where external pull requests exploit actions/cache scoping to poison dependency caches for main branch builds.",
     summary: "Academic researchers and cloud security firms publish proofs of concept demonstrating that permissive cache key naming in GitHub Actions workflows permits malicious pull requests to overwrite cache entries consumed by release workflows.",
@@ -542,7 +542,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 13. WebAssembly (Wasm) Sandbox Escapes via SIMD Vector Out-of-Bounds Emulation
   {
-    uviId: "UVI-INFO-2025-0013",
+    uviId: "Vantage-INFO-2025-0013",
     title: "Informational: WebAssembly SIMD Register Allocation Flaws Inducing Host Process Memory Corruption",
     headline: "Academic cryptographers and browser security researchers publish preprints detailing register allocation flaws in Wasm JIT engines.",
     summary: "Preprint disclosures and browser fuzzing telemetry reveal that complex 128-bit SIMD vector instructions compiled by JIT engines in Node.js, V8, and Wasmtime can cause register spilling calculation errors, enabling linear memory escapes into host memory.",
@@ -632,7 +632,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 14. Android Debug Bridge (ADB) Over Wi-Fi Silent Pairing & Local Keystroke Exfiltration
   {
-    uviId: "UVI-INFO-2025-0014",
+    uviId: "Vantage-INFO-2025-0014",
     title: "Informational: Unauthenticated Wireless ADB Probing on Developer Local Area Networks",
     headline: "Network telemetry highlights automated malware scanning developer home and office subnets for open Android Debug Bridge ports.",
     summary: "Security researchers observe malware variants scanning LAN subnets for open port 5555 on developer workstations, leveraging Android Debug Bridge (ADB) over Wi-Fi to silently install malicious APKs, dump logcats containing session cookies, and extract signing keys.",
@@ -721,7 +721,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 15. Subdomain Dangling DNS Takeovers of Internal Developer Documentation & API Gateways
   {
-    uviId: "UVI-INFO-2025-0015",
+    uviId: "Vantage-INFO-2025-0015",
     title: "Informational: Dangling DNS CNAME Takeovers Targeting Corporate Developer Portals & Documentation",
     headline: "Investigative research catalogs thousands of abandoned developer documentation subdomains vulnerable to zero-click domain takeovers.",
     summary: "Automated scanning operations conducted by bug bounty researchers and underground actors uncover widespread dangling DNS records pointing to decommissioned GitHub Pages, AWS S3 buckets, and Readme.io documentation sites, enabling session cookie hijacking under corporate top-level domains.",
@@ -811,7 +811,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 16. C to Rust Memory-Safety Rewrite Transpilation Semantic Bug Waves
   {
-    uviId: "UVI-INFO-2025-0016",
+    uviId: "Vantage-INFO-2025-0016",
     title: "Informational: Semantic Concurrency & Memory Bugs in LLM-Transpiled C-to-Rust Codebases",
     headline: "Security essays and academic audits highlight silent race conditions and use-after-free bugs introduced by automated C-to-Rust rewrites.",
     summary: "As organizations accelerate initiatives to replace memory-unsafe C/C++ libraries with Rust using automated transpilers and LLMs, researchers discover subtle semantic mismatches where unsafe pointer arithmetic wrapped in `unsafe { ... }` blocks violates Rust's aliasing rules.",
@@ -901,7 +901,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 17. Docker Socket Mounting in Development Devcontainers & Remote SSH Containers
   {
-    uviId: "UVI-INFO-2025-0017",
+    uviId: "Vantage-INFO-2025-0017",
     title: "Informational: Devcontainer Root Breakouts via Ubiquitous /var/run/docker.sock Mounts",
     headline: "Cloud threat research highlights systemic container breakouts in remote IDE environments sharing host Docker sockets.",
     summary: "Cloud native security researchers and red teams warn of the ubiquitous practice of mounting `/var/run/docker.sock` inside developer development containers (Devcontainers, GitHub Codespaces, Gitpod), allowing any compromised extension or build script to instantly claim host root privileges.",
@@ -990,7 +990,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 18. Git Submodule Recursive URL Redirection & Shallow Clone RCE Chatter
   {
-    uviId: "UVI-INFO-2025-0018",
+    uviId: "Vantage-INFO-2025-0018",
     title: "Informational: Git Submodule Path Traversal & Hook Execution Vectors in Recursive Clones",
     headline: "Underground intel and exploit proof-of-concepts detail path traversal techniques in .gitmodules weaponized against developers running git clone --recursive.",
     summary: "Discussions on underground developer forums (vx-underground) and Git security research highlight persistent vulnerabilities where crafted `.gitmodules` entries exploit relative paths to write executable hook scripts into the parent `.git/hooks/` directory during recursive clones.",
@@ -1079,7 +1079,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 19. NPM Lifecycle Scripts (postinstall) Silent Background Daemonization
   {
-    uviId: "UVI-INFO-2025-0019",
+    uviId: "Vantage-INFO-2025-0019",
     title: "Informational: Persistent Background Daemonization via NPM postinstall Process Detachment",
     headline: "Threat intelligence telemetry detects malicious npm packages spawning detached POSIX daemon processes that outlive package installation.",
     summary: "Socket.dev and OpenSSF researchers document an increasing trend of supply chain malware packages using double-forking and `nohup / setsid` in `postinstall` scripts to launch persistent background daemons on developer laptops that continue running long after `npm install` finishes.",
@@ -1169,7 +1169,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 20. Post-Quantum Cryptography (PQC) Migration Algorithmic Side-Channels
   {
-    uviId: "UVI-INFO-2025-0020",
+    uviId: "Vantage-INFO-2025-0020",
     title: "Informational: Cache-Timing Side-Channels in Early Post-Quantum (PQC) ML-KEM Reference Implementations",
     headline: "Cryptographic preprints analyze microarchitectural timing leakages in newly standardized post-quantum key encapsulation algorithms.",
     summary: "Academic researchers at IACR and institutional laboratories identify cache-timing and branch-prediction side-channels in several early software implementations of NIST-standardized Post-Quantum Cryptography algorithms (ML-KEM / Kyber and ML-DSA / Dilithium) integrated into developer libraries.",
@@ -1258,7 +1258,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 21. Shadow AI Code Assistant Telemetry Exfiltration
   {
-    uviId: "UVI-INFO-2025-0021",
+    uviId: "Vantage-INFO-2025-0021",
     title: "Informational: Shadow AI Code Assistant Telemetry Exfiltration via Rogue Language Server Protocol (LSP) Daemons",
     headline: "Investigative research tracks unofficial AI coding plugins transmitting proprietary source code ASTs to third-party telemetry mirrors.",
     summary: "Security researchers analyzed 40 popular third-party AI assistant plugins across VS Code, JetBrains, and Neovim, discovering that 12 unofficial extensions transmit unredacted source code files, git commit history, and API keys to unvetted analytics endpoints under the guise of model fine-tuning telemetry.",
@@ -1339,7 +1339,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 22. Local MCP Server Tool-Calling Command Injection
   {
-    uviId: "UVI-INFO-2025-0022",
+    uviId: "Vantage-INFO-2025-0022",
     title: "Informational: Local Model Context Protocol (MCP) Indirect Prompt Injection Triggering Arbitrary Shell Execution",
     headline: "Security preprints demonstrate prompt injection via untrusted repository READMEs and issues invoking local MCP command tools.",
     summary: "As autonomous coding agents integrate Model Context Protocol (MCP) tools for terminal execution, researchers demonstrate that adversarial text inside cloned repositories or GitHub issues can coerce the LLM into invoking local bash tools with destructive payloads.",
@@ -1412,7 +1412,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 23. Browser DevTools Protocol Websocket Hijacking
   {
-    uviId: "UVI-INFO-2025-0023",
+    uviId: "Vantage-INFO-2025-0023",
     title: "Informational: Drive-By Browser DevTools Protocol (CDP) WebSocket Hijacking Probing Localhost Debug Ports",
     headline: "Security disclosures identify drive-by web scripts port-scanning localhost (9222/5858) to hijack developer browser sessions.",
     summary: "Web security researchers disclose that malicious websites visited by developers run background JavaScript fetch sweeps against common debugging ports (e.g. 9222, 5858, 9229). If Chrome or Node.js was launched with remote debugging enabled, the page establishes a WebSocket connection to extract session cookies and authentication tokens.",
@@ -1485,7 +1485,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 24. Docker Socket Mounting in Ephemeral GitHub Actions Self-Hosted Runners
   {
-    uviId: "UVI-INFO-2025-0024",
+    uviId: "Vantage-INFO-2025-0024",
     title: "Informational: Container-to-Host Root Escalation via Shared Docker Socket in Self-Hosted CI/CD Runners",
     headline: "Cloud threat research documents recurring privilege escalation in self-hosted GitHub Actions and GitLab CI runner clusters.",
     summary: "Cloud security analysts publish telemetry showing widespread container escapes in enterprise self-hosted CI/CD pools where `/var/run/docker.sock` is mounted into test containers to enable Docker-in-Docker functionality, granting untrusted build jobs root access on the host node.",
@@ -1557,7 +1557,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 25. VS Code Workspace Trust Bypass via Crafted tasks.json
   {
-    uviId: "UVI-INFO-2025-0025",
+    uviId: "Vantage-INFO-2025-0025",
     title: "Informational: Zero-Click Pre-Launch Build Task Hooks in Crafted .vscode/tasks.json Bypassing Workspace Trust",
     headline: "Security researcher writeup reveals how crafted repository task configurations execute arbitrary code when cloning and inspecting code.",
     summary: "Vulnerability researchers publish an advisory detailing bypasses in developer IDE workspace trust mechanisms. By embedding pre-launch task triggers inside `.vscode/tasks.json` and chaining them with symlinked file watchers, adversaries achieve arbitrary code execution as soon as a project is opened.",
@@ -1630,7 +1630,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 26. Malicious Safetensors & GGUF Quantized Checkpoints
   {
-    uviId: "UVI-INFO-2025-0026",
+    uviId: "Vantage-INFO-2025-0026",
     title: "Informational: Steganographic Code Execution Payloads Disguised Inside Open-Source AI Model Weights (GGUF / Safetensors)",
     headline: "AI safety researchers discover malicious steganographic payloads and polyglot files uploaded to public machine learning registries.",
     summary: "Security researchers auditing open-weights repositories on model hubs discover threat actors uploading quantized GGUF and Safetensors checkpoints containing embedded shell scripts and polyglot file headers that execute when parsed by popular Python quantization toolchains.",
@@ -1702,7 +1702,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 27. Cloudflare Tunnel Localhost Proxies Exposing IMDSv1
   {
-    uviId: "UVI-INFO-2025-0027",
+    uviId: "Vantage-INFO-2025-0027",
     title: "Informational: Automated Developer Tunnels (Cloudflare / ngrok) Accidentally Exposing Cloud Metadata (IMDSv1)",
     headline: "Telemetry reports mass scanning of ephemeral tunnel subdomains harvesting exposed cloud credentials from local dev servers.",
     summary: "Cloud threat monitoring teams track active automated campaigns scraping public developer tunnel domains (Cloudflare Quick Tunnels, ngrok, localtunnel). When developers tunnel local services that perform outbound HTTP requests, scanners abuse SSRF primitives to harvest AWS/GCP instance identity credentials (IMDSv1).",
@@ -1775,7 +1775,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 28. WSL2 & Docker Desktop Named Pipe Privilege Escalation
   {
-    uviId: "UVI-INFO-2025-0028",
+    uviId: "Vantage-INFO-2025-0028",
     title: "Informational: Unauthenticated Named Pipe Relay in Windows Subsystem for Linux (WSL2) & Docker Desktop",
     headline: "Security research discloses local privilege escalation vectors via unauthenticated inter-process named pipes on Windows developer laptops.",
     summary: "Security researchers publish findings on IPC communication mechanisms used by Docker Desktop and WSL2 to synchronize container filesystems with Windows hosts. Weak default ACLs on loopback named pipes allow standard unprivileged Windows users to command the background hypervisor daemon with elevated root permissions.",
@@ -1848,7 +1848,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 29. Speculative Execution in V8 & Node.js JIT
   {
-    uviId: "UVI-INFO-2025-0029",
+    uviId: "Vantage-INFO-2025-0029",
     title: "Informational: Branch History Injection & Speculative Cache Side-Channels in Node.js & V8 JIT Compilers",
     headline: "Academic preprint details microarchitectural cache-timing side channels in JavaScript JIT execution engines.",
     summary: "Academic researchers publish an evaluation of speculative execution vulnerabilities impacting Google V8 and Node.js runtimes. By poisoning Branch Target Buffers (BTB) through worker threads, unprivileged JavaScript code can read out-of-bounds memory from neighboring worker threads and process memory spaces.",
@@ -1921,7 +1921,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 30. Git Submodule Clone Argument Injection
   {
-    uviId: "UVI-INFO-2025-0030",
+    uviId: "Vantage-INFO-2025-0030",
     title: "Informational: Malicious Recursive Git Submodule Configurations Executing Arbitrary Pre-Commit Scripts",
     headline: "Security research analyzes argument injection vectors in recursive git submodule cloning (`--recurse-submodules`).",
     summary: "Vulnerability researchers publish an analysis of git submodule handling. When developers or CI/CD pipelines run `git clone --recurse-submodules`, crafted `.gitmodules` entries with newline characters or dash prefixes can pass arbitrary flags to external helper commands, executing shell scripts on the checkout system.",
@@ -1994,7 +1994,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 31. Trojan Source 2.0: Invisible Unicode Directional Overrides in Pull Requests
   {
-    uviId: "UVI-INFO-2025-0031",
+    uviId: "Vantage-INFO-2025-0031",
     title: "Informational: Trojan Source 2.0: Invisible Unicode Directional Overrides Masking Vulnerabilities in Code Reviews",
     headline: "Academic researchers publish new Unicode Bidirectional (BiDi) override techniques that evade modern syntax highlighters.",
     summary: "Academic researchers unveil second-generation 'Trojan Source' attack techniques. By inserting zero-width unicode glyphs and bidirectional control overrides into string literals and comments, adversaries craft pull requests where code looks benign to human reviewers in GitHub/GitLab web interfaces but executes adversarial logic when compiled.",
@@ -2067,7 +2067,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 32. Stale Maintainer NPM Account Takeover via Expired Domain Hijacking
   {
-    uviId: "UVI-INFO-2025-0032",
+    uviId: "Vantage-INFO-2025-0032",
     title: "Informational: Mass Abandoned Domain Hijacking Targeting Stale Open-Source Package Maintainers",
     headline: "Threat intelligence monitors automated re-registration of expired maintainer email domains to hijack package release tokens.",
     summary: "Cyber threat intelligence feeds report automated syndicates monitoring public package registries (NPM, PyPI, RubyGems) to identify abandoned packages where maintainer email addresses use expired custom domains. Attackers purchase the expired domains, configure MX records, and trigger password resets to take over publishing rights for widely used libraries.",
@@ -2140,7 +2140,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 33. Silent Monorepo Dependency Confusion via Unscoped Internal Packages
   {
-    uviId: "UVI-INFO-2025-0033",
+    uviId: "Vantage-INFO-2025-0033",
     title: "Informational: Monorepo Dependency Confusion Exploiting Unscoped Internal Package Fallbacks",
     headline: "Security research whitepaper demonstrates corporate credential harvesting via unscoped internal package name squatting.",
     summary: "Security researchers evaluate enterprise monorepos and multi-package workspaces, demonstrating that build systems configured with private package registries frequently fail over to public registries when internal packages lack namespace scoping (`@company/pkg` vs `company-pkg`), executing malicious preinstall hooks.",
@@ -2212,7 +2212,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 34. Kubernetes Kubelet API SSRF via Developer Port-Forward Tunnels
   {
-    uviId: "UVI-INFO-2025-0034",
+    uviId: "Vantage-INFO-2025-0034",
     title: "Informational: Unauthenticated Lateral Movement to Kubelet API via Active Developer Port-Forward Tunnels",
     headline: "Cloud penetration testing writeups demonstrate container breakouts pivoting through active `kubectl port-forward` tunnels.",
     summary: "Cloud security penetration testers demonstrate that active `kubectl port-forward` sessions established by developers create bidirectional TCP bridges between local developer machines and remote Kubernetes clusters. Untrusted local services can pivot through the tunnel to access internal cluster node APIs without RBAC restrictions.",
@@ -2285,7 +2285,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 35. Secret Leakage in Git Diff Cache via Untracked Merkle Stash Objects
   {
-    uviId: "UVI-INFO-2025-0035",
+    uviId: "Vantage-INFO-2025-0035",
     title: "Informational: Dormant Secret Persistence in Local Git Object Packs from Untracked Stashes & Reflog Buffers",
     headline: "Forensic research warns that deleting secrets from code still leaves plain-text tokens in `.git/objects` packs.",
     summary: "Git forensics researchers publish findings showing that developers who accidentally paste API keys into code files and subsequently remove them before committing still leave plain-text credentials indefinitely preserved inside `.git/objects` and `.git/logs/reflog` buffers on their local workstations.",
@@ -2357,7 +2357,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 36. OAuth PKCE Downgrade and Redirect Interception in Local Developer CLI Tools
   {
-    uviId: "UVI-INFO-2025-0036",
+    uviId: "Vantage-INFO-2025-0036",
     title: "Informational: Localhost Port Grabbing & OAuth PKCE Downgrade in Developer CLI Authentication Flows",
     headline: "Security research evaluates loopback redirect security in CLI tools (AWS CLI, gcloud, Supabase, Vercel).",
     summary: "Web security researchers publish an evaluation of developer CLI authentication flows that spawn temporary localhost HTTP servers (e.g. `http://localhost:8080/callback`) to receive OAuth tokens. Malicious local software running as standard users can pre-bind the callback port or trigger race conditions to steal authorization codes.",
@@ -2430,7 +2430,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   },
   // 37. GitHub Security Lab Research (GHSL-2025-021)
   {
-    uviId: "UVI-INFO-2025-0037",
+    uviId: "Vantage-INFO-2025-0037",
     title: "Informational: GitHub Security Lab Advisory GHSL-2025-021: Arbitrary Workflow Command Injection in CI/CD Automation Toolkits",
     headline: "GitHub Security Lab research identifies systemic expression injection vulnerabilities across open-source GitHub Actions workflows.",
     summary: "GitHub Security Lab researchers uncover a pervasive vulnerability pattern across open-source CI/CD automation. Workflows that dynamically evaluate untrusted pull request data (such as commit titles, issue comments, or branch names) using inline bash expressions ${{ github.event.issue.title }} allow external contributors to break out of string delimiters and execute arbitrary shell commands inside privileged runner containers.",
@@ -2506,7 +2506,7 @@ export const ADDITIONAL_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
   // 1. vscode-prettier-formatter typosquat
   {
-    uviId: "UVI-MAL-2025-0101",
+    uviId: "Vantage-MAL-2025-0101",
     title: "VS Code Extension Marketplace Typosquat 'vscode-prettier-formatter' ClipBanker Trojan",
     headline: "Malicious VS Code extension impersonating official Prettier formatter injects cryptocurrency address substitution malware.",
     summary: "Discovered by OpenSSF and Socket.dev, this malicious VSIX extension typosquatted the popular Prettier code formatter. Once installed, it silently monitored the developer's clipboard for Bitcoin, Ethereum, and Solana wallet addresses, substituting attacker-controlled addresses.",
@@ -2549,7 +2549,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 2. aws-credential-sync
   {
-    uviId: "UVI-MAL-2025-0102",
+    uviId: "Vantage-MAL-2025-0102",
     title: "Malicious NPM Package 'aws-credential-sync' Stealing Local AWS & SSH Keys",
     headline: "Trojanized npm utility claiming to synchronize AWS profiles silently exfiltrates ~/.aws/credentials and ~/.ssh/id_rsa to Discord webhooks.",
     summary: "A malicious package published to the npm registry targeted cloud engineers. Under the guise of a convenient multi-account AWS profile switcher, the package's postinstall script read the developer's local AWS configuration, credentials, and default SSH private keys, transmitting them via encrypted POST to an adversary Discord webhook.",
@@ -2592,7 +2592,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 3. kubernetes-helm-helper PyPI Backdoor
   {
-    uviId: "UVI-MAL-2025-0103",
+    uviId: "Vantage-MAL-2025-0103",
     title: "Malicious PyPI Package 'kubernetes-helm-helper' Deploying Subnet Reverse Shell",
     headline: "Typosquat on Python Package Index embeds obfuscated reverse shell connecting developer machines to command-and-control server.",
     summary: "Discovered by JFrog Security Research, this PyPI package masqueraded as a helper utility for managing Kubernetes Helm charts in Python. In reality, its `setup.py` executed an obfuscated base64 payload that spawned a background reverse TCP shell to an IP in Eastern Europe.",
@@ -2635,7 +2635,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 4. solana-web3-utils Typosquat
   {
-    uviId: "UVI-MAL-2025-0104",
+    uviId: "Vantage-MAL-2025-0104",
     title: "Typosquat NPM Package 'solana-web3-utils' Exfiltrating Private Keys from Local .env Files",
     headline: "Malicious package targeting blockchain developers recursively searches directories for .env files containing private keys.",
     summary: "Found by Socket.dev and Trail of Bits, this package mimicked the official `@solana/web3.js` library. Upon invocation of any utility function, it scanned parent and child directories for `.env` files, parsed lines containing `PRIVATE_KEY` or `SECRET_KEY`, and sent them to an anonymous Telegram bot channel.",
@@ -2678,7 +2678,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 5. rust-analyzer-turbo Malicious VSIX
   {
-    uviId: "UVI-MAL-2025-0105",
+    uviId: "Vantage-MAL-2025-0105",
     title: "Malicious VS Code Extension 'rust-analyzer-turbo' Side-Loading Obfuscated C2 Beacon",
     headline: "Fake high-performance Rust extension drops native dynamic library executing Cobalt Strike beacon in developer background.",
     summary: "Discovered by Trail of Bits and Aqua Nautilus, this fake VS Code extension claimed to offer 10x faster syntax indexing for Rust projects. In reality, on installation it extracted an obfuscated `.dll` / `.so` file from its extension package and injected it into the IDE host process.",
@@ -2721,7 +2721,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 6. react-native-debugger-pro
   {
-    uviId: "UVI-MAL-2025-0106",
+    uviId: "Vantage-MAL-2025-0106",
     title: "Malicious NPM Package 'react-native-debugger-pro' Harvesting iOS/Android Simulator Tokens",
     headline: "Trojanized mobile debugging library reads simulator Keychain files and browser cookies on developer MacBooks.",
     summary: "A malicious npm package impersonating the popular React Native Debugger tool was found to contain code that dumped local iOS Simulator Keychain files (`keychain-2.db`) and Android emulator sqlite databases, harvesting authentication session tokens.",
@@ -2764,7 +2764,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 7. terraform-provider-cloudstack
   {
-    uviId: "UVI-MAL-2025-0107",
+    uviId: "Vantage-MAL-2025-0107",
     title: "Trojanized Terraform Provider 'terraform-provider-cloudstack' Exfiltrating State Files",
     headline: "Malicious Terraform provider published to public registry intercepts terraform apply to steal terraform.tfstate plaintext secrets.",
     summary: "Discovered by Aqua Nautilus, a trojanized Terraform provider masquerading as a community CloudStack integration intercepted the Terraform schema initialization. During `terraform apply`, it read the local `terraform.tfstate` file—containing database passwords, private keys, and cloud tokens—and transmitted it to an external server.",
@@ -2807,7 +2807,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 8. go-grpc-healthcheck
   {
-    uviId: "UVI-MAL-2025-0108",
+    uviId: "Vantage-MAL-2025-0108",
     title: "Malicious Go Module 'go-grpc-healthcheck' Stealing CI/CD Environment Variables via init()",
     headline: "Backdoored Go module executes covert token theft during package initialization using Go runtime init() function.",
     summary: "Discovered by JFrog and Socket.dev, this malicious Go module mimicked standard gRPC health check libraries. Because Go executes package `init()` functions automatically when imported, any project importing this module executed the malicious code without ever calling a specific function.",
@@ -2850,7 +2850,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 9. vite-plugin-pwa-analyzer
   {
-    uviId: "UVI-MAL-2025-0109",
+    uviId: "Vantage-MAL-2025-0109",
     title: "Malicious NPM Package 'vite-plugin-pwa-analyzer' Bundling Silent Cryptominer into Builds",
     headline: "Trojanized Vite plugin injects obfuscated WebAssembly cryptocurrency miner into generated production JavaScript bundles.",
     summary: "Discovered by Snyk and OpenSSF, this malicious plugin posed as a progressive web app bundle size analyzer for Vite. During `vite build`, it modified the generated HTML output to inject a WebAssembly-based Monero miner that executes in client browsers visiting the deployed application.",
@@ -2893,7 +2893,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 10. electron-builder-macos-helper
   {
-    uviId: "UVI-MAL-2025-0110",
+    uviId: "Vantage-MAL-2025-0110",
     title: "Malicious NPM Package 'electron-builder-macos-helper' Stealing Apple Signing Certificates",
     headline: "Trojanized npm package targeting desktop app developers extracts Apple Developer ID code signing certificates and passwords.",
     summary: "Discovered by Socket.dev and Trail of Bits, this package claimed to automate macOS code signing and notarization for Electron applications. In reality, it intercepted the developer's Apple Developer ID `.p12` certificate file, exported the keychain password, and transmitted the signing assets to an offshore server.",
@@ -2936,7 +2936,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 11. QakBot & Cobalt Strike Multi-C2 Infiltration Campaign (URLhaus, ThreatFox, Feodo, MontySecurity C2, GreyNoise, OTX)
   {
-    uviId: "UVI-MAL-2025-0111",
+    uviId: "Vantage-MAL-2025-0111",
     title: "QakBot & Cobalt Strike Multi-Feed C2 Infiltration & Stage 2 Beaconing Campaign",
     headline: "Coordinated malware delivery campaign using weaponized ZIP attachments and DLL sideloading to establish resilient Cobalt Strike and QakBot C2 beacon channels.",
     summary: "Multi-feed intelligence from URLhaus, ThreatFox, Feodo Tracker, and MontySecurity C2-Tracker identified active QakBot and Cobalt Strike payload distribution networks deploying DLL sideloading against developer workstation utilities and CI/CD environments.",
@@ -2983,7 +2983,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 12. Deceptive Developer Phishing & Fake OAuth Consent Harvester (OpenPhish, PhishTank, Socket.dev, URLhaus)
   {
-    uviId: "UVI-PHISH-2025-0812",
+    uviId: "Vantage-PHISH-2025-0812",
     title: "Deceptive Developer Phishing & Malicious GitHub OAuth Token Harvester Campaign",
     headline: "Targeted credential harvesting and rogue OAuth consent flow impersonating legitimate CI/CD code review bots to siphon private enterprise repositories.",
     summary: "Identified by OpenPhish, PhishTank, and Socket.dev, an aggressive phishing campaign targeting GitHub and GitLab developers used fake automated code audit bot notifications to lure engineers to deceptive OAuth authorization portals.",
@@ -3028,7 +3028,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 13. Global Distributed SSH & Runner Brute-Force Botnet Spray (Blocklist.de, SANS DShield, GreenSnow, IPSum, Tor, Talos)
   {
-    uviId: "UVI-NET-2025-0441",
+    uviId: "Vantage-NET-2025-0441",
     title: "Global Distributed SSH & Developer Runner Brute-Force Botnet Spray",
     headline: "High-volume distributed brute-force network targeting public SSH bastions, developer devboxes, and cloud CI/CD runners.",
     summary: "Telemetry synthesized from Blocklist.de, SANS ISC DShield, GreenSnow, IPSum, Tor Exit Nodes, and Cisco Talos revealed a massive coordinated brute-force campaign attempting default and leaked credentials against port 22 and developer tunneling services.",
@@ -3075,7 +3075,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 14. Edge Gateway Exploit Wave with High EPSS Probability (FIRST EPSS, CISA KEV, ET Open, threatfeeds.io, Bert-JanP)
   {
-    uviId: "UVI-EXP-2025-0919",
+    uviId: "Vantage-EXP-2025-0919",
     title: "Edge Gateway Authentication Bypass & Weaponized Zero-Day Exploit Wave",
     headline: "Remote unauthenticated code execution in edge enterprise gateways exhibits 97th percentile EPSS exploitation probability.",
     summary: "Coordinated threat data from FIRST EPSS, CISA KEV, Emerging Threats (ET Open Rules), threatfeeds.io, and Bert-JanP Open Threat Intelligence tracks rapid automated weaponization of edge VPN and gateway appliances.",
@@ -3123,7 +3123,7 @@ export const ADDITIONAL_CURATED_MALWARE_ADVISORIES: UviAdvisoryRecord[] = [
 export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
   // 1. Polyfill.io Supply Chain Hijacking
   {
-    uviId: "UVI-2024-38526",
+    uviId: "Vantage-2024-38526",
     title: "Polyfill.io CDN Domain Acquisition & Malicious Script Redirection Supply Chain Attack",
     headline: "Compromised CDN domain polyfill.io served dynamic malicious redirects targeting mobile browsers across 100,000+ websites.",
     summary: "The original domain `polyfill.io` was sold to a Chinese marketing firm (Funnull), which began injecting malicious redirection scripts into the polyfill JavaScript bundles served to mobile visitors, routing users to fraudulent and sports betting sites.",
@@ -3173,7 +3173,7 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 2. Zerologon (CVE-2020-1472)
   {
-    uviId: "UVI-2020-1472",
+    uviId: "Vantage-2020-1472",
     title: "Microsoft Netlogon Cryptographic Flaw Elevation of Privilege (Zerologon)",
     headline: "Flaw in AES-CFB8 implementation allows unauthenticated domain elevation to Domain Admin in seconds.",
     summary: "An elevation of privilege vulnerability in Microsoft Windows Server Netlogon Remote Protocol (MS-NRPC) allowed an unauthenticated attacker with network access to a domain controller to establish a vulnerable Netlogon secure channel connection and set the computer password to empty, achieving full domain admin control.",
@@ -3223,7 +3223,7 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 3. Apache Commons Text (Text4Shell - CVE-2022-42889)
   {
-    uviId: "UVI-2022-42889",
+    uviId: "Vantage-2022-42889",
     title: "Apache Commons Text Remote Code Execution via StringSubstitutor Interpolator (Text4Shell)",
     headline: "Improper variable interpolation in StringSubstitutor enables unauthenticated RCE via dns, url, and script prefixes.",
     summary: "Apache Commons Text versions 1.5 through 1.9 carried default string lookup configurations that evaluated variable interpolations with dangerous prefixes ('script', 'dns', 'url'), enabling remote code execution when applications passed untrusted input to StringSubstitutor.",
@@ -3268,7 +3268,7 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 4. Microsoft Outlook MonikerLink (CVE-2024-21413)
   {
-    uviId: "UVI-2024-21413",
+    uviId: "Vantage-2024-21413",
     title: "Microsoft Outlook MonikerLink NTLM Credential Leaking & Remote Code Execution",
     headline: "Critical vulnerability in Microsoft Outlook bypasses Protected View to leak NTLM hashes and execute remote code via file:// monikers.",
     summary: "A vulnerability in Microsoft Outlook allowed an attacker sending a crafted email containing a `file://` hyperlink with an exclamation mark suffix (MonikerLink) to bypass Protected View protections, forcing the host to send NTLM authentication hashes over SMB and instantiate arbitrary COM objects.",
@@ -3318,7 +3318,7 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
 
   // 5. Microsoft Windows MSDT (Follina - CVE-2022-30190)
   {
-    uviId: "UVI-2022-30190",
+    uviId: "Vantage-2022-30190",
     title: "Microsoft Windows Support Diagnostic Tool (MSDT) Remote Code Execution (Follina)",
     headline: "Zero-day vulnerability in MSDT invoked via Microsoft Word ms-msdt schema allows code execution even when macros are disabled.",
     summary: "A remote code execution vulnerability existed when MSDT was called using the URL protocol from an application such as Microsoft Word. An attacker who successfully exploited this vulnerability could run arbitrary code with the privileges of the calling application, bypassing macro restrictions.",

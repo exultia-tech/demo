@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { UVI_PUBLIC_FEED_SOURCES } from "@/lib/threat-feed-data";
-import { UviIcon } from "@/components/BrandIcons";
+import { VantageIcon } from "@/components/BrandIcons";
 
 export default function ThreatFeedStatsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
@@ -109,7 +109,7 @@ export default function ThreatFeedStatsPage() {
       }}>
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
-            <UviIcon size={56} glow={true} />
+            <VantageIcon size={56} glow={true} />
           </div>
           <h1 style={{
             fontSize: "clamp(2.2rem, 5vw, 3.4rem)",

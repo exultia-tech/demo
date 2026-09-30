@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { UviIcon } from "@/components/BrandIcons";
+import { VantageIcon } from "@/components/BrandIcons";
 import { Shield, Lock, FileText, CheckCircle, Network, Users } from "lucide-react";
 
 export default function UviBestPracticesPage() {
@@ -10,11 +10,11 @@ export default function UviBestPracticesPage() {
   return (
     <div className="fade-in" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto", paddingBottom: "5rem" }}>
       <header style={{ marginBottom: "2.5rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-        <UviIcon size={48} glow={true} />
+        <VantageIcon size={48} glow={true} />
         <div>
           <h1 style={{ fontSize: "2.2rem", margin: 0 }}>OS Hardening & Best Practices</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", margin: "0.25rem 0 0 0" }}>
-            Industry standard techniques for securing environments alongside the Universal Vulnerability Intelligence (UVI) feed.
+            Industry standard techniques for securing environments alongside the Vantage feed.
           </p>
         </div>
       </header>
@@ -55,7 +55,7 @@ export default function UviBestPracticesPage() {
           </div>
           
           <p style={{ color: "#E2E8F0", lineHeight: 1.6, marginBottom: "2rem" }}>
-            The CIS Benchmarks are consensus-based, best-practice security configuration guides developed and accepted by government, business, industry, and academia. They provide a critical foundation for OS container security in conjunction with real-time UVI mitigations.
+            The CIS Benchmarks are consensus-based, best-practice security configuration guides developed and accepted by government, business, industry, and academia. They provide a critical foundation for OS container security in conjunction with real-time Vantage mitigations.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -99,7 +99,7 @@ export default function UviBestPracticesPage() {
           </div>
           
           <p style={{ color: "#E2E8F0", lineHeight: 1.6, marginBottom: "2rem" }}>
-            Configuring robust networking boundaries prevents lateral movement and unauthorized egress. UVI automatically injects known C2 IPs, but structural networking restrictions are essential for a zero-trust model.
+            Configuring robust networking boundaries prevents lateral movement and unauthorized egress. Vantage automatically injects known C2 IPs, but structural networking restrictions are essential for a zero-trust model.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }}>
@@ -130,7 +130,7 @@ export default function UviBestPracticesPage() {
           </div>
           
           <p style={{ color: "#E2E8F0", lineHeight: 1.6, marginBottom: "2rem" }}>
-            System accounts must be tightly regulated. If an attacker bypasses the network layer using a vulnerability in the UVI feed, strict IAM boundaries prevent privilege escalation.
+            System accounts must be tightly regulated. If an attacker bypasses the network layer using a vulnerability in the Vantage feed, strict IAM boundaries prevent privilege escalation.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }}>

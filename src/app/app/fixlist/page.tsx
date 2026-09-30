@@ -25,7 +25,7 @@ const REMEDIATION_CLASSES = [
     id: 'phishing',
     icon: '🎣',
     title: 'Phishing & Domain Blocking',
-    description: 'Block known phishing domains and fraud URLs at the hosts file level from the UVI PHISHING_FRAUD indicators.',
+    description: 'Block known phishing domains and fraud URLs at the hosts file level from the Vantage PHISHING_FRAUD indicators.',
   },
   {
     id: 'kev',
@@ -52,7 +52,7 @@ const FIREWALL_FORMATS = [
   { value: 'juniper',  label: 'Juniper SRX filter' },
 ];
 
-export default function FixListPage() {
+export default function PraxisPage() {
   const [os, setOs] = useState('linux');
   const [cron, setCron] = useState(false);
   const [proxy, setProxy] = useState('');
@@ -152,7 +152,7 @@ export default function FixListPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
           <span style={{ fontSize: '2rem' }}>🔧</span>
           <h1 style={{ fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-            Fix List
+            Praxis
           </h1>
           <span style={{
             fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem',
@@ -164,7 +164,7 @@ export default function FixListPage() {
           </span>
         </div>
         <p style={{ color: 'var(--text-muted)', maxWidth: '700px', lineHeight: 1.6, margin: 0 }}>
-          Compile and deploy targeted remediation clients directly from the UVI threat registry.
+          Compile and deploy targeted remediation clients directly from the Vantage threat registry.
           Scripts are generated on-demand, transmitted exactly <strong style={{ color: 'var(--text-main)' }}>once</strong>, and immediately destroyed — no server-side retention.
         </p>
       </div>
@@ -360,7 +360,7 @@ export default function FixListPage() {
               color: '#a5b4fc', background: 'transparent', opacity: previewLoading ? 0.5 : 1,
               transition: 'opacity 0.2s ease'
             }}>
-              <code>{previewScript || (previewLoading ? '# Compiling from UVI threat registry...' : '# Select remediation classes to see the compiled payload.')}</code>
+              <code>{previewScript || (previewLoading ? '# Compiling from Vantage threat registry...' : '# Select remediation classes to see the compiled payload.')}</code>
             </pre>
           </div>
 

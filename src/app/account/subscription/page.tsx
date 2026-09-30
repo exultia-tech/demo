@@ -18,7 +18,7 @@ import {
   Building2,
   Cpu
 } from "lucide-react";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
 export default function SubscriptionPage() {
@@ -268,8 +268,8 @@ export default function SubscriptionPage() {
               transition: "all 0.2s ease"
             }}
           >
-            <UviIcon size={18} glow={false} />
-            UVI Threat Intel
+            <VantageIcon size={18} glow={false} />
+            Vantage Threat Intel
           </button>
 
           <button

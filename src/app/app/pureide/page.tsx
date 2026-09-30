@@ -3784,13 +3784,13 @@ build_hardened_ide:
           <div className="glass-card" style={{ marginTop: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <div>
-                <h2>📡 Unified Vulnerability Intelligence (UVI) Sync Matrix</h2>
+                <h2>📡 Vantage Sync Matrix</h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
-                  Real-time UVI multi-feed ingested and correlated for continuous extension supply chain verification.
+                  Real-time Vantage multi-feed ingested and correlated for continuous extension supply chain verification.
                 </p>
               </div>
               <span className="github-badge" style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}>
-                ● UVI Multi-Feed Online (Live Sync)
+                ● Vantage Multi-Feed Online (Live Sync)
               </span>
             </div>
 
@@ -4643,10 +4643,10 @@ build_hardened_ide:
             <div style={{ marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>📡</span> Unified Vulnerability Intelligence (UVI) Signals
+                  <span>📡</span> Vantage Signals
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: '#34D399', background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(52,211,153,0.3)' }}>
-                  ✓ UVI Multi-Feed Synced
+                  ✓ Vantage Multi-Feed Synced
                 </span>
               </div>
 

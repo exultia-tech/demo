@@ -59,7 +59,7 @@ export default function PureOSPricingPage() {
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Monthly UVI Sync Updates</span>
+              <span>Monthly Vantage Sync Updates</span>
             </li>
           </ul>
           <Link href="/app/pureos" className="btn-secondary" style={{ width: "100%", padding: "1rem", textAlign: "center", textDecoration: "none", borderRadius: "12px", fontWeight: 600 }}>
@@ -91,7 +91,7 @@ export default function PureOSPricingPage() {
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Daily UVI Sync Updates (Zero-Day Patching)</span>
+              <span>Daily Vantage Sync Updates (Zero-Day Patching)</span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />

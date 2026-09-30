@@ -53,7 +53,7 @@ export async function initializeDatabase(): Promise<void> {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`,
 
-    // 2. Universal Vulnerability Intelligence (UVI)
+    // 2. Vantage
     `CREATE TABLE IF NOT EXISTS uvi_threats (
       uvi_id TEXT PRIMARY KEY,
       legacy_uvi_id TEXT,
@@ -313,7 +313,7 @@ export async function initializeDatabase(): Promise<void> {
       ],
       {
         id: 'tok_admin_live_001',
-        name: 'UVI Telemetry Production Agent Key',
+        name: 'Vantage Telemetry Production Agent Key',
         prefix: 'exultia_pat_live_9a8f...',
         rawSecret: 'exultia_pat_live_9a8f4c2e1b',
         scopes: ['read:threats', 'read:stats', 'ingest:telemetry', 'builder:cli']

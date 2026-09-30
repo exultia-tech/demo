@@ -4,7 +4,7 @@ import { PureOsIcon } from "@/components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "Exultia PureOS | Pre-Hardened OS Images",
-  description: "PureOS provides pre-hardened OS container images secured against the UVI Threat Feed and industry best practices.",
+  description: "PureOS provides pre-hardened OS container images secured against the Vantage Threat Feed and industry best practices.",
 };
 
 export default function PureOSMarketingPage() {
@@ -19,7 +19,7 @@ export default function PureOSMarketingPage() {
           <span className="gradient-text">PureOS Registry</span>
         </h1>
         <p className="hero-subtitle" style={{ maxWidth: "720px", margin: "0 auto 2.5rem auto", fontSize: "1.1rem", lineHeight: 1.5, color: "var(--text-muted)" }}>
-          Stop deploying vulnerable infrastructure. PureOS provides a catalogue of pre-hardened, zero-trust OS container images continuously synchronized with the Universal Vulnerability Intelligence (UVI) feed.
+          Stop deploying vulnerable infrastructure. PureOS provides a catalogue of pre-hardened, zero-trust OS container images continuously synchronized with the Vantage feed.
         </p>
 
         <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
@@ -39,9 +39,9 @@ export default function PureOSMarketingPage() {
           
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
             <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
-              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>UVI Synchronized</h3>
+              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>Vantage Synchronized</h3>
               <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6 }}>
-                Every image in the PureOS registry is automatically rebuilt and verified against the latest UVI Threat Feed advisories. Zero-day mitigations are injected directly into the baseline OS configurations.
+                Every image in the PureOS registry is automatically rebuilt and verified against the latest Vantage Threat Feed advisories. Zero-day mitigations are injected directly into the baseline OS configurations.
               </p>
             </div>
             <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>

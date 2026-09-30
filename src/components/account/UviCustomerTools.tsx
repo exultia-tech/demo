@@ -20,7 +20,7 @@ import {
   Database,
   Search
 } from "lucide-react";
-import { UviIcon } from "@/components/BrandIcons";
+import { VantageIcon } from "@/components/BrandIcons";
 import { PlanGate } from "@/components/auth/PlanGate";
 
 export default function UviCustomerTools() {
@@ -37,7 +37,7 @@ export default function UviCustomerTools() {
   // Sample Developer Threat Radar Items
   const sampleWorkstationThreats = [
     {
-      uviId: "UVI-2026-09-00000104",
+      uviId: "Vantage-2026-09-00000104",
       title: "VS Code / Open VSX Malicious Extension Token Harvester",
       severity: "CRITICAL",
       cvss: 9.8,
@@ -45,7 +45,7 @@ export default function UviCustomerTools() {
       mitigation: "PureIDE Hermetic Sandbox Block Active"
     },
     {
-      uviId: "UVI-2026-09-00000318",
+      uviId: "Vantage-2026-09-00000318",
       title: "PyPI Package Dependency Confusion in Torch Compiler Stubs",
       severity: "HIGH",
       cvss: 8.6,
@@ -53,7 +53,7 @@ export default function UviCustomerTools() {
       mitigation: "Strict Registry Egress Enforced"
     },
     {
-      uviId: "UVI-2026-09-00000522",
+      uviId: "Vantage-2026-09-00000522",
       title: "Language Server Protocol (LSP) Unchecked JSON-RPC Deserialization",
       severity: "HIGH",
       cvss: 8.2,
@@ -75,14 +75,14 @@ export default function UviCustomerTools() {
       statusText: "OK",
       deliveryDurationMs: 42,
       headersSent: {
-        "User-Agent": "Exultia-UVI-Webhook-Engine/2.8",
+        "User-Agent": "Exultia-Vantage-Webhook-Engine/2.8",
         "X-Exultia-Signature-SHA256": "hmac-sha256=4f8b9e1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9",
         "X-Exultia-Event-Type": "threat.advisory.critical",
         "Content-Type": "application/json"
       },
       payload: {
         event: "threat.advisory.published",
-        uviId: "UVI-2026-09-00000941",
+        uviId: "Vantage-2026-09-00000941",
         title: "Critical C2 Command Injection in Untrusted Workstation Build Hooks",
         severity: "CRITICAL",
         cvssScore: 9.8,
@@ -105,9 +105,9 @@ export default function UviCustomerTools() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
-            <UviIcon size={30} />
+            <VantageIcon size={30} />
             <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-              UVI Threat Intelligence Customer Hub
+              Vantage Threat Intelligence Customer Hub
             </h2>
             <span style={{
               fontSize: "0.7rem",
@@ -123,7 +123,7 @@ export default function UviCustomerTools() {
             </span>
           </div>
           <p style={{ color: "#94A3B8", fontSize: "0.88rem", margin: 0 }}>
-            Universal Vulnerability Intelligence streaming, developer threat radar, and bulk dataset archives.
+            Vantage streaming, developer threat radar, and bulk dataset archives.
           </p>
         </div>
 

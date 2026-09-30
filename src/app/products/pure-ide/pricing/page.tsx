@@ -161,7 +161,7 @@ export default function PricingPage() {
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included">✓ Multi-IDE Builds (6 Engines)</li>
             <li className="included">✓ 0-CVE Verified Whitelist</li>
-            <li className="included">✓ Unified Vulnerability Intelligence (UVI) Sync</li>
+            <li className="included">✓ Vantage Sync</li>
             <li className="included">✓ CycloneDX 1.5 JSON SBOMs</li>
             <li className="included">✓ Zero Outbound Telemetry</li>
             <li className="included">✓ Marketplace Catalog Carting</li>
@@ -382,7 +382,7 @@ export default function PricingPage() {
                 </div>
                 
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-                  Thank you for supporting open-source IDE security awareness and continuous Unified Vulnerability Intelligence (UVI) operations.
+                  Thank you for supporting open-source IDE security awareness and continuous Vantage operations.
                 </p>
 
                 {/* SELECTED DONATION SUMMARY (DIRECTLY FROM MAIN CARD) */}
@@ -436,7 +436,7 @@ export default function PricingPage() {
                 </div>
                 <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Thank You for Your Support!</h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
-                  Your one-time donation of <strong style={{ color: '#34D399' }}>${parsedPrice}</strong> directly funds our independent supply-chain vulnerability research and public Unified Vulnerability Intelligence (UVI) ingestion.
+                  Your one-time donation of <strong style={{ color: '#34D399' }}>${parsedPrice}</strong> directly funds our independent supply-chain vulnerability research and public Vantage ingestion.
                 </p>
                 <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)', fontFamily: 'monospace', fontSize: '0.8rem', color: '#93C5FD', marginBottom: '1.5rem' }}>
                   Receipt Reference: {donationReceiptId} • (Non-recurring)

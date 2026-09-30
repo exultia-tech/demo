@@ -20,7 +20,7 @@ import {
   Layers,
   Zap
 } from "lucide-react";
-import { PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
 interface CustomerOverviewProps {
   onSelectTab: (tab: "overview" | "pureide" | "uvi" | "inquest" | "tokens" | "security") => void;
@@ -216,8 +216,8 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
 
           <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.4rem" }}>
-              <UviIcon size={20} />
-              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>UVI Threat Intel</span>
+              <VantageIcon size={20} />
+              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Vantage Threat Intel</span>
             </div>
             <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
               {uviTier === "enterprise" 
@@ -318,7 +318,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
             </button>
           </div>
 
-          {/* TILE 2: UVI */}
+          {/* TILE 2: Vantage */}
           <div style={{
             background: "rgba(15, 23, 42, 0.7)",
             border: "1px solid rgba(139, 92, 246, 0.3)",
@@ -329,9 +329,9 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <UviIcon size={32} />
+                <VantageIcon size={32} />
                 <div>
-                  <h4 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>UVI Threat Intel</h4>
+                  <h4 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Vantage Threat Intel</h4>
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Intelligence & Feeds</div>
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
                 gap: "6px"
               }}
             >
-              Open UVI Hub <ArrowRight size={14} />
+              Open Vantage Hub <ArrowRight size={14} />
             </button>
           </div>
 

@@ -55,11 +55,11 @@ export const apiTokens = sqliteTable('api_tokens', {
 });
 
 // ============================================================================
-// 2. Universal Vulnerability Intelligence (UVI) Feed & Catalog
+// 2. Vantage Feed & Catalog
 // ============================================================================
 
 export const uviThreats = sqliteTable('uvi_threats', {
-  uviId: text('uvi_id').primaryKey(), // e.g. UVI-2026-09-00000001
+  uviId: text('uvi_id').primaryKey(), // e.g. Vantage-2026-09-00000001
   legacyUviId: text('legacy_uvi_id'),
   title: text('title').notNull(),
   headline: text('headline').notNull(),

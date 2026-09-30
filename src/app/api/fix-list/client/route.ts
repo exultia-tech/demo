@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   if (lang === 'bash') {
     let script = `#!/bin/sh
-# Exultia Lightweight Fix List Client
+# Exultia Lightweight Praxis Client
 # OS Target: ${os}
 # 
 # This script retrieves and applies threat remediations from Exultia.

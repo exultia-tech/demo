@@ -26,7 +26,7 @@ import {
   Radio,
   Scale
 } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, UviIcon, InquestIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
@@ -367,7 +367,7 @@ function AccountPageContent() {
             <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: "4px 0 0 0" }}>
               {user.email} • Active Tiers:{" "}
               <span style={{ color: "#60A5FA", fontWeight: 700 }}>PureIDE ({pureIdeTier.toUpperCase()})</span> •{" "}
-              <span style={{ color: "#C084FC", fontWeight: 700 }}>UVI ({uviTier.toUpperCase()})</span> •{" "}
+              <span style={{ color: "#C084FC", fontWeight: 700 }}>Vantage ({uviTier.toUpperCase()})</span> •{" "}
               <span style={{ color: "#67E8F9", fontWeight: 700 }}>Inquest ({inquestTier.toUpperCase()})</span>
             </p>
           </div>
@@ -486,8 +486,8 @@ function AccountPageContent() {
             whiteSpace: "nowrap"
           }}
         >
-          <UviIcon size={16} glow={false} />
-          UVI Threat Intel
+          <VantageIcon size={16} glow={false} />
+          Vantage Threat Intel
         </button>
 
         <button
@@ -609,7 +609,7 @@ function AccountPageContent() {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: UVI THREAT INTEL */}
+      {/* TAB 3: Vantage THREAT INTEL */}
       {/* ========================================================================= */}
       {activeTab === "uvi" && (
         <UviCustomerTools />
@@ -737,7 +737,7 @@ function AccountPageContent() {
               </div>
             </div>
 
-            {/* CARD 2: UVI */}
+            {/* CARD 2: Vantage */}
             <div style={{
               background: "rgba(15, 23, 42, 0.7)",
               border: getSubTier("uvi") !== "free" ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
@@ -748,9 +748,9 @@ function AccountPageContent() {
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <UviIcon size={36} />
+                  <VantageIcon size={36} />
                   <div>
-                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>UVI Feed</h3>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Vantage Feed</h3>
                     <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Threat Intelligence</div>
                   </div>
                 </div>
@@ -912,7 +912,7 @@ function AccountPageContent() {
                 Personal Access Tokens (API Keys)
               </h2>
               <p style={{ color: "#94A3B8", fontSize: "0.88rem", margin: "4px 0 0 0" }}>
-                Authenticate with Exultia CLI compilers, UVI intelligence feeds, and automated CI/CD pipelines.
+                Authenticate with Exultia CLI compilers, Vantage intelligence feeds, and automated CI/CD pipelines.
               </p>
             </div>
             <button
@@ -1017,7 +1017,7 @@ function AccountPageContent() {
                     </label>
                     <input 
                       type="text"
-                      placeholder="e.g. CI/CD Airgap Builder or UVI Ingest Script"
+                      placeholder="e.g. CI/CD Airgap Builder or Vantage Ingest Script"
                       value={newTokenName}
                       onChange={e => setNewTokenName(e.target.value)}
                       required
@@ -1066,7 +1066,7 @@ function AccountPageContent() {
                   </label>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                     {[
-                      { scope: "read:threats", label: "Read UVI Threat Feed & Advisories" },
+                      { scope: "read:threats", label: "Read Vantage Threat Feed & Advisories" },
                       { scope: "read:stats", label: "Read Global CVSS/KEV Analytics" },
                       { scope: "ingest:telemetry", label: "Stream Threat Feeds & Ingestion" },
                       { scope: "builder:cli", label: "Trigger PureIDE Workstation Builds" },

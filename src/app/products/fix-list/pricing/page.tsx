@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FixListIcon } from '@/components/BrandIcons';
+import { PraxisIcon } from '@/components/BrandIcons';
 
-export default function FixListPricingPage() {
+export default function PraxisPricingPage() {
   const [communityPrice, setCommunityPrice] = useState<string>("0");
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<number | "custom">(0);
@@ -34,9 +34,9 @@ export default function FixListPricingPage() {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2.5rem 3rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '4rem' }}>
-        <FixListIcon size={64} className="mb-4" />
+        <PraxisIcon size={64} className="mb-4" />
         <h1 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '1rem' }}>
-          Enterprise Licensing for Fix List
+          Enterprise Licensing for Praxis
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '800px', lineHeight: 1.6 }}>
           Scale automated remediation across your entire global infrastructure with our dedicated fleet deployments, white-glove SIEM integrations, and SLA-backed support.
@@ -171,7 +171,7 @@ export default function FixListPricingPage() {
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Pro</h3>
           <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$499<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
-            Ideal for mid-sized organizations needing API access to UVI and automated script generation.
+            Ideal for mid-sized organizations needing API access to Vantage and automated script generation.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Unlimited manual script generations</li>
@@ -229,7 +229,7 @@ export default function FixListPricingPage() {
                 </div>
                 
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-                  Thank you for supporting Fix List and the maintenance of Unified Vulnerability Intelligence (UVI).
+                  Thank you for supporting Praxis and the maintenance of Vantage.
                 </p>
 
                 <div style={{ padding: '1rem', background: 'rgba(52, 211, 153, 0.08)', border: '1px solid rgba(52, 211, 153, 0.3)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>

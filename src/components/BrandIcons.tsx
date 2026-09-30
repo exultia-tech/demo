@@ -183,11 +183,11 @@ export function PureIdeIcon({ size = 32, className = "", glow = true }: IconProp
 }
 
 /**
- * Universal Vulnerability Intelligence (UVI) Product Icon
+ * Vantage Product Icon
  * Represents a global threat radar aperture, interconnected vulnerability nodes,
  * and high-velocity CVE synthesis.
  */
-export function UviIcon({ size = 32, className = "", glow = true }: IconProps) {
+export function VantageIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(139, 92, 246, 0.45))" : "none";
 
   return (
@@ -347,10 +347,10 @@ export function InquestIcon({ size = 32, className = "", glow = true }: IconProp
 }
 
 /**
- * Fix List Product Icon
+ * Praxis Product Icon
  * Represents targeted remediation, wrench/tooling, and infrastructure healing.
  */
-export function FixListIcon({ size = 32, className = "", glow = true }: IconProps) {
+export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))" : "none";
 
   return (
