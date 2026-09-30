@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon } from "@/components/BrandIcons";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
@@ -148,6 +148,78 @@ export default function HomePage() {
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
                 Explore Inquest →
+              </Link>
+            </div>
+          </div>
+
+          {/* PRODUCT 4: PUREOS */}
+          <div className="glass-card" style={{
+            padding: "2.25rem 2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            borderRadius: "18px",
+            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
+            marginBottom: 0
+          }}>
+            <div>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <PureOsIcon size={52} glow={true} />
+              </div>
+
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>PureOS</h3>
+              <div style={{ color: "#10B981", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
+                Zero-Trust Container Images
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+                Build verified, CIS-hardened container images and virtual machines with an integrated SBOM pipeline. Zero hidden dependencies.
+              </p>
+            </div>
+
+            <div>
+              <Link 
+                href="/app/pureos" 
+                className="btn-primary" 
+                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #10B981, #059669)" }}>
+                Launch Configurator →
+              </Link>
+            </div>
+          </div>
+
+          {/* PRODUCT 5: PRAXIS */}
+          <div className="glass-card" style={{
+            padding: "2.25rem 2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            border: "1px solid rgba(245, 158, 11, 0.3)",
+            borderRadius: "18px",
+            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
+            marginBottom: 0
+          }}>
+            <div>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <PraxisIcon size={52} glow={true} />
+              </div>
+
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Praxis</h3>
+              <div style={{ color: "#F59E0B", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
+                Remediation Engine
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+                Compile and deploy one-time targeted remediation scripts for critical vulnerabilities, syncing directly with the Vantage global registry.
+              </p>
+            </div>
+
+            <div>
+              <Link 
+                href="/app/fixlist" 
+                className="btn-primary" 
+                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+                Generate Scripts →
               </Link>
             </div>
           </div>
