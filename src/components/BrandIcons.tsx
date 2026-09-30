@@ -184,8 +184,7 @@ export function PureIdeIcon({ size = 32, className = "", glow = true }: IconProp
 
 /**
  * Vantage Product Icon
- * Represents a global threat radar aperture, interconnected vulnerability nodes,
- * and high-velocity CVE synthesis.
+ * Represents the all-seeing cybernetic eye of the Universal Threat Feed.
  */
 export function VantageIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(139, 92, 246, 0.45))" : "none";
@@ -201,57 +200,38 @@ export function VantageIcon({ size = 32, className = "", glow = true }: IconProp
       style={{ filter: glowFilter }}
     >
       <defs>
-        <linearGradient id="uvi-radar-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+        <linearGradient id="vantage-radar-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#C084FC" />
           <stop offset="50%" stopColor="#8B5CF6" />
           <stop offset="100%" stopColor="#6D28D9" />
         </linearGradient>
 
-        <linearGradient id="uvi-core-grad" x1="18" y1="18" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+        <linearGradient id="vantage-core-grad" x1="18" y1="18" x2="30" y2="30" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#F472B6" />
           <stop offset="50%" stopColor="#C084FC" />
           <stop offset="100%" stopColor="#FFFFFF" />
         </linearGradient>
       </defs>
 
-      {/* Outer Hex-Orbit Radar Ring */}
-      <polygon
-        points="24,4 41,13.8 41,34.2 24,44 7,34.2 7,13.8"
-        fill="rgba(20, 10, 35, 0.7)"
-        stroke="url(#uvi-radar-grad)"
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-      />
+      {/* Orbiting Data Rings */}
+      <path d="M24 4 A 20 20 0 0 1 44 24" stroke="rgba(192, 132, 252, 0.3)" strokeWidth="2" strokeLinecap="round" strokeDasharray="1 6" />
+      <path d="M24 44 A 20 20 0 0 1 4 24" stroke="rgba(192, 132, 252, 0.3)" strokeWidth="2" strokeLinecap="round" strokeDasharray="1 6" />
 
-      {/* Inner Concentric Pulse Ring */}
-      <circle
-        cx="24"
-        cy="24"
-        r="13"
-        stroke="rgba(192, 132, 252, 0.4)"
-        strokeWidth="1.5"
-        strokeDasharray="4 3"
-      />
+      {/* Geometric Cyber-Eye Sclera */}
+      <path d="M4 24 C 14 12, 34 12, 44 24 C 34 36, 14 36, 4 24 Z" stroke="url(#vantage-radar-grad)" strokeWidth="2.5" fill="rgba(20, 10, 35, 0.8)" strokeLinejoin="round" />
 
-      {/* Radar Sweep Crosshairs */}
-      <line x1="24" y1="11" x2="24" y2="37" stroke="rgba(167, 139, 250, 0.5)" strokeWidth="1.25" strokeLinecap="round" />
-      <line x1="11" y1="24" x2="37" y2="24" stroke="rgba(167, 139, 250, 0.5)" strokeWidth="1.25" strokeLinecap="round" />
+      {/* Inner Lens Ring */}
+      <circle cx="24" cy="24" r="9" stroke="url(#vantage-radar-grad)" strokeWidth="1.5" strokeDasharray="3 3" />
 
-      {/* Aggregated Threat Satellite Nodes */}
-      <circle cx="16" cy="15" r="2.5" fill="#C084FC" />
-      <circle cx="33" cy="17" r="2.2" fill="#8B5CF6" />
-      <circle cx="31" cy="32" r="2.5" fill="#A855F7" />
-      <circle cx="15" cy="30" r="2" fill="#E879F9" />
+      {/* Threat Focus Diamond (Pupil) */}
+      <path d="M24 16 L31 24 L24 32 L17 24 Z" fill="url(#vantage-core-grad)" />
 
-      {/* Satellite Telemetry Rays */}
-      <line x1="16" y1="15" x2="24" y2="24" stroke="rgba(232, 121, 249, 0.6)" strokeWidth="1.2" />
-      <line x1="33" y1="17" x2="24" y2="24" stroke="rgba(192, 132, 252, 0.6)" strokeWidth="1.2" />
-      <line x1="31" y1="32" x2="24" y2="24" stroke="rgba(168, 85, 247, 0.6)" strokeWidth="1.2" />
-      <line x1="15" y1="30" x2="24" y2="24" stroke="rgba(244, 114, 182, 0.6)" strokeWidth="1.2" />
-
-      {/* Central Pulsing Zero-Day Threat Core */}
-      <circle cx="24" cy="24" r="5" fill="url(#uvi-core-grad)" />
+      {/* Central Singularity Spark */}
       <circle cx="24" cy="24" r="2" fill="#FFFFFF" />
+
+      {/* Targeting Accents */}
+      <line x1="24" y1="12" x2="24" y2="16" stroke="#C084FC" strokeWidth="2" strokeLinecap="round" />
+      <line x1="24" y1="32" x2="24" y2="36" stroke="#6D28D9" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
