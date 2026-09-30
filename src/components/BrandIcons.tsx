@@ -351,7 +351,7 @@ export function InquestIcon({ size = 32, className = "", glow = true }: IconProp
  * Represents targeted remediation, wrench/tooling, and infrastructure healing.
  */
 export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))" : "none";
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))" : "none";
 
   return (
     <svg
@@ -365,14 +365,14 @@ export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps
     >
       <defs>
         <linearGradient id="fixlist-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#34D399" />
-          <stop offset="50%" stopColor="#10B981" />
-          <stop offset="100%" stopColor="#059669" />
+          <stop offset="0%" stopColor="#FBBF24" />
+          <stop offset="50%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
         </linearGradient>
 
         <linearGradient id="fixlist-accent-grad" x1="24" y1="10" x2="40" y2="26" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#A7F3D0" />
-          <stop offset="100%" stopColor="#10B981" />
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="100%" stopColor="#F59E0B" />
         </linearGradient>
       </defs>
 
@@ -401,8 +401,8 @@ export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps
       <circle cx="27" cy="19" r="3" fill="rgba(5, 20, 15, 0.9)" />
 
       {/* Healing Pulse/Plus Sign */}
-      <line x1="14" y1="18" x2="20" y2="18" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="17" y1="15" x2="17" y2="21" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="14" y1="18" x2="20" y2="18" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="17" y1="15" x2="17" y2="21" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -412,7 +412,7 @@ export function PraxisIcon({ size = 32, className = "", glow = true }: IconProps
  * Represents secure, hardened OS containers (box/cube with shield elements).
  */
 export function PureOsIcon({ size = 32, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))" : "none";
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))" : "none";
 
   return (
     <svg
@@ -426,14 +426,14 @@ export function PureOsIcon({ size = 32, className = "", glow = true }: IconProps
     >
       <defs>
         <linearGradient id="pureos-base-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="50%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#D97706" />
+          <stop offset="0%" stopColor="#34D399" />
+          <stop offset="50%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#059669" />
         </linearGradient>
 
         <linearGradient id="pureos-accent-grad" x1="24" y1="10" x2="24" y2="38" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FDE68A" />
-          <stop offset="100%" stopColor="#F59E0B" />
+          <stop offset="0%" stopColor="#A7F3D0" />
+          <stop offset="100%" stopColor="#10B981" />
         </linearGradient>
       </defs>
 
