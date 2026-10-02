@@ -228,14 +228,14 @@ export default function HomePage() {
           <div className="glass-card" style={{
             padding: "2.25rem 2rem", display: "flex", flexDirection: "column", justifyContent: "space-between",
             border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)", boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)"
+            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)", boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)", marginBottom: 0
           }}>
             <div>
               <div style={{ marginBottom: "1.5rem" }}><AxiomIcon size={52} glow={true} /></div>
               <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Axiom</h3>
               <div style={{ color: "#F43F5E", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>Security Education Framework</div>
               <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Open-source study paths for foundational infosec certifications (CompTIA Security+ & ISC2 CC). Breaking down the entry barriers to cyber education.
+                Open-source study paths, an interactive global exam simulator, and mock terminal labs for industry-leading certifications like CISSP, OSCP, and Security+.
               </p>
             </div>
             <div>
