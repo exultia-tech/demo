@@ -23,6 +23,10 @@ export default function AxiomDashboard() {
   const [checkpointInterval, setCheckpointInterval] = useState<number>(10);
   const [activeExamQs, setActiveExamQs] = useState<typeof MOCK_EXAM_DB>([]);
   const [showCheckpoint, setShowCheckpoint] = useState<boolean>(false);
+  
+  // Instant Validation
+  const [instantValidation, setInstantValidation] = useState<boolean>(false);
+  const [validationVisible, setValidationVisible] = useState<boolean>(false);
 
   // Labs State
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
@@ -50,6 +54,7 @@ export default function AxiomDashboard() {
     setSelectedAnswer(null);
     setExamAnswers([]);
     setShowCheckpoint(false);
+    setValidationVisible(false);
   };
 
   const proceedToNextQuestion = (answersToUse: number[]) => {
@@ -57,6 +62,7 @@ export default function AxiomDashboard() {
     if (currentQuestionIdx < activeExamQs.length - 1) {
       setCurrentQuestionIdx(currentQuestionIdx + 1);
       setSelectedAnswer(null);
+      setValidationVisible(false);
     } else {
       let calculatedScore = 0;
       answersToUse.forEach((ans, idx) => {
@@ -68,6 +74,11 @@ export default function AxiomDashboard() {
   };
 
   const handleNextQuestion = () => {
+    if (instantValidation && !validationVisible) {
+      setValidationVisible(true);
+      return;
+    }
+
     const newAnswers = [...examAnswers, selectedAnswer ?? -1];
     setExamAnswers(newAnswers);
     
@@ -344,6 +355,19 @@ export default function AxiomDashboard() {
                   />
                   <small style={{ color: "#64748B", display: "block", marginTop: "0.25rem" }}>Set to 0 to disable checkpoints.</small>
                 </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", background: "rgba(0,0,0,0.3)", padding: "1rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  <input 
+                    type="checkbox" 
+                    id="instantValidation"
+                    checked={instantValidation}
+                    onChange={(e) => setInstantValidation(e.target.checked)}
+                    style={{ width: "1.25rem", height: "1.25rem", accentColor: "#F43F5E", cursor: "pointer" }}
+                  />
+                  <label htmlFor="instantValidation" style={{ color: "#E2E8F0", fontSize: "0.95rem", fontWeight: 600, cursor: "pointer", userSelect: "none" }}>
+                    Enable Instant Validation
+                    <span style={{ display: "block", fontSize: "0.8rem", color: "#64748B", fontWeight: 400, marginTop: "0.2rem" }}>See explanations immediately after answering.</span>
+                  </label>
+                </div>
               </div>
 
               <button 
@@ -380,23 +404,49 @@ export default function AxiomDashboard() {
               </h3>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-                {activeExamQs[currentQuestionIdx].options.map((opt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedAnswer(idx)}
-                    style={{
-                      textAlign: "left", padding: "1.25rem", borderRadius: "8px", cursor: "pointer", fontSize: "1rem",
-                      background: selectedAnswer === idx ? "rgba(244, 63, 94, 0.2)" : "rgba(255,255,255,0.03)",
-                      border: selectedAnswer === idx ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)",
-                      color: selectedAnswer === idx ? "#FFFFFF" : "#E2E8F0"
-                    }}>
-                    <span style={{ fontWeight: 600, marginRight: "1rem", color: selectedAnswer === idx ? "#FDA4AF" : "#64748B" }}>
-                      {String.fromCharCode(65 + idx)}.
-                    </span>
-                    {opt}
-                  </button>
-                ))}
+                {activeExamQs[currentQuestionIdx].options.map((opt, idx) => {
+                  const isCorrect = idx === activeExamQs[currentQuestionIdx].correctAnswer;
+                  let bg = selectedAnswer === idx ? "rgba(244, 63, 94, 0.2)" : "rgba(255,255,255,0.03)";
+                  let border = selectedAnswer === idx ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)";
+                  let color = selectedAnswer === idx ? "#FFFFFF" : "#E2E8F0";
+                  
+                  if (validationVisible) {
+                    if (isCorrect) {
+                      bg = "rgba(52, 211, 153, 0.2)";
+                      border = "1px solid #34D399";
+                      color = "#34D399";
+                    } else if (selectedAnswer === idx && !isCorrect) {
+                      bg = "rgba(239, 68, 68, 0.2)";
+                      border = "1px solid #EF4444";
+                      color = "#EF4444";
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={idx}
+                      disabled={validationVisible}
+                      onClick={() => setSelectedAnswer(idx)}
+                      style={{
+                        textAlign: "left", padding: "1.25rem", borderRadius: "8px", cursor: validationVisible ? "default" : "pointer", fontSize: "1rem",
+                        background: bg, border: border, color: color,
+                        transition: "all 0.2s"
+                      }}>
+                      <span style={{ fontWeight: 600, marginRight: "1rem", color: validationVisible ? color : (selectedAnswer === idx ? "#FDA4AF" : "#64748B") }}>
+                        {String.fromCharCode(65 + idx)}.
+                      </span>
+                      {opt}
+                    </button>
+                  );
+                })}
               </div>
+
+              {validationVisible && (
+                <div style={{ padding: "1.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", marginBottom: "2rem", borderLeft: "4px solid #F43F5E" }}>
+                  <h4 style={{ margin: "0 0 0.5rem 0", color: "#FDA4AF" }}>Explanation</h4>
+                  <p style={{ margin: 0, color: "#E2E8F0", lineHeight: 1.6 }}>{activeExamQs[currentQuestionIdx].explanation}</p>
+                </div>
+              )}
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button
@@ -406,7 +456,7 @@ export default function AxiomDashboard() {
                     padding: "0.75rem 2rem", background: selectedAnswer !== null ? "#F43F5E" : "rgba(255,255,255,0.1)", 
                     color: selectedAnswer !== null ? "white" : "#64748B", border: "none", borderRadius: "8px", fontWeight: 600, cursor: selectedAnswer !== null ? "pointer" : "not-allowed" 
                   }}>
-                  {currentQuestionIdx === activeExamQs.length - 1 ? "Submit Exam" : "Next Question"}
+                  {instantValidation && !validationVisible ? "Submit Answer" : (currentQuestionIdx === activeExamQs.length - 1 ? "Submit Exam" : "Next Question")}
                 </button>
               </div>
             </div>
