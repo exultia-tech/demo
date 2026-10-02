@@ -272,5 +272,8 @@ while(questions.length < targetQuestions) {
   }
 }
 
+questions.forEach(q => {
+  q.question = q.question.replace(/\s*\((Scenario Variation|ID|Var|Scan ID|Ticket #|Ref|Design #|Alert ID)[:\s]*\d+\)/g, '');
+});
 fs.writeFileSync('./src/lib/axiom-questions.json', JSON.stringify(questions, null, 2));
 console.log(`Generated ${questions.length} questions.`);
