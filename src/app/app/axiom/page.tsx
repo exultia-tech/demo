@@ -18,6 +18,12 @@ export default function AxiomDashboard() {
   const [score, setScore] = useState<number | null>(null);
   const [examAnswers, setExamAnswers] = useState<number[]>([]);
 
+  // Simulator Configuration & Checkpoints
+  const [sessionQuestionCount, setSessionQuestionCount] = useState<number>(90);
+  const [checkpointInterval, setCheckpointInterval] = useState<number>(10);
+  const [activeExamQs, setActiveExamQs] = useState<typeof MOCK_EXAM_DB>([]);
+  const [showCheckpoint, setShowCheckpoint] = useState<boolean>(false);
+
   // Labs State
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
   const [terminalInput, setTerminalInput] = useState("");
@@ -28,29 +34,56 @@ export default function AxiomDashboard() {
 
   // --- EXAM SIMULATOR LOGIC ---
   const handleStartExam = () => {
+    const shuffled = [...MOCK_EXAM_DB].sort(() => 0.5 - Math.random());
+    const count = Math.min(Math.max(1, sessionQuestionCount), MOCK_EXAM_DB.length);
+    setActiveExamQs(shuffled.slice(0, count));
+
     setExamActive(true);
     setCurrentQuestionIdx(0);
     setScore(null);
     setSelectedAnswer(null);
     setExamAnswers([]);
+    setShowCheckpoint(false);
+  };
+
+  const proceedToNextQuestion = (answersToUse: number[]) => {
+    setShowCheckpoint(false);
+    if (currentQuestionIdx < activeExamQs.length - 1) {
+      setCurrentQuestionIdx(currentQuestionIdx + 1);
+      setSelectedAnswer(null);
+    } else {
+      let calculatedScore = 0;
+      answersToUse.forEach((ans, idx) => {
+        if (ans === activeExamQs[idx].correctAnswer) calculatedScore++;
+      });
+      setScore(calculatedScore);
+      setExamActive(false);
+    }
   };
 
   const handleNextQuestion = () => {
     const newAnswers = [...examAnswers, selectedAnswer ?? -1];
     setExamAnswers(newAnswers);
     
-    if (currentQuestionIdx < MOCK_EXAM_DB.length - 1) {
-      setCurrentQuestionIdx(currentQuestionIdx + 1);
-      setSelectedAnswer(null);
-    } else {
-      // Calculate score
-      let calculatedScore = 0;
-      newAnswers.forEach((ans, idx) => {
-        if (ans === MOCK_EXAM_DB[idx].correctAnswer) calculatedScore++;
-      });
-      setScore(calculatedScore);
-      setExamActive(false);
+    // Check if we hit a checkpoint
+    if (checkpointInterval > 0 && newAnswers.length % checkpointInterval === 0 && newAnswers.length < activeExamQs.length) {
+      setShowCheckpoint(true);
+      return;
     }
+
+    proceedToNextQuestion(newAnswers);
+  };
+
+  const getCheckpointScore = () => {
+    if (!checkpointInterval) return 0;
+    const recentAnswers = examAnswers.slice(-checkpointInterval);
+    const recentQuestions = activeExamQs.slice(examAnswers.length - checkpointInterval, examAnswers.length);
+    
+    let checkpointScore = 0;
+    recentAnswers.forEach((ans, idx) => {
+      if (ans === recentQuestions[idx].correctAnswer) checkpointScore++;
+    });
+    return checkpointScore;
   };
 
   // --- TERMINAL LAB LOGIC ---
@@ -278,9 +311,35 @@ export default function AxiomDashboard() {
             <div style={{ textAlign: "center", padding: "4rem 2rem", background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)" }}>
               <AxiomIcon size={64} glow={true} className="mx-auto" />
               <h2 style={{ color: "#FFFFFF", fontSize: "2rem", marginTop: "1.5rem" }}>Global Exam Simulator</h2>
-              <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "2rem", maxWidth: "500px", margin: "0 auto 2rem auto" }}>
+              <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "1.5rem", maxWidth: "500px", margin: "0 auto 1.5rem auto" }}>
                 Test your knowledge across {MOCK_EXAM_DB.length} mixed questions from CompTIA, ISC2, and OffSec domains.
               </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "400px", margin: "0 auto 2rem auto", textAlign: "left" }}>
+                <div>
+                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Questions per Session (Max: {MOCK_EXAM_DB.length})</label>
+                  <input 
+                    type="number" 
+                    value={sessionQuestionCount} 
+                    onChange={(e) => setSessionQuestionCount(Number(e.target.value))} 
+                    max={MOCK_EXAM_DB.length}
+                    min={1}
+                    style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Checkpoint Interval (Show score every X questions)</label>
+                  <input 
+                    type="number" 
+                    value={checkpointInterval} 
+                    onChange={(e) => setCheckpointInterval(Number(e.target.value))} 
+                    min={0}
+                    style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}
+                  />
+                  <small style={{ color: "#64748B", display: "block", marginTop: "0.25rem" }}>Set to 0 to disable checkpoints.</small>
+                </div>
+              </div>
+
               <button 
                 onClick={handleStartExam}
                 style={{ padding: "1rem 2.5rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontSize: "1.1rem", fontWeight: 700, cursor: "pointer" }}>
@@ -289,19 +348,33 @@ export default function AxiomDashboard() {
             </div>
           )}
 
-          {examActive && (
+          {examActive && showCheckpoint && (
+            <div style={{ textAlign: "center", background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)", padding: "4rem 2rem" }}>
+              <h2 style={{ color: "#FFFFFF", fontSize: "2.5rem", marginBottom: "1rem" }}>Checkpoint Reached!</h2>
+              <p style={{ color: "#94A3B8", fontSize: "1.2rem", marginBottom: "2rem" }}>
+                You scored <strong style={{ color: "#F43F5E", fontSize: "1.5rem" }}>{getCheckpointScore()}</strong> out of the last {checkpointInterval} questions.
+              </p>
+              <button 
+                onClick={() => proceedToNextQuestion(examAnswers)}
+                style={{ padding: "1rem 2.5rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontSize: "1.1rem", fontWeight: 700, cursor: "pointer" }}>
+                Continue Exam
+              </button>
+            </div>
+          )}
+
+          {examActive && !showCheckpoint && (
             <div style={{ background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)", padding: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
-                <span style={{ color: "#FDA4AF", fontWeight: 600 }}>Question {currentQuestionIdx + 1} of {MOCK_EXAM_DB.length}</span>
-                <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Tag: {MOCK_EXAM_DB[currentQuestionIdx].cert}</span>
+                <span style={{ color: "#FDA4AF", fontWeight: 600 }}>Question {currentQuestionIdx + 1} of {activeExamQs.length}</span>
+                <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Tag: {activeExamQs[currentQuestionIdx].cert}</span>
               </div>
 
               <h3 style={{ color: "#FFFFFF", fontSize: "1.3rem", lineHeight: 1.5, marginBottom: "2rem" }}>
-                {MOCK_EXAM_DB[currentQuestionIdx].question}
+                {activeExamQs[currentQuestionIdx].question}
               </h3>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-                {MOCK_EXAM_DB[currentQuestionIdx].options.map((opt, idx) => (
+                {activeExamQs[currentQuestionIdx].options.map((opt, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedAnswer(idx)}
@@ -327,7 +400,7 @@ export default function AxiomDashboard() {
                     padding: "0.75rem 2rem", background: selectedAnswer !== null ? "#F43F5E" : "rgba(255,255,255,0.1)", 
                     color: selectedAnswer !== null ? "white" : "#64748B", border: "none", borderRadius: "8px", fontWeight: 600, cursor: selectedAnswer !== null ? "pointer" : "not-allowed" 
                   }}>
-                  {currentQuestionIdx === MOCK_EXAM_DB.length - 1 ? "Submit Exam" : "Next Question"}
+                  {currentQuestionIdx === activeExamQs.length - 1 ? "Submit Exam" : "Next Question"}
                 </button>
               </div>
             </div>
@@ -336,14 +409,14 @@ export default function AxiomDashboard() {
           {score !== null && (
             <div style={{ textAlign: "center", padding: "4rem 2rem", background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)" }}>
               <div style={{ fontSize: "5rem", fontWeight: 900, color: "#F43F5E", marginBottom: "1rem" }}>
-                {Math.round((score / MOCK_EXAM_DB.length) * 100)}%
+                {Math.round((score / activeExamQs.length) * 100)}%
               </div>
               <h2 style={{ color: "#FFFFFF", fontSize: "2rem", marginBottom: "1rem" }}>
-                You scored {score} out of {MOCK_EXAM_DB.length}
+                You scored {score} out of {activeExamQs.length}
               </h2>
               <div style={{ textAlign: "left", background: "rgba(255,255,255,0.02)", padding: "2rem", borderRadius: "8px", marginTop: "2rem" }}>
                 <h3 style={{ color: "#FDA4AF", marginBottom: "1rem" }}>Review Answers</h3>
-                {MOCK_EXAM_DB.map((q, idx) => {
+                {activeExamQs.map((q, idx) => {
                   const userAns = examAnswers[idx];
                   const isCorrect = userAns === q.correctAnswer;
                   return (
