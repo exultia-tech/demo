@@ -433,3 +433,42 @@ export function PureOsIcon({ size = 32, className = "", glow = true }: IconProps
     </svg>
   );
 }
+
+/**
+ * Axiom Product Icon
+ * Represents the foundational open-source framework for security education and certification.
+ */
+export function AxiomIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(244, 63, 94, 0.45))" : "none";
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
+      <defs>
+        <linearGradient id="axiom-grad-main" x1="12" y1="4" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDA4AF" />
+          <stop offset="50%" stopColor="#F43F5E" />
+          <stop offset="100%" stopColor="#BE123C" />
+        </linearGradient>
+        <linearGradient id="axiom-grad-accent" x1="24" y1="12" x2="24" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#FDA4AF" />
+        </linearGradient>
+      </defs>
+
+      {/* The Open Book / Framework Foundation */}
+      <path d="M24 14 L10 10 V36 L24 40 L38 36 V10 L24 14 Z" fill="rgba(25, 5, 10, 0.8)" stroke="url(#axiom-grad-main)" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M24 14 V40" stroke="url(#axiom-grad-main)" strokeWidth="2.5" strokeLinejoin="round" />
+      
+      {/* Pages / Layers of Knowledge */}
+      <path d="M24 20 L14 16.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <path d="M24 26 L14 22.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <path d="M24 32 L14 28.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <path d="M24 20 L34 16.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <path d="M24 26 L34 22.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <path d="M24 32 L34 28.5" stroke="url(#axiom-grad-main)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+
+      {/* Central Spark of Wisdom */}
+      <polygon points="24,6 27,15 24,24 21,15" fill="url(#axiom-grad-accent)" />
+    </svg>
+  );
+}

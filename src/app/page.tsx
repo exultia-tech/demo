@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIcon } from "@/components/BrandIcons";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
@@ -220,6 +220,27 @@ export default function HomePage() {
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
                 Generate Scripts →
+              </Link>
+            </div>
+          </div>
+
+          {/* PRODUCT 6: AXIOM */}
+          <div className="glass-card" style={{
+            padding: "2.25rem 2rem", display: "flex", flexDirection: "column", justifyContent: "space-between",
+            border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "18px",
+            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)", boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)"
+          }}>
+            <div>
+              <div style={{ marginBottom: "1.5rem" }}><AxiomIcon size={52} glow={true} /></div>
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Axiom</h3>
+              <div style={{ color: "#F43F5E", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>Security Education Framework</div>
+              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+                Open-source study paths for foundational infosec certifications (CompTIA Security+ & ISC2 CC). Breaking down the entry barriers to cyber education.
+              </p>
+            </div>
+            <div>
+              <Link href="/app/axiom" className="btn-primary" style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F43F5E, #BE123C)" }}>
+                Start Learning →
               </Link>
             </div>
           </div>
