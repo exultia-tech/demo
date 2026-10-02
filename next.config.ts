@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    prerenderResponseLimit: 10485760, // 10MB
+  },
 };
 
 export default nextConfig;

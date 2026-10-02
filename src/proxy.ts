@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SITE_CONFIG } from "./config/site-config";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // If global isolated threat feed mode is active, prevent visitors from reaching unreleased products
   if (SITE_CONFIG.isolatedThreatFeed) {
     const { pathname } = request.nextUrl;
