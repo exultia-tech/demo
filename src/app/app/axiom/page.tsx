@@ -2,52 +2,96 @@
 
 import React, { useState } from "react";
 import { AxiomIcon } from "@/components/BrandIcons";
-
-const SYLLABUS_DATA = {
-  "isc2-cc": {
-    title: "ISC2 Certified in Cybersecurity (CC)",
-    description: "The foundational entry-level certification from ISC2. Proves you have the foundational knowledge, skills, and abilities to take on entry- and junior-level cybersecurity roles.",
-    domains: [
-      { id: "cc-1", title: "Domain 1: Security Principles", weight: "26%", topics: ["Understand the security concepts of information assurance", "Understand the risk management process", "Understand security controls", "Understand (ISC)2 Code of Ethics", "Understand governance processes"] },
-      { id: "cc-2", title: "Domain 2: Business Continuity (BC), Disaster Recovery (DR) & Incident Response Concepts", weight: "10%", topics: ["Understand business continuity (BC)", "Understand disaster recovery (DR)", "Understand incident response"] },
-      { id: "cc-3", title: "Domain 3: Access Controls Concepts", weight: "22%", topics: ["Understand physical access controls", "Understand logical access controls"] },
-      { id: "cc-4", title: "Domain 4: Network Security", weight: "24%", topics: ["Understand computer networking", "Understand network threats and attacks", "Understand network security infrastructure"] },
-      { id: "cc-5", title: "Domain 5: Security Operations", weight: "18%", topics: ["Understand data security", "Understand system hardening", "Understand best practice security policies", "Understand security awareness training"] }
-    ],
-    resources: [
-      { type: "Official", name: "ISC2 Official Free CC Training", url: "#" },
-      { type: "Video", name: "Mike Chapple's CC Study Guide", url: "#" },
-      { type: "Flashcards", name: "Community Quizlet Deck", url: "#" }
-    ]
-  },
-  "comptia-secplus": {
-    title: "CompTIA Security+ (SY0-701)",
-    description: "A global certification that validates the baseline skills necessary to perform core security functions and pursue an IT security career. The SY0-701 exam focuses on current trends.",
-    domains: [
-      { id: "sec-1", title: "Domain 1: General Security Concepts", weight: "12%", topics: ["Compare and contrast various types of security controls", "Summarize fundamental security concepts", "Explain the importance of change management processes", "Explain the use of cryptographic solutions"] },
-      { id: "sec-2", title: "Domain 2: Threats, Vulnerabilities, and Mitigations", weight: "22%", topics: ["Compare and contrast common threat actors and motivations", "Explain common threat vectors and attack surfaces", "Explain various types of vulnerabilities", "Given a scenario, analyze indicators of malicious activity"] },
-      { id: "sec-3", title: "Domain 3: Security Architecture", weight: "18%", topics: ["Compare and contrast security implications of different architecture models", "Given a scenario, apply security principles to secure enterprise infrastructure", "Compare and contrast concepts and strategies to protect data"] },
-      { id: "sec-4", title: "Domain 4: Security Operations", weight: "28%", topics: ["Given a scenario, apply common security techniques to computing resources", "Explain the security implications of proper hardware, software, and data asset management", "Explain various activities associated with vulnerability management", "Explain security alerting and monitoring concepts and tools", "Given a scenario, modify enterprise capabilities to enhance security", "Given a scenario, implement and maintain identity and access management", "Explain the importance of automation and orchestration related to secure operations", "Explain appropriate incident response activities"] },
-      { id: "sec-5", title: "Domain 5: Security Program Management and Oversight", weight: "20%", topics: ["Summarize elements of effective security governance", "Explain elements of the risk management process", "Explain the processes associated with third-party risk assessment and management", "Summarize elements of effective security compliance", "Explain types and purposes of audits and assessments", "Given a scenario, implement security awareness practices"] }
-    ],
-    resources: [
-      { type: "Video", name: "Professor Messer's SY0-701 Free Course", url: "#" },
-      { type: "Notes", name: "ExamCompass Practice Tests", url: "#" },
-      { type: "Lab", name: "TryHackMe Pre-Security Path", url: "#" }
-    ]
-  }
-};
+import { CERTIFICATIONS, MOCK_EXAM_DB, LABS_DB, Certification } from "@/lib/axiom-data";
 
 export default function AxiomDashboard() {
-  const [activeCert, setActiveCert] = useState<"isc2-cc" | "comptia-secplus">("isc2-cc");
+  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs">("syllabus");
+  
+  // Syllabus State
+  const [activeCertId, setActiveCertId] = useState<string>("comptia-secplus");
   const [expandedDomain, setExpandedDomain] = useState<string | null>(null);
 
-  const certData = SYLLABUS_DATA[activeCert];
+  // Simulator State
+  const [examActive, setExamActive] = useState(false);
+  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
+  const [examAnswers, setExamAnswers] = useState<number[]>([]);
+
+  // Labs State
+  const [activeLabId, setActiveLabId] = useState<string | null>(null);
+  const [terminalInput, setTerminalInput] = useState("");
+  const [terminalOutput, setTerminalOutput] = useState<string[]>([]);
+
+  const certsList = Object.values(CERTIFICATIONS);
+  const activeCert = CERTIFICATIONS[activeCertId];
+
+  // --- EXAM SIMULATOR LOGIC ---
+  const handleStartExam = () => {
+    setExamActive(true);
+    setCurrentQuestionIdx(0);
+    setScore(null);
+    setSelectedAnswer(null);
+    setExamAnswers([]);
+  };
+
+  const handleNextQuestion = () => {
+    const newAnswers = [...examAnswers, selectedAnswer ?? -1];
+    setExamAnswers(newAnswers);
+    
+    if (currentQuestionIdx < MOCK_EXAM_DB.length - 1) {
+      setCurrentQuestionIdx(currentQuestionIdx + 1);
+      setSelectedAnswer(null);
+    } else {
+      // Calculate score
+      let calculatedScore = 0;
+      newAnswers.forEach((ans, idx) => {
+        if (ans === MOCK_EXAM_DB[idx].correctAnswer) calculatedScore++;
+      });
+      setScore(calculatedScore);
+      setExamActive(false);
+    }
+  };
+
+  // --- TERMINAL LAB LOGIC ---
+  const handleTerminalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!terminalInput.trim()) return;
+
+    const newOutput = [...terminalOutput, `root@axiom-lab:~# ${terminalInput}`];
+    
+    const cmd = terminalInput.trim().toLowerCase();
+    if (cmd === "nmap 10.0.4.15") {
+      newOutput.push("Starting Nmap 7.93 ( https://nmap.org )");
+      newOutput.push("Nmap scan report for 10.0.4.15");
+      newOutput.push("Host is up (0.012s latency).");
+      newOutput.push("PORT    STATE SERVICE");
+      newOutput.push("22/tcp  open  ssh");
+      newOutput.push("80/tcp  open  http");
+      newOutput.push("443/tcp open  https");
+    } else if (cmd === "nmap -sv -p 80,443 10.0.4.15" || cmd === "nmap -sv -p 80,443 10.0.4.15".toLowerCase()) {
+      newOutput.push("Starting Nmap 7.93...");
+      newOutput.push("PORT    STATE SERVICE VERSION");
+      newOutput.push("80/tcp  open  http    nginx 1.18.0 (Ubuntu)");
+      newOutput.push("443/tcp open  ssl/http nginx 1.18.0 (Ubuntu)");
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Web server is nginx 1.18.0");
+    } else if (cmd === "clear") {
+      setTerminalOutput([]);
+      setTerminalInput("");
+      return;
+    } else {
+      newOutput.push(`bash: ${cmd.split(" ")[0]}: command not found (or not implemented in mock)`);
+    }
+
+    setTerminalOutput(newOutput);
+    setTerminalInput("");
+  };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem" }}>
+    <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "2rem" }}>
       {/* Header */}
-      <header style={{ marginBottom: "3rem", borderBottom: "1px solid rgba(244, 63, 94, 0.2)", paddingBottom: "2rem" }}>
+      <header style={{ marginBottom: "2rem", borderBottom: "1px solid rgba(244, 63, 94, 0.2)", paddingBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
           <AxiomIcon size={48} glow={true} />
           <div>
@@ -55,106 +99,279 @@ export default function AxiomDashboard() {
               Exultia <span style={{ color: "#F43F5E" }}>Axiom</span>
             </h1>
             <p style={{ margin: "0.25rem 0 0 0", color: "#94A3B8", fontSize: "1.1rem" }}>
-              Open-Source Security Education & Certification Framework
+              The Open-Source Security Education Framework
             </p>
           </div>
         </div>
       </header>
 
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
-        <button 
-          onClick={() => setActiveCert("isc2-cc")}
-          style={{ 
-            padding: "1rem 1.5rem", 
-            background: activeCert === "isc2-cc" ? "rgba(244, 63, 94, 0.15)" : "rgba(255,255,255,0.02)", 
-            border: activeCert === "isc2-cc" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255,255,255,0.1)",
-            color: activeCert === "isc2-cc" ? "#FFFFFF" : "#94A3B8",
-            borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem",
-            transition: "all 0.2s ease"
-          }}>
-          ISC2 Certified in Cybersecurity
-        </button>
-        <button 
-          onClick={() => setActiveCert("comptia-secplus")}
-          style={{ 
-            padding: "1rem 1.5rem", 
-            background: activeCert === "comptia-secplus" ? "rgba(244, 63, 94, 0.15)" : "rgba(255,255,255,0.02)", 
-            border: activeCert === "comptia-secplus" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255,255,255,0.1)",
-            color: activeCert === "comptia-secplus" ? "#FFFFFF" : "#94A3B8",
-            borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem",
-            transition: "all 0.2s ease"
-          }}>
-          CompTIA Security+ (SY0-701)
-        </button>
+      {/* Main App Nav */}
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
+        {["syllabus", "simulator", "labs"].map(view => (
+          <button 
+            key={view}
+            onClick={() => setActiveView(view as any)}
+            style={{ 
+              padding: "0.75rem 1.5rem", 
+              background: activeView === view ? "rgba(244, 63, 94, 0.15)" : "transparent", 
+              border: activeView === view ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid transparent",
+              color: activeView === view ? "#FFFFFF" : "#94A3B8",
+              borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem", textTransform: "capitalize",
+              transition: "all 0.2s ease"
+            }}>
+            {view}
+          </button>
+        ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "2rem" }}>
-        {/* Main Syllabus Layout */}
-        <div>
-          <div style={{ background: "rgba(25, 5, 10, 0.4)", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "12px", padding: "2rem", marginBottom: "2rem" }}>
-            <h2 style={{ margin: "0 0 1rem 0", color: "#FFFFFF", fontSize: "1.75rem" }}>{certData.title}</h2>
-            <p style={{ color: "#94A3B8", lineHeight: 1.6, margin: "0 0 2rem 0", fontSize: "1.05rem" }}>{certData.description}</p>
-            
-            <h3 style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.5rem", marginBottom: "1.5rem", color: "#FDA4AF" }}>Official Exam Domains</h3>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {certData.domains.map(domain => {
-                const isExpanded = expandedDomain === domain.id;
-                return (
-                  <div key={domain.id} style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", background: "rgba(255,255,255,0.02)", overflow: "hidden" }}>
-                    <button 
-                      onClick={() => setExpandedDomain(isExpanded ? null : domain.id)}
-                      style={{ width: "100%", padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "transparent", border: "none", color: "#E2E8F0", cursor: "pointer", textAlign: "left", fontSize: "1.05rem", fontWeight: 600 }}>
-                      <span>{domain.title}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                        <span style={{ fontSize: "0.85rem", color: "#F43F5E", background: "rgba(244, 63, 94, 0.1)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>Weight: {domain.weight}</span>
-                        <span style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▼</span>
-                      </div>
-                    </button>
-                    
-                    {isExpanded && (
-                      <div style={{ padding: "0 1.25rem 1.25rem 1.25rem", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                        <ul style={{ color: "#94A3B8", lineHeight: 1.6, paddingLeft: "1.5rem", margin: "1rem 0 0 0" }}>
-                          {domain.topics.map((topic, idx) => (
-                            <li key={idx} style={{ marginBottom: "0.5rem" }}>{topic}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      {/* --- VIEW: SYLLABUS --- */}
+      {activeView === "syllabus" && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: "2rem" }}>
+          
+          {/* Sidebar: Cert List */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <h3 style={{ color: "#FDA4AF", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Certifications</h3>
+            {certsList.map(cert => (
+              <button 
+                key={cert.id}
+                onClick={() => { setActiveCertId(cert.id); setExpandedDomain(null); }}
+                style={{ 
+                  textAlign: "left", padding: "1rem", borderRadius: "8px", cursor: "pointer", transition: "all 0.2s ease",
+                  background: activeCertId === cert.id ? "rgba(244, 63, 94, 0.1)" : "rgba(255,255,255,0.02)",
+                  border: activeCertId === cert.id ? "1px solid rgba(244, 63, 94, 0.4)" : "1px solid rgba(255,255,255,0.05)",
+                  color: activeCertId === cert.id ? "#FFFFFF" : "#94A3B8"
+                }}>
+                <div style={{ fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.25rem" }}>{cert.title}</div>
+                <div style={{ fontSize: "0.8rem", color: activeCertId === cert.id ? "#FDA4AF" : "#64748B" }}>{cert.vendor} • {cert.level}</div>
+              </button>
+            ))}
           </div>
-        </div>
 
-        {/* Sidebar Resources */}
-        <div>
-          <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "1.5rem", position: "sticky", top: "2rem" }}>
-            <h3 style={{ margin: "0 0 1.5rem 0", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              Free Study Resources
-            </h3>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {certData.resources.map((res, idx) => (
-                <a key={idx} href={res.url} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "1rem", background: "rgba(255,255,255,0.03)", borderRadius: "8px", textDecoration: "none", border: "1px solid rgba(255,255,255,0.05)" }}>
+          {/* Main Content: Domains & Resources */}
+          <div>
+            <div style={{ background: "rgba(25, 5, 10, 0.4)", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "12px", padding: "2rem", marginBottom: "2rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <h2 style={{ margin: 0, color: "#FFFFFF", fontSize: "2rem" }}>{activeCert.title}</h2>
+                <span style={{ background: "rgba(244, 63, 94, 0.1)", color: "#F43F5E", padding: "0.4rem 0.8rem", borderRadius: "6px", fontWeight: 700, fontSize: "0.85rem" }}>{activeCert.vendor}</span>
+              </div>
+              <p style={{ color: "#94A3B8", lineHeight: 1.6, margin: "0 0 2rem 0", fontSize: "1.05rem" }}>{activeCert.description}</p>
+              
+              <h3 style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.5rem", marginBottom: "1.5rem", color: "#FDA4AF" }}>Official Exam Domains</h3>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {activeCert.domains.map(domain => {
+                  const isExpanded = expandedDomain === domain.id;
+                  return (
+                    <div key={domain.id} style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", background: "rgba(255,255,255,0.02)", overflow: "hidden" }}>
+                      <button 
+                        onClick={() => setExpandedDomain(isExpanded ? null : domain.id)}
+                        style={{ width: "100%", padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "transparent", border: "none", color: "#E2E8F0", cursor: "pointer", textAlign: "left", fontSize: "1.05rem", fontWeight: 600 }}>
+                        <span>{domain.title}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                          <span style={{ fontSize: "0.85rem", color: "#F43F5E", background: "rgba(244, 63, 94, 0.1)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>Weight: {domain.weight}</span>
+                          <span style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▼</span>
+                        </div>
+                      </button>
+                      
+                      {isExpanded && (
+                        <div style={{ padding: "0 1.25rem 1.25rem 1.25rem", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                          <ul style={{ color: "#94A3B8", lineHeight: 1.6, paddingLeft: "1.5rem", margin: "1rem 0 0 0" }}>
+                            {domain.topics.map((topic, idx) => (
+                              <li key={idx} style={{ marginBottom: "0.5rem" }}>{topic}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <h3 style={{ marginBottom: "1rem", color: "#FFFFFF" }}>Free Study Resources</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem" }}>
+              {activeCert.resources.map((res, idx) => (
+                <a key={idx} href={res.url} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", textDecoration: "none", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <span style={{ fontSize: "0.75rem", color: "#F43F5E", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{res.type}</span>
-                  <span style={{ color: "#E2E8F0", fontWeight: 500, fontSize: "0.95rem" }}>{res.name}</span>
+                  <span style={{ color: "#E2E8F0", fontWeight: 500, fontSize: "1rem" }}>{res.name}</span>
                 </a>
               ))}
             </div>
-
-            <div style={{ marginTop: "2rem", padding: "1rem", background: "rgba(52, 211, 153, 0.1)", border: "1px solid rgba(52, 211, 153, 0.3)", borderRadius: "8px" }}>
-              <h4 style={{ margin: "0 0 0.5rem 0", color: "#34D399", fontSize: "0.9rem" }}>Community Maintained</h4>
-              <p style={{ margin: 0, color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5 }}>
-                Axiom is an open-source syllabus. Have a great free resource? Open a pull request to add it to the curriculum.
-              </p>
-            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* --- VIEW: SIMULATOR --- */}
+      {activeView === "simulator" && (
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          {!examActive && score === null && (
+            <div style={{ textAlign: "center", padding: "4rem 2rem", background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)" }}>
+              <AxiomIcon size={64} glow={true} className="mx-auto" />
+              <h2 style={{ color: "#FFFFFF", fontSize: "2rem", marginTop: "1.5rem" }}>Global Exam Simulator</h2>
+              <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "2rem", maxWidth: "500px", margin: "0 auto 2rem auto" }}>
+                Test your knowledge across {MOCK_EXAM_DB.length} mixed questions from CompTIA, ISC2, and OffSec domains.
+              </p>
+              <button 
+                onClick={handleStartExam}
+                style={{ padding: "1rem 2.5rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontSize: "1.1rem", fontWeight: 700, cursor: "pointer" }}>
+                Start Practice Exam
+              </button>
+            </div>
+          )}
+
+          {examActive && (
+            <div style={{ background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)", padding: "2rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
+                <span style={{ color: "#FDA4AF", fontWeight: 600 }}>Question {currentQuestionIdx + 1} of {MOCK_EXAM_DB.length}</span>
+                <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Tag: {MOCK_EXAM_DB[currentQuestionIdx].cert}</span>
+              </div>
+
+              <h3 style={{ color: "#FFFFFF", fontSize: "1.3rem", lineHeight: 1.5, marginBottom: "2rem" }}>
+                {MOCK_EXAM_DB[currentQuestionIdx].question}
+              </h3>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
+                {MOCK_EXAM_DB[currentQuestionIdx].options.map((opt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedAnswer(idx)}
+                    style={{
+                      textAlign: "left", padding: "1.25rem", borderRadius: "8px", cursor: "pointer", fontSize: "1rem",
+                      background: selectedAnswer === idx ? "rgba(244, 63, 94, 0.2)" : "rgba(255,255,255,0.03)",
+                      border: selectedAnswer === idx ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)",
+                      color: selectedAnswer === idx ? "#FFFFFF" : "#E2E8F0"
+                    }}>
+                    <span style={{ fontWeight: 600, marginRight: "1rem", color: selectedAnswer === idx ? "#FDA4AF" : "#64748B" }}>
+                      {String.fromCharCode(65 + idx)}.
+                    </span>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  disabled={selectedAnswer === null}
+                  onClick={handleNextQuestion}
+                  style={{ 
+                    padding: "0.75rem 2rem", background: selectedAnswer !== null ? "#F43F5E" : "rgba(255,255,255,0.1)", 
+                    color: selectedAnswer !== null ? "white" : "#64748B", border: "none", borderRadius: "8px", fontWeight: 600, cursor: selectedAnswer !== null ? "pointer" : "not-allowed" 
+                  }}>
+                  {currentQuestionIdx === MOCK_EXAM_DB.length - 1 ? "Submit Exam" : "Next Question"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {score !== null && (
+            <div style={{ textAlign: "center", padding: "4rem 2rem", background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)" }}>
+              <div style={{ fontSize: "5rem", fontWeight: 900, color: "#F43F5E", marginBottom: "1rem" }}>
+                {Math.round((score / MOCK_EXAM_DB.length) * 100)}%
+              </div>
+              <h2 style={{ color: "#FFFFFF", fontSize: "2rem", marginBottom: "1rem" }}>
+                You scored {score} out of {MOCK_EXAM_DB.length}
+              </h2>
+              <div style={{ textAlign: "left", background: "rgba(255,255,255,0.02)", padding: "2rem", borderRadius: "8px", marginTop: "2rem" }}>
+                <h3 style={{ color: "#FDA4AF", marginBottom: "1rem" }}>Review Answers</h3>
+                {MOCK_EXAM_DB.map((q, idx) => {
+                  const userAns = examAnswers[idx];
+                  const isCorrect = userAns === q.correctAnswer;
+                  return (
+                    <div key={q.id} style={{ marginBottom: "1.5rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ color: "#E2E8F0", fontWeight: 600, marginBottom: "0.5rem" }}>Q: {q.question}</div>
+                      <div style={{ color: isCorrect ? "#34D399" : "#EF4444", fontWeight: 600, marginBottom: "0.5rem" }}>
+                        Your Answer: {q.options[userAns]} {isCorrect ? "✓" : "✗"}
+                      </div>
+                      {!isCorrect && (
+                        <div style={{ color: "#34D399", fontWeight: 600, marginBottom: "0.5rem" }}>
+                          Correct Answer: {q.options[q.correctAnswer]}
+                        </div>
+                      )}
+                      <div style={{ color: "#94A3B8", fontSize: "0.9rem", fontStyle: "italic" }}>Explanation: {q.explanation}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={() => setScore(null)} style={{ marginTop: "2rem", padding: "1rem 2.5rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontSize: "1.1rem", fontWeight: 700, cursor: "pointer" }}>
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* --- VIEW: LABS --- */}
+      {activeView === "labs" && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}>
+          <div>
+            <h3 style={{ color: "#FDA4AF", marginBottom: "1rem" }}>Available Labs</h3>
+            {LABS_DB.map(lab => (
+              <div 
+                key={lab.id} 
+                onClick={() => { setActiveLabId(lab.id); setTerminalOutput([]); setTerminalInput(""); }}
+                style={{ 
+                  background: activeLabId === lab.id ? "rgba(244, 63, 94, 0.15)" : "rgba(255,255,255,0.02)", 
+                  border: activeLabId === lab.id ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)",
+                  padding: "1.5rem", borderRadius: "8px", cursor: "pointer", marginBottom: "1rem", transition: "all 0.2s"
+                }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "0.75rem", color: "#F43F5E", fontWeight: 700, padding: "0.2rem 0.5rem", background: "rgba(244, 63, 94, 0.1)", borderRadius: "4px" }}>{lab.type}</span>
+                  <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>{lab.difficulty}</span>
+                </div>
+                <h4 style={{ color: "#FFFFFF", fontSize: "1.1rem", margin: "0 0 0.5rem 0" }}>{lab.title}</h4>
+                <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0, lineHeight: 1.5 }}>{lab.objective}</p>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            {activeLabId ? (
+              <div style={{ background: "#0a0a0a", borderRadius: "8px", border: "1px solid rgba(244, 63, 94, 0.3)", overflow: "hidden" }}>
+                <div style={{ background: "rgba(20, 10, 15, 1)", padding: "1rem 1.5rem", borderBottom: "1px solid rgba(244, 63, 94, 0.2)", display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#F43F5E" }}></span>
+                  <span style={{ color: "#FDA4AF", fontFamily: "monospace", fontWeight: 600 }}>axiom-lab-terminal</span>
+                </div>
+                <div style={{ padding: "1.5rem", color: "#A3A3A3", fontFamily: "monospace", minHeight: "400px" }}>
+                  <div style={{ color: "#F43F5E", marginBottom: "1.5rem" }}>
+                    Welcome to Axiom Labs.<br/>
+                    Currently running: {LABS_DB.find(l => l.id === activeLabId)?.title}
+                  </div>
+                  
+                  <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.05)", padding: "1rem", borderRadius: "4px" }}>
+                    <div style={{ color: "#E2E8F0", marginBottom: "0.5rem" }}>Instructions:</div>
+                    {LABS_DB.find(l => l.id === activeLabId)?.instructions.map((inst, i) => (
+                      <div key={i} style={{ color: "#94A3B8", marginBottom: "0.25rem" }}>{inst}</div>
+                    ))}
+                  </div>
+
+                  {terminalOutput.map((out, idx) => (
+                    <div key={idx} style={{ marginBottom: "0.25rem", color: out.includes("root@") ? "#34D399" : out.includes("COMPLETE") ? "#FBBF24" : "#A3A3A3" }}>
+                      {out}
+                    </div>
+                  ))}
+
+                  <form onSubmit={handleTerminalSubmit} style={{ display: "flex", marginTop: "1rem", alignItems: "center" }}>
+                    <span style={{ color: "#34D399", marginRight: "0.5rem" }}>root@axiom-lab:~#</span>
+                    <input 
+                      type="text" 
+                      value={terminalInput}
+                      onChange={e => setTerminalInput(e.target.value)}
+                      style={{ background: "transparent", border: "none", color: "#FFFFFF", fontFamily: "monospace", fontSize: "1rem", outline: "none", width: "100%" }}
+                      autoFocus
+                      autoComplete="off"
+                    />
+                  </form>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", background: "rgba(25, 5, 10, 0.2)", borderRadius: "12px", border: "1px dashed rgba(255,255,255,0.1)" }}>
+                <span style={{ color: "#64748B" }}>Select a lab to begin the simulation.</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
