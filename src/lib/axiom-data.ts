@@ -42,8 +42,6 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "sec-5", title: "Domain 5: Security Program Management and Oversight", weight: "20%", topics: ["Summarize elements of effective security governance", "Explain elements of the risk management process", "Explain the processes associated with third-party risk assessment and management", "Summarize elements of effective security compliance", "Explain types and purposes of audits and assessments", "Given a scenario, implement security awareness practices"] }
     ],
     resources: [
-      { type: "Book", name: "CompTIA Security+ SY0-701 Practice Tests (David Seidl)", url: "#" },
-      { type: "Book", name: "Security+ Get Certified Get Ahead (Darril Gibson)", url: "#" },
       { type: "Video", name: "Professor Messer's SY0-701 Free Course", url: "#" },
       { type: "Notes", name: "ExamCompass Practice Tests", url: "#" },
       { type: "Lab", name: "TryHackMe Pre-Security Path", url: "#" }
@@ -79,8 +77,8 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "casp-4", title: "Governance, Risk, and Compliance", weight: "15%", topics: ["Apply risk strategies", "Manage compliance frameworks"] }
     ],
     resources: [
-      { type: "Book", name: "CASP+ Study Guide (Wiley)", url: "#" },
-      { type: "Book", name: "CASP+ Practice Tests (Wiley)", url: "#" }
+      { type: "Whitepaper", name: "NIST Risk Management Framework", url: "https://csrc.nist.gov/projects/risk-management/about-rmf" },
+      { type: "Guide", name: "OWASP Top 10", url: "https://owasp.org/www-project-top-ten/" }
     ]
   },
   "isc2-cissp": {
@@ -100,12 +98,9 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cissp-8", title: "Domain 8: Software Development Security", weight: "11%", topics: ["Understand and integrate security in the Software Development Life Cycle (SDLC)", "Identify and apply security controls in software development ecosystems"] }
     ],
     resources: [
-      { type: "Book", name: "ISC2 CISSP Official Study Guide 10th Ed (Chapple, Stewart, Gibson)", url: "#" },
-      { type: "Book", name: "CISSP All-In-One Exam Guide (Shon Harris)", url: "#" },
-      { type: "Book", name: "Destination CISSP - A Concise Guide", url: "#" },
-      { type: "Book", name: "Packt CISSP Practice Exams & Tests", url: "#" },
       { type: "Video", name: "Cybrary CISSP Course", url: "#" },
-      { type: "Community", name: "Reddit /r/CISSP Discord", url: "#" }
+      { type: "Community", name: "Reddit /r/CISSP Discord", url: "#" },
+      { type: "Notes", name: "Sunflower CISSP Notes", url: "#" }
     ]
   },
   "isaca-cism": {
@@ -121,7 +116,7 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cism-4", title: "Incident Management", weight: "30%", topics: ["Establish and maintain an incident response plan", "Investigate and document incidents"] }
     ],
     resources: [
-      { type: "Book", name: "CISM Review Manual, 16th Edition", url: "#" },
+      { type: "Notes", name: "CISM Open Study Notes", url: "#" },
       { type: "Forum", name: "ISACA Engage Community", url: "#" }
     ]
   },
@@ -222,7 +217,14 @@ export const MOCK_EXAM_DB: MockQuestion[] = [
   { id: "q17", cert: "giac-gsec", question: "Which Windows utility is commonly used by administrators (and attackers) to execute commands remotely and often operates over TCP port 5985?", options: ["RDP", "Telnet", "SSH", "WinRM (Windows Remote Management)"], correctAnswer: 3, explanation: "WinRM uses TCP 5985 (HTTP) or 5986 (HTTPS) and is the underlying protocol for PowerShell Remoting." },
   { id: "q18", cert: "comptia-secplus", question: "A biometric access system frequently denies access to authorized users. Which metric describes this situation?", options: ["False Acceptance Rate (FAR)", "False Rejection Rate (FRR)", "Crossover Error Rate (CER)", "Mean Time To Failure (MTTF)"], correctAnswer: 1, explanation: "False Rejection Rate (FRR), or Type I error, occurs when an authorized subject is incorrectly denied access." },
   { id: "q19", cert: "isc2-cissp", question: "In software development, which testing methodology tests the software from the outside without knowledge of its internal source code?", options: ["White-box testing", "Grey-box testing", "Black-box testing", "Unit testing"], correctAnswer: 2, explanation: "Black-box (or dynamic) testing examines the functionality of an application without peering into its internal structures or workings." },
-  { id: "q20", cert: "offensive-oscp", question: "What is the primary difference between a bind shell and a reverse shell?", options: ["A bind shell connects back to the attacker; a reverse shell waits for the attacker to connect.", "A bind shell waits on the target for a connection; a reverse shell connects from the target back to the attacker.", "Bind shells use UDP; reverse shells use TCP.", "Reverse shells are encrypted; bind shells are plaintext."], correctAnswer: 1, explanation: "A bind shell opens a port on the target and waits. A reverse shell makes an outbound connection from the target back to the attacker's listening port." }
+  { id: "q20", cert: "offensive-oscp", question: "What is the primary difference between a bind shell and a reverse shell?", options: ["A bind shell connects back to the attacker; a reverse shell waits for the attacker to connect.", "A bind shell waits on the target for a connection; a reverse shell connects from the target back to the attacker.", "Bind shells use UDP; reverse shells use TCP.", "Reverse shells are encrypted; bind shells are plaintext."], correctAnswer: 1, explanation: "A bind shell opens a port on the target and waits. A reverse shell makes an outbound connection from the target back to the attacker's listening port." },
+  
+  // Paraphrased Conceptual Additions (CASP+, CISM, CISSP)
+  { id: "q21", cert: "comptia-casp", question: "A senior security engineer is designing a zero-trust architecture for a hybrid cloud environment. Which principle should be the primary focus?", options: ["Perimeter-based IDS/IPS", "Continuous authentication and micro-segmentation", "MAC address filtering at the core switch", "Single Sign-On (SSO) without MFA"], correctAnswer: 1, explanation: "Zero-trust architecture assumes breach and requires continuous authentication and micro-segmentation to strictly control lateral movement." },
+  { id: "q22", cert: "comptia-casp", question: "During a penetration test, a tester utilizes a technique known as 'Pass-the-Hash'. What does this technique achieve?", options: ["Extracts plaintext passwords from the SAM database", "Authenticates to a remote server using the NT hash without knowing the plaintext password", "Cracks the NTLM hash using a rainbow table", "Bypasses the firewall by hashing the payload"], correctAnswer: 1, explanation: "Pass-the-Hash allows an attacker to authenticate to a remote server/service by using the underlying NTLM hash of a user's password, bypassing the need for the plaintext password." },
+  { id: "q23", cert: "isc2-cissp", question: "According to the (ISC)² Code of Ethics, which canon requires professionals to provide diligent and competent service to principals?", options: ["Protect society, the common good, necessary public trust and confidence, and the infrastructure.", "Act honorably, honestly, justly, responsibly, and legally.", "Provide diligent and competent service to principals.", "Advance and protect the profession."], correctAnswer: 2, explanation: "The third canon of the (ISC)² Code of Ethics explicitly states: Provide diligent and competent service to principals." },
+  { id: "q24", cert: "isaca-cism", question: "When developing an incident response plan, what is the most critical first step to ensure the plan's success?", options: ["Purchasing a SIEM solution", "Identifying and classifying critical assets", "Obtaining executive management support and alignment with business objectives", "Conducting a table-top exercise"], correctAnswer: 2, explanation: "Without executive management support and alignment with business objectives, any security initiative (including incident response) will lack the necessary authority, funding, and cross-departmental cooperation." },
+  { id: "q25", cert: "comptia-secplus", question: "An organization wants to securely exchange symmetric keys over an insecure channel. Which algorithm should they use?", options: ["AES", "Diffie-Hellman", "SHA-256", "RC4"], correctAnswer: 1, explanation: "Diffie-Hellman (DH) is an asymmetric cryptographic protocol specifically designed to allow two parties to securely establish a shared secret (symmetric key) over an insecure channel." }
 ];
 
 export type AxiomLab = {
@@ -297,6 +299,19 @@ export const LABS_DB: AxiomLab[] = [
       "2. Use grep to find failed login attempts: 'grep \"Failed password\" /var/log/auth.log'",
       "3. Count how many attempts came from the attacker using 'wc -l': 'grep \"Failed password\" /var/log/auth.log | wc -l'",
       "4. Identify the attacker's IP address."
+    ]
+  },
+  {
+    id: "lab-casp-arch-1",
+    title: "Architecture Analysis: Zero Trust Firewall Rules",
+    difficulty: "Advanced",
+    type: "Terminal",
+    objective: "Implement a micro-segmentation rule using iptables to strictly allow only HTTPS traffic to a database jump server.",
+    instructions: [
+      "1. Check current firewall rules: 'iptables -L'",
+      "2. Add a rule to drop all incoming TCP traffic by default: 'iptables -A INPUT -p tcp -j DROP'",
+      "3. Insert a rule to explicitly allow incoming HTTPS (port 443): 'iptables -I INPUT 1 -p tcp --dport 443 -j ACCEPT'",
+      "4. Verify the new zero-trust perimeter logic: 'iptables -S'"
     ]
   }
 ];

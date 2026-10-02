@@ -122,6 +122,29 @@ export default function AxiomDashboard() {
       newOutput.push("");
       newOutput.push("[+] LAB OBJECTIVE COMPLETE: Found attacker IP 192.168.1.104");
     }
+    // CASP ARCHITECTURE LAB
+    else if (cmd === "iptables -l") {
+      newOutput.push("Chain INPUT (policy ACCEPT)");
+      newOutput.push("target     prot opt source               destination");
+      newOutput.push("");
+      newOutput.push("Chain FORWARD (policy ACCEPT)");
+      newOutput.push("target     prot opt source               destination");
+      newOutput.push("");
+      newOutput.push("Chain OUTPUT (policy ACCEPT)");
+      newOutput.push("target     prot opt source               destination");
+    } else if (cmd === "iptables -a input -p tcp -j drop") {
+      newOutput.push(""); // no output for iptables add
+    } else if (cmd === "iptables -i input 1 -p tcp --dport 443 -j accept") {
+      newOutput.push(""); // no output for iptables insert
+    } else if (cmd === "iptables -s") {
+      newOutput.push("-P INPUT ACCEPT");
+      newOutput.push("-P FORWARD ACCEPT");
+      newOutput.push("-P OUTPUT ACCEPT");
+      newOutput.push("-A INPUT -p tcp -m tcp --dport 443 -j ACCEPT");
+      newOutput.push("-A INPUT -p tcp -j DROP");
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Zero-trust micro-segmentation established.");
+    }
     // UTILS
     else if (cmd === "clear") {
       setTerminalOutput([]);
