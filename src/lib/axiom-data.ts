@@ -1,3 +1,5 @@
+import generatedQuestions from './axiom-questions.json';
+
 export type Certification = {
   id: string;
   title: string;
@@ -224,7 +226,8 @@ export const MOCK_EXAM_DB: MockQuestion[] = [
   { id: "q22", cert: "comptia-casp", question: "During a penetration test, a tester utilizes a technique known as 'Pass-the-Hash'. What does this technique achieve?", options: ["Extracts plaintext passwords from the SAM database", "Authenticates to a remote server using the NT hash without knowing the plaintext password", "Cracks the NTLM hash using a rainbow table", "Bypasses the firewall by hashing the payload"], correctAnswer: 1, explanation: "Pass-the-Hash allows an attacker to authenticate to a remote server/service by using the underlying NTLM hash of a user's password, bypassing the need for the plaintext password." },
   { id: "q23", cert: "isc2-cissp", question: "According to the (ISC)² Code of Ethics, which canon requires professionals to provide diligent and competent service to principals?", options: ["Protect society, the common good, necessary public trust and confidence, and the infrastructure.", "Act honorably, honestly, justly, responsibly, and legally.", "Provide diligent and competent service to principals.", "Advance and protect the profession."], correctAnswer: 2, explanation: "The third canon of the (ISC)² Code of Ethics explicitly states: Provide diligent and competent service to principals." },
   { id: "q24", cert: "isaca-cism", question: "When developing an incident response plan, what is the most critical first step to ensure the plan's success?", options: ["Purchasing a SIEM solution", "Identifying and classifying critical assets", "Obtaining executive management support and alignment with business objectives", "Conducting a table-top exercise"], correctAnswer: 2, explanation: "Without executive management support and alignment with business objectives, any security initiative (including incident response) will lack the necessary authority, funding, and cross-departmental cooperation." },
-  { id: "q25", cert: "comptia-secplus", question: "An organization wants to securely exchange symmetric keys over an insecure channel. Which algorithm should they use?", options: ["AES", "Diffie-Hellman", "SHA-256", "RC4"], correctAnswer: 1, explanation: "Diffie-Hellman (DH) is an asymmetric cryptographic protocol specifically designed to allow two parties to securely establish a shared secret (symmetric key) over an insecure channel." }
+  { id: "q25", cert: "comptia-secplus", question: "An organization wants to securely exchange symmetric keys over an insecure channel. Which algorithm should they use?", options: ["AES", "Diffie-Hellman", "SHA-256", "RC4"], correctAnswer: 1, explanation: "Diffie-Hellman (DH) is an asymmetric cryptographic protocol specifically designed to allow two parties to securely establish a shared secret (symmetric key) over an insecure channel." },
+  ...(generatedQuestions as MockQuestion[])
 ];
 
 export type AxiomLab = {
