@@ -34,7 +34,13 @@ export default function AxiomDashboard() {
 
   // --- EXAM SIMULATOR LOGIC ---
   const handleStartExam = () => {
-    const shuffled = [...MOCK_EXAM_DB].sort(() => 0.5 - Math.random());
+    // Fisher-Yates shuffle for true randomization
+    const shuffled = [...MOCK_EXAM_DB];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
     const count = Math.min(Math.max(1, sessionQuestionCount), MOCK_EXAM_DB.length);
     setActiveExamQs(shuffled.slice(0, count));
 
