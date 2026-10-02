@@ -1,8 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AxiomIcon } from "@/components/BrandIcons";
-import { CERTIFICATIONS, MOCK_EXAM_DB, LABS_DB, Certification } from "@/lib/axiom-data";
+import { CERTIFICATIONS, LABS_DB, Certification } from "@/lib/axiom-data";
+
+const TOTAL_QUESTIONS = 15000;
+
+interface ExamQuestion {
+  id: string;
+  cert: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
 
 export default function AxiomDashboard() {
   const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs">("syllabus");
@@ -21,12 +32,16 @@ export default function AxiomDashboard() {
   // Simulator Configuration & Checkpoints
   const [sessionQuestionCount, setSessionQuestionCount] = useState<number>(90);
   const [checkpointInterval, setCheckpointInterval] = useState<number>(10);
-  const [activeExamQs, setActiveExamQs] = useState<typeof MOCK_EXAM_DB>([]);
+  const [activeExamQs, setActiveExamQs] = useState<ExamQuestion[]>([]);
   const [showCheckpoint, setShowCheckpoint] = useState<boolean>(false);
   
   // Instant Validation
   const [instantValidation, setInstantValidation] = useState<boolean>(false);
   const [validationVisible, setValidationVisible] = useState<boolean>(false);
+
+  // Timer State
+  const [examDurationMinutes, setExamDurationMinutes] = useState<number>(90);
+  const [timeRemainingSeconds, setTimeRemainingSeconds] = useState<number | null>(null);
 
   // Labs State
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
@@ -37,29 +52,29 @@ export default function AxiomDashboard() {
   const activeCert = CERTIFICATIONS[activeCertId];
 
   // --- EXAM SIMULATOR LOGIC ---
-  const handleStartExam = () => {
-    // Fisher-Yates shuffle for true randomization
-    const shuffled = [...MOCK_EXAM_DB];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  const handleStartExam = async () => {
+    try {
+      const res = await fetch(`/api/axiom/exam?count=${sessionQuestionCount}`);
+      const data = await res.json();
+      setActiveExamQs(data);
+
+      setExamActive(true);
+      setCurrentQuestionIdx(0);
+      setScore(null);
+      setSelectedAnswer(null);
+      setExamAnswers([]);
+      setShowCheckpoint(false);
+      setValidationVisible(false);
+      setTimeRemainingSeconds(examDurationMinutes * 60);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to load exam data.");
     }
-
-    const count = Math.min(Math.max(1, sessionQuestionCount), MOCK_EXAM_DB.length);
-    setActiveExamQs(shuffled.slice(0, count));
-
-    setExamActive(true);
-    setCurrentQuestionIdx(0);
-    setScore(null);
-    setSelectedAnswer(null);
-    setExamAnswers([]);
-    setShowCheckpoint(false);
-    setValidationVisible(false);
   };
 
-  const proceedToNextQuestion = (answersToUse: number[]) => {
+  const proceedToNextQuestion = (answersToUse: number[], forceSubmit: boolean = false) => {
     setShowCheckpoint(false);
-    if (currentQuestionIdx < activeExamQs.length - 1) {
+    if (currentQuestionIdx < activeExamQs.length - 1 && !forceSubmit) {
       setCurrentQuestionIdx(currentQuestionIdx + 1);
       setSelectedAnswer(null);
       setValidationVisible(false);
@@ -70,7 +85,33 @@ export default function AxiomDashboard() {
       });
       setScore(calculatedScore);
       setExamActive(false);
+      setTimeRemainingSeconds(null);
     }
+  };
+
+  useEffect(() => {
+    if (!examActive || timeRemainingSeconds === null) return;
+    
+    if (timeRemainingSeconds <= 0) {
+      proceedToNextQuestion(examAnswers, true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimeRemainingSeconds(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [examActive, timeRemainingSeconds]);
+
+  const formatTime = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    if (h > 0) {
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   const handleNextQuestion = () => {
@@ -329,17 +370,27 @@ export default function AxiomDashboard() {
               <AxiomIcon size={64} glow={true} className="mx-auto" />
               <h2 style={{ color: "#FFFFFF", fontSize: "2rem", marginTop: "1.5rem" }}>Global Exam Simulator</h2>
               <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "1.5rem", maxWidth: "500px", margin: "0 auto 1.5rem auto" }}>
-                Test your knowledge across {MOCK_EXAM_DB.length} mixed questions from CompTIA, ISC2, and OffSec domains.
+                Test your knowledge across {TOTAL_QUESTIONS} mixed questions from CompTIA, ISC2, and OffSec domains.
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "400px", margin: "0 auto 2rem auto", textAlign: "left" }}>
                 <div>
-                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Questions per Session (Max: {MOCK_EXAM_DB.length})</label>
+                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Questions per Session (Max: {TOTAL_QUESTIONS})</label>
                   <input 
                     type="number" 
                     value={sessionQuestionCount} 
                     onChange={(e) => setSessionQuestionCount(Number(e.target.value))} 
-                    max={MOCK_EXAM_DB.length}
+                    max={TOTAL_QUESTIONS}
+                    min={1}
+                    style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Exam Duration (Minutes)</label>
+                  <input 
+                    type="number" 
+                    value={examDurationMinutes} 
+                    onChange={(e) => setExamDurationMinutes(Number(e.target.value))} 
                     min={1}
                     style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}
                   />
@@ -396,57 +447,71 @@ export default function AxiomDashboard() {
             <div style={{ background: "rgba(25, 5, 10, 0.4)", borderRadius: "12px", border: "1px solid rgba(244, 63, 94, 0.2)", padding: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
                 <span style={{ color: "#FDA4AF", fontWeight: 600 }}>Question {currentQuestionIdx + 1} of {activeExamQs.length}</span>
-                <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Tag: {activeExamQs[currentQuestionIdx].cert}</span>
-              </div>
-
-              <h3 style={{ color: "#FFFFFF", fontSize: "1.3rem", lineHeight: 1.5, marginBottom: "2rem" }}>
-                {activeExamQs[currentQuestionIdx].question}
-              </h3>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-                {activeExamQs[currentQuestionIdx].options.map((opt, idx) => {
-                  const isCorrect = idx === activeExamQs[currentQuestionIdx].correctAnswer;
-                  let bg = selectedAnswer === idx ? "rgba(244, 63, 94, 0.2)" : "rgba(255,255,255,0.03)";
-                  let border = selectedAnswer === idx ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)";
-                  let color = selectedAnswer === idx ? "#FFFFFF" : "#E2E8F0";
-                  
-                  if (validationVisible) {
-                    if (isCorrect) {
-                      bg = "rgba(52, 211, 153, 0.2)";
-                      border = "1px solid #34D399";
-                      color = "#34D399";
-                    } else if (selectedAnswer === idx && !isCorrect) {
-                      bg = "rgba(239, 68, 68, 0.2)";
-                      border = "1px solid #EF4444";
-                      color = "#EF4444";
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={idx}
-                      disabled={validationVisible}
-                      onClick={() => setSelectedAnswer(idx)}
-                      style={{
-                        textAlign: "left", padding: "1.25rem", borderRadius: "8px", cursor: validationVisible ? "default" : "pointer", fontSize: "1rem",
-                        background: bg, border: border, color: color,
-                        transition: "all 0.2s"
-                      }}>
-                      <span style={{ fontWeight: 600, marginRight: "1rem", color: validationVisible ? color : (selectedAnswer === idx ? "#FDA4AF" : "#64748B") }}>
-                        {String.fromCharCode(65 + idx)}.
-                      </span>
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {validationVisible && (
-                <div style={{ padding: "1.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", marginBottom: "2rem", borderLeft: "4px solid #F43F5E" }}>
-                  <h4 style={{ margin: "0 0 0.5rem 0", color: "#FDA4AF" }}>Explanation</h4>
-                  <p style={{ margin: 0, color: "#E2E8F0", lineHeight: 1.6 }}>{activeExamQs[currentQuestionIdx].explanation}</p>
+                <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+                  {timeRemainingSeconds !== null && (
+                    <span style={{ color: timeRemainingSeconds < 300 ? "#EF4444" : "#E2E8F0", fontWeight: 700, fontSize: "1.1rem", padding: "0.25rem 0.75rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", border: `1px solid ${timeRemainingSeconds < 300 ? "#EF4444" : "rgba(255,255,255,0.1)"}` }}>
+                      {formatTime(timeRemainingSeconds)}
+                    </span>
+                  )}
+                  <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Tag: {activeExamQs[currentQuestionIdx].cert}</span>
                 </div>
-              )}
+              </div>
+
+              <div 
+                style={{ userSelect: "none", WebkitUserSelect: "none" }} 
+                onCopy={(e) => e.preventDefault()} 
+                onCut={(e) => e.preventDefault()}
+                onContextMenu={(e) => e.preventDefault()}
+              >
+                <h3 style={{ color: "#FFFFFF", fontSize: "1.3rem", lineHeight: 1.5, marginBottom: "2rem" }}>
+                  {activeExamQs[currentQuestionIdx].question}
+                </h3>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
+                  {activeExamQs[currentQuestionIdx].options.map((opt, idx) => {
+                    const isCorrect = idx === activeExamQs[currentQuestionIdx].correctAnswer;
+                    let bg = selectedAnswer === idx ? "rgba(244, 63, 94, 0.2)" : "rgba(255,255,255,0.03)";
+                    let border = selectedAnswer === idx ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)";
+                    let color = selectedAnswer === idx ? "#FFFFFF" : "#E2E8F0";
+                    
+                    if (validationVisible) {
+                      if (isCorrect) {
+                        bg = "rgba(52, 211, 153, 0.2)";
+                        border = "1px solid #34D399";
+                        color = "#34D399";
+                      } else if (selectedAnswer === idx && !isCorrect) {
+                        bg = "rgba(239, 68, 68, 0.2)";
+                        border = "1px solid #EF4444";
+                        color = "#EF4444";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        disabled={validationVisible}
+                        onClick={() => setSelectedAnswer(idx)}
+                        style={{
+                          textAlign: "left", padding: "1.25rem", borderRadius: "8px", cursor: validationVisible ? "default" : "pointer", fontSize: "1rem",
+                          background: bg, border: border, color: color,
+                          transition: "all 0.2s"
+                        }}>
+                        <span style={{ fontWeight: 600, marginRight: "1rem", color: validationVisible ? color : (selectedAnswer === idx ? "#FDA4AF" : "#64748B") }}>
+                          {String.fromCharCode(65 + idx)}.
+                        </span>
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {validationVisible && (
+                  <div style={{ padding: "1.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", marginBottom: "2rem", borderLeft: "4px solid #F43F5E" }}>
+                    <h4 style={{ margin: "0 0 0.5rem 0", color: "#FDA4AF" }}>Explanation</h4>
+                    <p style={{ margin: 0, color: "#E2E8F0", lineHeight: 1.6 }}>{activeExamQs[currentQuestionIdx].explanation}</p>
+                  </div>
+                )}
+              </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button
