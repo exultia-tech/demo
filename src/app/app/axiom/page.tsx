@@ -59,8 +59,9 @@ export default function AxiomDashboard() {
     if (!terminalInput.trim()) return;
 
     const newOutput = [...terminalOutput, `root@axiom-lab:~# ${terminalInput}`];
-    
     const cmd = terminalInput.trim().toLowerCase();
+    
+    // NMAP LAB
     if (cmd === "nmap 10.0.4.15") {
       newOutput.push("Starting Nmap 7.93 ( https://nmap.org )");
       newOutput.push("Nmap scan report for 10.0.4.15");
@@ -76,7 +77,53 @@ export default function AxiomDashboard() {
       newOutput.push("443/tcp open  ssl/http nginx 1.18.0 (Ubuntu)");
       newOutput.push("");
       newOutput.push("[+] LAB OBJECTIVE COMPLETE: Web server is nginx 1.18.0");
-    } else if (cmd === "clear") {
+    } 
+    // PRIVILEGE ESCALATION LAB
+    else if (cmd === "whoami") {
+      newOutput.push("user");
+    } else if (cmd === "sudo -l") {
+      newOutput.push("Matching Defaults entries for user on axiom-lab:");
+      newOutput.push("    env_reset, mail_badpass, secure_path=/usr/local/sbin\\:/usr/local/bin\\:/usr/sbin\\:/usr/bin\\:/sbin\\:/bin");
+      newOutput.push("User user may run the following commands on axiom-lab:");
+      newOutput.push("    (root) NOPASSWD: /usr/bin/vim");
+    } else if (cmd.startsWith("sudo vim -c") && cmd.includes("!/bin/sh")) {
+      newOutput.push("Spawning root shell...");
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Privilege Escalation Successful!");
+      newOutput.push("root@axiom-lab:~#");
+    }
+    // WEB EXPLOIT LAB
+    else if (cmd === "curl http://localhost:3000/api/users") {
+      newOutput.push('{"error":"Forbidden","message":"Access restricted to internal network (127.0.0.1)"}');
+    } else if (cmd === 'curl -h "x-forwarded-for: 127.0.0.1" http://localhost:3000/api/users' || cmd === "curl -h 'x-forwarded-for: 127.0.0.1' http://localhost:3000/api/users") {
+      newOutput.push('{"status":"success","data":[{"id":1,"role":"admin","token":"Axiom_Flag{cUrL_m4st3r_99}"}]}');
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Extracted admin token.");
+    }
+    // CRYPTO LAB
+    else if (cmd === "ls -la" || cmd === "ls -l") {
+      newOutput.push("total 12");
+      newOutput.push("-rw-r--r-- 1 user user  64 Oct 02 10:45 secret.enc");
+    } else if (cmd.includes("openssl enc -aes-256-cbc -d -in secret.enc") && cmd.includes("-out secret.txt") && cmd.includes("-k axiom")) {
+      newOutput.push("Decrypting payload...");
+      newOutput.push("secret.txt created successfully.");
+    } else if (cmd === "cat secret.txt") {
+      newOutput.push("Axiom_Flag{AES_CBC_D3CRYPT3D_YAY}");
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Cryptography lab solved.");
+    }
+    // LOG ANALYSIS LAB
+    else if (cmd === 'grep "failed password" /var/log/auth.log') {
+      newOutput.push("Oct  2 03:14:01 axiom sshd[4193]: Failed password for root from 192.168.1.104 port 43292 ssh2");
+      newOutput.push("Oct  2 03:14:03 axiom sshd[4197]: Failed password for root from 192.168.1.104 port 43294 ssh2");
+      newOutput.push("Oct  2 03:14:05 axiom sshd[4201]: Failed password for root from 192.168.1.104 port 43296 ssh2");
+    } else if (cmd === 'grep "failed password" /var/log/auth.log | wc -l') {
+      newOutput.push("3");
+      newOutput.push("");
+      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Found attacker IP 192.168.1.104");
+    }
+    // UTILS
+    else if (cmd === "clear") {
       setTerminalOutput([]);
       setTerminalInput("");
       return;

@@ -170,69 +170,44 @@ export type MockQuestion = {
 };
 
 export const MOCK_EXAM_DB: MockQuestion[] = [
-  {
-    id: "q1",
-    cert: "comptia-secplus",
-    question: "A security analyst is investigating a compromised server. They want to capture the volatile memory before pulling the power cord. Which incident response concept does this describe?",
-    options: ["Chain of Custody", "Order of Volatility", "Data Recovery", "Containment"],
-    correctAnswer: 1,
-    explanation: "Order of Volatility dictates that you must capture the most volatile data (like RAM/CPU registers) first before it is lost."
-  },
-  {
-    id: "q2",
-    cert: "isc2-cc",
-    question: "Which access control model uses clearance levels (e.g., Top Secret, Secret, Confidential) to determine access to resources?",
-    options: ["Discretionary Access Control (DAC)", "Role-Based Access Control (RBAC)", "Mandatory Access Control (MAC)", "Attribute-Based Access Control (ABAC)"],
-    correctAnswer: 2,
-    explanation: "Mandatory Access Control (MAC) uses strict labels and clearance levels assigned by an administrator, common in government and military environments."
-  },
-  {
-    id: "q3",
-    cert: "comptia-secplus",
-    question: "Which cryptographic algorithm is a symmetric stream cipher widely used in older wireless protocols like WEP?",
-    options: ["AES", "RC4", "RSA", "ECC"],
-    correctAnswer: 1,
-    explanation: "RC4 is a symmetric stream cipher that was famously used (and broken) in WEP."
-  },
-  {
-    id: "q4",
-    cert: "isc2-cissp",
-    question: "In the context of Risk Management, transferring a risk usually involves:",
-    options: ["Implementing a firewall", "Accepting the potential losses", "Purchasing cyber insurance", "Removing the vulnerable service"],
-    correctAnswer: 2,
-    explanation: "Transferring (or sharing) a risk means shifting the financial burden to a third party, typically through insurance or outsourcing."
-  },
-  {
-    id: "q5",
-    cert: "offensive-oscp",
-    question: "When performing a Kerberoasting attack, what is the attacker actually attempting to extract and crack?",
-    options: ["NTDS.dit hashes", "AS-REP responses for users without pre-auth", "TGS (Ticket Granting Service) tickets for service accounts", "The Golden Ticket"],
-    correctAnswer: 2,
-    explanation: "Kerberoasting targets Service Principal Names (SPNs) by requesting a TGS ticket and attempting to crack the ticket's RC4 encrypted portion offline to get the service account's plaintext password."
-  },
-  {
-    id: "q6",
-    cert: "eccouncil-ceh",
-    question: "Which phase of the ethical hacking process involves using Nmap to find open ports and services on a target network?",
-    options: ["Reconnaissance/Footprinting", "Scanning and Enumeration", "Gaining Access", "Maintaining Access"],
-    correctAnswer: 1,
-    explanation: "Scanning and Enumeration actively probes the network to discover live hosts, open ports, and services."
-  },
-  {
-    id: "q7",
-    cert: "isaca-cism",
-    question: "What is the primary objective of an information security governance framework?",
-    options: ["To eliminate all organizational risk", "To ensure security strategies align with business objectives", "To select technical security controls", "To automate incident response"],
-    correctAnswer: 1,
-    explanation: "The primary goal of governance is to ensure that security initiatives align with and support the broader goals of the business."
-  }
+  // Security+ Questions
+  { id: "q1", cert: "comptia-secplus", question: "A security analyst is investigating a compromised server. They want to capture the volatile memory before pulling the power cord. Which incident response concept does this describe?", options: ["Chain of Custody", "Order of Volatility", "Data Recovery", "Containment"], correctAnswer: 1, explanation: "Order of Volatility dictates that you must capture the most volatile data (like RAM/CPU registers) first before it is lost." },
+  { id: "q3", cert: "comptia-secplus", question: "Which cryptographic algorithm is a symmetric stream cipher widely used in older wireless protocols like WEP?", options: ["AES", "RC4", "RSA", "ECC"], correctAnswer: 1, explanation: "RC4 is a symmetric stream cipher that was famously used (and broken) in WEP." },
+  { id: "q8", cert: "comptia-secplus", question: "What is the primary purpose of a DNS sinkhole?", options: ["To speed up DNS resolution", "To route traffic away from known malicious domains", "To encrypt DNS queries", "To load balance web servers"], correctAnswer: 1, explanation: "A DNS sinkhole intercepts requests for malicious domains and returns a false IP, preventing the host from connecting to the attacker's server." },
+  { id: "q9", cert: "comptia-secplus", question: "Which of the following describes a vulnerability where an application fails to properly validate user input before writing it to a log file, potentially allowing an attacker to forge log entries?", options: ["Cross-Site Scripting (XSS)", "SQL Injection", "Log Injection", "Directory Traversal"], correctAnswer: 2, explanation: "Log injection occurs when unvalidated user input is written to logs, allowing attackers to forge entries or inject malicious scripts for log viewers." },
+  
+  // ISC2 CC Questions
+  { id: "q2", cert: "isc2-cc", question: "Which access control model uses clearance levels (e.g., Top Secret, Secret, Confidential) to determine access to resources?", options: ["Discretionary Access Control (DAC)", "Role-Based Access Control (RBAC)", "Mandatory Access Control (MAC)", "Attribute-Based Access Control (ABAC)"], correctAnswer: 2, explanation: "Mandatory Access Control (MAC) uses strict labels and clearance levels assigned by an administrator, common in government and military environments." },
+  { id: "q10", cert: "isc2-cc", question: "Which core principle of the CIA triad ensures that data has not been altered in an unauthorized manner?", options: ["Confidentiality", "Integrity", "Availability", "Authentication"], correctAnswer: 1, explanation: "Integrity guarantees that information is accurate and has not been modified by unauthorized entities." },
+  
+  // CISSP Questions
+  { id: "q4", cert: "isc2-cissp", question: "In the context of Risk Management, transferring a risk usually involves:", options: ["Implementing a firewall", "Accepting the potential losses", "Purchasing cyber insurance", "Removing the vulnerable service"], correctAnswer: 2, explanation: "Transferring (or sharing) a risk means shifting the financial burden to a third party, typically through insurance or outsourcing." },
+  { id: "q11", cert: "isc2-cissp", question: "In a federated identity environment using SAML 2.0, which entity verifies the user's credentials and issues the assertion?", options: ["Service Provider (SP)", "Identity Provider (IdP)", "Relying Party (RP)", "Active Directory"], correctAnswer: 1, explanation: "The Identity Provider (IdP) is responsible for authenticating the user and generating the SAML assertion." },
+  { id: "q12", cert: "isc2-cissp", question: "Which fire suppression system is most appropriate for a server room filled with critical IT equipment?", options: ["Wet pipe sprinkler", "Dry pipe sprinkler", "Clean agent gas (e.g., FM-200)", "Water foam extinguisher"], correctAnswer: 2, explanation: "Clean agent gases like FM-200 or Inergen suppress fires without leaving a residue or using water, protecting the electronic equipment." },
+  
+  // OSCP Questions
+  { id: "q5", cert: "offensive-oscp", question: "When performing a Kerberoasting attack, what is the attacker actually attempting to extract and crack?", options: ["NTDS.dit hashes", "AS-REP responses for users without pre-auth", "TGS (Ticket Granting Service) tickets for service accounts", "The Golden Ticket"], correctAnswer: 2, explanation: "Kerberoasting targets Service Principal Names (SPNs) by requesting a TGS ticket and attempting to crack the ticket's RC4 encrypted portion offline to get the service account's plaintext password." },
+  { id: "q13", cert: "offensive-oscp", question: "An attacker uploads a PHP web shell as 'shell.php.jpg' to bypass a poorly configured file extension filter. Which vulnerability allows this file to be executed on an Apache server?", options: ["Local File Inclusion (LFI)", "Apache AddHandler misconfiguration", "Command Injection", "Directory Traversal"], correctAnswer: 1, explanation: "If Apache is configured with 'AddHandler application/x-httpd-php .php', it will execute PHP code in ANY file that contains '.php' in the name, even if it ends in '.jpg'." },
+  { id: "q14", cert: "offensive-oscp", question: "Which command would you use to spawn a fully interactive TTY shell from a dumb reverse shell using Python?", options: ["python -c 'import pty; pty.spawn(\"/bin/bash\")'", "python -c 'import os; os.system(\"/bin/bash\")'", "python -m http.server", "python3 /bin/bash"], correctAnswer: 0, explanation: "Using the pty module in Python is a standard way to upgrade a dumb shell into a fully interactive TTY." },
+  
+  // CEH Questions
+  { id: "q6", cert: "eccouncil-ceh", question: "Which phase of the ethical hacking process involves using Nmap to find open ports and services on a target network?", options: ["Reconnaissance/Footprinting", "Scanning and Enumeration", "Gaining Access", "Maintaining Access"], correctAnswer: 1, explanation: "Scanning and Enumeration actively probes the network to discover live hosts, open ports, and services." },
+  { id: "q15", cert: "eccouncil-ceh", question: "An attacker sends fragmented packets to a target to bypass the IDS/IPS rules. What type of evasion technique is this?", options: ["Session Hijacking", "MAC Spoofing", "IP Fragmentation", "ARP Poisoning"], correctAnswer: 2, explanation: "IP fragmentation breaks packets into smaller pieces to evade signature-based detection mechanisms that fail to properly reassemble them." },
+  
+  // CISM / CySA+ / GSEC
+  { id: "q7", cert: "isaca-cism", question: "What is the primary objective of an information security governance framework?", options: ["To eliminate all organizational risk", "To ensure security strategies align with business objectives", "To select technical security controls", "To automate incident response"], correctAnswer: 1, explanation: "The primary goal of governance is to ensure that security initiatives align with and support the broader goals of the business." },
+  { id: "q16", cert: "comptia-cysa", question: "During an incident response, you find a beaconing signal connecting to an external IP over port 443 every 5 minutes. The packet sizes are exactly the same. What does this most likely indicate?", options: ["Legitimate Windows Updates", "Command and Control (C2) traffic", "An aggressive port scan", "A DDoS attack"], correctAnswer: 1, explanation: "Regular, exact-interval outbound connections over standard ports (like 443) are classic indicators of C2 beaconing malware." },
+  { id: "q17", cert: "giac-gsec", question: "Which Windows utility is commonly used by administrators (and attackers) to execute commands remotely and often operates over TCP port 5985?", options: ["RDP", "Telnet", "SSH", "WinRM (Windows Remote Management)"], correctAnswer: 3, explanation: "WinRM uses TCP 5985 (HTTP) or 5986 (HTTPS) and is the underlying protocol for PowerShell Remoting." },
+  { id: "q18", cert: "comptia-secplus", question: "A biometric access system frequently denies access to authorized users. Which metric describes this situation?", options: ["False Acceptance Rate (FAR)", "False Rejection Rate (FRR)", "Crossover Error Rate (CER)", "Mean Time To Failure (MTTF)"], correctAnswer: 1, explanation: "False Rejection Rate (FRR), or Type I error, occurs when an authorized subject is incorrectly denied access." },
+  { id: "q19", cert: "isc2-cissp", question: "In software development, which testing methodology tests the software from the outside without knowledge of its internal source code?", options: ["White-box testing", "Grey-box testing", "Black-box testing", "Unit testing"], correctAnswer: 2, explanation: "Black-box (or dynamic) testing examines the functionality of an application without peering into its internal structures or workings." },
+  { id: "q20", cert: "offensive-oscp", question: "What is the primary difference between a bind shell and a reverse shell?", options: ["A bind shell connects back to the attacker; a reverse shell waits for the attacker to connect.", "A bind shell waits on the target for a connection; a reverse shell connects from the target back to the attacker.", "Bind shells use UDP; reverse shells use TCP.", "Reverse shells are encrypted; bind shells are plaintext."], correctAnswer: 1, explanation: "A bind shell opens a port on the target and waits. A reverse shell makes an outbound connection from the target back to the attacker's listening port." }
 ];
 
 export type AxiomLab = {
   id: string;
   title: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
-  type: "Terminal" | "Log Analysis" | "Web Exploit";
+  type: "Terminal" | "Log Analysis" | "Web Exploit" | "Linux Basics";
   objective: string;
   instructions: string[];
 };
@@ -251,15 +226,55 @@ export const LABS_DB: AxiomLab[] = [
     ]
   },
   {
-    id: "lab-logs-1",
-    title: "Incident Response: Identifying SQLi in Apache Logs",
+    id: "lab-privesc-1",
+    title: "Privilege Escalation: Sudo Misconfigurations",
     difficulty: "Intermediate",
-    type: "Log Analysis",
-    objective: "Analyze a snippet of Apache access logs to identify the exact timestamp an attacker successfully extracted data via SQL injection.",
+    type: "Terminal",
+    objective: "Identify what commands your current user can run as root, and exploit them.",
     instructions: [
-      "1. Search the logs for common SQLi payloads (e.g., UNION SELECT, WAITFOR DELAY).",
-      "2. Correlate the payloads with a 200 OK HTTP response.",
-      "3. Note the IP address of the attacker."
+      "1. You are logged in as 'user'. Type 'whoami' to verify.",
+      "2. Use 'sudo -l' to list allowed sudo commands.",
+      "3. Notice that you can run '/usr/bin/vim' as root.",
+      "4. Spawn a root shell using vim: 'sudo vim -c \":!/bin/sh\"'"
+    ]
+  },
+  {
+    id: "lab-web-1",
+    title: "Web Exploit: Basic curl and API enumeration",
+    difficulty: "Beginner",
+    type: "Web Exploit",
+    objective: "Use curl to interact with an unauthenticated API endpoint and extract the flag.",
+    instructions: [
+      "1. Perform a GET request to the local API: 'curl http://localhost:3000/api/users'",
+      "2. Notice the response is forbidden.",
+      "3. The API documentation says you can bypass auth using an internal header. Try: 'curl -H \"X-Forwarded-For: 127.0.0.1\" http://localhost:3000/api/users'",
+      "4. Extract the admin token from the response."
+    ]
+  },
+  {
+    id: "lab-crypto-1",
+    title: "Cryptography: OpenSSL Decryption",
+    difficulty: "Intermediate",
+    type: "Linux Basics",
+    objective: "Decrypt a base64 encoded, AES-256-CBC encrypted file using OpenSSL.",
+    instructions: [
+      "1. You have a file named 'secret.enc'. List it using 'ls -la'.",
+      "2. You know the password is 'axiom'.",
+      "3. Decrypt the file: 'openssl enc -aes-256-cbc -d -in secret.enc -out secret.txt -k axiom -pbkdf2'",
+      "4. Read the decrypted contents: 'cat secret.txt'"
+    ]
+  },
+  {
+    id: "lab-logs-1",
+    title: "Log Analysis: Grep Authentication Logs",
+    difficulty: "Beginner",
+    type: "Log Analysis",
+    objective: "Analyze an authentication log to find the IP address of a brute-force attacker.",
+    instructions: [
+      "1. A log file is located at '/var/log/auth.log'.",
+      "2. Use grep to find failed login attempts: 'grep \"Failed password\" /var/log/auth.log'",
+      "3. Count how many attempts came from the attacker using 'wc -l': 'grep \"Failed password\" /var/log/auth.log | wc -l'",
+      "4. Identify the attacker's IP address."
     ]
   }
 ];
