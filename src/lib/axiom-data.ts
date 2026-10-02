@@ -47,6 +47,23 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { type: "Lab", name: "TryHackMe Pre-Security Path", url: "#" }
     ]
   },
+  "comptia-cysa": {
+    id: "comptia-cysa",
+    title: "Cybersecurity Analyst (CySA+)",
+    vendor: "CompTIA",
+    level: "Intermediate",
+    description: "Validates the skills required to leverage intelligence and threat detection techniques, analyze and interpret data, identify and address vulnerabilities, suggest preventative measures, and effectively respond to and recover from incidents.",
+    domains: [
+      { id: "cysa-1", title: "Security Operations", weight: "33%", topics: ["Determine appropriate log analysis techniques", "Analyze network activity", "Analyze intelligence sources"] },
+      { id: "cysa-2", title: "Vulnerability Management", weight: "30%", topics: ["Implement vulnerability assessment processes", "Analyze vulnerability scans", "Explain mitigation techniques"] },
+      { id: "cysa-3", title: "Incident Response and Management", weight: "20%", topics: ["Apply incident response procedures", "Analyze potential indicators of compromise"] },
+      { id: "cysa-4", title: "Reporting and Communication", weight: "17%", topics: ["Explain the importance of communication during incident response", "Analyze post-incident activities"] }
+    ],
+    resources: [
+      { type: "Video", name: "CertifyBreakfast CySA+ Series", url: "#" },
+      { type: "Lab", name: "TryHackMe Cyber Defense Path", url: "#" }
+    ]
+  },
   "isc2-cissp": {
     id: "isc2-cissp",
     title: "Certified Information Systems Security Professional (CISSP)",
@@ -67,6 +84,59 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { type: "Book", name: "Official (ISC)2 CISSP Study Guide", url: "#" },
       { type: "Video", name: "Cybrary CISSP Course", url: "#" },
       { type: "Community", name: "Reddit /r/CISSP Discord", url: "#" }
+    ]
+  },
+  "isaca-cism": {
+    id: "isaca-cism",
+    title: "Certified Information Security Manager (CISM)",
+    vendor: "ISACA",
+    level: "Advanced",
+    description: "Focuses on IT security management. Proves you have the expertise to manage, design, and oversee an enterprise's information security program.",
+    domains: [
+      { id: "cism-1", title: "Information Security Governance", weight: "17%", topics: ["Establish and maintain an information security strategy", "Establish and maintain an information security governance framework"] },
+      { id: "cism-2", title: "Information Security Risk Management", weight: "20%", topics: ["Establish and maintain a risk management strategy", "Integrate risk management into business processes"] },
+      { id: "cism-3", title: "Information Security Program", weight: "33%", topics: ["Manage information security program resources", "Ensure alignment of the information security program"] },
+      { id: "cism-4", title: "Incident Management", weight: "30%", topics: ["Establish and maintain an incident response plan", "Investigate and document incidents"] }
+    ],
+    resources: [
+      { type: "Book", name: "ISACA CISM Review Manual", url: "#" },
+      { type: "Forum", name: "ISACA Engage Community", url: "#" }
+    ]
+  },
+  "eccouncil-ceh": {
+    id: "eccouncil-ceh",
+    title: "Certified Ethical Hacker (CEH)",
+    vendor: "EC-Council",
+    level: "Intermediate",
+    description: "A foundational ethical hacking certification that introduces the latest hacking techniques, vulnerability assessment tools, and exploits used by malicious actors.",
+    domains: [
+      { id: "ceh-1", title: "Information Security and Ethical Hacking Overview", weight: "6%", topics: ["Introduction to Ethical Hacking", "Cyber Kill Chain Concepts"] },
+      { id: "ceh-2", title: "Reconnaissance Techniques", weight: "21%", topics: ["Footprinting", "Scanning Networks", "Enumeration"] },
+      { id: "ceh-3", title: "System Hacking Phases and Attack Techniques", weight: "17%", topics: ["Vulnerability Analysis", "System Hacking", "Malware Threats"] },
+      { id: "ceh-4", title: "Network and Perimeter Hacking", weight: "14%", topics: ["Sniffing", "Social Engineering", "Denial-of-Service"] },
+      { id: "ceh-5", title: "Web Application Hacking", weight: "16%", topics: ["Hacking Web Servers", "Hacking Web Applications", "SQL Injection"] }
+    ],
+    resources: [
+      { type: "Lab", name: "HackTheBox CEH Track", url: "#" },
+      { type: "Video", name: "CEH Free Training on YouTube", url: "#" }
+    ]
+  },
+  "giac-gsec": {
+    id: "giac-gsec",
+    title: "GIAC Security Essentials (GSEC)",
+    vendor: "GIAC",
+    level: "Intermediate",
+    description: "Validates a practitioner's knowledge of information security beyond simple terminology and concepts, demonstrating hands-on IT systems roles.",
+    domains: [
+      { id: "gsec-1", title: "Access Control & Password Management", weight: "N/A", topics: ["Access Control Theory", "Authentication & Password Management"] },
+      { id: "gsec-2", title: "Cryptography", weight: "N/A", topics: ["Cryptography Fundamentals", "Public Key Infrastructure (PKI)"] },
+      { id: "gsec-3", title: "Defensible Network Architecture", weight: "N/A", topics: ["Network Architecture", "Virtualization & Cloud Security"] },
+      { id: "gsec-4", title: "Endpoint Security", weight: "N/A", topics: ["Linux Security", "Windows Security", "Mac Security"] },
+      { id: "gsec-5", title: "Incident Handling & Response", weight: "N/A", topics: ["Incident Response", "Vulnerability Scanning", "Network Forensics"] }
+    ],
+    resources: [
+      { type: "Notes", name: "SANS GSEC Open Cheat Sheets", url: "#" },
+      { type: "Video", name: "SANS Webcasts", url: "#" }
     ]
   },
   "offensive-oscp": {
@@ -139,6 +209,22 @@ export const MOCK_EXAM_DB: MockQuestion[] = [
     options: ["NTDS.dit hashes", "AS-REP responses for users without pre-auth", "TGS (Ticket Granting Service) tickets for service accounts", "The Golden Ticket"],
     correctAnswer: 2,
     explanation: "Kerberoasting targets Service Principal Names (SPNs) by requesting a TGS ticket and attempting to crack the ticket's RC4 encrypted portion offline to get the service account's plaintext password."
+  },
+  {
+    id: "q6",
+    cert: "eccouncil-ceh",
+    question: "Which phase of the ethical hacking process involves using Nmap to find open ports and services on a target network?",
+    options: ["Reconnaissance/Footprinting", "Scanning and Enumeration", "Gaining Access", "Maintaining Access"],
+    correctAnswer: 1,
+    explanation: "Scanning and Enumeration actively probes the network to discover live hosts, open ports, and services."
+  },
+  {
+    id: "q7",
+    cert: "isaca-cism",
+    question: "What is the primary objective of an information security governance framework?",
+    options: ["To eliminate all organizational risk", "To ensure security strategies align with business objectives", "To select technical security controls", "To automate incident response"],
+    correctAnswer: 1,
+    explanation: "The primary goal of governance is to ensure that security initiatives align with and support the broader goals of the business."
   }
 ];
 
@@ -160,7 +246,7 @@ export const LABS_DB: AxiomLab[] = [
     objective: "Identify open ports and running services on a target server using nmap.",
     instructions: [
       "1. Type 'nmap 10.0.4.15' to perform a basic scan.",
-      "2. Type 'nmap -sV -p 80,443 10.0.4.15' to detect service versions.",
+      "2. Type 'nmap -sv -p 80,443 10.0.4.15' to detect service versions.",
       "3. Identify which web server version is running on port 80."
     ]
   },
