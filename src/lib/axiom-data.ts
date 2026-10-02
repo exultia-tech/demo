@@ -42,6 +42,8 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "sec-5", title: "Domain 5: Security Program Management and Oversight", weight: "20%", topics: ["Summarize elements of effective security governance", "Explain elements of the risk management process", "Explain the processes associated with third-party risk assessment and management", "Summarize elements of effective security compliance", "Explain types and purposes of audits and assessments", "Given a scenario, implement security awareness practices"] }
     ],
     resources: [
+      { type: "Book", name: "CompTIA Security+ SY0-701 Practice Tests (David Seidl)", url: "#" },
+      { type: "Book", name: "Security+ Get Certified Get Ahead (Darril Gibson)", url: "#" },
       { type: "Video", name: "Professor Messer's SY0-701 Free Course", url: "#" },
       { type: "Notes", name: "ExamCompass Practice Tests", url: "#" },
       { type: "Lab", name: "TryHackMe Pre-Security Path", url: "#" }
@@ -64,6 +66,23 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { type: "Lab", name: "TryHackMe Cyber Defense Path", url: "#" }
     ]
   },
+  "comptia-casp": {
+    id: "comptia-casp",
+    title: "Advanced Security Practitioner (CASP+)",
+    vendor: "CompTIA",
+    level: "Advanced",
+    description: "Advanced-level cybersecurity certification covering technical skills in security architecture and senior security engineering in traditional, cloud, and hybrid environments.",
+    domains: [
+      { id: "casp-1", title: "Security Architecture", weight: "29%", topics: ["Analyze business requirements", "Integrate network and security components"] },
+      { id: "casp-2", title: "Security Operations", weight: "30%", topics: ["Conduct incident response", "Analyze threat intelligence"] },
+      { id: "casp-3", title: "Security Engineering and Cryptography", weight: "26%", topics: ["Apply secure configurations", "Implement cryptographic techniques"] },
+      { id: "casp-4", title: "Governance, Risk, and Compliance", weight: "15%", topics: ["Apply risk strategies", "Manage compliance frameworks"] }
+    ],
+    resources: [
+      { type: "Book", name: "CASP+ Study Guide (Wiley)", url: "#" },
+      { type: "Book", name: "CASP+ Practice Tests (Wiley)", url: "#" }
+    ]
+  },
   "isc2-cissp": {
     id: "isc2-cissp",
     title: "Certified Information Systems Security Professional (CISSP)",
@@ -81,7 +100,10 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cissp-8", title: "Domain 8: Software Development Security", weight: "11%", topics: ["Understand and integrate security in the Software Development Life Cycle (SDLC)", "Identify and apply security controls in software development ecosystems"] }
     ],
     resources: [
-      { type: "Book", name: "Official (ISC)2 CISSP Study Guide", url: "#" },
+      { type: "Book", name: "ISC2 CISSP Official Study Guide 10th Ed (Chapple, Stewart, Gibson)", url: "#" },
+      { type: "Book", name: "CISSP All-In-One Exam Guide (Shon Harris)", url: "#" },
+      { type: "Book", name: "Destination CISSP - A Concise Guide", url: "#" },
+      { type: "Book", name: "Packt CISSP Practice Exams & Tests", url: "#" },
       { type: "Video", name: "Cybrary CISSP Course", url: "#" },
       { type: "Community", name: "Reddit /r/CISSP Discord", url: "#" }
     ]
@@ -99,7 +121,7 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cism-4", title: "Incident Management", weight: "30%", topics: ["Establish and maintain an incident response plan", "Investigate and document incidents"] }
     ],
     resources: [
-      { type: "Book", name: "ISACA CISM Review Manual", url: "#" },
+      { type: "Book", name: "CISM Review Manual, 16th Edition", url: "#" },
       { type: "Forum", name: "ISACA Engage Community", url: "#" }
     ]
   },
