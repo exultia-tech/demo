@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
+import OperatorPreviewBanner from "@/components/OperatorPreviewBanner";
 
 export const metadata: Metadata = {
   title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Footer />
           <AuthModal />
           <PaymentModal />
+          <OperatorPreviewBanner />
         </AuthProvider>
       </body>
     </html>
