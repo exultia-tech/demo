@@ -32,7 +32,8 @@ function isHoliday(date: Date): boolean {
 }
 
 export function calculateStatutoryDeadline(startDateStr: string, daysCount: number, dayType: 'business' | 'calendar'): string {
-  const date = new Date(startDateStr);
+  const normalizedStr = startDateStr.length === 10 ? `${startDateStr}T00:00:00` : startDateStr;
+  const date = new Date(normalizedStr);
   if (isNaN(date.getTime())) {
     const fallback = new Date();
     fallback.setDate(fallback.getDate() + daysCount);

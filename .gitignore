@@ -28,6 +28,8 @@
 .DS_Store
 *.pem
 tmp_orchestrator.ps1
+local.db
+local.db-journal
 
 # debug
 npm-debug.log*
