@@ -64,11 +64,11 @@ export async function GET(req: Request) {
       }, { status: 403 });
     }
 
-    // 5. Enforce Content Protection & Quota
-    // To prevent a user from paying $499 for 1 month and dumping the entire 15,000 question bank
-    // (bypassing the $2500 per 250 questions one-time fee), we enforce a strict pagination/quota lock.
-    // In a full implementation, this would map the `userRecord.id` to a specific block of 250 questions.
-    // Here we deterministically slice the first 250 questions based on their subscription tier.
+    // 5. Enforce Content Protection & Quota via Stateless Seeded Sync
+    // To prevent a user from paying $499 for 1 month and dumping the entire 15,000 question bank,
+    // we use a deterministic Seeded PRNG. The seed is composed of: userId + Month + Year.
+    // This guarantees the user gets the EXACT same 250 questions for the entire month,
+    // but automatically rotates to a fresh batch on the 1st of the next month.
     
     // Parse requested limit, cap at 250 max.
     const url = new URL(req.url);
@@ -78,7 +78,33 @@ export async function GET(req: Request) {
         limit = Math.min(250, Math.max(1, Number(limitParam)));
     }
 
-    const questionBlock = MOCK_EXAM_DB.slice(0, limit);
+    // Seed string
+    const now = new Date();
+    const seedString = `${userRecord.id}_${now.getUTCFullYear()}_${now.getUTCMonth()}`;
+    
+    // Simple fast string hasher
+    let seed = 0;
+    for (let i = 0; i < seedString.length; i++) {
+        seed = Math.imul(31, seed) + seedString.charCodeAt(i) | 0;
+    }
+
+    // Mulberry32 PRNG
+    const random = () => {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+
+    // Shuffle the indices deterministically
+    const indices = Array.from({ length: MOCK_EXAM_DB.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    // Get the assigned question block
+    const questionBlock = indices.slice(0, limit).map(idx => MOCK_EXAM_DB[idx]);
 
     // 6. Build LMS Export format
     const lmsFormat = questionBlock.map(q => ({
