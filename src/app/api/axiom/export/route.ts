@@ -64,8 +64,24 @@ export async function GET(req: Request) {
       }, { status: 403 });
     }
 
-    // 5. Build LMS Export format
-    const lmsFormat = MOCK_EXAM_DB.map(q => ({
+    // 5. Enforce Content Protection & Quota
+    // To prevent a user from paying $499 for 1 month and dumping the entire 15,000 question bank
+    // (bypassing the $2500 per 250 questions one-time fee), we enforce a strict pagination/quota lock.
+    // In a full implementation, this would map the `userRecord.id` to a specific block of 250 questions.
+    // Here we deterministically slice the first 250 questions based on their subscription tier.
+    
+    // Parse requested limit, cap at 250 max.
+    const url = new URL(req.url);
+    const limitParam = url.searchParams.get('limit');
+    let limit = 250;
+    if (limitParam && !isNaN(Number(limitParam))) {
+        limit = Math.min(250, Math.max(1, Number(limitParam)));
+    }
+
+    const questionBlock = MOCK_EXAM_DB.slice(0, limit);
+
+    // 6. Build LMS Export format
+    const lmsFormat = questionBlock.map(q => ({
       guid: q.id,
       domain: q.domain,
       difficulty: q.difficulty,
@@ -87,6 +103,8 @@ export async function GET(req: Request) {
       success: true,
       meta: {
         total_questions: lmsFormat.length,
+        quota_limit: 250,
+        quota_remaining: 250 - lmsFormat.length,
         format: "LMS_SCORM_COMPATIBLE_JSON",
         license: "ENTERPRISE_INTERNAL_ONLY",
         exported_by: userRecord.email,
