@@ -52,7 +52,7 @@ interface AuthContextType {
   closePaymentModal: () => void;
   
   // Helpers
-  getUserTier: (product: "inquest" | "pureide" | "uvi") => string;
+  getUserTier: (product: "inquest" | "pureide" | "uvi" | "axiom" | "fixlist") => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -200,7 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPaymentOptions(null);
   };
 
-  const getUserTier = (product: "inquest" | "pureide" | "uvi"): string => {
+  const getUserTier = (product: "inquest" | "pureide" | "uvi" | "axiom" | "fixlist"): string => {
     if (!user) return "free";
     const sub = user.subscriptions?.find(s => s.product === product && s.status === "active");
     return sub ? sub.tier : "free";
