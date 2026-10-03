@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Lock, Mail, User as UserIcon, X, ShieldCheck, KeyRound, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Lock, Mail, User as UserIcon, X, ShieldCheck, KeyRound, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function AuthModal() {
   const { isAuthModalOpen, authModalMode, closeAuthModal, login, register } = useAuth();
@@ -37,12 +37,6 @@ export default function AuthModal() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickFill = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError(null);
   };
 
   return (
@@ -222,57 +216,6 @@ export default function AuthModal() {
           <div style={{ flex: 1, height: "1px", background: "rgba(255, 255, 255, 0.1)" }} />
         </div>
 
-        {/* Quick Fill Dev Preset Accounts */}
-        {mode === "login" && (
-          <div style={{
-            background: "rgba(30, 41, 59, 0.6)",
-            border: "1px dashed rgba(59, 130, 246, 0.4)",
-            borderRadius: "12px",
-            padding: "0.75rem",
-            marginBottom: "1.25rem"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.5rem" }}>
-              <Sparkles size={13} color="#60A5FA" />
-              <span style={{ fontSize: "0.72rem", color: "#93C5FD", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Preview Test Accounts
-              </span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-              <button
-                type="button"
-                onClick={() => handleQuickFill("demo-paid@exultia.com", "password123")}
-                style={{
-                  background: email === "demo-paid@exultia.com" ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                  border: "1px solid rgba(59, 130, 246, 0.3)",
-                  borderRadius: "8px",
-                  padding: "6px 8px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  color: "#FFFFFF"
-                }}
-              >
-                <div style={{ fontSize: "0.76rem", fontWeight: 700, color: "#93C5FD" }}>Demo Paid (Full)</div>
-                <div style={{ fontSize: "0.68rem", color: "#64748B" }}>All Modules Unlocked</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill("admin@exultia.tech", "password123")}
-                style={{
-                  background: email === "admin@exultia.tech" ? "rgba(139, 92, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                  border: "1px solid rgba(139, 92, 246, 0.3)",
-                  borderRadius: "8px",
-                  padding: "6px 8px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  color: "#FFFFFF"
-                }}
-              >
-                <div style={{ fontSize: "0.76rem", fontWeight: 700, color: "#C084FC" }}>Admin (Root)</div>
-                <div style={{ fontSize: "0.68rem", color: "#64748B" }}>Administrator</div>
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Notice for Registration Mode */}
         {mode === "register" && (

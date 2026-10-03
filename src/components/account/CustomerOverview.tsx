@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -17,8 +17,7 @@ import {
   Activity, 
   ChevronRight, 
   RefreshCw,
-  Layers,
-  Zap
+  Layers
 } from "lucide-react";
 import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
@@ -28,8 +27,7 @@ interface CustomerOverviewProps {
 }
 
 export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: CustomerOverviewProps) {
-  const { user, getUserTier, refreshUser } = useAuth();
-  const [isSwitchingTier, setIsSwitchingTier] = useState(false);
+  const { user, getUserTier } = useAuth();
 
   const pureIdeTier = getUserTier("pureide");
   const uviTier = getUserTier("uvi");
@@ -48,119 +46,8 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   if (inquestTier === "enterprise") unlockedScore += 30;
   else if (inquestTier === "legal") unlockedScore += 20;
   else unlockedScore += 10;
-
-  const handleSimulateTier = async (targetTier: "free" | "pro" | "enterprise") => {
-    setIsSwitchingTier(true);
-    try {
-      const inquestTarget = targetTier === "pro" ? "legal" : targetTier;
-      await Promise.all([
-        fetch("/api/user/subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: "pureide", tier: targetTier, billingCycle: "annual" }),
-        }),
-        fetch("/api/user/subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: "uvi", tier: targetTier, billingCycle: "annual" }),
-        }),
-        fetch("/api/user/subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: "inquest", tier: inquestTarget, billingCycle: "annual" }),
-        })
-      ]);
-      await refreshUser();
-    } catch (e) {
-      console.error("Failed to switch simulation tier:", e);
-    } finally {
-      setIsSwitchingTier(false);
-    }
-  };
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      
-      {/* 1. TIER SIMULATOR & PREVIEW CONTROL BAR */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)",
-        border: "1px dashed rgba(59, 130, 246, 0.4)",
-        borderRadius: "16px",
-        padding: "1rem 1.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ background: "rgba(59, 130, 246, 0.2)", padding: "6px", borderRadius: "8px", color: "#60A5FA" }}>
-            <Zap size={18} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
-              Customer Tier Preview & Simulator
-            </div>
-            <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
-              Simulate how the portal adapts to different purchased subscription levels in real time.
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <button
-            onClick={() => handleSimulateTier("free")}
-            disabled={isSwitchingTier}
-            style={{
-              background: (pureIdeTier === "free" && uviTier === "free") ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
-              border: (pureIdeTier === "free" && uviTier === "free") ? "1px solid rgba(255, 255, 255, 0.4)" : "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "8px",
-              padding: "6px 14px",
-              color: "#CBD5E1",
-              fontSize: "0.8rem",
-              fontWeight: 700,
-              cursor: "pointer"
-            }}
-          >
-            Community (Free)
-          </button>
-
-          <button
-            onClick={() => handleSimulateTier("pro")}
-            disabled={isSwitchingTier}
-            style={{
-              background: (pureIdeTier === "pro" || inquestTier === "legal") ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-              border: (pureIdeTier === "pro" || inquestTier === "legal") ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "8px",
-              padding: "6px 14px",
-              color: "#93C5FD",
-              fontSize: "0.8rem",
-              fontWeight: 700,
-              cursor: "pointer"
-            }}
-          >
-            Pro / Legal Tier
-          </button>
-
-          <button
-            onClick={() => handleSimulateTier("enterprise")}
-            disabled={isSwitchingTier}
-            style={{
-              background: (pureIdeTier === "enterprise" && uviTier === "enterprise") ? "rgba(139, 92, 246, 0.3)" : "rgba(255, 255, 255, 0.04)",
-              border: (pureIdeTier === "enterprise" && uviTier === "enterprise") ? "1px solid #8B5CF6" : "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "8px",
-              padding: "6px 14px",
-              color: "#C084FC",
-              fontSize: "0.8rem",
-              fontWeight: 700,
-              cursor: "pointer"
-            }}
-          >
-            Enterprise Suite
-          </button>
-        </div>
-      </div>
-
       {/* 2. UNLOCKED CAPABILITY SCORECARD & PROGRESS METER */}
       <div style={{
         background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%)",

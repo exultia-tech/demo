@@ -32,7 +32,6 @@ import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
 import InquestCustomerTools from "@/components/account/InquestCustomerTools";
-import AdminPersonaSwitcher from "@/components/admin/AdminPersonaSwitcher";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
 
 interface ApiTokenItem {
@@ -60,7 +59,7 @@ function AccountPageContent() {
   const { user, loading: authLoading, openAuthModal, openPaymentModal, refreshUser, getUserTier, isImpersonating } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"overview" | "personas" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "subscriptions" | "tokens" | "workflows" | "security">(
+  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "subscriptions" | "tokens" | "workflows" | "security">(
     (tabParam as any) || "overview"
   );
 
@@ -426,30 +425,6 @@ function AccountPageContent() {
           Customer Overview
         </button>
 
-        {(user.role === "admin" || isImpersonating) && (
-          <button
-            onClick={() => setActiveTab("personas")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "0.85rem 1.25rem",
-              background: activeTab === "personas" ? "rgba(245, 158, 11, 0.2)" : "rgba(245, 158, 11, 0.05)",
-              border: "1px solid rgba(245, 158, 11, 0.3)",
-              borderBottom: activeTab === "personas" ? "2px solid #F59E0B" : "2px solid transparent",
-              color: activeTab === "personas" ? "#FFFFFF" : "#FDE68A",
-              fontWeight: activeTab === "personas" ? 800 : 600,
-              fontSize: "0.9rem",
-              cursor: "pointer",
-              borderRadius: "8px 8px 0 0",
-              whiteSpace: "nowrap",
-              boxShadow: activeTab === "personas" ? "0 0 15px rgba(245, 158, 11, 0.2)" : "none"
-            }}
-          >
-            <Sparkles size={16} color="#F59E0B" />
-            Admin Test Personas
-          </button>
-        )}
 
         <button
           onClick={() => setActiveTab("pureide")}
@@ -662,25 +637,13 @@ function AccountPageContent() {
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 0: ADMIN TEST PERSONAS */}
-      {/* ========================================================================= */}
-      {activeTab === "personas" && (
-        <AdminPersonaSwitcher />
-      )}
-
-      {/* ========================================================================= */}
       {/* TAB 1: CUSTOMER OVERVIEW */}
       {/* ========================================================================= */}
       {activeTab === "overview" && (
-        <>
-          {(user.role === "admin" || isImpersonating) && (
-            <AdminPersonaSwitcher />
-          )}
-          <CustomerOverview 
-            onSelectTab={setActiveTab} 
-            onOpenUpgradeModal={() => router.push("/account/subscription")} 
-          />
-        </>
+        <CustomerOverview 
+          onSelectTab={setActiveTab} 
+          onOpenUpgradeModal={() => router.push("/account/subscription")} 
+        />
       )}
 
       {/* ========================================================================= */}

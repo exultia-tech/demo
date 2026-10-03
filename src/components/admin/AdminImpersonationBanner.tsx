@@ -22,44 +22,8 @@ const PERSONA_OPTIONS: PersonaOption[] = [
     badge: "Root Admin",
     pureide: "enterprise",
     uvi: "enterprise",
-    inquest: "legal",
-    color: "#F59E0B"
-  },
-  {
-    email: "free@exultia.tech",
-    name: "Alex Rivera (Community Free)",
-    badge: "Free Tier",
-    pureide: "free",
-    uvi: "free",
-    inquest: "free",
-    color: "#94A3B8"
-  },
-  {
-    email: "pro@exultia.tech",
-    name: "Jordan Vance (Pro Dev)",
-    badge: "Pro Developer",
-    pureide: "pro",
-    uvi: "pro",
-    inquest: "free",
-    color: "#3B82F6"
-  },
-  {
-    email: "legal@exultia.tech",
-    name: "Elena Rostova, Esq.",
-    badge: "Legal Pro",
-    pureide: "free",
-    uvi: "free",
-    inquest: "legal",
-    color: "#06B6D4"
-  },
-  {
-    email: "enterprise@exultia.tech",
-    name: "Marcus Sterling",
-    badge: "Hermetic Enterprise",
-    pureide: "enterprise",
-    uvi: "enterprise",
     inquest: "enterprise",
-    color: "#8B5CF6"
+    color: "#F59E0B"
   }
 ];
 

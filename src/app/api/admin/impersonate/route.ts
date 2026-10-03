@@ -35,75 +35,11 @@ export const TEST_PERSONAS: TestPersonaMeta[] = [
     entitlements: {
       pureide: 'enterprise',
       uvi: 'enterprise',
-      inquest: 'legal',
-    },
-    headline: 'Full Administrative Privileges & System Controls',
-    description: 'Root operator account with complete administrative control, DB seed access, and persona substitution powers.',
-    keyFeatures: ['Full Persona Switcher', 'Database Seed Management', 'Hermetic Enclave Attestation', 'CISO Advisory Hotline']
-  },
-  {
-    id: 'usr_test_free',
-    email: 'free@exultia.tech',
-    name: 'Alex Rivera (Community Free)',
-    role: 'user',
-    badge: 'Community / Free',
-    themeColor: '#94A3B8',
-    entitlements: {
-      pureide: 'free',
-      uvi: 'free',
-      inquest: 'free',
-    },
-    headline: 'Zero-Cost Baseline Community Tier Across All Products',
-    description: 'Tests upgrade barriers, rate limit warnings (60 req/min), standard compiler triggers, and trial capabilities.',
-    keyFeatures: ['Telemetry Stripping Simulator', 'Public Feed Browsing', '3 Active FOIA Request Limit', 'Standard Bates Counter']
-  },
-  {
-    id: 'usr_test_pro',
-    email: 'pro@exultia.tech',
-    name: 'Jordan Vance (Pro Developer)',
-    role: 'user',
-    badge: 'Pro Developer',
-    themeColor: '#3B82F6',
-    entitlements: {
-      pureide: 'pro',
-      uvi: 'pro',
-      inquest: 'free',
-    },
-    headline: 'PureIDE Pro & Vantage Threat Intel Pro Workstation',
-    description: 'Tests live socket egress firewall rules, automated token redaction, dedicated cloud compiler runners, and real-time CVSS v4 streaming.',
-    keyFeatures: ['Live Egress Socket Firewall', 'Secrets Scanner & Token Redactor', '10,000 req/min Threat API', 'Automated SBOM Builder']
-  },
-  {
-    id: 'usr_test_legal',
-    email: 'legal@exultia.tech',
-    name: 'Elena Rostova, Esq. (Legal Pro)',
-    role: 'user',
-    badge: 'Legal Discovery Pro',
-    themeColor: '#06B6D4',
-    entitlements: {
-      pureide: 'free',
-      uvi: 'free',
-      inquest: 'legal',
-    },
-    headline: 'Inquest Legal Discovery & Statutory FOIA Appeals Pro',
-    description: 'Tests automated 9-exemption statutory appeal brief generation, Exemption 4/7(A) burden-of-proof scanner, and OCR evidence indexing.',
-    keyFeatures: ['Statutory Administrative Appeal Builder', 'Glomar Challenge Defense Engine', 'Unlimited Case Dockets', 'Bates Vault Indexing']
-  },
-  {
-    id: 'usr_test_enterprise',
-    email: 'enterprise@exultia.tech',
-    name: 'Marcus Sterling (Enterprise SecLead)',
-    role: 'user',
-    badge: 'Hermetic Enterprise',
-    themeColor: '#8B5CF6',
-    entitlements: {
-      pureide: 'enterprise',
-      uvi: 'enterprise',
       inquest: 'enterprise',
     },
-    headline: 'Hermetic Enterprise Architecture Suite (All Products Max Tier)',
-    description: 'Tests hermetic offline binary cosign, zero-egress hardware attestation, high-throughput webhook dispatchers, and APA court complaint builders.',
-    keyFeatures: ['Hermetic Offline Binary Cosign', 'Streaming Webhook Dispatcher', 'Daily Raw Parquet Dumps', 'Federal APA Court Complaint Generator']
+    headline: 'Full Administrative Privileges & System Controls',
+    description: 'Root operator account with complete administrative control and universal enterprise privileges.',
+    keyFeatures: ['System Administration', 'Zero-Trust Telemetry Attestation', 'Hermetic Enclave Attestation', 'CISO Advisory Hotline']
   }
 ];
 
