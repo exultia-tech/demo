@@ -3,6 +3,9 @@ import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { generateCycloneDX } from '@/lib/sbom';
+import { getCurrentUser } from '@/lib/auth/session';
+import { db, githubWorkflows } from '@/lib/db';
+import { eq, and } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,10 +27,28 @@ export async function POST(req: NextRequest) {
     const safeBrand = (brandName || 'SecureIDE Studio').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim();
     const safeLocale = (locale || 'en').replace(/[^a-zA-Z0-9\-_]/g, '').toLowerCase().trim();
     const safeVersion = (version || 'latest').replace(/[^a-zA-Z0-9\-._/]/g, '').trim();
-    const githubToken = process.env.GITHUB_TOKEN;
-    const githubOwner = process.env.GITHUB_OWNER;
-    const githubRepo = process.env.GITHUB_REPO;
-    const workflowFile = process.env.GITHUB_WORKFLOW || 'build-ide.yml';
+
+    // Check user entitlements
+    const user = await getCurrentUser();
+    const isEnterprise = Boolean(
+      user?.role === 'admin' || user?.subscriptions?.some(
+        s => s.status === 'active' && (s.tier.toLowerCase() === 'enterprise' || s.tier.toLowerCase() === 'developer')
+      )
+    );
+
+    // Resolve custom user-linked GitHub workflow if user is an enterprise subscriber
+    let customWorkflow: any = null;
+    if (user && isEnterprise) {
+      customWorkflow = await db.query.githubWorkflows.findFirst({
+        where: and(eq(githubWorkflows.userId, user.id), eq(githubWorkflows.isActive, true)),
+      });
+    }
+
+    const githubToken = customWorkflow?.personalAccessToken || process.env.GITHUB_TOKEN;
+    const githubOwner = customWorkflow?.owner || process.env.GITHUB_OWNER;
+    const githubRepo = customWorkflow?.repo || process.env.GITHUB_REPO;
+    const workflowFile = customWorkflow?.workflowFile || process.env.GITHUB_WORKFLOW || 'build-ide.yml';
+    const repoOpts = { owner: githubOwner, repo: githubRepo, token: githubToken };
 
     // -----------------------------------------------------------------------
     // MODE A: MULTI-OS CLOUD ENGINE DISPATCH (If credentials configured)
@@ -51,7 +72,11 @@ export async function POST(req: NextRequest) {
         registryUrl,
         extensions,
         telemetryUrl,
-        buildId
+        buildId,
+        owner: githubOwner,
+        repo: githubRepo,
+        workflowFile,
+        token: githubToken,
       });
 
       const distDir = path.join(process.cwd(), 'public', 'downloads');
@@ -65,6 +90,9 @@ export async function POST(req: NextRequest) {
           const emit = (text: string) => controller.enqueue(encoder.encode(text));
 
           emit(`>>> [SECURE IDE] Dispatching build to Multi-OS Cloud Engine...\n`);
+          if (customWorkflow) {
+            emit(`>>> [ENTERPRISE WORKFLOW] Custom linked repository active: ${githubOwner}/${githubRepo} (${workflowFile})\n`);
+          }
           emit(`>>> [CLOUD] Architecture Target: ${targetOs.toUpperCase()} | Engine: ${engine.toUpperCase()} (${safeVersion}) | Locale: ${safeLocale.toUpperCase()}\n`);
           emit(`>>> [CLOUD] Build ID: ${buildId}\n`);
           emit(`>>> [STATUS] Isolated cloud sandbox provisioned and executing...\n`);
@@ -74,10 +102,10 @@ export async function POST(req: NextRequest) {
           let run: any = null;
 
           // Poll to find the triggered workflow run (up to 30s)
-          emit(`>>> [CLOUD ENGINE] Connecting to GitHub Actions pipeline...\n`);
+          emit(`>>> [CLOUD ENGINE] Connecting to GitHub Actions pipeline (${githubOwner}/${githubRepo})...\n`);
           for (let attempt = 0; attempt < 10; attempt++) {
             await new Promise(r => setTimeout(r, 2500));
-            run = await findWorkflowRun(t0);
+            run = await findWorkflowRun(t0, repoOpts);
             if (run) break;
             emit(`>>> [STATUS] Waiting for GitHub runner allocation (${attempt + 1}/10)...\n`);
           }
@@ -98,10 +126,10 @@ export async function POST(req: NextRequest) {
           while (Date.now() - t0 < maxWaitMs) {
             await new Promise(r => setTimeout(r, 3000));
 
-            const currentRun = await getWorkflowRunStatus(run.id);
+            const currentRun = await getWorkflowRunStatus(run.id, repoOpts);
             if (!currentRun) continue;
 
-            const steps = await getWorkflowJobSteps(run.id);
+            const steps = await getWorkflowJobSteps(run.id, repoOpts);
             for (const step of steps) {
               const key = `${step.number}:${step.name}:${step.status}:${step.conclusion}`;
               if (key !== lastSeenStep && step.status !== 'queued') {
@@ -117,7 +145,7 @@ export async function POST(req: NextRequest) {
                 emit(`>>> [ARTIFACT] Downloading signed release artifact from GitHub...\n`);
 
                 try {
-                  const extracted = await downloadAndExtractArtifact(run.id, distDir, buildId);
+                  const extracted = await downloadAndExtractArtifact(run.id, distDir, buildId, repoOpts);
                   if (extracted.zipFile) {
                     emit(`>>> Custom build generated: ${path.basename(extracted.zipFile)}\n`);
                   }

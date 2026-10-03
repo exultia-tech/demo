@@ -20,6 +20,7 @@ const TIER_WEIGHTS: Record<string, number> = {
   pro: 10,
   legal: 10,
   enterprise: 20,
+  developer: 20,
 };
 
 export function PlanGate({

@@ -13,6 +13,10 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const isEnterprise = sessionUser.role === 'admin' || sessionUser.subscriptions?.some(
+      s => s.status === 'active' && (s.tier.toLowerCase() === 'enterprise' || s.tier.toLowerCase() === 'developer')
+    );
+
     const tokens = await db.query.apiTokens.findMany({
       where: eq(apiTokens.userId, sessionUser.id),
       orderBy: (tokens, { desc }) => [desc(tokens.createdAt)],
@@ -20,6 +24,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
+      isEnterprise: Boolean(isEnterprise),
       tokens: tokens.map(t => {
         let scopes: string[] = [];
         try {
@@ -50,6 +55,18 @@ export async function POST(req: Request) {
     const sessionUser = await getCurrentUser();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const isEnterprise = sessionUser.role === 'admin' || sessionUser.subscriptions?.some(
+      s => s.status === 'active' && (s.tier.toLowerCase() === 'enterprise' || s.tier.toLowerCase() === 'developer')
+    );
+
+    if (!isEnterprise) {
+      return NextResponse.json({
+        error: 'Programmatic API tokens and enhanced APIs are exclusive to Enterprise subscribers. Free accounts are limited to basic account management.',
+        requiresUpgrade: true,
+        requiredTier: 'enterprise'
+      }, { status: 403 });
     }
 
     const body = await req.json();

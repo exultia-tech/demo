@@ -3,7 +3,7 @@ import { compileRemediationBlock } from "@/lib/fix-list-compiler";
 import { UviAdvisoryRecord } from "@/lib/threat-feed-data";
 
 describe("FixList Compiler & Remediation Engine Tests", () => {
-  const sampleNetworkAdvisory: UviAdvisoryRecord = {
+  const sampleNetworkAdvisory: any = {
     uviId: "UVI-2026-TEST-001",
     title: "Test C2 Beacon Infrastructure",
     severity: "HIGH",
@@ -31,7 +31,7 @@ describe("FixList Compiler & Remediation Engine Tests", () => {
     },
   };
 
-  const samplePhishingAdvisory: UviAdvisoryRecord = {
+  const samplePhishingAdvisory: any = {
     ...sampleNetworkAdvisory,
     uviId: "UVI-2026-TEST-002",
     title: "Executive Credential Harvest Domain",

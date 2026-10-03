@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db, users, apiTokens, subscriptions } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 import { verifyPassword } from '@/lib/auth/crypto';
-import { MOCK_EXAM_DB } from '@/lib/axiom-data';
+import { MOCK_EXAM_DB } from '@/lib/axiom-exam-data';
 
 export const dynamic = 'force-dynamic';
 

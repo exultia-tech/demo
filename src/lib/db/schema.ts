@@ -54,6 +54,33 @@ export const apiTokens = sqliteTable('api_tokens', {
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+export const oauthAccounts = sqliteTable('oauth_accounts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  provider: text('provider').notNull(), // 'microsoft', 'google', 'github'
+  providerAccountId: text('provider_account_id').notNull(),
+  email: text('email'),
+  accessToken: text('access_token'),
+  scope: text('scope'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+export const githubWorkflows = sqliteTable('github_workflows', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  owner: text('owner').notNull(),
+  repo: text('repo').notNull(),
+  workflowFile: text('workflow_file').notNull().default('build-ide.yml'),
+  defaultBranch: text('default_branch').notNull().default('main'),
+  personalAccessToken: text('personal_access_token'), // Optional encrypted PAT for direct workflow triggering
+  installationId: text('installation_id'),          // Optional GitHub App installation ID
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+
 // ============================================================================
 // 2. Vantage Feed & Catalog
 // ============================================================================

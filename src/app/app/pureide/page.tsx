@@ -399,8 +399,21 @@ export default function ConsolePage() {
   const [targetWebDocker, setTargetWebDocker] = useState(true);
 
   // Engine Version Channel Selection (Latest, Preview, Previous, Custom)
+  const [engineChannels, setEngineChannels] = useState<Record<IdeEngine, VersionChannel[]>>(ENGINE_CHANNELS);
   const [versionChannel, setVersionChannel] = useState<"latest" | "preview" | "previous" | "custom">("latest");
   const [customTag, setCustomTag] = useState("");
+
+  // Live Upstream Version Resolver: ensures PureIDE is continuously updated
+  useEffect(() => {
+    fetch('/api/pureide/versions')
+      .then(res => res.json())
+      .then(data => {
+        if (data?.success && data?.channels) {
+          setEngineChannels(data.channels);
+        }
+      })
+      .catch(err => console.error("Could not fetch live engine channels:", err));
+  }, []);
 
   // CI/CD Pipeline Generator
   const [pipelineFormat, setPipelineFormat] = useState<"github" | "gitlab" | "azure" | "jenkins">("github");
@@ -2552,7 +2565,7 @@ build_hardened_ide:
                       );
                     }
 
-                    const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
+                    const currentChannels = (engineChannels || ENGINE_CHANNELS)[selectedEngine] || (engineChannels || ENGINE_CHANNELS).vscode;
                     const chObj = currentChannels.find(c => c.id === versionChannel) || currentChannels[0];
                     return (
                       <div id="version-channel-desc-text" style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>

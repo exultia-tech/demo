@@ -4,10 +4,10 @@ import { execSync } from 'child_process';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
-const GITHUB_OWNER = process.env.GITHUB_OWNER || 'wstrika';
-const GITHUB_REPO = process.env.GITHUB_REPO || 'secure-ide';
-const GITHUB_WORKFLOW = process.env.GITHUB_WORKFLOW || 'build-ide.yml';
+const DEFAULT_GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const DEFAULT_GITHUB_OWNER = process.env.GITHUB_OWNER || 'wstrika';
+const DEFAULT_GITHUB_REPO = process.env.GITHUB_REPO || 'secure-ide';
+const DEFAULT_GITHUB_WORKFLOW = process.env.GITHUB_WORKFLOW || 'build-ide.yml';
 
 export interface WorkflowDispatchParams {
   tier: string;
@@ -20,6 +20,11 @@ export interface WorkflowDispatchParams {
   extensions?: string;
   telemetryUrl?: string;
   buildId: string;
+  owner?: string;
+  repo?: string;
+  workflowFile?: string;
+  token?: string;
+  ref?: string;
 }
 
 export interface WorkflowRunInfo {
@@ -38,29 +43,41 @@ export interface JobStepInfo {
   number: number;
 }
 
-function getHeaders() {
+export interface RepoContext {
+  owner?: string;
+  repo?: string;
+  token?: string;
+}
+
+export function getHeaders(customToken?: string) {
+  const token = customToken || DEFAULT_GITHUB_TOKEN;
   return {
     'Accept': 'application/vnd.github+json',
-    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     'X-GitHub-Api-Version': '2022-11-28',
     'User-Agent': 'SecureIDE-Web-Orchestrator'
   };
 }
 
 /**
- * Dispatches a workflow_dispatch event to GitHub Actions.
+ * Dispatches a workflow_dispatch event to GitHub Actions (supports user linked repo or default repo).
  */
 export async function dispatchWorkflow(params: WorkflowDispatchParams): Promise<void> {
-  const dispatchUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW}/dispatches`;
+  const owner = params.owner || DEFAULT_GITHUB_OWNER;
+  const repo = params.repo || DEFAULT_GITHUB_REPO;
+  const workflow = params.workflowFile || DEFAULT_GITHUB_WORKFLOW;
+  const ref = params.ref || 'main';
+
+  const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow}/dispatches`;
 
   const res = await fetch(dispatchUrl, {
     method: 'POST',
     headers: {
-      ...getHeaders(),
+      ...getHeaders(params.token),
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      ref: 'main',
+      ref,
       inputs: {
         tier: params.tier.toUpperCase(),
         target_os: params.targetOs.toLowerCase(),
@@ -85,10 +102,15 @@ export async function dispatchWorkflow(params: WorkflowDispatchParams): Promise<
 /**
  * Finds the workflow run that was triggered for the workflow by scanning recent runs.
  */
-export async function findWorkflowRun(sinceMs: number = Date.now() - 60000): Promise<WorkflowRunInfo | null> {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs?event=workflow_dispatch&per_page=5`;
+export async function findWorkflowRun(
+  sinceMs: number = Date.now() - 60000,
+  opts?: RepoContext
+): Promise<WorkflowRunInfo | null> {
+  const owner = opts?.owner || DEFAULT_GITHUB_OWNER;
+  const repo = opts?.repo || DEFAULT_GITHUB_REPO;
+  const url = `https://api.github.com/repos/${owner}/${repo}/actions/runs?event=workflow_dispatch&per_page=5`;
   
-  const res = await fetch(url, { headers: getHeaders() });
+  const res = await fetch(url, { headers: getHeaders(opts?.token) });
   if (!res.ok) return null;
 
   const data = await res.json();
@@ -107,9 +129,11 @@ export async function findWorkflowRun(sinceMs: number = Date.now() - 60000): Pro
 /**
  * Gets the current status of a specific workflow run.
  */
-export async function getWorkflowRunStatus(runId: number): Promise<WorkflowRunInfo | null> {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs/${runId}`;
-  const res = await fetch(url, { headers: getHeaders() });
+export async function getWorkflowRunStatus(runId: number, opts?: RepoContext): Promise<WorkflowRunInfo | null> {
+  const owner = opts?.owner || DEFAULT_GITHUB_OWNER;
+  const repo = opts?.repo || DEFAULT_GITHUB_REPO;
+  const url = `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}`;
+  const res = await fetch(url, { headers: getHeaders(opts?.token) });
   if (!res.ok) return null;
   return res.json();
 }
@@ -117,9 +141,11 @@ export async function getWorkflowRunStatus(runId: number): Promise<WorkflowRunIn
 /**
  * Gets the active or completed job steps for a workflow run.
  */
-export async function getWorkflowJobSteps(runId: number): Promise<JobStepInfo[]> {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs/${runId}/jobs`;
-  const res = await fetch(url, { headers: getHeaders() });
+export async function getWorkflowJobSteps(runId: number, opts?: RepoContext): Promise<JobStepInfo[]> {
+  const owner = opts?.owner || DEFAULT_GITHUB_OWNER;
+  const repo = opts?.repo || DEFAULT_GITHUB_REPO;
+  const url = `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`;
+  const res = await fetch(url, { headers: getHeaders(opts?.token) });
   if (!res.ok) return [];
 
   const data = await res.json();
@@ -144,15 +170,19 @@ export async function getWorkflowJobSteps(runId: number): Promise<JobStepInfo[]>
 export async function downloadAndExtractArtifact(
   runId: number,
   outputDir: string = path.join(process.cwd(), 'public', 'downloads'),
-  buildIdHint?: string
+  buildIdHint?: string,
+  opts?: RepoContext
 ): Promise<{ zipFile?: string; exeFile?: string; sbomFile?: string }> {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
+  const owner = opts?.owner || DEFAULT_GITHUB_OWNER;
+  const repo = opts?.repo || DEFAULT_GITHUB_REPO;
+
   // 1. Get artifacts for this workflow run
-  const artifactsUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs/${runId}/artifacts`;
-  const res = await fetch(artifactsUrl, { headers: getHeaders() });
+  const artifactsUrl = `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/artifacts`;
+  const res = await fetch(artifactsUrl, { headers: getHeaders(opts?.token) });
   if (!res.ok) {
     throw new Error(`Failed to list artifacts for run ${runId} (${res.status})`);
   }
@@ -175,9 +205,9 @@ export async function downloadAndExtractArtifact(
 
   try {
     // 2. Download artifact archive stream
-    const downloadUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/artifacts/${artifactId}/zip`;
+    const downloadUrl = `https://api.github.com/repos/${owner}/${repo}/actions/artifacts/${artifactId}/zip`;
     const dlRes = await fetch(downloadUrl, {
-      headers: getHeaders()
+      headers: getHeaders(opts?.token)
     });
 
     if (!dlRes.ok) {
@@ -242,7 +272,7 @@ export async function downloadAndExtractArtifact(
 export async function getOrFetchLatestArtifact(
   outputDir: string = path.join(process.cwd(), 'public', 'downloads')
 ): Promise<{ zipFile?: string; exeFile?: string }> {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs?event=workflow_dispatch&status=success&per_page=1`;
+  const url = `https://api.github.com/repos/${DEFAULT_GITHUB_OWNER}/${DEFAULT_GITHUB_REPO}/actions/runs?event=workflow_dispatch&status=success&per_page=1`;
   const res = await fetch(url, { headers: getHeaders() });
   if (!res.ok) return {};
 
@@ -254,7 +284,7 @@ export async function getOrFetchLatestArtifact(
   const runId = latestRun.id;
 
   // Check if we already have files extracted for this run's artifact
-  const artifactsUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs/${runId}/artifacts`;
+  const artifactsUrl = `https://api.github.com/repos/${DEFAULT_GITHUB_OWNER}/${DEFAULT_GITHUB_REPO}/actions/runs/${runId}/artifacts`;
   const artRes = await fetch(artifactsUrl, { headers: getHeaders() });
   if (!artRes.ok) return {};
 
