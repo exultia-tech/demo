@@ -16,7 +16,7 @@ interface ExamQuestion {
 }
 
 export default function AxiomDashboard() {
-  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs">("syllabus");
+  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs" | "pricing">("syllabus");
   
   // Syllabus State
   const [activeCertId, setActiveCertId] = useState<string>("comptia-secplus");
@@ -268,7 +268,7 @@ export default function AxiomDashboard() {
 
       {/* Main App Nav */}
       <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
-        {["syllabus"].map(view => (
+        {["syllabus", "pricing"].map(view => (
           <button 
             key={view}
             onClick={() => setActiveView(view as any)}
@@ -280,7 +280,7 @@ export default function AxiomDashboard() {
               borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem", textTransform: "capitalize",
               transition: "all 0.2s ease"
             }}>
-            {view === "syllabus" ? "Exam Prep" : view}
+            {view === "syllabus" ? "Exam Prep" : view === "pricing" ? "Pricing & API" : view}
           </button>
         ))}
       </div>
@@ -632,6 +632,52 @@ export default function AxiomDashboard() {
                 <span style={{ color: "#64748B" }}>Select a lab to begin the simulation.</span>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* --- VIEW: PRICING --- */}
+      {activeView === "pricing" && (
+        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ color: "white", fontSize: "2rem", marginBottom: "1rem" }}>Axiom Pricing & LMS API</h2>
+          <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "3rem", lineHeight: 1.6 }}>
+            Our web-based exam simulator is free for individual students. For organizations, universities, and enterprise training programs, we offer a dedicated API to publish our certified content directly into your internal Learning Management Systems (LMS).
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", textAlign: "left" }}>
+            
+            {/* Free Tier */}
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "2.5rem" }}>
+              <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>Student / Individual</h3>
+              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>Free</div>
+              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <li>✓ Full access to 15,000+ certification questions</li>
+                <li>✓ Interactive exam simulator with timers</li>
+                <li>✓ Instant explanations & feedback</li>
+                <li>✓ Checkpoints & progress tracking</li>
+                <li style={{ color: "#F43F5E" }}>✗ No API access</li>
+                <li style={{ color: "#F43F5E" }}>✗ No SCORM/LMS exports</li>
+              </ul>
+            </div>
+
+            {/* Enterprise Tier */}
+            <div style={{ background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "16px", padding: "2.5rem", position: "relative" }}>
+              <div style={{ position: "absolute", top: "-12px", right: "2rem", background: "#F43F5E", color: "white", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 800 }}>ENTERPRISE</div>
+              <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>LMS API Integration</h3>
+              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$499<span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>/mo</span></div>
+              <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Or one-time fee of $2,500 per 250 questions.</p>
+              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <li>✓ <strong>Everything in Free</strong></li>
+                <li>✓ <strong>Enterprise API Endpoint Access</strong></li>
+                <li>✓ Synchronize to internal LMS</li>
+                <li>✓ SCORM compatible JSON exports</li>
+                <li>✓ Private content publishing rights</li>
+              </ul>
+              <button style={{ width: "100%", padding: "1rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", cursor: "pointer" }}>
+                Upgrade in Dashboard
+              </button>
+            </div>
+
           </div>
         </div>
       )}
