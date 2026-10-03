@@ -3,6 +3,7 @@ import { db, users, subscriptions, oauthAccounts } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
+import { isValidationModeActive, isAuthorizedOperator, RESTRICTED_ACCESS_MESSAGE } from '@/lib/auth/access-control';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -192,23 +193,37 @@ export async function GET(
     }
 
     // -------------------------------------------------------------------------
-    // 5. ACCOUNT CREATION & LINKING (Turso DB)
+    // 5. PRE-LAUNCH OPERATOR ACCESS CONTROL & ACCOUNT LINKING (Turso DB)
     // -------------------------------------------------------------------------
+    const validationActive = isValidationModeActive();
+
     let user = await db.query.users.findFirst({
       where: eq(users.email, profile.email.toLowerCase()),
     });
 
+    const isAuthorized = isAuthorizedOperator(profile.email, user?.role);
+
+    // If pre-launch validation mode is active, strictly block non-operators
+    if (validationActive && !isAuthorized) {
+      console.warn(`[PRE-LAUNCH VALIDATION BLOCKED] Unauthorized OAuth sign-in attempt: ${profile.email}`);
+      return NextResponse.redirect(
+        `${baseUrl}/?auth=restricted&message=${encodeURIComponent(RESTRICTED_ACCESS_MESSAGE)}`
+      );
+    }
+
     if (!user) {
-      // Create new user account automatically
+      // Create new user account automatically (elevate authorized operators to admin with enterprise tiers)
       const newUserId = `usr_oauth_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
       const dummyPasswordHash = hashPassword(crypto.randomUUID());
+      const assignedRole = (validationActive && isAuthorized) || isAuthorizedOperator(profile.email) ? 'admin' : 'user';
+      const assignedTier = assignedRole === 'admin' ? 'enterprise' : 'free';
 
       await db.insert(users).values({
         id: newUserId,
         email: profile.email.toLowerCase(),
         name: profile.name,
         passwordHash: dummyPasswordHash,
-        role: 'user',
+        role: assignedRole,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -220,7 +235,7 @@ export async function GET(
           id: `sub_${prod}_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`,
           userId: newUserId,
           product: prod,
-          tier: 'free',
+          tier: assignedTier,
           status: 'active',
           createdAt: new Date(),
         });

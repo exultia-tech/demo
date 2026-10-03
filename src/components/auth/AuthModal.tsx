@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Lock, Mail, X, ShieldCheck, ShieldAlert, ArrowRight, CheckCircle2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +13,17 @@ export default function AuthModal() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && isAuthModalOpen) {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get("message");
+      const authState = params.get("auth");
+      if (authState === "restricted" || authState === "error") {
+        setError(msg || "Private pre-launch validation active. Access is restricted to authorized operators.");
+      }
+    }
+  }, [isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
 
@@ -116,6 +127,25 @@ export default function AuthModal() {
               >
                 <ShieldCheck size={28} />
               </div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  background: "rgba(245, 158, 11, 0.12)",
+                  border: "1px solid rgba(245, 158, 11, 0.35)",
+                  color: "#FBBF24",
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  margin: "0 auto 0.75rem auto",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <ShieldAlert size={13} color="#F59E0B" />
+                <span>Pre-Launch Validation Active (Operator Whitelist Only)</span>
+              </div>
               <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.35rem 0" }}>
                 Exultia Portal Access
               </h2>
@@ -123,6 +153,28 @@ export default function AuthModal() {
                 Instant single sign-on for enterprise workspaces and personal accounts.
               </p>
             </div>
+
+            {/* Error / Restricted Alert */}
+            {error && (
+              <div
+                style={{
+                  background: "rgba(239, 68, 68, 0.15)",
+                  border: "1px solid rgba(239, 68, 68, 0.35)",
+                  borderRadius: "10px",
+                  padding: "0.75rem 0.9rem",
+                  color: "#FCA5A5",
+                  fontSize: "0.82rem",
+                  marginBottom: "1.25rem",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "8px",
+                  lineHeight: 1.4,
+                }}
+              >
+                <AlertTriangle size={16} color="#F87171" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div>{error}</div>
+              </div>
+            )}
 
             {/* SSO Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1.5rem" }}>

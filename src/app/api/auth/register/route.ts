@@ -4,12 +4,24 @@ import { db, users, subscriptions } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
+import { isValidationModeActive, isAuthorizedOperator, RESTRICTED_ACCESS_MESSAGE } from '@/lib/auth/access-control';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
     const { name, email, password, inviteCode } = await req.json();
+
+    // Enforce Pre-Launch Validation lockout policy
+    if (isValidationModeActive()) {
+      const cleanEmail = email ? email.trim().toLowerCase() : '';
+      if (!isAuthorizedOperator(cleanEmail)) {
+        return NextResponse.json({
+          error: RESTRICTED_ACCESS_MESSAGE,
+          restricted: true
+        }, { status: 403 });
+      }
+    }
 
     // Enforce Invite-Only / Registration Disabled policy during private development preview
     const isInviteOnly = process.env.ALLOW_PUBLIC_REGISTRATION !== 'true';

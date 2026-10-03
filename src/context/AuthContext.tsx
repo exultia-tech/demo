@@ -86,6 +86,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refreshUser();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const authParam = params.get("auth");
+      if (authParam === "restricted" || authParam === "error") {
+        setIsAuthModalOpen(true);
+      }
+    }
   }, []);
 
   const login = async (email: string, password: string) => {

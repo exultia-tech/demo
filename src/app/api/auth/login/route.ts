@@ -5,6 +5,7 @@ import { initializeDatabase } from '@/lib/db/init';
 import { eq, and } from 'drizzle-orm';
 import { verifyPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
+import { isValidationModeActive, isAuthorizedOperator, RESTRICTED_ACCESS_MESSAGE } from '@/lib/auth/access-control';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,13 @@ export async function POST(req: Request) {
 
     if (!userRecord) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    }
+
+    // Pre-Launch Validation Mode Check:
+    if (isValidationModeActive() && !isAuthorizedOperator(cleanEmail, userRecord.role)) {
+      return NextResponse.json({
+        error: RESTRICTED_ACCESS_MESSAGE
+      }, { status: 403 });
     }
 
     // Root Emergency Break-Glass Policy:
