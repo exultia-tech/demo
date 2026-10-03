@@ -268,8 +268,8 @@ export default function AuthModal() {
             <div style={{ position: "relative" }}>
               <Mail size={16} color="#64748B" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }} />
               <input 
-                type="email"
-                placeholder="name@company.com"
+                type="text"
+                placeholder="Email or Username"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
