@@ -28,6 +28,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
+    // Root Emergency Break-Glass Policy:
+    // Password-based authentication is restricted strictly to root system administrators.
+    // Standard accounts must authenticate via SSO (Google, Microsoft 365, or GitHub).
+    if (userRecord.role !== 'admin') {
+      return NextResponse.json({
+        error: 'Password authentication is reserved strictly for root administrative emergency access. Please sign in with your SSO provider (Google, Microsoft 365, or GitHub).'
+      }, { status: 403 });
+    }
+
     const isValid = verifyPassword(password, userRecord.passwordHash);
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
