@@ -26,7 +26,7 @@ import {
   Radio,
   Scale
 } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, AxiomIcon, PraxisIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
@@ -58,7 +58,7 @@ function AccountPageContent() {
   const { user, loading: authLoading, openAuthModal, openPaymentModal, refreshUser, getUserTier, isImpersonating } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"overview" | "personas" | "pureide" | "uvi" | "inquest" | "subscriptions" | "tokens" | "security">(
+  const [activeTab, setActiveTab] = useState<"overview" | "personas" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "subscriptions" | "tokens" | "security">(
     (tabParam as any) || "overview"
   );
 
@@ -105,7 +105,7 @@ function AccountPageContent() {
   const inquestTier = getUserTier("inquest");
 
   useEffect(() => {
-    if (tabParam && ["overview", "personas", "pureide", "uvi", "inquest", "subscriptions", "tokens", "security"].includes(tabParam)) {
+    if (tabParam && ["overview", "personas", "pureide", "uvi", "inquest", "axiom", "fixlist", "subscriptions", "tokens", "security"].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, [tabParam]);
@@ -368,7 +368,9 @@ function AccountPageContent() {
               {user.email} • Active Tiers:{" "}
               <span style={{ color: "#60A5FA", fontWeight: 700 }}>PureIDE ({pureIdeTier.toUpperCase()})</span> •{" "}
               <span style={{ color: "#C084FC", fontWeight: 700 }}>Vantage ({uviTier.toUpperCase()})</span> •{" "}
-              <span style={{ color: "#67E8F9", fontWeight: 700 }}>Inquest ({inquestTier.toUpperCase()})</span>
+              <span style={{ color: "#67E8F9", fontWeight: 700 }}>Inquest ({inquestTier.toUpperCase()})</span> •{" "}
+              <span style={{ color: "#FDA4AF", fontWeight: 700 }}>Axiom ({getUserTier("axiom").toUpperCase()})</span> •{" "}
+              <span style={{ color: "#FDE68A", fontWeight: 700 }}>Praxis ({getUserTier("fixlist").toUpperCase()})</span>
             </p>
           </div>
         </div>
@@ -513,6 +515,50 @@ function AccountPageContent() {
         </button>
 
         <button
+          onClick={() => setActiveTab("axiom")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "axiom" ? "rgba(244, 63, 94, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "axiom" ? "2px solid #F43F5E" : "2px solid transparent",
+            color: activeTab === "axiom" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "axiom" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <AxiomIcon size={16} glow={false} />
+          Axiom Exam Prep
+        </button>
+
+        <button
+          onClick={() => setActiveTab("fixlist")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "fixlist" ? "rgba(245, 158, 11, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "fixlist" ? "2px solid #F59E0B" : "2px solid transparent",
+            color: activeTab === "fixlist" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "fixlist" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <PraxisIcon size={16} glow={false} />
+          Praxis Fix List
+        </button>
+
+        <button
           onClick={() => setActiveTab("subscriptions")}
           style={{
             display: "flex",
@@ -623,6 +669,28 @@ function AccountPageContent() {
       )}
 
       {/* ========================================================================= */}
+      {/* TAB 4.1: AXIOM EXAM PREP */}
+      {/* ========================================================================= */}
+      {activeTab === "axiom" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "18px", padding: "2rem", textAlign: "center" }}>
+          <AxiomIcon size={64} glow={true} className="mx-auto mb-4" />
+          <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "1rem" }}>Axiom LMS Integration</h2>
+          <p style={{ color: "#94A3B8" }}>API token management for LMS endpoint access will appear here.</p>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4.2: PRAXIS FIX LIST */}
+      {/* ========================================================================= */}
+      {activeTab === "fixlist" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.5)", borderRadius: "18px", padding: "2rem", textAlign: "center" }}>
+          <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
+          <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "1rem" }}>Praxis Threat Remediation</h2>
+          <p style={{ color: "#94A3B8" }}>Vulnerability tracking and fix list management will appear here.</p>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* TAB 5: SUBSCRIPTIONS & ENTITLEMENTS */}
       {/* ========================================================================= */}
       {activeTab === "subscriptions" && (
@@ -633,7 +701,7 @@ function AccountPageContent() {
                 Product Subscriptions & Entitlements
               </h2>
               <p style={{ color: "#94A3B8", fontSize: "0.88rem", margin: "4px 0 0 0" }}>
-                Manage your active subscription tiers and developer privileges across all 3 Exultia products.
+                Manage your active subscription tiers and developer privileges across all 5 Exultia products.
               </p>
             </div>
             <Link
@@ -655,7 +723,7 @@ function AccountPageContent() {
             </Link>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
             
             {/* CARD 1: PUREIDE */}
             <div style={{
@@ -892,6 +960,134 @@ function AccountPageContent() {
                     }}
                   >
                     {getSubTier("inquest") === "enterprise" ? "Active (Enterprise)" : "Enterprise"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 4: AXIOM */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.7)",
+              border: getSubTier("axiom") !== "free" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "18px",
+              padding: "1.75rem",
+              display: "flex",
+              flexDirection: "column"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <AxiomIcon size={36} glow={false} />
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom</h3>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Exam Simulator</div>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.7rem",
+                  background: getSubTier("axiom") !== "free" ? "rgba(244, 63, 94, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                  color: getSubTier("axiom") !== "free" ? "#FDA4AF" : "#94A3B8",
+                  border: getSubTier("axiom") !== "free" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                  fontWeight: 800,
+                  textTransform: "uppercase"
+                }}>
+                  {getSubTier("axiom")}
+                </span>
+              </div>
+
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                Cybersecurity certification prep. Free on the web, Enterprise API for LMS integration.
+              </p>
+
+              <div style={{ marginTop: "auto" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
+                  <CheckCircle2 size={14} color="#F43F5E" />
+                  <span>
+                    {getSubTier("axiom") === "enterprise" ? "LMS API Integration" : "Web Exam Simulator"}
+                  </span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "enterprise" ? "free" : "enterprise")}
+                    disabled={updatingSubProduct === "axiom"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(244, 63, 94, 0.3)",
+                      borderRadius: "8px",
+                      color: getSubTier("axiom") === "enterprise" ? "#FDA4AF" : "#FFFFFF",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("axiom") === "enterprise" ? "Active (Enterprise)" : "Upgrade to Enterprise LMS API"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 5: PRAXIS FIX LIST */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.7)",
+              border: getSubTier("fixlist") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "18px",
+              padding: "1.75rem",
+              display: "flex",
+              flexDirection: "column"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <PraxisIcon size={36} glow={false} />
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis</h3>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Fix List Management</div>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.7rem",
+                  background: getSubTier("fixlist") !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                  color: getSubTier("fixlist") !== "free" ? "#FDE68A" : "#94A3B8",
+                  border: getSubTier("fixlist") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                  fontWeight: 800,
+                  textTransform: "uppercase"
+                }}>
+                  {getSubTier("fixlist")}
+                </span>
+              </div>
+
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                Track and remediate vulnerabilities securely with surgical precision.
+              </p>
+
+              <div style={{ marginTop: "auto" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
+                  <CheckCircle2 size={14} color="#F59E0B" />
+                  <span>
+                    {getSubTier("fixlist") === "enterprise" ? "Enterprise Remediation" : "Basic Tracking"}
+                  </span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "enterprise" ? "free" : "enterprise")}
+                    disabled={updatingSubProduct === "fixlist"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("fixlist") === "enterprise" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(245, 158, 11, 0.3)",
+                      borderRadius: "8px",
+                      color: getSubTier("fixlist") === "enterprise" ? "#FDE68A" : "#FFFFFF",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("fixlist") === "enterprise" ? "Active (Enterprise)" : "Upgrade to Enterprise"}
                   </button>
                 </div>
               </div>

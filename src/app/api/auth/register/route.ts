@@ -72,6 +72,30 @@ export async function POST(req: Request) {
         tier: 'free',
         status: 'active',
         createdAt: new Date(),
+      },
+      {
+        id: `sub_uvi_${userId}`,
+        userId,
+        product: 'uvi',
+        tier: 'free',
+        status: 'active',
+        createdAt: new Date(),
+      },
+      {
+        id: `sub_axiom_${userId}`,
+        userId,
+        product: 'axiom',
+        tier: 'free',
+        status: 'active',
+        createdAt: new Date(),
+      },
+      {
+        id: `sub_fixlist_${userId}`,
+        userId,
+        product: 'fixlist',
+        tier: 'free',
+        status: 'active',
+        createdAt: new Date(),
       }
     ]);
 
@@ -96,7 +120,10 @@ export async function POST(req: Request) {
         role: 'user',
         subscriptions: [
           { product: 'pureide', tier: 'free', status: 'active' },
-          { product: 'inquest', tier: 'free', status: 'active' }
+          { product: 'inquest', tier: 'free', status: 'active' },
+          { product: 'uvi', tier: 'free', status: 'active' },
+          { product: 'axiom', tier: 'free', status: 'active' },
+          { product: 'fixlist', tier: 'free', status: 'active' }
         ]
       }
     });
