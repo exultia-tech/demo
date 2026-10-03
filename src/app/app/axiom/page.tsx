@@ -268,7 +268,7 @@ export default function AxiomDashboard() {
 
       {/* Main App Nav */}
       <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
-        {["syllabus", "simulator", "labs"].map(view => (
+        {["syllabus"].map(view => (
           <button 
             key={view}
             onClick={() => setActiveView(view as any)}
@@ -280,7 +280,7 @@ export default function AxiomDashboard() {
               borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem", textTransform: "capitalize",
               transition: "all 0.2s ease"
             }}>
-            {view}
+            {view === "syllabus" ? "Exam Prep" : view}
           </button>
         ))}
       </div>
