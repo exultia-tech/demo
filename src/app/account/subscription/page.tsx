@@ -83,8 +83,8 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Pro Workstation",
-        priceMonthly: 59,
-        priceAnnual: 49,
+        priceMonthly: 49,
+        priceAnnual: 39,
         description: "Priority compiler engine, dedicated build runner, and real-time egress firewall.",
         features: [
           "Everything in Community",
@@ -100,8 +100,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Hermetic Enterprise",
-        priceMonthly: 349,
-        priceAnnual: 299,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "Strict airgap signing, offline cryptographic cosign, and custom organizational policies.",
         features: [
           "Everything in Pro",
@@ -136,8 +136,8 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Threat Intel Pro",
-        priceMonthly: 119,
-        priceAnnual: 99,
+        priceMonthly: 49,
+        priceAnnual: 39,
         description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors.",
         features: [
           "Everything in Community",
@@ -153,8 +153,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Global Feed Enterprise",
-        priceMonthly: 599,
-        priceAnnual: 499,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "High-throughput webhook ingestion, raw bulk dataset dumps, and private threat submissions.",
         features: [
           "Everything in Pro",
@@ -189,8 +189,8 @@ function SubscriptionContent() {
       {
         tier: "legal",
         name: "Legal Discovery Pro",
-        priceMonthly: 179,
-        priceAnnual: 149,
+        priceMonthly: 49,
+        priceAnnual: 39,
         description: "Autonomous administrative appeal generator, 9-exemption de-redaction scanner, and docket sync.",
         features: [
           "Everything in Community",
@@ -207,8 +207,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Firm & Agency Suite",
-        priceMonthly: 599,
-        priceAnnual: 499,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "Multi-seat litigation workspace, court filing export, and dedicated legal tech support.",
         features: [
           "Everything in Legal Pro",
@@ -243,8 +243,8 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Automated Remediation Pro",
-        priceMonthly: 79,
-        priceAnnual: 65,
+        priceMonthly: 49,
+        priceAnnual: 39,
         description: "Automated patch generation with surgical Bash, PowerShell, and Ansible fix payloads.",
         features: [
           "Everything in Community",
@@ -260,8 +260,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Fleet Patch Automation",
-        priceMonthly: 399,
-        priceAnnual: 319,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "Enterprise-wide fleet automated patch deployment, SIEM hooks, and air-gapped script signing.",
         features: [
           "Everything in Pro",
@@ -295,8 +295,8 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Verified Stacks Pro",
-        priceMonthly: 59,
-        priceAnnual: 49,
+        priceMonthly: 49,
+        priceAnnual: 39,
         description: "Production-ready hardened runtimes with daily zero-day patch rebuilds and minimal attack surfaces.",
         features: [
           "Everything in Community",
@@ -312,8 +312,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Sovereign Airgap Hub",
-        priceMonthly: 449,
-        priceAnnual: 359,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "Private container registry proxy, custom golden images, and enclave-based hardware attestation.",
         features: [
           "Everything in Pro",
@@ -345,30 +345,13 @@ function SubscriptionContent() {
         isPopular: false
       },
       {
-        tier: "pro",
-        name: "Certified Professional",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Hands-on attack & defense lab simulations, domain weakness diagnosis, and printable study guides.",
-        features: [
-          "Everything in Free",
-          "Interactive terminal hands-on attack & defense labs",
-          "Detailed domain performance analytics & weak-spot diagnosis",
-          "Printable PDF study guides & flashcard generation",
-          "Unlimited practice exam attempts & history exports",
-          "Priority simulation engine & offline study mode"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
         tier: "enterprise",
         name: "LMS API Integration",
-        priceMonthly: 299,
-        priceAnnual: 249,
+        priceMonthly: 149,
+        priceAnnual: 119,
         description: "Enterprise REST API, SCORM/xAPI exports, and organizational team benchmarking.",
         features: [
-          "Everything in Pro",
+          "Everything in Student Free tier",
           "Dedicated Enterprise REST API endpoints for question banks",
           "SCORM & xAPI compatible exports for internal LMS",
           "Multi-student progress benchmarking & corporate scorecards",
@@ -376,7 +359,7 @@ function SubscriptionContent() {
           "SSO SAML 2.0 integration & dedicated education advisor"
         ],
         cta: "Upgrade to Enterprise",
-        isPopular: false
+        isPopular: true
       }
     ]
   };
@@ -590,7 +573,16 @@ function SubscriptionContent() {
       </div>
 
       {/* Pricing Cards Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))", gap: "2rem", marginBottom: "3rem" }}>
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: plans[selectedProduct].length === 2 ? "repeat(auto-fit, minmax(320px, 420px))" : "repeat(auto-fit, minmax(310px, 1fr))", 
+        justifyContent: "center",
+        gap: "2rem", 
+        marginBottom: "3rem",
+        maxWidth: plans[selectedProduct].length === 2 ? "900px" : undefined,
+        marginLeft: "auto",
+        marginRight: "auto"
+      }}>
         {plans[selectedProduct].map((plan) => {
           const isCurrent = currentTier === plan.tier;
           const price = billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly;

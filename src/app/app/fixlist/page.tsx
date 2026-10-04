@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 const REMEDIATION_CLASSES = [
   {
@@ -203,8 +204,26 @@ export default function PraxisPage() {
             Beta
           </span>
 
-          <div style={{ marginLeft: "auto", position: "relative" }}>
-            <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.8rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+            <Link
+              href="/account/subscription?product=fixlist"
+              style={{
+                padding: "0.45rem 0.9rem",
+                borderRadius: "8px",
+                background: "rgba(245, 158, 11, 0.15)",
+                border: "1px solid rgba(245, 158, 11, 0.35)",
+                color: "#FBBF24",
+                fontWeight: 700,
+                fontSize: "0.82rem",
+                textDecoration: "none",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Plans & Pricing ($0, $49, $149) →
+            </Link>
+
+            <div style={{ position: "relative" }}>
+              <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.8rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
               <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Profile:</span>
               <select 
                 onChange={(e) => {
@@ -239,7 +258,8 @@ export default function PraxisPage() {
             )}
           </div>
         </div>
-        <p style={{ color: 'var(--text-muted)', maxWidth: '700px', lineHeight: 1.6, margin: 0 }}>
+      </div>
+      <p style={{ color: 'var(--text-muted)', maxWidth: '700px', lineHeight: 1.6, margin: 0 }}>
           Compile and deploy targeted remediation clients directly from the Vantage threat registry.
           Scripts are generated on-demand, transmitted exactly <strong style={{ color: 'var(--text-main)' }}>once</strong>, and immediately destroyed — no server-side retention.
         </p>

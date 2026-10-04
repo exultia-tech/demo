@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { PureOsIcon } from '@/components/BrandIcons';
 import { Download, FileCode } from 'lucide-react';
 
@@ -133,27 +134,44 @@ export default function PureOSConfigurator() {
           </div>
 
           {/* Tier Selector */}
-          <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem", borderRadius: "12px" }}>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginRight: "0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>License:</span>
+          <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem", borderRadius: "12px", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginRight: "0.25rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>License:</span>
             {['Free', 'Pro', 'Enterprise'].map(t => (
               <button
               key={t}
               onClick={() => setTier(t as SubscriptionTier)}
               style={{
-                padding: "0.4rem 1rem",
+                padding: "0.4rem 0.85rem",
                 borderRadius: "8px",
                 background: tier === t ? "linear-gradient(135deg, #10B981 0%, #059669 100%)" : "transparent",
                 color: tier === t ? "white" : "var(--text-muted)",
                 border: "none",
                 cursor: "pointer",
                 fontWeight: 600,
-                fontSize: "0.85rem",
+                fontSize: "0.82rem",
                 transition: "all 0.2s ease"
               }}
             >
-              {t}
+              {t} {t === 'Free' ? '($0)' : t === 'Pro' ? '($49)' : '($149)'}
             </button>
-          ))}
+            ))}
+            <Link
+              href="/account/subscription?product=pureos"
+              style={{
+                padding: "0.4rem 0.85rem",
+                borderRadius: "8px",
+                background: "rgba(16, 185, 129, 0.15)",
+                border: "1px solid rgba(16, 185, 129, 0.35)",
+                color: "#34D399",
+                fontWeight: 700,
+                fontSize: "0.8rem",
+                textDecoration: "none",
+                marginLeft: "0.25rem",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Plans & Pricing ($0, $49, $149) →
+            </Link>
           </div>
         </div>
       </header>
@@ -291,10 +309,26 @@ export default function PureOSConfigurator() {
                   <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                     <div style={{ fontSize: "1.5rem", marginTop: "-2px" }}>🔑</div>
                     <div style={{ flex: 1 }}>
-                      <h3 style={{ margin: "0 0 0.5rem 0", color: "white", fontSize: "1.1rem" }}>Enterprise Entitlements (BYOS)</h3>
-                      <p style={{ margin: "0 0 1rem 0", color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: 1.5 }}>
-                        Building {baseImage.split('-')[0].toUpperCase()} with official package repositories requires an active subscription. Provide your subscription token to authorize the build worker.
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
+                        <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: 1.5, flex: 1 }}>
+                          Building {baseImage.split('-')[0].toUpperCase()} with official package repositories requires an active subscription. Provide your subscription token to authorize the build worker.
+                        </p>
+                        <Link
+                          href="/account/subscription?product=pureos"
+                          style={{
+                            padding: "0.4rem 0.85rem",
+                            borderRadius: "6px",
+                            background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                            color: "#000",
+                            fontSize: "0.8rem",
+                            fontWeight: 700,
+                            textDecoration: "none",
+                            whiteSpace: "nowrap"
+                          }}
+                        >
+                          Get Subscription ($0, $49, $149) →
+                        </Link>
+                      </div>
                       
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         <label style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>

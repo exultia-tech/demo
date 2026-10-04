@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
 // Multi-IDE Types
 type IdeEngine = "vscode" | "theia" | "zed" | "neovim" | "jupyter";
@@ -4223,9 +4224,27 @@ build_hardened_ide:
                   Select the procurement tier to allocate license seats, private registries, and binary whitelabeling.
                 </p>
               </div>
-              <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
-                Active: {tier} Edition
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <span className="github-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
+                  Active: {tier} Edition
+                </span>
+                <Link
+                  href="/account/subscription?product=pureide"
+                  style={{
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '6px',
+                    background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                    color: '#fff',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Manage / Purchase Plans ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
@@ -4240,8 +4259,8 @@ build_hardened_ide:
                 },
                 {
                   id: "TEAM" as SubscriptionTier,
-                  name: "Team Edition",
-                  price: "$19 / seat / mo",
+                  name: "Team / Pro Edition",
+                  price: "$49 / mo ($39 billed annually)",
                   badge: "Most Popular",
                   badgeColor: "#60A5FA",
                   features: ["Stack Blueprints Catalog Access", "Multi-Role Composite Stacks", "50 Procured Seat Licenses"]
@@ -4249,7 +4268,7 @@ build_hardened_ide:
                 {
                   id: "ENTERPRISE" as SubscriptionTier,
                   name: "Enterprise Edition",
-                  price: "$39 / seat / mo",
+                  price: "$149 / mo ($119 billed annually)",
                   badge: "Full Governance",
                   badgeColor: "#A78BFA",
                   features: ["Custom Brand Whitelabeling Studio", "Private JFrog / Artifactory Proxy", "250+ Procured Seat Licenses"]

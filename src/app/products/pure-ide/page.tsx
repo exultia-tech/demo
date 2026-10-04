@@ -40,7 +40,7 @@ export default function PureIdeLandingPage() {
           <Link 
             href="/products/pure-ide/pricing" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            Pricing Plans
+            Plans & Pricing ($0, $49, $149)
           </Link>
         </div>
       </section>
@@ -367,7 +367,10 @@ export default function PureIdeLandingPage() {
               Launch Builder Console Free →
             </Link>
             <Link href="/products/pure-ide/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              View Pricing Plans
+              Plans & Pricing ($0, $49, $149)
+            </Link>
+            <Link href="/account/subscription?product=pureide" className="btn-primary" style={{ padding: "0.95rem 1.85rem", fontSize: "0.95rem", textDecoration: "none", background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}>
+              Subscribe Now →
             </Link>
           </div>
         </div>

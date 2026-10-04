@@ -77,7 +77,7 @@ export default function PureOSPricingPage() {
             Advanced hardening and real-time threat sync for production.
           </p>
           <div style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "2rem" }}>
-            ${isAnnual ? "49" : "59"}
+            ${isAnnual ? "39" : "49"}
             <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: 400 }}>/mo</span>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem 0", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -98,9 +98,9 @@ export default function PureOSPricingPage() {
               <span>Distroless Builds (No Package Managers)</span>
             </li>
           </ul>
-          <button className="btn-primary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", border: "none" }}>
-            Subscribe to Pro
-          </button>
+          <Link href="/account/subscription?product=pureos" className="btn-primary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 700, background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", textDecoration: "none", textAlign: "center", display: "block", color: "white", boxSizing: "border-box" }}>
+            Subscribe to Pro ($49/mo) →
+          </Link>
         </div>
 
         {/* ENTERPRISE TIER */}
@@ -110,7 +110,8 @@ export default function PureOSPricingPage() {
             Custom golden images and private registry integration.
           </p>
           <div style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "2rem" }}>
-            Custom
+            ${isAnnual ? "119" : "149"}
+            <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: 400 }}>/mo</span>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem 0", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
@@ -130,9 +131,9 @@ export default function PureOSPricingPage() {
               <span>Dedicated Support Channel</span>
             </li>
           </ul>
-          <button className="btn-secondary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 600 }}>
-            Contact Sales
-          </button>
+          <Link href="/account/subscription?product=pureos" className="btn-secondary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 700, textDecoration: "none", textAlign: "center", display: "block", color: "white", boxSizing: "border-box" }}>
+            Subscribe to Enterprise ($149/mo) →
+          </Link>
         </div>
       </section>
     </div>

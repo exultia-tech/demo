@@ -29,10 +29,10 @@ export default function InquestPricingPage() {
   const { openPaymentModal } = useAuth();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
 
-  const proMonthly = 119;
-  const proAnnualMonthly = 99;
-  const newsroomMonthly = 599;
-  const newsroomAnnualMonthly = 499;
+  const proMonthly = 49;
+  const proAnnualMonthly = 39;
+  const newsroomMonthly = 149;
+  const newsroomAnnualMonthly = 119;
 
   const handleStartTrial = (plan: "pro" | "newsroom") => {
     openPaymentModal({
@@ -262,7 +262,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#67E8F9", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($1,188/yr) · 14-day free trial" : "Billed monthly · Cancel anytime"}
+                {billingCycle === "annual" ? "Billed annually ($468/yr) · 14-day free trial" : "Billed monthly ($49/mo) · Cancel anytime"}
               </div>
             </div>
 
@@ -352,7 +352,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#A78BFA", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($5,988/yr) · 5 team licenses" : "Billed monthly · 5 team licenses"}
+                {billingCycle === "annual" ? "Billed annually ($1,428/yr) · 5 team licenses" : "Billed monthly ($149/mo) · 5 team licenses"}
               </div>
             </div>
 

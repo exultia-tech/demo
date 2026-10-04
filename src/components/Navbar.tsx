@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -65,8 +65,12 @@ export default function Navbar() {
     pathname.startsWith("/products/pure-os")
   );
 
+  const isAxiomContext = !isIsolated && (
+    pathname.startsWith("/app/axiom")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext;
 
   // Active subscription helper
   const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
@@ -143,14 +147,14 @@ export default function Navbar() {
           </nav>
         ) : (
           /* FULL SUITE PRODUCTS DROPDOWN */
-          <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+          <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.25rem" }}>
             <div 
               style={{ position: "relative" }}
               onMouseEnter={() => setIsProductsOpen(true)}
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -315,10 +319,50 @@ export default function Navbar() {
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Pre-hardened OS container catalogue</div>
                       </div>
                     </Link>
+
+                    {/* PRODUCT 6: Axiom */}
+                    <Link 
+                      href="/app/axiom" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isAxiomContext ? "rgba(244, 63, 94, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <AxiomIcon size={32} glow={false} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Axiom</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
+                      </div>
+                    </Link>
                   </div>
                 </div>
               )}
             </div>
+
+            {/* DIRECT PRICING & PLANS LINK */}
+            <Link 
+              href="/account/subscription"
+              className={`nav-link ${pathname === "/account/subscription" ? "active" : ""}`}
+              style={{
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px"
+              }}
+            >
+              Pricing & Plans
+            </Link>
           </nav>
         )}
 
@@ -569,9 +613,10 @@ export default function Navbar() {
                 Architecture
               </a>
               <Link 
-                href="/products/pure-ide/pricing" 
-                className={`submenu-link ${pathname === "/products/pure-ide/pricing" ? "active-blue" : ""}`}>
-                Pricing
+                href="/account/subscription?product=pureide" 
+                className="submenu-link"
+                style={{ color: "#93C5FD", fontWeight: 700 }}>
+                Plans & Pricing ($0, $49, $149)
               </Link>
               <Link 
                 href="/app/pureide" 
@@ -599,6 +644,12 @@ export default function Navbar() {
                 href={threatFeedStats} 
                 className={`submenu-link ${pathname.includes("/stats") ? "active-purple" : ""}`}>
                 Global Statistics
+              </Link>
+              <Link 
+                href="/account/subscription?product=uvi" 
+                className="submenu-link"
+                style={{ color: "#C084FC", fontWeight: 700 }}>
+                Plans & Pricing ($0, $49, $149)
               </Link>
               <Link 
                 href="/app/uvi/best-practices" 
@@ -634,9 +685,10 @@ export default function Navbar() {
                 Features
               </Link>
               <Link 
-                href="/products/inquest/pricing" 
-                className={`submenu-link ${pathname === "/products/inquest/pricing" ? "active-cyan" : ""}`}>
-                Pricing
+                href="/account/subscription?product=inquest" 
+                className="submenu-link"
+                style={{ color: "#67E8F9", fontWeight: 700 }}>
+                Plans & Pricing ($0, $49, $149)
               </Link>
               <Link 
                 href="/app/inquest" 
@@ -661,9 +713,10 @@ export default function Navbar() {
                 Client Generator
               </Link>
               <Link 
-                href="/products/fix-list/pricing" 
-                className={`submenu-link ${pathname === "/products/fix-list/pricing" ? "active-emerald" : ""}`}>
-                Enterprise Licensing
+                href="/account/subscription?product=fixlist" 
+                className="submenu-link"
+                style={{ color: "#FDE68A", fontWeight: 700 }}>
+                Plans & Pricing ($0, $49, $149)
               </Link>
             </div>
           )}
@@ -682,15 +735,39 @@ export default function Navbar() {
                 Overview
               </Link>
               <Link 
-                href="/products/pure-os/pricing" 
-                className={`submenu-link ${pathname === "/products/pure-os/pricing" ? "active-amber" : ""}`}>
-                Pricing
+                href="/account/subscription?product=pureos" 
+                className="submenu-link"
+                style={{ color: "#FBBF24", fontWeight: 700 }}>
+                Plans & Pricing ($0, $49, $149)
               </Link>
               <Link 
                 href="/app/pureos" 
                 className={`submenu-link ${pathname === "/app/pureos" ? "active-amber" : ""}`}
                 style={{ fontWeight: 600 }}>
                 Catalogue
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 6: AXIOM SUBMENU */}
+          {isAxiomContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(244, 63, 94, 0.15)", color: "#FDA4AF", borderColor: "rgba(244, 63, 94, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <AxiomIcon size={16} glow={false} />
+                Axiom
+              </span>
+
+              <Link 
+                href="/app/axiom" 
+                className={`submenu-link ${pathname === "/app/axiom" ? "active-rose" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Simulator & Labs
+              </Link>
+              <Link 
+                href="/account/subscription?product=axiom" 
+                className="submenu-link"
+                style={{ color: "#FDA4AF", fontWeight: 700 }}>
+                Plans & Pricing ($0, $149)
               </Link>
             </div>
           )}

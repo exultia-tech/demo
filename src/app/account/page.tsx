@@ -835,7 +835,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("pureide") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                    {getSubTier("pureide") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("pureide", getSubTier("pureide") === "enterprise" ? "free" : "enterprise")}
@@ -851,7 +851,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("pureide") === "enterprise" ? "Active (Enterprise)" : "Enterprise"}
+                    {getSubTier("pureide") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
                   </button>
                 </div>
               </div>
@@ -896,7 +896,7 @@ function AccountPageContent() {
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#C084FC" />
                   <span>
-                    {getSubTier("uvi") === "enterprise" ? "Streaming Webhooks & Raw Dumps" : (getSubTier("uvi") === "pro" ? "Realtime API & KEV Feeds" : "Web UI Feed Access")}
+                    {getSubTier("uvi") === "enterprise" ? "Streaming Webhooks & Raw Dumps ($149)" : (getSubTier("uvi") === "pro" ? "Realtime API & KEV Feeds ($49)" : "Web UI Feed Access (Free $0)")}
                   </span>
                 </div>
 
@@ -915,7 +915,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("uvi") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                    {getSubTier("uvi") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("uvi", getSubTier("uvi") === "enterprise" ? "free" : "enterprise")}
@@ -931,7 +931,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("uvi") === "enterprise" ? "Active (Enterprise)" : "Enterprise"}
+                    {getSubTier("uvi") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
                   </button>
                 </div>
               </div>
@@ -976,7 +976,7 @@ function AccountPageContent() {
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#67E8F9" />
                   <span>
-                    {getSubTier("inquest") === "legal" ? "Unlimited Statutory Briefs & Cases" : (getSubTier("inquest") === "enterprise" ? "Enterprise Multi-Firm Docket" : "Standard Draft Filing")}
+                    {getSubTier("inquest") === "legal" ? "Unlimited Statutory Briefs & Cases ($49)" : (getSubTier("inquest") === "enterprise" ? "Enterprise Multi-Firm Docket ($149)" : "Standard Draft Filing (Free $0)")}
                   </span>
                 </div>
 
@@ -995,7 +995,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("inquest") === "legal" ? "Active (Legal)" : "Legal Pro"}
+                    {getSubTier("inquest") === "legal" ? "Active (Legal $49)" : "Legal Pro ($49)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("inquest", getSubTier("inquest") === "enterprise" ? "free" : "enterprise")}
@@ -1011,13 +1011,13 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("inquest") === "enterprise" ? "Active (Enterprise)" : "Enterprise"}
+                    {getSubTier("inquest") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* CARD 4: AXIOM */}
+            {/* CARD 4: AXIOM (Strictly 2 Tiers: Free $0 and Enterprise $149) */}
             <div style={{
               background: "rgba(15, 23, 42, 0.7)",
               border: getSubTier("axiom") !== "free" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
@@ -1031,7 +1031,7 @@ function AccountPageContent() {
                   <AxiomIcon size={36} glow={false} />
                   <div>
                     <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom</h3>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Exam Simulator & LMS</div>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Exam Simulator & LMS API</div>
                   </div>
                 </div>
                 <span style={{
@@ -1049,41 +1049,41 @@ function AccountPageContent() {
               </div>
 
               <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-                15,000+ question cybersecurity certification simulator with interactive lab terminals and LMS API.
+                15,000+ question cybersecurity certification simulator with full question bank, interactive timer, and LMS API integration.
               </p>
 
               <div style={{ marginTop: "auto" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#F43F5E" />
                   <span>
-                    {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API & SCORM" : (getSubTier("axiom") === "pro" ? "Interactive Attack/Defense Labs" : "Web Exam Simulator")}
+                    {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API & SCORM ($149/mo)" : "Web Exam Simulator (Free $0)"}
                   </span>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                   <button
-                    onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "pro" ? "free" : "pro")}
-                    disabled={updatingSubProduct === "axiom"}
+                    onClick={() => handleQuickTierSwitch("axiom", "free")}
+                    disabled={updatingSubProduct === "axiom" || getSubTier("axiom") === "free"}
                     style={{
                       padding: "8px",
-                      background: getSubTier("axiom") === "pro" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      background: getSubTier("axiom") === "free" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
                       border: "1px solid rgba(244, 63, 94, 0.3)",
                       borderRadius: "8px",
                       color: "#FFFFFF",
                       fontSize: "0.78rem",
                       fontWeight: 700,
-                      cursor: "pointer"
+                      cursor: getSubTier("axiom") === "free" ? "default" : "pointer"
                     }}
                   >
-                    {getSubTier("axiom") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                    {getSubTier("axiom") === "free" ? "Active (Free $0)" : "Free ($0)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "enterprise" ? "free" : "enterprise")}
                     disabled={updatingSubProduct === "axiom"}
                     style={{
                       padding: "8px",
-                      background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                      border: "1px solid rgba(244, 63, 94, 0.3)",
+                      background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.25)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(244, 63, 94, 0.4)",
                       borderRadius: "8px",
                       color: "#FDA4AF",
                       fontSize: "0.78rem",
@@ -1091,7 +1091,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("axiom") === "enterprise" ? "Active (LMS API)" : "Enterprise LMS"}
+                    {getSubTier("axiom") === "enterprise" ? "Active ($149/mo)" : "Enterprise ($149)"}
                   </button>
                 </div>
               </div>
@@ -1136,7 +1136,7 @@ function AccountPageContent() {
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#F59E0B" />
                   <span>
-                    {getSubTier("fixlist") === "enterprise" ? "Global Fleet Patch Automation" : (getSubTier("fixlist") === "pro" ? "Automated Payloads & SIEM Exports" : "Community CVE Checklist")}
+                    {getSubTier("fixlist") === "enterprise" ? "Global Fleet Patch Automation ($149)" : (getSubTier("fixlist") === "pro" ? "Automated Payloads & SIEM Exports ($49)" : "Community CVE Checklist (Free $0)")}
                   </span>
                 </div>
 
@@ -1155,7 +1155,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("fixlist") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                    {getSubTier("fixlist") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "enterprise" ? "free" : "enterprise")}
@@ -1171,7 +1171,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("fixlist") === "enterprise" ? "Active (Fleet)" : "Fleet Enterprise"}
+                    {getSubTier("fixlist") === "enterprise" ? "Active (Fleet $149)" : "Fleet ($149)"}
                   </button>
                 </div>
               </div>
@@ -1216,7 +1216,7 @@ function AccountPageContent() {
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#10B981" />
                   <span>
-                    {getSubTier("pureos") === "enterprise" ? "Sovereign Airgap Attestation" : (getSubTier("pureos") === "pro" ? "Daily Threat Rebuilds & Distroless" : "Community Base Images")}
+                    {getSubTier("pureos") === "enterprise" ? "Sovereign Airgap Attestation ($149)" : (getSubTier("pureos") === "pro" ? "Daily Threat Rebuilds & Distroless ($49)" : "Community Base Images (Free $0)")}
                   </span>
                 </div>
 
@@ -1235,7 +1235,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("pureos") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                    {getSubTier("pureos") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
                   </button>
                   <button
                     onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "enterprise" ? "free" : "enterprise")}
@@ -1251,7 +1251,7 @@ function AccountPageContent() {
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("pureos") === "enterprise" ? "Active (Airgap)" : "Airgap Hub"}
+                    {getSubTier("pureos") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
                   </button>
                 </div>
               </div>

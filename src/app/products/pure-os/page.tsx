@@ -27,7 +27,10 @@ export default function PureOSMarketingPage() {
             Browse Catalogue →
           </Link>
           <Link href="/products/pure-os/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            View Licensing Plans
+            Plans & Pricing ($0, $49, $149)
+          </Link>
+          <Link href="/account/subscription?product=pureos" className="btn-primary" style={{ padding: "0.95rem 1.85rem", fontSize: "0.95rem", textDecoration: "none", background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}>
+            Subscribe Now →
           </Link>
         </div>
       </section>
@@ -56,6 +59,33 @@ export default function PureOSMarketingPage() {
                 We strip non-essential binaries and package managers from production-ready images, dramatically reducing the surface area available for remote code execution and lateral movement.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BOTTOM CTA BANNER */}
+      <section style={{ maxWidth: "1000px", margin: "4rem auto 0 auto", padding: "0 1.5rem" }}>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15))",
+          border: "1px solid rgba(245, 158, 11, 0.3)",
+          borderRadius: "20px",
+          padding: "3rem 2rem",
+          textAlign: "center",
+          boxShadow: "0 20px 40px -15px rgba(0,0,0,0.8)"
+        }}>
+          <h2 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.75rem", color: "#FFFFFF" }}>
+            Ready to Deploy Hardened OS Images?
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "600px", margin: "0 auto 2rem auto" }}>
+            Configure and download verified, CIS-hardened base images with automated SBOM validation.
+          </p>
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/app/pureos" className="btn-primary" style={{ padding: "0.95rem 2.25rem", fontSize: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" }}>
+              Launch Configurator Free →
+            </Link>
+            <Link href="/account/subscription?product=pureos" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
+              Plans & Pricing ($0, $49, $149) →
+            </Link>
           </div>
         </div>
       </section>

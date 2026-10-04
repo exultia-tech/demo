@@ -41,9 +41,9 @@ export default function InquestProductLandingPage() {
             50-State Agency Directory
           </Link>
           <Link 
-            href="/app/inquest?tab=analyzer" 
+            href="/products/inquest/pricing" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            Denial Letter Analyzer
+            Plans & Pricing ($0, $49, $149)
           </Link>
         </div>
       </section>
@@ -273,7 +273,7 @@ export default function InquestProductLandingPage() {
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $99 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+                $49 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo ($39 billed annually)</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
                 Multi-agency sweeps, automated follow-up scheduling, and inbound reply parsing.
@@ -286,7 +286,7 @@ export default function InquestProductLandingPage() {
               </ul>
             </div>
             <Link 
-              href="/products/inquest/pricing" 
+              href="/account/subscription?product=inquest" 
               className="btn-primary"
               style={{
                 marginTop: "1.75rem",
@@ -300,7 +300,7 @@ export default function InquestProductLandingPage() {
                 fontWeight: 800,
                 textDecoration: "none"
               }}>
-              View Pro Details →
+              Subscribe Pro ($49/mo) →
             </Link>
           </div>
 
@@ -322,7 +322,7 @@ export default function InquestProductLandingPage() {
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $499 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo (annual)</span>
+                $149 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo ($119 billed annually)</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
                 Shared team docket, duplicate request warnings, and exportable evidence packages.
@@ -335,7 +335,7 @@ export default function InquestProductLandingPage() {
               </ul>
             </div>
             <Link 
-              href="/products/inquest/pricing" 
+              href="/account/subscription?product=inquest" 
               style={{
                 marginTop: "1.75rem",
                 display: "block",
@@ -349,7 +349,7 @@ export default function InquestProductLandingPage() {
                 fontWeight: 700,
                 textDecoration: "none"
               }}>
-              View Team Suite →
+              Subscribe Newsroom ($149/mo) →
             </Link>
           </div>
         </div>

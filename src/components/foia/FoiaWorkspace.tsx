@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { RequestWizard } from './RequestWizard';
 import { CaseDashboard } from './CaseDashboard';
@@ -240,26 +241,48 @@ export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wiza
           </button>
         </div>
 
-        {/* Settings Button */}
-        <button
-          onClick={() => setIsSettingsOpen(true)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: '#E2E8F0',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            cursor: 'pointer'
-          }}
-        >
-          <Sliders size={14} />
-          <span>Filing Profile & Key</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <Link
+            href="/account/subscription?product=inquest"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.2))',
+              border: '1px solid rgba(6, 182, 212, 0.4)',
+              color: '#67E8F9',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <span>Plans & Pricing ($0, $49, $149) →</span>
+          </Link>
+
+          {/* Settings Button */}
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#E2E8F0',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            <Sliders size={14} />
+            <span>Filing Profile & Key</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Workspace Stage */}

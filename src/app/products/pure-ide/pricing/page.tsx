@@ -198,47 +198,47 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* TIER 2: TEAM EDITION */}
+        {/* TIER 2: TEAM / PRO EDITION */}
         <div className="pricing-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem' }}>
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Team</h3>
+              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Pro Workstation</h3>
               <span style={{ fontSize: '0.68rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                 Pro Teams
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
-              For engineering teams wanting shared blueprints & automated CI/CD.
+              Priority compiler engine, dedicated cloud builds, and real-time egress firewall.
             </p>
           </div>
 
           {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-              ${billingCycle === "annual" ? "19" : "24"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
             </div>
           </div>
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.35 }}>
-              {billingCycle === "annual" ? "Billed annually ($19/mo) • Save 20%" : "Billed monthly ($24/mo) • Cancel anytime"}
+              {billingCycle === "annual" ? "Billed annually ($39/mo) • Save 20%" : "Billed monthly ($49/mo) • Cancel anytime"}
             </p>
           </div>
 
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Community, plus:</li>
+            <li className="included">✓ Priority Dedicated Cloud Builds</li>
+            <li className="included">✓ Real-time Egress Socket Firewall</li>
+            <li className="included">✓ Secrets Scanner & Token Redaction</li>
             <li className="included">✓ Curated Blueprints (20+ Stacks)</li>
-            <li className="included">✓ Publish Org Blueprints</li>
-            <li className="included">✓ Remote-SSH Bridges</li>
-            <li className="included">✓ Hardening Policy as Code</li>
-            <li className="included">✓ CI/CD Pipeline Exporters</li>
+            <li className="included">✓ 5 Active Workstation Deployments</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
-            <Link href="/app/pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
-              Start Team Trial →
+            <Link href="/account/subscription?product=pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', fontWeight: 700 }}>
+              Subscribe to Pro ($49/mo) →
             </Link>
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function PricingPage() {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
               {enterpriseScale === "100+"
                 ? "For enterprise orders of more than 100 licenses. Contact our team to discuss your organization's requirements."
-                : "Full White-Labeling, Headless build APIs, private Artifactory proxying, and policy overrides."
+                : "Hermetic offline cosign, zero-egress hardware attestation, and unlimited workstation nodes."
               }
             </p>
           </div>
@@ -275,7 +275,7 @@ export default function PricingPage() {
               </div>
             ) : (
               <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-                ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+                ${billingCycle === "annual" ? "119" : "149"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
               </div>
             )}
           </div>
@@ -334,12 +334,12 @@ export default function PricingPage() {
             </ul>
           ) : (
             <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
-              <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Team, plus:</li>
-              <li className="included">✓ White-Label Brand Studio</li>
-              <li className="included">✓ Headless REST Build API</li>
-              <li className="included">✓ Private Artifactory Proxy</li>
-              <li className="included">✓ Policy Extension Overrides</li>
-              <li className="included">✓ Multi-OS Release Matrix</li>
+              <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Pro, plus:</li>
+              <li className="included">✓ Hermetic Offline Binary Cosigning</li>
+              <li className="included">✓ Zero-Egress Hardware Attestation</li>
+              <li className="included">✓ Dedicated Self-Hosted Compiler Agent</li>
+              <li className="included">✓ Unlimited Workstation Nodes</li>
+              <li className="included">✓ 24/7 Priority SLA & Security Architect</li>
             </ul>
           )}
 
@@ -354,8 +354,8 @@ export default function PricingPage() {
                 Contact Us (100+ Orders) →
               </a>
             ) : (
-              <Link href="/app/pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box' }}>
-                Launch Enterprise (1–100) →
+              <Link href="/account/subscription?product=pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', fontWeight: 700 }}>
+                Subscribe to Enterprise ($149/mo) →
               </Link>
             )}
           </div>

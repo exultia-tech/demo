@@ -77,6 +77,11 @@ export default function HomePage() {
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600 }}>
                 Explore PureIDE →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=pureide" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -113,6 +118,11 @@ export default function HomePage() {
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}>
                 Explore Threat Intelligence →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=uvi" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -149,6 +159,11 @@ export default function HomePage() {
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
                 Explore Inquest →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=inquest" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -185,6 +200,11 @@ export default function HomePage() {
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #10B981, #059669)" }}>
                 Launch Configurator →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=pureos" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -221,6 +241,11 @@ export default function HomePage() {
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
                 Generate Scripts →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=fixlist" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $49, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -242,6 +267,11 @@ export default function HomePage() {
               <Link href="/app/axiom" className="btn-primary" style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F43F5E, #BE123C)" }}>
                 Start Learning →
               </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=axiom" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing ($0, $149) →
+                </Link>
+              </div>
             </div>
           </div>
 

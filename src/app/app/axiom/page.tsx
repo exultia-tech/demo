@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { AxiomIcon } from "@/components/BrandIcons";
 import { CERTIFICATIONS, LABS_DB, Certification } from "@/lib/axiom-data";
 
@@ -340,7 +341,7 @@ export default function AxiomDashboard() {
       </header>
 
       {/* Main App Nav */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
         {["syllabus", "simulator", "pricing"].map(view => (
           <button 
             key={view}
@@ -356,6 +357,26 @@ export default function AxiomDashboard() {
             {view === "syllabus" ? "Exam Prep" : view === "simulator" ? "Exam Simulator" : view === "pricing" ? "Pricing & API" : view}
           </button>
         ))}
+
+        <Link
+          href="/account/subscription?product=axiom"
+          style={{
+            marginLeft: "auto",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "0.75rem 1.25rem",
+            background: "linear-gradient(135deg, rgba(244, 63, 94, 0.2) 0%, rgba(225, 29, 72, 0.2) 100%)",
+            border: "1px solid rgba(244, 63, 94, 0.4)",
+            color: "#FDA4AF",
+            borderRadius: "8px",
+            fontWeight: 700,
+            fontSize: "0.9rem",
+            textDecoration: "none"
+          }}
+        >
+          Subscribe ($0 Free / $149 Enterprise) →
+        </Link>
       </div>
 
       {/* --- VIEW: SYLLABUS --- */}
@@ -757,10 +778,10 @@ export default function AxiomDashboard() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", textAlign: "left" }}>
             
             {/* Free Tier */}
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "2.5rem" }}>
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "2.5rem", display: "flex", flexDirection: "column" }}>
               <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>Student / Individual</h3>
-              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>Free</div>
-              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$0 <span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>Free Forever</span></div>
+              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem", flex: 1 }}>
                 <li>✓ Full access to 15,000+ certification questions</li>
                 <li>✓ Interactive exam simulator with timers</li>
                 <li>✓ Instant explanations & feedback</li>
@@ -768,24 +789,33 @@ export default function AxiomDashboard() {
                 <li style={{ color: "#F43F5E" }}>✗ No API access</li>
                 <li style={{ color: "#F43F5E" }}>✗ No SCORM/LMS exports</li>
               </ul>
+              <Link 
+                href="/account/subscription?product=axiom"
+                style={{ width: "100%", padding: "1rem", background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}
+              >
+                Current Free Tier ($0)
+              </Link>
             </div>
 
             {/* Enterprise Tier */}
-            <div style={{ background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "16px", padding: "2.5rem", position: "relative" }}>
+            <div style={{ background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "16px", padding: "2.5rem", position: "relative", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "absolute", top: "-12px", right: "2rem", background: "#F43F5E", color: "white", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 800 }}>ENTERPRISE</div>
               <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>LMS API Integration</h3>
-              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$499<span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>/mo</span></div>
-              <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Or one-time fee of $2,500 per 250 questions.</p>
-              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$149<span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>/mo</span></div>
+              <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Dedicated question bank API, SCORM exports, and enterprise seat management.</p>
+              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem", flex: 1 }}>
                 <li>✓ <strong>Everything in Free</strong></li>
                 <li>✓ <strong>Enterprise API Endpoint Access</strong></li>
                 <li>✓ Synchronize to internal LMS</li>
                 <li>✓ SCORM compatible JSON exports</li>
                 <li>✓ Private content publishing rights</li>
               </ul>
-              <button style={{ width: "100%", padding: "1rem", background: "#F43F5E", color: "white", border: "none", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", cursor: "pointer" }}>
-                Upgrade in Dashboard
-              </button>
+              <Link 
+                href="/account/subscription?product=axiom"
+                style={{ width: "100%", padding: "1rem", background: "#F43F5E", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box", boxShadow: "0 0 20px rgba(244, 63, 94, 0.4)" }}
+              >
+                Subscribe to Enterprise ($149/mo) →
+              </Link>
             </div>
 
           </div>

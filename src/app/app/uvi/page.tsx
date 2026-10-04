@@ -294,6 +294,53 @@ export default function ThreatFeedPage() {
 
   return (
     <div style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%" }}>
+      {/* Direct Subscription / Referral Banner */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "1rem",
+        background: "linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(147, 51, 234, 0.12))",
+        border: "1px solid rgba(59, 130, 246, 0.3)",
+        borderRadius: "12px",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "1.5rem"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.88rem", color: "#E2E8F0", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "1.1rem" }}>⚡</span>
+          <span>
+            <strong>Vantage Licensing:</strong> Looking for live API feeds, automated quarantine webhooks, or team seats?
+          </span>
+          <span style={{
+            fontSize: "0.75rem",
+            padding: "0.2rem 0.55rem",
+            borderRadius: "6px",
+            background: "rgba(59, 130, 246, 0.2)",
+            color: "#93C5FD",
+            fontWeight: 700
+          }}>
+            Free $0 · Pro $49/mo · Enterprise $149/mo
+          </span>
+        </div>
+        <Link
+          href="/account/subscription?product=uvi"
+          style={{
+            padding: "0.45rem 1rem",
+            fontSize: "0.85rem",
+            fontWeight: 700,
+            color: "#FFFFFF",
+            background: "linear-gradient(135deg, #2563EB, #1D4ED8)",
+            borderRadius: "8px",
+            textDecoration: "none",
+            boxShadow: "0 2px 10px rgba(37, 99, 235, 0.35)",
+            whiteSpace: "nowrap"
+          }}
+        >
+          View Plans & Upgrade →
+        </Link>
+      </div>
+
       {/* Top Header Row: Title & Subtitle (Left) + Threat Total Tile (Right) */}
       <div style={{ 
         display: "flex", 

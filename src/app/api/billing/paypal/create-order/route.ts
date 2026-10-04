@@ -7,28 +7,28 @@ export const dynamic = 'force-dynamic';
 // Standard Exultia plan pricing table
 const PRICING_CATALOG: Record<string, Record<string, { monthly: number; annual: number }>> = {
   pureide: {
-    pro: { monthly: 59, annual: 49 * 12 },
-    enterprise: { monthly: 349, annual: 299 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
   uvi: {
-    pro: { monthly: 99, annual: 79 * 12 },
-    enterprise: { monthly: 499, annual: 399 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
   inquest: {
-    legal: { monthly: 149, annual: 119 * 12 },
-    enterprise: { monthly: 699, annual: 549 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    legal: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
   axiom: {
-    pro: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 299, annual: 249 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
   fixlist: {
-    pro: { monthly: 79, annual: 65 * 12 },
-    enterprise: { monthly: 399, annual: 319 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
   pureos: {
-    pro: { monthly: 89, annual: 69 * 12 },
-    enterprise: { monthly: 449, annual: 359 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 149, annual: 119 * 12 },
   },
 };
 

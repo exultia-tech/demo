@@ -153,7 +153,7 @@ export default function PraxisPricingPage() {
               </button>
             ) : (
               <Link 
-                href="/register?plan=community" 
+                href="/account/subscription?product=fixlist" 
                 style={{
                   display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
                   background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-main)', fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -169,7 +169,7 @@ export default function PraxisPricingPage() {
         {/* Pro Tier */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '2.5rem' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Pro</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$499<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$49<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
             Ideal for mid-sized organizations needing API access to Vantage and automated script generation.
           </p>
@@ -179,18 +179,18 @@ export default function PraxisPricingPage() {
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> 3 Custom Export Formats</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Email Support</li>
           </ul>
-          <Link href="/register" style={{
+          <Link href="/account/subscription?product=fixlist" style={{
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
-            background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', fontWeight: 600, border: '1px solid rgba(16, 185, 129, 0.3)',
+            background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)',
             textDecoration: 'none', transition: 'all 0.2s ease'
-          }}>Start Free Trial</Link>
+          }}>Subscribe to Pro ($49/mo) →</Link>
         </div>
 
         {/* Enterprise Tier */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '2.5rem', borderColor: 'rgba(16, 185, 129, 0.5)', background: 'rgba(16, 185, 129, 0.03)', position: 'relative' }}>
           <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #10B981, #059669)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Most Popular</div>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Enterprise</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>Custom</div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$149<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
             Full fleet deployment, custom SIEM integrations, and white-glove onboarding for large enterprises.
           </p>
@@ -201,11 +201,11 @@ export default function PraxisPricingPage() {
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> 99.99% Uptime SLA</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Air-gapped deployment options</li>
           </ul>
-          <Link href="/contact" style={{
+          <Link href="/account/subscription?product=fixlist" style={{
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
             background: 'linear-gradient(135deg, #10B981, #059669)', color: 'white', fontWeight: 700,
             textDecoration: 'none', transition: 'all 0.2s ease', border: 'none', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
-          }}>Contact Sales</Link>
+          }}>Subscribe to Enterprise ($149/mo) →</Link>
         </div>
 
       </div>
