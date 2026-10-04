@@ -181,6 +181,27 @@ export async function getLicenseAuditSummary(hoursWindow: number = 168): Promise
     });
   }
 
+  // Also include registered users who may not have generated touches in this window yet
+  for (const user of allUsers) {
+    if (!userLogs.has(user.id)) {
+      const userSubTiers = subMap.get(user.id) || {};
+      reports.push({
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        activeProducts: Object.keys(userSubTiers),
+        subscriptionTiers: userSubTiers,
+        uniqueIpsCount: 0,
+        uniqueDevicesCount: 0,
+        recentIps: [],
+        recentDevices: [],
+        totalTouches: 0,
+        lastActive: null,
+        complianceStatus: 'COMPLIANT',
+      });
+    }
+  }
+
   // Sort by suspected sharing first, then total touches
   reports.sort((a, b) => {
     if (a.complianceStatus === 'SUSPECTED_SHARING' && b.complianceStatus !== 'SUSPECTED_SHARING') return -1;
@@ -195,4 +216,36 @@ export async function getLicenseAuditSummary(hoursWindow: number = 168): Promise
     flaggedAccountsCount,
     reports,
   };
+}
+
+export interface RecentTouchRecord {
+  id: string;
+  userId: string;
+  userEmail: string;
+  product: string;
+  action: string;
+  ipAddress: string;
+  userAgent: string;
+  timestamp: Date | null;
+}
+
+export async function getRecentAuditFeed(limit: number = 30): Promise<RecentTouchRecord[]> {
+  const rawLogs = await db.query.licenseAuditLogs.findMany({
+    orderBy: [desc(licenseAuditLogs.timestamp)],
+    limit,
+  });
+
+  const allUsers = await db.query.users.findMany();
+  const userMap = new Map(allUsers.map(u => [u.id, u.email]));
+
+  return rawLogs.map(l => ({
+    id: l.id,
+    userId: l.userId,
+    userEmail: userMap.get(l.userId) || l.userId,
+    product: l.product,
+    action: l.action,
+    ipAddress: l.ipAddress,
+    userAgent: l.userAgent,
+    timestamp: l.timestamp,
+  }));
 }

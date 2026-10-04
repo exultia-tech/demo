@@ -25,7 +25,8 @@ import {
   LayoutDashboard,
   Radio,
   Scale,
-  GitBranch
+  GitBranch,
+  ShieldAlert
 } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
@@ -33,6 +34,7 @@ import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
 import InquestCustomerTools from "@/components/account/InquestCustomerTools";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
+import AdminConsole from "@/components/account/AdminConsole";
 
 interface ApiTokenItem {
   id: string;
@@ -59,8 +61,14 @@ function AccountPageContent() {
   const { user, loading: authLoading, openAuthModal, openPaymentModal, refreshUser, getUserTier, isImpersonating } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "pureos" | "subscriptions" | "tokens" | "workflows" | "security">(
+  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "pureos" | "subscriptions" | "tokens" | "workflows" | "security" | "admin">(
     (tabParam as any) || "overview"
+  );
+
+  const isAdmin = Boolean(
+    user?.role === "admin" ||
+    user?.isImpersonating ||
+    user?.email?.toLowerCase() === "admin@exultia.tech"
   );
 
   // Profile Form State
@@ -377,8 +385,31 @@ function AccountPageContent() {
           </div>
         </div>
 
-        {/* Quick Stats Chips */}
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        {/* Quick Stats Chips & Admin Action */}
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab("admin")}
+              style={{
+                background: activeTab === "admin" ? "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" : "rgba(245, 158, 11, 0.15)",
+                border: "1px solid rgba(245, 158, 11, 0.4)",
+                borderRadius: "12px",
+                padding: "0.75rem 1.25rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: activeTab === "admin" ? "#000000" : "#FDE68A",
+                fontWeight: 800,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                boxShadow: activeTab === "admin" ? "0 0 20px rgba(245, 158, 11, 0.5)" : "none",
+                transition: "all 0.2s ease"
+              }}
+            >
+              <ShieldAlert size={18} color={activeTab === "admin" ? "#000000" : "#F59E0B"} />
+              <span>Admin Console</span>
+            </button>
+          )}
           <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "0.75rem 1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#60A5FA" }}>{stats.activeSubscriptionsCount || subscriptions.filter(s => s.status === "active").length}</div>
             <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Active Tiers</div>
@@ -656,6 +687,40 @@ function AccountPageContent() {
           <Lock size={16} color={activeTab === "security" ? "#FB7185" : "#94A3B8"} />
           Profile & Security
         </button>
+
+        {isAdmin && (
+          <button
+            onClick={() => setActiveTab("admin")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "0.85rem 1.25rem",
+              background: activeTab === "admin" ? "rgba(245, 158, 11, 0.25)" : "rgba(245, 158, 11, 0.08)",
+              border: "none",
+              borderBottom: activeTab === "admin" ? "2px solid #F59E0B" : "2px solid transparent",
+              color: activeTab === "admin" ? "#FDE68A" : "#F59E0B",
+              fontWeight: activeTab === "admin" ? 800 : 600,
+              fontSize: "0.9rem",
+              cursor: "pointer",
+              borderRadius: "8px 8px 0 0",
+              whiteSpace: "nowrap"
+            }}
+          >
+            <ShieldAlert size={16} color="#F59E0B" />
+            Admin Console
+            <span style={{
+              background: "#F59E0B",
+              color: "#000000",
+              fontSize: "0.62rem",
+              padding: "1px 6px",
+              borderRadius: "4px",
+              fontWeight: 800
+            }}>
+              ROOT
+            </span>
+          </button>
+        )}
       </div>
 
       {/* ========================================================================= */}
@@ -1927,6 +1992,13 @@ function AccountPageContent() {
           </div>
 
         </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 11: ADMIN SURVEILLANCE & LICENSE CONSOLE */}
+      {/* ========================================================================= */}
+      {activeTab === "admin" && isAdmin && (
+        <AdminConsole currentUserEmail={user.email} />
       )}
 
     </div>
