@@ -75,6 +75,13 @@ export default function AuthModal() {
     }
   };
 
+  const handleSSO = (provider: string) => {
+    const cleanEmail = email.trim();
+    const cleanName = name.trim();
+    const query = cleanEmail ? `?email=${encodeURIComponent(cleanEmail)}${cleanName ? `&name=${encodeURIComponent(cleanName)}` : ''}` : '';
+    window.location.href = `/api/auth/oauth/${provider}${query}`;
+  };
+
   return (
     <div
       style={{
@@ -430,7 +437,7 @@ export default function AuthModal() {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            margin: "1.25rem 0 1rem 0",
+            margin: "1.25rem 0 0.5rem 0",
             color: "#64748B",
             fontSize: "0.72rem",
             textTransform: "uppercase",
@@ -441,13 +448,16 @@ export default function AuthModal() {
           <span>or continue with SSO</span>
           <div style={{ flex: 1, height: "1px", background: "rgba(255, 255, 255, 0.08)" }} />
         </div>
+        <p style={{ fontSize: "0.72rem", color: "#94A3B8", textAlign: "center", margin: "0 0 0.85rem 0" }}>
+          Single sign-on connects with your email address above.
+        </p>
 
         {/* SSO Action Buttons */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.6rem" }}>
           {/* Google */}
           <button
             type="button"
-            onClick={() => (window.location.href = "/api/auth/oauth/google")}
+            onClick={() => handleSSO("google")}
             title="Continue with Google"
             style={{
               display: "flex",
@@ -493,7 +503,7 @@ export default function AuthModal() {
           {/* GitHub */}
           <button
             type="button"
-            onClick={() => (window.location.href = "/api/auth/oauth/github")}
+            onClick={() => handleSSO("github")}
             title="Continue with GitHub"
             style={{
               display: "flex",
@@ -528,7 +538,7 @@ export default function AuthModal() {
           {/* Microsoft */}
           <button
             type="button"
-            onClick={() => (window.location.href = "/api/auth/oauth/microsoft")}
+            onClick={() => handleSSO("microsoft")}
             title="Continue with Microsoft"
             style={{
               display: "flex",

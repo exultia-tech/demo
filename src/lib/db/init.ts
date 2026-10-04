@@ -52,6 +52,32 @@ export async function initializeDatabase(): Promise<void> {
       created_at INTEGER,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`,
+    `CREATE TABLE IF NOT EXISTS oauth_accounts (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      provider_account_id TEXT NOT NULL,
+      email TEXT,
+      access_token TEXT,
+      scope TEXT,
+      created_at INTEGER,
+      updated_at INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`,
+    `CREATE TABLE IF NOT EXISTS github_workflows (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      owner TEXT NOT NULL,
+      repo TEXT NOT NULL,
+      workflow_file TEXT NOT NULL DEFAULT 'build-ide.yml',
+      default_branch TEXT NOT NULL DEFAULT 'main',
+      personal_access_token TEXT,
+      installation_id TEXT,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      created_at INTEGER,
+      updated_at INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`,
 
     // 2. Vantage
     `CREATE TABLE IF NOT EXISTS uvi_threats (

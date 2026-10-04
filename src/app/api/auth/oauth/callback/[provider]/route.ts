@@ -4,6 +4,7 @@ import { eq, and } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
 import { isValidationModeActive, isAuthorizedOperator, RESTRICTED_ACCESS_MESSAGE } from '@/lib/auth/access-control';
+import { initializeDatabase } from '@/lib/db/init';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -33,29 +34,34 @@ export async function GET(
   let profile: OAuthUserProfile | null = null;
 
   try {
+    await initializeDatabase();
+
     // -------------------------------------------------------------------------
     // 1. MOCK / DEV MODE (When API credentials are not yet added to .env)
     // -------------------------------------------------------------------------
     if (isMock || !code) {
+      const customEmail = searchParams.get('email');
+      const customName = searchParams.get('name');
+
       if (provider === 'github') {
         profile = {
-          providerAccountId: 'gh_demo_1001',
-          email: 'github.developer@exultia.tech',
-          name: 'GitHub Engineer',
+          providerAccountId: customEmail ? `gh_${Buffer.from(customEmail).toString('hex').slice(0, 16)}` : 'gh_demo_1001',
+          email: customEmail || 'github.developer@exultia.tech',
+          name: customName || (customEmail ? customEmail.split('@')[0] : 'GitHub Engineer'),
           scope: 'read:user user:email workflow repo',
         };
       } else if (provider === 'google') {
         profile = {
-          providerAccountId: 'goog_demo_2002',
-          email: 'google.account@exultia.tech',
-          name: 'Google User',
+          providerAccountId: customEmail ? `goog_${Buffer.from(customEmail).toString('hex').slice(0, 16)}` : 'goog_demo_2002',
+          email: customEmail || 'google.account@exultia.tech',
+          name: customName || (customEmail ? customEmail.split('@')[0] : 'Google User'),
           scope: 'openid profile email',
         };
       } else if (provider === 'microsoft') {
         profile = {
-          providerAccountId: 'ms_entra_demo_3003',
-          email: 'entra.enterprise@exultia.tech',
-          name: 'Entra 365 Enterprise User',
+          providerAccountId: customEmail ? `ms_${Buffer.from(customEmail).toString('hex').slice(0, 16)}` : 'ms_entra_demo_3003',
+          email: customEmail || 'entra.enterprise@exultia.tech',
+          name: customName || (customEmail ? customEmail.split('@')[0] : 'Entra 365 Enterprise User'),
           scope: 'openid profile email User.Read',
         };
       }
@@ -249,26 +255,30 @@ export async function GET(
       return NextResponse.redirect(`${baseUrl}/?auth=error&message=${encodeURIComponent('Failed to provision user record')}`);
     }
 
-    // Store or update OAuth account link
-    const existingOAuth = await db.query.oauthAccounts.findFirst({
-      where: and(
-        eq(oauthAccounts.provider, provider),
-        eq(oauthAccounts.providerAccountId, profile.providerAccountId)
-      ),
-    });
-
-    if (!existingOAuth) {
-      await db.insert(oauthAccounts).values({
-        id: `oa_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
-        userId: user.id,
-        provider,
-        providerAccountId: profile.providerAccountId,
-        email: profile.email.toLowerCase(),
-        accessToken: profile.accessToken || null,
-        scope: profile.scope || null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+    // Store or update OAuth account link (resilient to schema variances)
+    try {
+      const existingOAuth = await db.query.oauthAccounts.findFirst({
+        where: and(
+          eq(oauthAccounts.provider, provider),
+          eq(oauthAccounts.providerAccountId, profile.providerAccountId)
+        ),
       });
+
+      if (!existingOAuth) {
+        await db.insert(oauthAccounts).values({
+          id: `oa_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+          userId: user.id,
+          provider,
+          providerAccountId: profile.providerAccountId,
+          email: profile.email.toLowerCase(),
+          accessToken: profile.accessToken || null,
+          scope: profile.scope || null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+    } catch (oauthErr) {
+      console.warn('OAuth account linking notice (non-fatal):', oauthErr);
     }
 
     // -------------------------------------------------------------------------

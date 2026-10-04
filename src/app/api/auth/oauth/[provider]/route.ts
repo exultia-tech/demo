@@ -14,6 +14,9 @@ export async function GET(
   const redirectUri = `${baseUrl}/api/auth/oauth/callback/${provider}`;
 
   const state = crypto.randomBytes(16).toString('hex');
+  const emailParam = req.nextUrl.searchParams.get('email');
+  const nameParam = req.nextUrl.searchParams.get('name');
+  const extraQuery = emailParam ? `&email=${encodeURIComponent(emailParam)}${nameParam ? `&name=${encodeURIComponent(nameParam)}` : ''}` : '';
 
   // 1. GitHub OAuth
   if (provider === 'github') {
@@ -24,7 +27,7 @@ export async function GET(
       return NextResponse.redirect(authUrl);
     }
     // Development / Demo Fallback Mode
-    return NextResponse.redirect(`${redirectUri}?mock=true&provider=github&state=${state}`);
+    return NextResponse.redirect(`${redirectUri}?mock=true&provider=github&state=${state}${extraQuery}`);
   }
 
   // 2. Google OAuth
@@ -32,11 +35,12 @@ export async function GET(
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (clientId) {
       const scope = encodeURIComponent('openid profile email');
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&state=${state}&prompt=select_account`;
+      const loginHint = emailParam ? `&login_hint=${encodeURIComponent(emailParam)}` : '';
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&state=${state}&prompt=select_account${loginHint}`;
       return NextResponse.redirect(authUrl);
     }
     // Development / Demo Fallback Mode
-    return NextResponse.redirect(`${redirectUri}?mock=true&provider=google&state=${state}`);
+    return NextResponse.redirect(`${redirectUri}?mock=true&provider=google&state=${state}${extraQuery}`);
   }
 
   // 3. Microsoft 365 / Microsoft Entra ID (Azure AD)
@@ -45,11 +49,12 @@ export async function GET(
     const tenantId = process.env.MICROSOFT_TENANT_ID || 'common';
     if (clientId) {
       const scope = encodeURIComponent('openid profile email User.Read');
-      const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${scope}&state=${state}`;
+      const loginHint = emailParam ? `&login_hint=${encodeURIComponent(emailParam)}` : '';
+      const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${scope}&state=${state}${loginHint}`;
       return NextResponse.redirect(authUrl);
     }
     // Development / Demo Fallback Mode
-    return NextResponse.redirect(`${redirectUri}?mock=true&provider=microsoft&state=${state}`);
+    return NextResponse.redirect(`${redirectUri}?mock=true&provider=microsoft&state=${state}${extraQuery}`);
   }
 
   return NextResponse.json({ error: `Unsupported OAuth provider: ${provider}` }, { status: 400 });
