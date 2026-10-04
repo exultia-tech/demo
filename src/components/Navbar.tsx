@@ -13,6 +13,12 @@ import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Navbar() {
   const pathname = usePathname();
+
+  // Hide full navigation bar on private preview / holding page
+  if (pathname === "/preview") {
+    return null;
+  }
+
   const { user, loading, logout, openAuthModal, isImpersonating, revertImpersonation } = useAuth();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);

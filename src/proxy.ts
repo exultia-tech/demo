@@ -16,26 +16,27 @@ export function proxy(request: NextRequest) {
   }
 
   // 2. PRIVATE PREVIEW & OPERATOR GATE
-  // When active (default: true during validation), visitors cannot see the live site unless authorized
-  const isPreviewMode = process.env.PRIVATE_PREVIEW_MODE !== "false" && process.env.PUBLIC_LAUNCH !== "true";
+  // When active (default: true during validation), visitors cannot see the live site unless authorized with the operator key
+  const isExplicitlyDisabled = process.env.PRIVATE_PREVIEW_MODE === "false" || process.env.PUBLIC_LAUNCH === "true" || process.env.ALLOW_PUBLIC_ACCESS === "true";
+  const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {
-    // Whitelist the preview page itself, unlock/lock APIs, and the emergency admin login
+    // Whitelist the preview page itself, unlock/lock APIs, auth routes, and the emergency admin login
     if (
       pathname.startsWith("/preview") ||
       pathname.startsWith("/api/preview") ||
-      pathname.startsWith("/admin/login")
+      pathname.startsWith("/admin/login") ||
+      pathname.startsWith("/api/auth")
     ) {
       return NextResponse.next();
     }
 
-    // Check for operator cookie or session
+    // Check for operator authorization passkey cookie
     const operatorCookie = request.cookies.get(OPERATOR_COOKIE_NAME)?.value;
-    const sessionCookie = request.cookies.get("exultia_session")?.value;
-    const expectedKey = process.env.OPERATOR_PREVIEW_KEY || DEFAULT_OPERATOR_KEY;
+    const expectedKey = (process.env.OPERATOR_PREVIEW_KEY || DEFAULT_OPERATOR_KEY).trim();
 
     const isOperatorAuthorized = Boolean(
-      (operatorCookie && operatorCookie === expectedKey) || sessionCookie
+      operatorCookie && operatorCookie.trim() === expectedKey
     );
 
     // If not authorized as operator, redirect to the preview holding page

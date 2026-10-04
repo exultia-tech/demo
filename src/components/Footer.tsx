@@ -7,6 +7,11 @@ import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Footer() {
   const pathname = usePathname();
+
+  // Hide full footer links on private preview / holding page
+  if (pathname === "/preview") {
+    return null;
+  }
   
   const isIsolated = isIsolatedThreatFeed(
     pathname,
