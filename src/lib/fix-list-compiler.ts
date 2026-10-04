@@ -147,9 +147,9 @@ export function compileRemediationBlock(
           case 'rpi':
             // Use the $PKG_UPGRADE variable resolved at runtime by detect_pkg_mgr
             lines.push(`if [ -n "$PKG_UPGRADE" ]; then`);
-            lines.push(`  if $PKG_QUERY ${pkg} >/dev/null 2>&1; then`);
+            lines.push(`  if $PKG_QUERY "${pkg}" >/dev/null 2>&1; then`);
             lines.push(`    log_msg "  -> Upgrading ${target.product} via $PKG_MGR..."`);
-            lines.push(`    $PKG_UPGRADE ${pkg} 2>/dev/null || log_err "Upgrade failed for ${target.product} via $PKG_MGR"`);
+            lines.push(`    $PKG_UPGRADE "${pkg}" 2>/dev/null || log_err "Upgrade failed for ${target.product} via $PKG_MGR"`);
             lines.push(`  else`);
             lines.push(`    log_msg "  -> ${target.product} not installed on this system, skipping."`);
             lines.push(`  fi`);
@@ -162,7 +162,7 @@ export function compileRemediationBlock(
             break;
           case 'solaris':
             lines.push(`if command -v pkg >/dev/null 2>&1; then`);
-            lines.push(`  pkg info ${pkg} >/dev/null 2>&1 && pkg update ${pkg} 2>/dev/null || log_err "Solaris pkg update failed for ${target.product}"`);
+            lines.push(`  pkg info "${pkg}" >/dev/null 2>&1 && pkg update "${pkg}" 2>/dev/null || log_err "Solaris pkg update failed for ${target.product}"`);
             lines.push(`else`);
             lines.push(`  log_err "Solaris: pkg not available. Manually apply ${target.product} fix >= ${target.fixedInVersion || 'latest'}."`);
             lines.push(`fi`);
