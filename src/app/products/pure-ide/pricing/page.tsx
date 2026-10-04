@@ -205,18 +205,18 @@ export default function PricingPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
               <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Pro Workstation</h3>
               <span style={{ fontSize: '0.68rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
-                Pro Teams
+                1 User License
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>
-              Priority compiler engine, dedicated cloud builds, and real-time egress firewall.
+              Priority compiler engine, dedicated cloud builds, and real-time egress firewall for single developers.
             </p>
           </div>
 
           {/* PRICE BLOCK (UNIFIED HEIGHT: 75px - VERTICALLY ALIGNED) */}
           <div style={{ height: '75px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="pricing-price" style={{ fontSize: '2.2rem', margin: 0, lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ seat / mo</span>
+              ${billingCycle === "annual" ? "39" : "49"} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ user / mo</span>
             </div>
           </div>
 
@@ -229,11 +229,12 @@ export default function PricingPage() {
 
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Community, plus:</li>
+            <li className="included">✓ Single Developer License (1 User Seat)</li>
             <li className="included">✓ Priority Dedicated Cloud Builds</li>
             <li className="included">✓ Real-time Egress Socket Firewall</li>
             <li className="included">✓ Secrets Scanner & Token Redaction</li>
             <li className="included">✓ Curated Blueprints (20+ Stacks)</li>
-            <li className="included">✓ 5 Active Workstation Deployments</li>
+            <li className="included">✓ 1 Active Developer Workstation</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
@@ -246,7 +247,7 @@ export default function PricingPage() {
         {/* TIER 3: ENTERPRISE (WITH DYNAMIC SCALE TOGGLE: 100 USERS VS 100+) */}
         <div className="pricing-card popular" style={{ display: 'flex', flexDirection: 'column', padding: '1.75rem 1.5rem', border: enterpriseScale === "100+" ? '1px solid rgba(167, 139, 250, 0.4)' : undefined, background: enterpriseScale === "100+" ? 'linear-gradient(180deg, rgba(30, 27, 75, 0.4), rgba(15, 23, 42, 0.6))' : undefined }}>
           <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: enterpriseScale === "100+" ? '#7C3AED' : 'var(--accent-primary)', color: 'white', padding: '0.2rem 0.75rem', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em' }}>
-            {enterpriseScale === "100+" ? "CUSTOM ENTERPRISE" : "MOST POPULAR"}
+            {enterpriseScale === "100+" ? "CUSTOM ENTERPRISE" : "VOLUME ENTITLEMENT"}
           </div>
 
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
@@ -256,7 +257,7 @@ export default function PricingPage() {
                 Enterprise
               </h3>
               <span style={{ fontSize: '0.68rem', color: enterpriseScale === "100+" ? '#C084FC' : '#A78BFA', background: enterpriseScale === "100+" ? 'rgba(192,132,252,0.15)' : 'rgba(167,139,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
-                {enterpriseScale === "100+" ? "100+ Licenses" : "1–100 Seats"}
+                {enterpriseScale === "100+" ? "100+ Volume Licenses" : "Volume License (1–100 Seats)"}
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: '1.5' }}>

@@ -246,7 +246,7 @@ export default function InquestPricingPage() {
                 borderRadius: "999px", 
                 fontWeight: 700 
               }}>
-                Single Investigator
+                1 User License
               </span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: "1.5", minHeight: "42px", margin: "0 0 1.5rem 0" }}>
@@ -273,6 +273,7 @@ export default function InquestPricingPage() {
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
+                  "Single Investigator License (1 User Seat)",
                   "Multi-Agency Campaign Blasts: File 50 states simultaneously",
                   "Automated Statutory Escalation Bot (constructive delay notices)",
                   "Inbound Email Relay (@inquest.exultia.tech) with auto-PDF parsing",
@@ -336,7 +337,7 @@ export default function InquestPricingPage() {
                 borderRadius: "999px", 
                 fontWeight: 700 
               }}>
-                5 Licenses Included
+                5 Licenses (Volume Entitlement)
               </span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: "1.5", minHeight: "42px", margin: "0 0 1.5rem 0" }}>
@@ -637,10 +638,10 @@ export default function InquestPricingPage() {
                 </td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Team Licenses Included</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 License</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 License</td>
-                <td style={{ padding: "1rem", textAlign: "center", color: "#A78BFA" }}>5 Licenses included</td>
+                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Seat & Volume Entitlements</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#94A3B8" }}>1 User License</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#67E8F9" }}>1 User License (Single Investigator)</td>
+                <td style={{ padding: "1rem", textAlign: "center", color: "#A78BFA" }}>5 Licenses included (Volume Entitlement)</td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
                 <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Cross-Bureau Deduplication Shield</td>

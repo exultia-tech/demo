@@ -4261,17 +4261,17 @@ build_hardened_ide:
                   id: "TEAM" as SubscriptionTier,
                   name: "Team / Pro Edition",
                   price: "$49 / mo ($39 billed annually)",
-                  badge: "Most Popular",
+                  badge: "1 User Seat",
                   badgeColor: "#60A5FA",
-                  features: ["Stack Blueprints Catalog Access", "Multi-Role Composite Stacks", "50 Procured Seat Licenses"]
+                  features: ["Single Developer License (1 User / 1 Seat)", "Stack Blueprints Catalog Access", "Multi-Role Composite Stacks"]
                 },
                 {
                   id: "ENTERPRISE" as SubscriptionTier,
                   name: "Enterprise Edition",
                   price: "$149 / mo ($119 billed annually)",
-                  badge: "Full Governance",
+                  badge: "Volume Entitlement",
                   badgeColor: "#A78BFA",
-                  features: ["Custom Brand Whitelabeling Studio", "Private JFrog / Artifactory Proxy", "250+ Procured Seat Licenses"]
+                  features: ["Volume Team License (250+ Organization Seats)", "Custom Brand Whitelabeling Studio", "Private JFrog / Artifactory Proxy"]
                 }
               ].map(t => {
                 const isSelected = tier === t.id;
@@ -4316,7 +4316,7 @@ build_hardened_ide:
           <div className="stats-grid">
             <div className="stat-card">
               <span className="stat-label">Procured Seat Licenses</span>
-              <div className="stat-number">{tier === "COMMUNITY" ? "Free / $0" : tier === "TEAM" ? "50 Seats" : "250 Seats"}</div>
+              <div className="stat-number">{tier === "COMMUNITY" ? "1 Local Seat" : tier === "TEAM" ? "1 User Seat" : "250+ Volume Seats"}</div>
               <p style={{ fontSize: '0.75rem', color: '#34D399' }}>Active Tier: {tier}</p>
             </div>
             <div className="stat-card">

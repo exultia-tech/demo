@@ -269,16 +269,17 @@ export default function InquestProductLandingPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Investigator Pro</h3>
                 <span style={{ fontSize: "0.7rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
-                  Most Popular
+                  1 User License
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
                 $49 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo ($39 billed annually)</span>
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
-                Multi-agency sweeps, automated follow-up scheduling, and inbound reply parsing.
+                Multi-agency sweeps, automated follow-up scheduling, and inbound reply parsing for single investigators.
               </p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#F1F5F9" }}>
+                <li>✓ Single Investigator License (1 User Seat)</li>
                 <li>✓ Multi-Agency Campaign Sweeps (all 50 states)</li>
                 <li>✓ Automated Deadline Follow-Up Reminders</li>
                 <li>✓ Inbound Email Tracking (@inquest.exultia.tech)</li>
@@ -318,7 +319,7 @@ export default function InquestProductLandingPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Newsroom & Legal</h3>
                 <span style={{ fontSize: "0.7rem", color: "#A78BFA", background: "rgba(167, 139, 250, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
-                  5 Licenses
+                  5 Licenses (Volume Entitlement)
                 </span>
               </div>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
@@ -328,7 +329,7 @@ export default function InquestProductLandingPage() {
                 Shared team docket, duplicate request warnings, and exportable evidence packages.
               </p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem", color: "#CBD5E1" }}>
-                <li>✓ Collaborative Team Docket (5 licenses included)</li>
+                <li>✓ Collaborative Team Docket (5 volume licenses included)</li>
                 <li>✓ Duplicate Request Warning Alerts</li>
                 <li>✓ Legal Precedent & Exemption Citations</li>
                 <li>✓ Exportable Certified Documentation Dossiers</li>

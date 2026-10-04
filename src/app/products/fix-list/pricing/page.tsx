@@ -171,9 +171,10 @@ export default function PraxisPricingPage() {
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Pro</h3>
           <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$49<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
-            Ideal for mid-sized organizations needing API access to Vantage and automated script generation.
+            Ideal for individual security engineers and operators needing API access to Vantage and automated script generation.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> <strong>Single Operator License (1 User Seat)</strong></li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Unlimited manual script generations</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> REST API Access (10,000 requests/mo)</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> 3 Custom Export Formats</li>
@@ -195,6 +196,7 @@ export default function PraxisPricingPage() {
             Full fleet deployment, custom SIEM integrations, and white-glove onboarding for large enterprises.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> <strong>Fleet Volume Entitlements (Multi-operator team pool)</strong></li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Unlimited API Access</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> All Firewall Export Formats</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Dedicated CSM & Onboarding</li>

@@ -1327,7 +1327,7 @@ function AccountPageContent() {
                 </p>
               </div>
               <button
-                onClick={() => openPaymentModal ? openPaymentModal({ product: "pureide", tier: "enterprise", price: 299, billingCycle: "annual", planName: "Enterprise Workstation & APIs" }) : router.push("/account/subscription")}
+                onClick={() => openPaymentModal ? openPaymentModal({ product: "pureide", tier: "enterprise", price: 149, billingCycle: "annual", planName: "Enterprise Workstation & APIs" }) : router.push("/account/subscription")}
                 style={{
                   padding: "8px 16px",
                   background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",

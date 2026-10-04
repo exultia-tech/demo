@@ -83,6 +83,10 @@ export default function PureOSPricingPage() {
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem 0", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
+              <span><strong>Single Developer License (1 User Seat)</strong></span>
+            </li>
+            <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
+              <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
               <span><strong>All Base OS & Language Runtimes</strong></span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
@@ -107,13 +111,17 @@ export default function PureOSPricingPage() {
         <div className="glass-card" style={{ padding: "2.5rem", borderRadius: "24px", display: "flex", flexDirection: "column" }}>
           <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Enterprise Hub</h3>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
-            Custom golden images and private registry integration.
+            Custom golden images, private registry integration, and volume organization entitlements.
           </p>
           <div style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "2rem" }}>
             ${isAnnual ? "119" : "149"}
             <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: 400 }}>/mo</span>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem 0", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
+              <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
+              <span><strong>Volume Organization Entitlements (Multi-Seat Builders)</strong></span>
+            </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
               <span>Private Registry Proxy (ACR/ECR/GCR)</span>

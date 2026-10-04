@@ -71,6 +71,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Zero-telemetry open-source workstation compiler for individual security researchers.",
         features: [
+          "Single Local Developer Seat",
           "Standard sandbox compiler triggers",
           "Telemetry stripping engine",
           "Local extension verification",
@@ -82,17 +83,18 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Pro Workstation",
+        name: "Pro Workstation (1 User)",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Priority compiler engine, dedicated build runner, and real-time egress firewall.",
+        description: "Priority compiler engine, dedicated build runner, and real-time egress firewall for single developers.",
         features: [
           "Everything in Community",
+          "Single Developer License (1 seat per user)",
           "Priority dedicated cloud builds",
           "Real-time egress socket firewall",
           "Secrets scanner & token redaction",
           "Automated SBOM generation",
-          "5 active workstation deployments"
+          "1 active developer workstation deployment"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -102,14 +104,15 @@ function SubscriptionContent() {
         name: "Hermetic Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Strict airgap signing, offline cryptographic cosign, and custom organizational policies.",
+        description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
         features: [
           "Everything in Pro",
+          "Volume Organization Entitlements (Multi-seat team licenses & fleet deployments)",
           "Hermetic offline binary cosign",
           "Custom organization extension policies",
           "Zero-egress hardware attestation",
           "Dedicated self-hosted compiler agent",
-          "Unlimited workstation nodes",
+          "Unlimited workstation nodes & pooled seats",
           "24/7 Priority SLA & security architect support"
         ],
         cta: "Upgrade to Enterprise",
@@ -124,6 +127,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Web catalog access to 110+ aggregated vulnerability feeds with basic search.",
         features: [
+          "Single User Browser Access",
           "Web portal vulnerability search",
           "CISA KEV & NVD CVE browsing",
           "Standard CVSS score breakdowns",
@@ -135,12 +139,13 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Threat Intel Pro",
+        name: "Threat Intel Pro (1 User)",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors.",
+        description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors for individual analysts.",
         features: [
           "Everything in Community",
+          "Single User License (1 seat per user)",
           "Real-time CVSS v3.1 & v4.0 live streaming",
           "Workstation & IDE specific exploit warnings",
           "Automated patch timeline intelligence",
@@ -155,9 +160,10 @@ function SubscriptionContent() {
         name: "Global Feed Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "High-throughput webhook ingestion, raw bulk dataset dumps, and private threat submissions.",
+        description: "High-throughput webhook ingestion, raw bulk dataset dumps, and enterprise volume team entitlements.",
         features: [
           "Everything in Pro",
+          "Volume Team Entitlements (Multi-seat organization access & pooled API tokens)",
           "Kafka & Webhook real-time advisory streaming",
           "Daily bulk JSON / Parquet dataset exports",
           "Private vulnerability intake & triage pipeline",
@@ -177,6 +183,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Basic FOIA drafting and statutory agency routing for journalists and researchers.",
         features: [
+          "Single Requester Local Storage",
           "Draft up to 3 active FOIA requests",
           "Agency statutory directory search",
           "Standard Bates numbering generator",
@@ -188,12 +195,13 @@ function SubscriptionContent() {
       },
       {
         tier: "legal",
-        name: "Legal Discovery Pro",
+        name: "Legal Discovery Pro (1 User)",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Autonomous administrative appeal generator, 9-exemption de-redaction scanner, and docket sync.",
+        description: "Autonomous administrative appeal generator, 9-exemption de-redaction scanner, and docket sync for single investigators.",
         features: [
           "Everything in Community",
+          "Single Investigator License (1 seat per user)",
           "Unlimited active discovery cases",
           "Statutory administrative appeal brief builder",
           "Exemption 4 / 7(A) burden-of-proof scanner",
@@ -212,6 +220,7 @@ function SubscriptionContent() {
         description: "Multi-seat litigation workspace, court filing export, and dedicated legal tech support.",
         features: [
           "Everything in Legal Pro",
+          "Volume Team Entitlements (5 litigation seats included, scalable)",
           "Multi-attorney docket sharing & collaboration",
           "Federal court complaint generation (APA / 552)",
           "Bates vault with cryptographically hashed chain of custody",
@@ -231,6 +240,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Essential vulnerability tracking and manual fix script generation for security researchers.",
         features: [
+          "Single Operator Access",
           "Standard manual script generations",
           "Basic localhost remediation mode",
           "Public CVE fix-list checklist",
@@ -242,12 +252,13 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Automated Remediation Pro",
+        name: "Automated Remediation Pro (1 User)",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Automated patch generation with surgical Bash, PowerShell, and Ansible fix payloads.",
+        description: "Automated patch generation with surgical Bash, PowerShell, and Ansible fix payloads for individual operators.",
         features: [
           "Everything in Community",
+          "Single Operator License (1 seat per user)",
           "Unlimited automated script generation",
           "Surgical Bash, PowerShell & Ansible payloads",
           "3 Custom SIEM & Firewall export formats",
@@ -262,9 +273,10 @@ function SubscriptionContent() {
         name: "Fleet Patch Automation",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Enterprise-wide fleet automated patch deployment, SIEM hooks, and air-gapped script signing.",
+        description: "Enterprise-wide fleet automated patch deployment, SIEM hooks, and fleet volume entitlements.",
         features: [
           "Everything in Pro",
+          "Volume Fleet Entitlements (Multi-operator team pool & unlimited managed endpoints)",
           "Full global fleet patch orchestration",
           "All Firewall/EDR export formats (CrowdStrike, Sentinel, Splunk)",
           "Custom SIEM real-time webhook listeners",
@@ -283,6 +295,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Essential CIS Level 1 hardened container images for independent developers.",
         features: [
+          "Single Developer Access",
           "Access to Alpine & Debian hardened base images",
           "CIS Level 1 Baseline security configuration",
           "Monthly Vantage sync updates",
@@ -294,12 +307,13 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Verified Stacks Pro",
+        name: "Verified Stacks Pro (1 User)",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Production-ready hardened runtimes with daily zero-day patch rebuilds and minimal attack surfaces.",
+        description: "Production-ready hardened runtimes with daily zero-day patch rebuilds for single developer workstations.",
         features: [
           "Everything in Community",
+          "Single Developer License (1 seat per user)",
           "All base OS & language runtimes (Node, Python, Go, Rust)",
           "CIS Level 2 strict airgap hardening",
           "Daily zero-day patch rebuilds synchronized to Vantage",
@@ -317,6 +331,7 @@ function SubscriptionContent() {
         description: "Private container registry proxy, custom golden images, and enclave-based hardware attestation.",
         features: [
           "Everything in Pro",
+          "Volume Organization Entitlements (Multi-seat builder nodes & cluster-wide distribution)",
           "Private container registry proxy (ACR, ECR, GCR, Harbor)",
           "Custom organizational golden image builder",
           "Enclave-based offline attestation & hardware roots of trust",
@@ -333,8 +348,9 @@ function SubscriptionContent() {
         name: "Student / Foundation",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Comprehensive exam prep and simulator for individual cybersecurity researchers and students.",
+        description: "Comprehensive exam prep and simulator for individual cybersecurity researchers and students (1 user).",
         features: [
+          "Single Student / Learner Access",
           "Full access to 15,000+ certification questions",
           "Interactive exam simulator with real-time timers",
           "Instant explanations, key concepts & immediate feedback",
@@ -349,9 +365,10 @@ function SubscriptionContent() {
         name: "LMS API Integration",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Enterprise REST API, SCORM/xAPI exports, and organizational team benchmarking.",
+        description: "Campus & institutional volume entitlements, LMS API integration, SCORM packages, and student seat management.",
         features: [
           "Everything in Student Free tier",
+          "Institutional Volume Entitlements (Multi-seat campus & employee licenses)",
           "Dedicated Enterprise REST API endpoints for question banks",
           "SCORM & xAPI compatible exports for internal LMS",
           "Multi-student progress benchmarking & corporate scorecards",
