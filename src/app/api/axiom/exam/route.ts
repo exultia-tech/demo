@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import { MOCK_EXAM_DB } from '@/lib/axiom-exam-data';
+import { getCurrentUser } from '@/lib/auth/session';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,6 +125,13 @@ function buildFinal(p: SessionPayload) {
 }
 
 export async function POST(request: Request) {
+  // Non-blocking trust-but-verify license telemetry
+  getCurrentUser().then(user => {
+    if (user) {
+      recordLicenseActivity(user.id, 'axiom', request, 'exam_access');
+    }
+  }).catch(() => {});
+
   let body: Record<string, unknown>;
   try {
     body = await request.json();

@@ -80,6 +80,16 @@ export const githubWorkflows = sqliteTable('github_workflows', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+export const licenseAuditLogs = sqliteTable('license_audit_logs', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  product: text('product').notNull(), // 'pureide', 'uvi', 'inquest', 'fixlist', 'pureos', 'axiom', 'account'
+  ipAddress: text('ip_address').notNull().default('unknown'),
+  userAgent: text('user_agent').notNull().default('unknown'),
+  action: text('action').notNull().default('access'), // 'login', 'script_gen', 'feed_query', 'build_trigger', 'exam_access', etc.
+  timestamp: integer('timestamp', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 
 // ============================================================================
 // 2. Vantage Feed & Catalog

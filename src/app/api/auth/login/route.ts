@@ -6,6 +6,7 @@ import { eq, and } from 'drizzle-orm';
 import { verifyPassword } from '@/lib/auth/crypto';
 import { createSession, SESSION_COOKIE_NAME } from '@/lib/auth/session';
 import { isValidationModeActive, isAuthorizedOperator, RESTRICTED_ACCESS_MESSAGE } from '@/lib/auth/access-control';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,9 @@ export async function POST(req: Request) {
 
     // Create new session in Turso
     const { token, expiresAt } = await createSession(userRecord.id);
+
+    // Passively log device and IP touch for trust-but-verify telemetry
+    await recordLicenseActivity(userRecord.id, 'account', req, 'login');
 
     const cookieStore = await cookies();
     cookieStore.set(SESSION_COOKIE_NAME, token, {

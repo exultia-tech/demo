@@ -78,6 +78,16 @@ export async function initializeDatabase(): Promise<void> {
       updated_at INTEGER,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`,
+    `CREATE TABLE IF NOT EXISTS license_audit_logs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      product TEXT NOT NULL,
+      ip_address TEXT NOT NULL DEFAULT 'unknown',
+      user_agent TEXT NOT NULL DEFAULT 'unknown',
+      action TEXT NOT NULL DEFAULT 'access',
+      timestamp INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`,
 
     // 2. Vantage
     `CREATE TABLE IF NOT EXISTS uvi_threats (

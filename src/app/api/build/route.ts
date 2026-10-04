@@ -6,6 +6,7 @@ import { generateCycloneDX } from '@/lib/sbom';
 import { getCurrentUser } from '@/lib/auth/session';
 import { db, githubWorkflows } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,6 +31,9 @@ export async function POST(req: NextRequest) {
 
     // Check user entitlements
     const user = await getCurrentUser();
+    if (user) {
+      recordLicenseActivity(user.id, 'pureide', req, 'trigger_build').catch(() => {});
+    }
     const isEnterprise = Boolean(
       user?.role === 'admin' || user?.subscriptions?.some(
         s => s.status === 'active' && (s.tier.toLowerCase() === 'enterprise' || s.tier.toLowerCase() === 'developer')

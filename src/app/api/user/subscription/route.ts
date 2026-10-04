@@ -2,15 +2,19 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth/session';
 import { db, subscriptions } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const sessionUser = await getCurrentUser();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Passive trust-but-verify telemetry
+    recordLicenseActivity(sessionUser.id, 'account', req, 'check_entitlements').catch(() => {});
 
     const subs = await db.query.subscriptions.findMany({
       where: eq(subscriptions.userId, sessionUser.id),

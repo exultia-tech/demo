@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { scriptStore } from '@/lib/fix-list-store';
 import { queryThreatFeedFromDb } from '@/lib/db/threats-query';
 import { compileRemediationBlock } from '@/lib/fix-list-compiler';
+import { getCurrentUser } from '@/lib/auth/session';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 // Map UI class IDs to Vantage database query parameters
 const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?: string }> = {
@@ -14,6 +16,13 @@ const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?
 
 export async function POST(request: NextRequest) {
   try {
+    // Non-blocking trust-but-verify license telemetry
+    getCurrentUser().then(user => {
+      if (user) {
+        recordLicenseActivity(user.id, 'fixlist', request, 'generate_script');
+      }
+    }).catch(() => {});
+
     const { os, cron, proxy, preview, classes = [], networkMode = 'localhost', firewallFormat = 'plain', customShebang = '#!/bin/sh', filenamePattern } = await request.json();
 
     let script = `${customShebang}\n`;

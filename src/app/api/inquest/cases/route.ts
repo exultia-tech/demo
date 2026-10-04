@@ -3,6 +3,7 @@ import { db, client, inquestCases, inquestEvidenceRecords, inquestStatutoryAppea
 import { eq, desc } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth/session';
 import { initializeDatabase } from '@/lib/db/init';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,10 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const caseId = searchParams.get('id');
     const user = await getCurrentUser();
+
+    if (user) {
+      recordLicenseActivity(user.id, 'inquest', req, 'view_cases').catch(() => {});
+    }
 
     if (caseId) {
       const caseRecord = await db.query.inquestCases.findFirst({
@@ -56,6 +61,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
+    if (user) {
+      recordLicenseActivity(user.id, 'inquest', req, 'create_case').catch(() => {});
+    }
     const body = await req.json();
     const { title, agency, jurisdiction, foiaTrackingNumber, exemptionCodes, denialCategory, notes } = body;
 

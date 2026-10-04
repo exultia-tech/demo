@@ -9,6 +9,8 @@ import {
 } from '@/lib/threat-feed-data';
 import { queryThreatFeedFromDb } from '@/lib/db/threats-query';
 import { ctiResearchAgent } from '@/lib/informational-research-agent';
+import { getCurrentUser } from '@/lib/auth/session';
+import { recordLicenseActivity } from '@/lib/licensing/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +19,13 @@ export type { UviAdvisoryRecord, PublicFeedSource, ThreatSeverity, DomainCategor
 export async function GET(request: Request) {
   // Ensure autonomous CTI research agent background worker is active
   ctiResearchAgent.ensureInitialized();
+
+  // Non-blocking trust-but-verify license telemetry
+  getCurrentUser().then(user => {
+    if (user) {
+      recordLicenseActivity(user.id, 'uvi', request, 'feed_query');
+    }
+  }).catch(() => {});
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query')?.trim().toLowerCase();
