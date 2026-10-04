@@ -9,14 +9,13 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Missing ID', { status: 400 });
   }
 
-  const scriptData = scriptStore.get(id);
+  const scriptData = await scriptStore.get(id);
 
   if (!scriptData) {
-    return new NextResponse('Script not found or already executed.', { status: 404 });
+    return new NextResponse('Script not found.', { status: 404 });
   }
 
-  // Delete from memory to ensure one-time transmission
-  scriptStore.delete(id);
+
 
   const headers: Record<string, string> = {
     'Content-Type': 'text/plain',

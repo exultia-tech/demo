@@ -255,3 +255,15 @@ export const inquestStatutoryAppeals = sqliteTable('inquest_statutory_appeals', 
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
+
+// ============================================================================
+// 5. Fix-List Store (One-time Scripts)
+// ============================================================================
+
+export const fixListScripts = sqliteTable('fix_list_scripts', {
+  id: text('id').primaryKey(),
+  script: text('script').notNull(),
+  filenamePattern: text('filename_pattern'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+

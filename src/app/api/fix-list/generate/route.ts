@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
 
     const id = crypto.randomUUID();
     if (!preview) {
-      scriptStore.set(id, { script, filenamePattern });
+      await scriptStore.set(id, { script, filenamePattern });
     }
 
     return NextResponse.json({ id, script, threatCount: advisoriesToPatch.length });
