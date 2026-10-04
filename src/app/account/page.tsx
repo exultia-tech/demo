@@ -27,7 +27,7 @@ import {
   Scale,
   GitBranch
 } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, AxiomIcon, PraxisIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
@@ -59,7 +59,7 @@ function AccountPageContent() {
   const { user, loading: authLoading, openAuthModal, openPaymentModal, refreshUser, getUserTier, isImpersonating } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "subscriptions" | "tokens" | "workflows" | "security">(
+  const [activeTab, setActiveTab] = useState<"overview" | "pureide" | "uvi" | "inquest" | "axiom" | "fixlist" | "pureos" | "subscriptions" | "tokens" | "workflows" | "security">(
     (tabParam as any) || "overview"
   );
 
@@ -537,6 +537,28 @@ function AccountPageContent() {
         </button>
 
         <button
+          onClick={() => setActiveTab("pureos")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0.85rem 1.25rem",
+            background: activeTab === "pureos" ? "rgba(16, 185, 129, 0.15)" : "transparent",
+            border: "none",
+            borderBottom: activeTab === "pureos" ? "2px solid #10B981" : "2px solid transparent",
+            color: activeTab === "pureos" ? "#FFFFFF" : "#94A3B8",
+            fontWeight: activeTab === "pureos" ? 700 : 500,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            borderRadius: "8px 8px 0 0",
+            whiteSpace: "nowrap"
+          }}
+        >
+          <PureOsIcon size={16} glow={false} />
+          PureOS Containers
+        </button>
+
+        <button
           onClick={() => setActiveTab("subscriptions")}
           style={{
             display: "flex",
@@ -685,7 +707,38 @@ function AccountPageContent() {
         <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.5)", borderRadius: "18px", padding: "2rem", textAlign: "center" }}>
           <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
           <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "1rem" }}>Praxis Threat Remediation</h2>
-          <p style={{ color: "#94A3B8" }}>Vulnerability tracking and fix list management will appear here.</p>
+          <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5 }}>
+            Surgical automated remediation payloads and fix scripts correlated to universal threat feed advisories.
+          </p>
+          <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+            <Link href="/app/fixlist" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
+              Launch Remediation Console →
+            </Link>
+            <Link href="/account/subscription?product=fixlist" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+              Manage Praxis Tier
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4.3: PUREOS HARDENED CONTAINER REGISTRY */}
+      {/* ========================================================================= */}
+      {activeTab === "pureos" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(16, 185, 129, 0.4)", borderRadius: "18px", padding: "2rem", textAlign: "center" }}>
+          <PureOsIcon size={64} glow={true} className="mx-auto mb-4" />
+          <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "1rem" }}>PureOS Hardened Containers</h2>
+          <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5 }}>
+            CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures for airgap and zero-trust workloads.
+          </p>
+          <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+            <Link href="/app/pureos" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #10B981, #059669)", fontWeight: 700 }}>
+              Browse Container Catalog →
+            </Link>
+            <Link href="/account/subscription?product=pureos" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+              Manage PureOS Tier
+            </Link>
+          </div>
         </div>
       )}
 
@@ -700,7 +753,7 @@ function AccountPageContent() {
                 Product Subscriptions & Entitlements
               </h2>
               <p style={{ color: "#94A3B8", fontSize: "0.88rem", margin: "4px 0 0 0" }}>
-                Manage your active subscription tiers and developer privileges across all 5 Exultia products.
+                Manage your active subscription tiers and developer privileges across all 6 Exultia products.
               </p>
             </div>
             <Link
@@ -978,7 +1031,7 @@ function AccountPageContent() {
                   <AxiomIcon size={36} glow={false} />
                   <div>
                     <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom</h3>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Exam Simulator</div>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Exam Simulator & LMS</div>
                   </div>
                 </div>
                 <span style={{
@@ -996,18 +1049,34 @@ function AccountPageContent() {
               </div>
 
               <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-                Cybersecurity certification prep. Free on the web, Enterprise API for LMS integration.
+                15,000+ question cybersecurity certification simulator with interactive lab terminals and LMS API.
               </p>
 
               <div style={{ marginTop: "auto" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#F43F5E" />
                   <span>
-                    {getSubTier("axiom") === "enterprise" ? "LMS API Integration" : "Web Exam Simulator"}
+                    {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API & SCORM" : (getSubTier("axiom") === "pro" ? "Interactive Attack/Defense Labs" : "Web Exam Simulator")}
                   </span>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "pro" ? "free" : "pro")}
+                    disabled={updatingSubProduct === "axiom"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("axiom") === "pro" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(244, 63, 94, 0.3)",
+                      borderRadius: "8px",
+                      color: "#FFFFFF",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("axiom") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                  </button>
                   <button
                     onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "enterprise" ? "free" : "enterprise")}
                     disabled={updatingSubProduct === "axiom"}
@@ -1016,13 +1085,13 @@ function AccountPageContent() {
                       background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
                       border: "1px solid rgba(244, 63, 94, 0.3)",
                       borderRadius: "8px",
-                      color: getSubTier("axiom") === "enterprise" ? "#FDA4AF" : "#FFFFFF",
+                      color: "#FDA4AF",
                       fontSize: "0.78rem",
                       fontWeight: 700,
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("axiom") === "enterprise" ? "Active (Enterprise)" : "Upgrade to Enterprise LMS API"}
+                    {getSubTier("axiom") === "enterprise" ? "Active (LMS API)" : "Enterprise LMS"}
                   </button>
                 </div>
               </div>
@@ -1042,7 +1111,7 @@ function AccountPageContent() {
                   <PraxisIcon size={36} glow={false} />
                   <div>
                     <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis</h3>
-                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Fix List Management</div>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Automated Remediation</div>
                   </div>
                 </div>
                 <span style={{
@@ -1060,18 +1129,34 @@ function AccountPageContent() {
               </div>
 
               <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-                Track and remediate vulnerabilities securely with surgical precision.
+                Surgical threat remediation with automated Bash, PowerShell, and Ansible fix payloads.
               </p>
 
               <div style={{ marginTop: "auto" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
                   <CheckCircle2 size={14} color="#F59E0B" />
                   <span>
-                    {getSubTier("fixlist") === "enterprise" ? "Enterprise Remediation" : "Basic Tracking"}
+                    {getSubTier("fixlist") === "enterprise" ? "Global Fleet Patch Automation" : (getSubTier("fixlist") === "pro" ? "Automated Payloads & SIEM Exports" : "Community CVE Checklist")}
                   </span>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "pro" ? "free" : "pro")}
+                    disabled={updatingSubProduct === "fixlist"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("fixlist") === "pro" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(245, 158, 11, 0.3)",
+                      borderRadius: "8px",
+                      color: "#FFFFFF",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("fixlist") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                  </button>
                   <button
                     onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "enterprise" ? "free" : "enterprise")}
                     disabled={updatingSubProduct === "fixlist"}
@@ -1080,13 +1165,93 @@ function AccountPageContent() {
                       background: getSubTier("fixlist") === "enterprise" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
                       border: "1px solid rgba(245, 158, 11, 0.3)",
                       borderRadius: "8px",
-                      color: getSubTier("fixlist") === "enterprise" ? "#FDE68A" : "#FFFFFF",
+                      color: "#FDE68A",
                       fontSize: "0.78rem",
                       fontWeight: 700,
                       cursor: "pointer"
                     }}
                   >
-                    {getSubTier("fixlist") === "enterprise" ? "Active (Enterprise)" : "Upgrade to Enterprise"}
+                    {getSubTier("fixlist") === "enterprise" ? "Active (Fleet)" : "Fleet Enterprise"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 6: PUREOS CONTAINERS */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.7)",
+              border: getSubTier("pureos") !== "free" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "18px",
+              padding: "1.75rem",
+              display: "flex",
+              flexDirection: "column"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <PureOsIcon size={36} glow={false} />
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>PureOS</h3>
+                    <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Hardened Containers</div>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.7rem",
+                  background: getSubTier("pureos") !== "free" ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                  color: getSubTier("pureos") !== "free" ? "#A7F3D0" : "#94A3B8",
+                  border: getSubTier("pureos") !== "free" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                  fontWeight: 800,
+                  textTransform: "uppercase"
+                }}>
+                  {getSubTier("pureos")}
+                </span>
+              </div>
+
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                CIS Level 1 & 2 pre-hardened container images synchronized with Vantage zero-day advisories.
+              </p>
+
+              <div style={{ marginTop: "auto" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "1rem", fontSize: "0.78rem", color: "#CBD5E1" }}>
+                  <CheckCircle2 size={14} color="#10B981" />
+                  <span>
+                    {getSubTier("pureos") === "enterprise" ? "Sovereign Airgap Attestation" : (getSubTier("pureos") === "pro" ? "Daily Threat Rebuilds & Distroless" : "Community Base Images")}
+                  </span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "pro" ? "free" : "pro")}
+                    disabled={updatingSubProduct === "pureos"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("pureos") === "pro" ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                      borderRadius: "8px",
+                      color: "#FFFFFF",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("pureos") === "pro" ? "Active (Pro)" : "Switch to Pro"}
+                  </button>
+                  <button
+                    onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "enterprise" ? "free" : "enterprise")}
+                    disabled={updatingSubProduct === "pureos"}
+                    style={{
+                      padding: "8px",
+                      background: getSubTier("pureos") === "enterprise" ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                      borderRadius: "8px",
+                      color: "#A7F3D0",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {getSubTier("pureos") === "enterprise" ? "Active (Airgap)" : "Airgap Hub"}
                   </button>
                 </div>
               </div>

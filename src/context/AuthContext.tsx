@@ -18,9 +18,11 @@ export interface User {
   subscriptions: SubscribedProduct[];
 }
 
-interface PaymentModalOptions {
-  product: "inquest" | "pureide" | "uvi";
-  tier: "pro" | "legal" | "enterprise";
+export type ProductId = "inquest" | "pureide" | "uvi" | "axiom" | "fixlist" | "pureos";
+
+export interface PaymentModalOptions {
+  product: ProductId | string;
+  tier: "free" | "pro" | "legal" | "enterprise" | string;
   price: number;
   billingCycle: "monthly" | "annual";
   planName: string;
@@ -52,7 +54,7 @@ interface AuthContextType {
   closePaymentModal: () => void;
   
   // Helpers
-  getUserTier: (product: "inquest" | "pureide" | "uvi" | "axiom" | "fixlist" | "pureos") => string;
+  getUserTier: (product: ProductId | string) => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -207,7 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPaymentOptions(null);
   };
 
-  const getUserTier = (product: "inquest" | "pureide" | "uvi" | "axiom" | "fixlist" | "pureos"): string => {
+  const getUserTier = (product: ProductId | string): string => {
     if (!user) return "free";
     const sub = user.subscriptions?.find(s => s.product === product && s.status === "active");
     return sub ? sub.tier : "free";

@@ -602,9 +602,8 @@ export default function PaymentModal() {
               Subscription Activated!
             </h3>
             <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-              Your PayPal payment has been successfully confirmed. You now have full access to{" "}
-              <strong style={{ color: "#67E8F9" }}>{paymentOptions.planName}</strong> across your workstations and legal
-              dockets.
+              Your payment has been successfully confirmed. You now have full access to{" "}
+              <strong style={{ color: "#67E8F9" }}>{paymentOptions.planName}</strong> across your workstations, tools, and developer environments.
             </p>
 
             <button

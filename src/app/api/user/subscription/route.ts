@@ -16,8 +16,8 @@ export async function GET() {
       where: eq(subscriptions.userId, sessionUser.id),
     });
 
-    // Ensure all 3 products are represented
-    const products = ['pureide', 'uvi', 'inquest'];
+    // Ensure all 6 products in the suite are represented
+    const products = ['pureide', 'uvi', 'inquest', 'fixlist', 'pureos', 'axiom'];
     const enriched = products.map(prod => {
       const match = subs.find(s => s.product === prod);
       return {
