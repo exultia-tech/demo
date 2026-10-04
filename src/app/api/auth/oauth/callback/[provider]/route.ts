@@ -203,11 +203,10 @@ export async function GET(
 
     const isAuthorized = isAuthorizedOperator(profile.email, user?.role);
 
-    // If pre-launch validation mode is active, strictly block non-operators
-    if (validationActive && !isAuthorized) {
-      console.warn(`[PRE-LAUNCH VALIDATION BLOCKED] Unauthorized OAuth sign-in attempt: ${profile.email}`);
+    // If registration is disabled and account does not exist, pause creation
+    if (process.env.DISABLE_REGISTRATION === 'true' && !user) {
       return NextResponse.redirect(
-        `${baseUrl}/?auth=restricted&message=${encodeURIComponent(RESTRICTED_ACCESS_MESSAGE)}`
+        `${baseUrl}/?auth=restricted&message=${encodeURIComponent('Account registration is currently paused.')}`
       );
     }
 

@@ -12,25 +12,10 @@ export async function POST(req: Request) {
   try {
     const { name, email, password, inviteCode } = await req.json();
 
-    // Enforce Pre-Launch Validation lockout policy
-    if (isValidationModeActive()) {
-      const cleanEmail = email ? email.trim().toLowerCase() : '';
-      if (!isAuthorizedOperator(cleanEmail)) {
-        return NextResponse.json({
-          error: RESTRICTED_ACCESS_MESSAGE,
-          restricted: true
-        }, { status: 403 });
-      }
-    }
-
-    // Enforce Invite-Only / Registration Disabled policy during private development preview
-    const isInviteOnly = process.env.ALLOW_PUBLIC_REGISTRATION !== 'true';
-    const validInviteCodes = ['EXULTIA_DEV_2026', 'FOUNDER_PREVIEW', process.env.INVITE_CODE].filter(Boolean);
-
-    if (isInviteOnly && (!inviteCode || !validInviteCodes.includes(inviteCode.trim().toUpperCase()))) {
+    // Registration lockout policy (optional via DISABLE_REGISTRATION)
+    if (process.env.DISABLE_REGISTRATION === 'true') {
       return NextResponse.json({
-        error: 'Account registration is currently invite-only during our private preview. Please contact an administrator or sign in with an authorized account.',
-        inviteRequired: true
+        error: 'Account registration is temporarily paused.',
       }, { status: 403 });
     }
 
@@ -56,13 +41,16 @@ export async function POST(req: Request) {
     const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const passwordHash = hashPassword(password);
 
+    const isOperator = isAuthorizedOperator(cleanEmail);
+    const assignedRole = isOperator ? 'admin' : 'user';
+
     // Create User
     await db.insert(users).values({
       id: userId,
       email: cleanEmail,
       name: name?.trim() || null,
       passwordHash,
-      role: 'user',
+      role: assignedRole,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -129,7 +117,7 @@ export async function POST(req: Request) {
         id: userId,
         email: cleanEmail,
         name: name?.trim() || null,
-        role: 'user',
+        role: assignedRole,
         subscriptions: [
           { product: 'pureide', tier: 'free', status: 'active' },
           { product: 'inquest', tier: 'free', status: 'active' },
