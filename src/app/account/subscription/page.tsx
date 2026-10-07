@@ -243,7 +243,7 @@ function SubscriptionContent() {
           "Single Operator Access",
           "Standard manual script generations",
           "Basic localhost remediation mode",
-          "Public CVE fix-list checklist",
+          "Public CVE Praxis checklist",
           "REST API access (50 requests/mo)",
           "Community advisory tracking"
         ],
@@ -390,7 +390,7 @@ function SubscriptionContent() {
           "PureIDE Pro Workstation",
           "Vantage Threat Intel Pro",
           "Inquest FOIA Legal Pro",
-          "Praxis Fix-List Pro",
+          "Praxis Pro",
           "PureOS Containers Pro",
           "Axiom Simulator Pro",
           "100% bundled 6-for-5 discount"
@@ -443,7 +443,7 @@ function SubscriptionContent() {
       bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
     },
     fixlist: {
-      name: "Praxis Fix-List",
+      name: "Praxis",
       subtitle: "Surgical vulnerability remediation & automated patch payloads",
       icon: <PraxisIcon size={18} glow={false} />,
       color: "#F59E0B",

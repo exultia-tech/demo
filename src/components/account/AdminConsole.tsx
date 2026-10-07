@@ -715,7 +715,7 @@ export default function AdminConsole({ currentUserEmail }: { currentUserEmail: s
               Live Telemetry Feed (Real-Time Touches)
             </h3>
             <span style={{ fontSize: "0.78rem", color: "#94A3B8" }}>
-              Most recent 30 passive check-ins across PureIDE, Vantage, Inquest, FixList, PureOS, and Axiom
+              Most recent 30 passive check-ins across PureIDE, Vantage, Inquest, Praxis, PureOS, and Axiom
             </span>
           </div>
           <span style={{ fontSize: "0.72rem", color: "#10B981", display: "flex", alignItems: "center", gap: "6px" }}>

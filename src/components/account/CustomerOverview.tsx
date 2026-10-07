@@ -426,7 +426,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <PraxisIcon size={32} glow={false} />
                 <div>
-                  <h4 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Fix-List</h4>
+                  <h4 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis</h4>
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Automated Remediation</div>
                 </div>
               </div>
