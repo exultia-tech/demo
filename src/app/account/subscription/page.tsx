@@ -30,7 +30,7 @@ import {
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom" | "omnipass";
+type ProductKey = "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +46,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "inquest", "fixlist", "pureos", "axiom", "omnipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "inquest", "fixlist", "pureos", "axiom", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
