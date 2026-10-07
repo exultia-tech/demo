@@ -124,15 +124,15 @@ export default function PureOSPricingPage() {
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Private Registry Proxy (ACR/ECR/GCR)</span>
+              <span>Air-gapped deployment compatibility</span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Custom Golden Image Builder</span>
+              <span>Signed cryptographic provenance</span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>SLA for Zero-Day Mitigations</span>
+              <span>FIPS 140-2 compliance modules</span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />

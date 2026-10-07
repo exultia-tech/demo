@@ -162,16 +162,9 @@ export default function InquestPricingPage() {
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
-                  "Federal 5 U.S.C. § 552 + all 50 state sunshine statutes",
-                  "Initial request drafting assistant with statutory citations",
-                  "Automatic fee waiver arguments (public interest & news media)",
-                  "Mandatory statutory segregability clause injection",
-                  "Bring-Your-Own Gemini API Key (100% private, 0 token fees)",
-                  "Local browser storage (zero server-side case data collection)",
-                  "Cryptographic SHA-256 fingerprint verification digest",
-                  "1-Click Mailto generator & formatted PDF export",
-                  "Standard Administrative Appeal brief template generator",
-                  "Preloaded 50-state verified agency contact directory"
+                  "Single User Browser Access",
+                  "Public records act discovery workflow",
+                  "Standard FOIA exemption 1-9 templating"
                 ].map((item, idx) => (
                   <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.86rem", color: "#CBD5E1", lineHeight: "1.4" }}>
                     <Check size={16} color="#34D399" style={{ flexShrink: 0, marginTop: "2px" }} />
@@ -273,17 +266,10 @@ export default function InquestPricingPage() {
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
-                  "Single Investigator License (1 User Seat)",
-                  "Multi-Agency Campaign Blasts: File 50 states simultaneously",
-                  "Automated Statutory Escalation Bot (constructive delay notices)",
-                  "Inbound Email Relay (@inquest.exultia.tech) with auto-PDF parsing",
-                  "Automated fee quote detection and tracking number extraction",
-                  "Encrypted cloud docket sync across laptop, tablet, & phone",
-                  "Google / Outlook statutory deadline calendar (.ics sync)",
-                  "Advanced Exemption Deconstruction with tailored counter-arguments",
-                  "50 simultaneously tracked active case files",
-                  "CSV, JSON, and certified court-ready PDF dossier batch exports",
-                  "Priority email support with 12-hour response SLA"
+                  "Everything in Community",
+                  "Automated redaction engine",
+                  "Case audit logging & chain of custody",
+                  "Priority API processing pipeline"
                 ].map((item, idx) => (
                   <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.86rem", color: "#F1F5F9", lineHeight: "1.4" }}>
                     <Check size={16} color="#06B6D4" style={{ flexShrink: 0, marginTop: "2px" }} />
@@ -364,16 +350,10 @@ export default function InquestPricingPage() {
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
-                  "Collaborative Newsroom & Legal Docket with 5 licenses included",
-                  "Cross-Bureau Request Deduplication Shield (avoids overlap)",
-                  "Role-based access: Reporters, Senior Editors, General Counsel",
-                  "Judicial Precedent Engine: Weaves state appellate case law into briefs",
-                  "Court-Ready Certified Evidence Dossiers (Article 78 / CPRA writs)",
-                  "RFC 3161 cryptographic timestamp chain & transmission receipts",
-                  "Private institutional agency notes (custodian history & tips)",
-                  "REST API & Webhooks for CMS or legal case management sync",
-                  "Unlimited simultaneously active cases",
-                  "Dedicated Account Manager & statutory compliance briefing"
+                  "Everything in Pro",
+                  "Firm/Agency Volume Entitlements (Multi-seat)",
+                  "Multi-agency collaboration portal",
+                  "White-glove data ingestion services"
                 ].map((item, idx) => (
                   <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.86rem", color: "#CBD5E1", lineHeight: "1.4" }}>
                     <Check size={16} color="#A78BFA" style={{ flexShrink: 0, marginTop: "2px" }} />

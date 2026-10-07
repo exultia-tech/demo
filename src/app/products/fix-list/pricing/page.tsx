@@ -177,7 +177,7 @@ export default function PraxisPricingPage() {
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> <strong>Single Operator License (1 User Seat)</strong></li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Unlimited manual script generations</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> REST API Access (10,000 requests/mo)</li>
-            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> 3 Custom Export Formats</li>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> SIEM webhook export formats (Splunk, QRadar)</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Email Support</li>
           </ul>
           <Link href="/account/subscription?product=fixlist" style={{
@@ -198,9 +198,9 @@ export default function PraxisPricingPage() {
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> <strong>Fleet Volume Entitlements (Multi-operator team pool)</strong></li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Unlimited API Access</li>
-            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> All Firewall Export Formats</li>
-            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Dedicated CSM & Onboarding</li>
-            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> 99.99% Uptime SLA</li>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Custom internal compliance benchmarking</li>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Dedicated priority incident engineer</li>
+            <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Organization Volume Entitlements</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Air-gapped deployment options</li>
           </ul>
           <Link href="/account/subscription?product=fixlist" style={{

@@ -74,9 +74,7 @@ function SubscriptionContent() {
           "Single Local Developer Seat",
           "Standard sandbox compiler triggers",
           "Telemetry stripping engine",
-          "Local extension verification",
-          "Community build queue",
-          "Public GitHub advisory checks"
+          "Local extension verification"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -89,12 +87,10 @@ function SubscriptionContent() {
         description: "Priority compiler engine, dedicated build runner, and real-time egress firewall for single developers.",
         features: [
           "Everything in Community",
-          "Single Developer License (1 seat per user)",
           "Priority dedicated cloud builds",
           "Real-time egress socket firewall",
           "Secrets scanner & token redaction",
-          "Automated SBOM generation",
-          "1 active developer workstation deployment"
+          "Automated SBOM generation"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -107,13 +103,10 @@ function SubscriptionContent() {
         description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
         features: [
           "Everything in Pro",
-          "Volume Organization Entitlements (Multi-seat team licenses & fleet deployments)",
           "Hermetic offline binary cosign",
           "Custom organization extension policies",
           "Zero-egress hardware attestation",
-          "Dedicated self-hosted compiler agent",
-          "Unlimited workstation nodes & pooled seats",
-          "24/7 Priority SLA & security architect support"
+          "Dedicated self-hosted compiler agent"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -125,14 +118,12 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Web catalog access to 110+ aggregated vulnerability feeds with basic search.",
+        description: "Web catalog access to vulnerability feeds with basic search.",
         features: [
           "Single User Browser Access",
           "Web portal vulnerability search",
           "CISA KEV & NVD CVE browsing",
-          "Standard CVSS score breakdowns",
-          "Public advisory catalog",
-          "Rate-limited REST API queries (60/min)"
+          "Standard CVSS score breakdowns"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -145,12 +136,8 @@ function SubscriptionContent() {
         description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors for individual analysts.",
         features: [
           "Everything in Community",
-          "Single User License (1 seat per user)",
-          "Real-time CVSS v3.1 & v4.0 live streaming",
           "Workstation & IDE specific exploit warnings",
-          "Automated patch timeline intelligence",
-          "API rate limit: 10,000 requests/min",
-          "Custom threat bookmarking & alerting"
+          "API rate limit: 10,000 requests/min"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -160,16 +147,12 @@ function SubscriptionContent() {
         name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "High-throughput webhook ingestion, raw bulk dataset dumps, and enterprise volume team entitlements.",
+        description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
         features: [
           "Everything in Pro",
-          "Volume Team Entitlements (Multi-seat organization access & pooled API tokens)",
-          "Kafka & Webhook real-time advisory streaming",
-          "Daily bulk JSON / Parquet dataset exports",
-          "Private vulnerability intake & triage pipeline",
-          "Direct CISO advisory hotline",
-          "Custom threat classification taxonomy",
-          "Unmetered dedicated API endpoints"
+          "Organization Volume Entitlements",
+          "Dedicated CISO advisory portal",
+          "Unlimited unmetered API quotas"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -181,35 +164,28 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Basic FOIA drafting and statutory agency routing for journalists and researchers.",
+        description: "Standard FOIA exemption processing and indexing for individual researchers.",
         features: [
-          "Single Requester Local Storage",
-          "Draft up to 3 active FOIA requests",
-          "Agency statutory directory search",
-          "Standard Bates numbering generator",
-          "Basic exemption code definitions",
-          "Local browser case storage"
+          "Single User Browser Access",
+          "Public records act discovery workflow",
+          "Standard FOIA exemption 1-9 templating"
         ],
         cta: "Current Free Tier",
         isPopular: false
       },
       {
-        tier: "legal",
-        name: "Legal Discovery Pro (1 User)",
+        tier: "pro",
+        name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Autonomous administrative appeal generator, 9-exemption de-redaction scanner, and docket sync for single investigators.",
+        description: "Automated redaction pipelines and case chain of custody for individual legal analysts.",
         features: [
           "Everything in Community",
-          "Single Investigator License (1 seat per user)",
-          "Unlimited active discovery cases",
-          "Statutory administrative appeal brief builder",
-          "Exemption 4 / 7(A) burden-of-proof scanner",
-          "OCR evidence indexing & redaction tagging",
-          "Automated agency statutory response deadlines",
-          "Glomar challenge defense assistant"
+          "Automated redaction engine",
+          "Case audit logging & chain of custody",
+          "Priority API processing pipeline"
         ],
-        cta: "Upgrade to Legal Pro",
+        cta: "Upgrade to Pro",
         isPopular: true
       },
       {
@@ -217,16 +193,12 @@ function SubscriptionContent() {
         name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Multi-seat litigation workspace, court filing export, and dedicated legal tech support.",
+        description: "Organization-wide deployments and multi-agency collaboration support.",
         features: [
-          "Everything in Legal Pro",
-          "Volume Team Entitlements (5 litigation seats included, scalable)",
-          "Multi-attorney docket sharing & collaboration",
-          "Federal court complaint generation (APA / 552)",
-          "Bates vault with cryptographically hashed chain of custody",
-          "Agency compliance dashboard & FOIA officer tools",
-          "Dedicated paralegal data onboarding",
-          "Custom litigation templates & precedent library"
+          "Everything in Pro",
+          "Firm/Agency Volume Entitlements (Multi-seat)",
+          "Multi-agency collaboration portal",
+          "White-glove data ingestion services"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -238,14 +210,11 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Essential vulnerability tracking and manual fix script generation for security researchers.",
+        description: "Manual threat remediation guidelines for individual operators.",
         features: [
-          "Single Operator Access",
-          "Standard manual script generations",
-          "Basic localhost remediation mode",
-          "Public CVE Praxis checklist",
-          "REST API access (50 requests/mo)",
-          "Community advisory tracking"
+          "Single User Browser Access",
+          "Public CVE checklist",
+          "Standard manual remediation guides"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -255,15 +224,12 @@ function SubscriptionContent() {
         name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Automated patch generation with surgical Bash, PowerShell, and Ansible fix payloads for individual operators.",
+        description: "Automated bash and playbook generation with SIEM export formatting.",
         features: [
           "Everything in Community",
-          "Single Operator License (1 seat per user)",
-          "Unlimited automated script generation",
-          "Surgical Bash, PowerShell & Ansible payloads",
-          "3 Custom SIEM & Firewall export formats",
-          "Direct Vantage CVE correlation",
-          "REST API access (10,000 requests/mo)"
+          "Automated bash/ansible patching payloads",
+          "SIEM webhook export formats (Splunk, QRadar)",
+          "Priority 12-hour support SLA"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -273,15 +239,12 @@ function SubscriptionContent() {
         name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Enterprise-wide fleet automated patch deployment, SIEM hooks, and fleet volume entitlements.",
+        description: "Fleet-wide operations scale and compliance tracking.",
         features: [
           "Everything in Pro",
-          "Volume Fleet Entitlements (Multi-operator team pool & unlimited managed endpoints)",
-          "Full global fleet patch orchestration",
-          "All Firewall/EDR export formats (CrowdStrike, Sentinel, Splunk)",
-          "Custom SIEM real-time webhook listeners",
-          "Air-gapped offline script cosigning & validation",
-          "Dedicated CSM, white-glove onboarding & 99.99% SLA"
+          "Organization Volume Entitlements (Fleet licenses)",
+          "Custom internal compliance benchmarking",
+          "Dedicated priority incident engineer"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -293,14 +256,11 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Essential CIS Level 1 hardened container images for independent developers.",
+        description: "Standard CIS baselines and vulnerability scanning.",
         features: [
-          "Single Developer Access",
-          "Access to Alpine & Debian hardened base images",
-          "CIS Level 1 Baseline security configuration",
-          "Monthly Vantage sync updates",
-          "Standard Docker & OCI container format",
-          "Public cryptographic signature verification"
+          "Single Developer Docker Pulls",
+          "Standard CIS baseline images",
+          "Public CVE vulnerability scans"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -310,15 +270,12 @@ function SubscriptionContent() {
         name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Production-ready hardened runtimes with daily zero-day patch rebuilds for single developer workstations.",
+        description: "Zero-trust environments and cryptographic SBOM generation.",
         features: [
           "Everything in Community",
-          "Single Developer License (1 seat per user)",
-          "All base OS & language runtimes (Node, Python, Go, Rust)",
-          "CIS Level 2 strict airgap hardening",
-          "Daily zero-day patch rebuilds synchronized to Vantage",
-          "Distroless minimal attack surface builds (no package managers)",
-          "Automated SBOM & cosign cryptographic signatures"
+          "Zero-trust hardened OS variants",
+          "Automated SBOM manifests",
+          "1 active registry connection"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -328,15 +285,12 @@ function SubscriptionContent() {
         name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Private container registry proxy, custom golden images, and enclave-based hardware attestation.",
+        description: "Air-gapped compatibility and full compliance infrastructure.",
         features: [
           "Everything in Pro",
-          "Volume Organization Entitlements (Multi-seat builder nodes & cluster-wide distribution)",
-          "Private container registry proxy (ACR, ECR, GCR, Harbor)",
-          "Custom organizational golden image builder",
-          "Enclave-based offline attestation & hardware roots of trust",
-          "Guaranteed 4-hour SLA for critical CVE zero-day mitigations",
-          "Dedicated OS security architect & custom kernel compilation"
+          "Organization Volume Entitlements",
+          "Air-gapped deployment compatibility",
+          "Signed cryptographic provenance"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -348,14 +302,11 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Comprehensive exam prep and simulator for individual cybersecurity researchers and students (1 user).",
+        description: "Cybersecurity certification prep testing (e.g. Security+, CEH).",
         features: [
-          "Single Student / Learner Access",
-          "Full access to 15,000+ certification questions",
-          "Interactive exam simulator with real-time timers",
-          "Instant explanations, key concepts & immediate feedback",
-          "Checkpoint scores & domain progress tracking",
-          "CompTIA, CISSP, CEH, AWS Security syllabus coverage"
+          "Single Student License",
+          "Standard exam question banks",
+          "Basic scoring & progress tracking"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -365,56 +316,52 @@ function SubscriptionContent() {
         name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
-        description: "Campus & institutional volume entitlements, LMS API integration, SCORM packages, and student seat management.",
+        description: "Institutional scale testing platforms with custom enterprise workflows.",
         features: [
-          "Everything in Student Free tier",
-          "Institutional Volume Entitlements (Multi-seat campus & employee licenses)",
-          "Dedicated Enterprise REST API endpoints for question banks",
-          "SCORM & xAPI compatible exports for internal LMS",
-          "Multi-student progress benchmarking & corporate scorecards",
-          "Private custom question publishing & grading pipeline",
-          "SSO SAML 2.0 integration & dedicated education advisor"
+          "Everything in Community",
+          "Institutional Volume Entitlements (Multi-seat)",
+          "Dedicated Enterprise REST API endpoints",
+          "SSO SAML 2.0 integration & dedicated support"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: true
       }
     ],
-    omnipass: [
+    multipass: [
       {
         tier: "pro",
-        name: "Pro",
-        priceMonthly: 245,
-        priceAnnual: 195,
-        description: "Buy all, get one free! Get individual Pro-level access to all six Exultia products for the price of five.",
+        name: "MultiPass Pro",
+        priceMonthly: 196,
+        priceAnnual: 156,
+        description: "Buy 4, get 1 free! Get individual Pro-level access to all five eligible Exultia products for the price of four.",
         features: [
           "PureIDE Pro Workstation",
           "Vantage Threat Intel Pro",
           "Inquest FOIA Legal Pro",
           "Praxis Pro",
           "PureOS Containers Pro",
-          "Axiom Simulator Pro",
-          "100% bundled 6-for-5 discount"
+          "100% bundled 5-for-4 discount"
         ],
-        cta: "Unlock OmniPass Vanguard",
+        cta: "Unlock MultiPass Pro",
         isPopular: true
       },
       {
         tier: "enterprise",
-        name: "Enterprise",
+        name: "MultiPass Enterprise",
         priceMonthly: 745,
         priceAnnual: 595,
-        description: "Buy all, get one free! Organization-wide Enterprise-level access to all six Exultia products for the price of five.",
+        description: "Buy 5, get 1 free! Organization-wide Enterprise-level access to all six Exultia products for the price of five.",
         features: [
-          "PureIDE Hermetic Enterprise",
-          "Vantage Global Feed Enterprise",
-          "Inquest Enterprise Archival",
-          "Praxis Autonomic Enterprise",
-          "PureOS Fleet Enterprise",
-          "Axiom Institutional Enterprise",
+          "PureIDE Enterprise",
+          "Vantage Enterprise",
+          "Inquest Enterprise",
+          "Praxis Enterprise",
+          "PureOS Enterprise",
+          "Axiom Enterprise",
           "100% bundled 6-for-5 discount",
           "Dedicated priority support engineer"
         ],
-        cta: "Unlock OmniPass Enterprise",
+        cta: "Unlock MultiPass Enterprise",
         isPopular: false
       }
     ]

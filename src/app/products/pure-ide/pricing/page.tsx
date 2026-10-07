@@ -233,7 +233,7 @@ export default function PricingPage() {
             <li className="included">✓ Priority Dedicated Cloud Builds</li>
             <li className="included">✓ Real-time Egress Socket Firewall</li>
             <li className="included">✓ Secrets Scanner & Token Redaction</li>
-            <li className="included">✓ Curated Blueprints (20+ Stacks)</li>
+            <li className="included">✓ Automated SBOM generation</li>
             <li className="included">✓ 1 Active Developer Workstation</li>
           </ul>
 
