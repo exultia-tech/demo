@@ -59,6 +59,12 @@ export default function PureOSMarketingPage() {
                 We strip non-essential binaries and package managers from production-ready images, dramatically reducing the surface area available for remote code execution and lateral movement.
               </p>
             </div>
+            <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+              <h3 style={{ color: "#FBBF24", marginBottom: "1rem" }}>Infrastructure-as-Code Deliverables</h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                To maintain strict chain-of-custody and air-gap compliance, we don't host your containers. We generate the hardened <strong style={{color:"white"}}>Dockerfile</strong> and <strong style={{color:"white"}}>JSON SBOM</strong> recipes for you to seamlessly integrate into your own internal CI/CD pipelines.
+              </p>
+            </div>
           </div>
         </div>
       </section>
