@@ -245,31 +245,6 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 3: INQUEST */}
-                    <Link 
-                      href="/products/inquest" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <InquestIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
-                      </div>
-                    </Link>
-
                     {/* PRODUCT 4: praxis */}
                     <Link 
                       href="/app/fixlist" 
@@ -344,6 +319,31 @@ export default function Navbar() {
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
                       </div>
                     </Link>
+                    {/* PRODUCT 3: INQUEST */}
+                    <Link 
+                      href="/products/inquest" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <InquestIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
+                      </div>
+                    </Link>
+
                   </div>
                 </div>
               )}
@@ -666,39 +666,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 3: INQUEST SUBMENU (Hidden in Isolated Mode) */}
-          {isFoiaContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <InquestIcon size={16} glow={false} />
-                Inquest
-              </span>
-
-              <Link 
-                href="/products/inquest" 
-                className={`submenu-link ${pathname === "/products/inquest" || pathname === "/products/foia" ? "active-cyan" : ""}`}>
-                Overview
-              </Link>
-              <Link 
-                href="/products/inquest/features" 
-                className={`submenu-link ${pathname === "/products/inquest/features" ? "active-cyan" : ""}`}>
-                Features
-              </Link>
-              <Link 
-                href="/account/subscription?product=inquest" 
-                className="submenu-link"
-                style={{ color: "#67E8F9", fontWeight: 700 }}>
-                Plans & Pricing
-              </Link>
-              <Link 
-                href="/app/inquest" 
-                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Inquest Workspace
-              </Link>
-            </div>
-          )}
-
           {/* SUBMENU OPTION 4: praxis SUBMENU */}
           {isPraxisContext && (
             <div className="product-submenu-group">
@@ -771,6 +738,39 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+          {/* SUBMENU OPTION 3: INQUEST SUBMENU (Hidden in Isolated Mode) */}
+          {isFoiaContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <InquestIcon size={16} glow={false} />
+                Inquest
+              </span>
+
+              <Link 
+                href="/products/inquest" 
+                className={`submenu-link ${pathname === "/products/inquest" || pathname === "/products/foia" ? "active-cyan" : ""}`}>
+                Overview
+              </Link>
+              <Link 
+                href="/products/inquest/features" 
+                className={`submenu-link ${pathname === "/products/inquest/features" ? "active-cyan" : ""}`}>
+                Features
+              </Link>
+              <Link 
+                href="/account/subscription?product=inquest" 
+                className="submenu-link"
+                style={{ color: "#67E8F9", fontWeight: 700 }}>
+                Plans & Pricing
+              </Link>
+              <Link 
+                href="/app/inquest" 
+                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Inquest Workspace
+              </Link>
+            </div>
+          )}
+
         </div>
       )}
     </div>

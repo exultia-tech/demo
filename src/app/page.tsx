@@ -126,47 +126,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* PRODUCT 3: INQUEST */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(6, 182, 212, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(5, 12, 22, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <InquestIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h3>
-              <div style={{ color: "#06B6D4", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Public Records & FOIA Assistant
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Draft, file, and track public records requests across federal FOIA and all 50 states. Includes automatic statutory deadline tracking, fee-waiver tools, and formal appeal templates.
-              </p>
-            </div>
-
-            <div>
-              <Link 
-                href="/products/inquest" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
-                Explore Inquest →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=inquest" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
-            </div>
-          </div>
-
           {/* PRODUCT 4: PUREOS */}
           <div className="glass-card" style={{
             padding: "2.25rem 2rem",
@@ -270,6 +229,47 @@ export default function HomePage() {
               <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
                 <Link href="/account/subscription?product=axiom" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
                   Plans & Pricing ($0, $149) →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* PRODUCT 3: INQUEST */}
+          <div className="glass-card" style={{
+            padding: "2.25rem 2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            border: "1px solid rgba(6, 182, 212, 0.3)",
+            borderRadius: "18px",
+            background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(5, 12, 22, 0.95) 100%)",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
+            marginBottom: 0
+          }}>
+            <div>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <InquestIcon size={52} glow={true} />
+              </div>
+
+              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h3>
+              <div style={{ color: "#06B6D4", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
+                Public Records & FOIA Assistant
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+                Draft, file, and track public records requests across federal FOIA and all 50 states. Includes automatic statutory deadline tracking, fee-waiver tools, and formal appeal templates.
+              </p>
+            </div>
+
+            <div>
+              <Link 
+                href="/products/inquest" 
+                className="btn-primary" 
+                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
+                Explore Inquest →
+              </Link>
+              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
+                <Link href="/account/subscription?product=inquest" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                  Plans & Pricing →
                 </Link>
               </div>
             </div>

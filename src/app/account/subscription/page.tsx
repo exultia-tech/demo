@@ -30,7 +30,7 @@ import {
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom" | "multipass";
+type ProductKey = "pureide" | "uvi" | "fixlist" | "pureos" | "axiom" | "inquest" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +46,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "inquest", "fixlist", "pureos", "axiom", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "fixlist", "pureos", "axiom", "inquest", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -153,52 +153,6 @@ function SubscriptionContent() {
           "Organization Volume Entitlements",
           "Dedicated CISO advisory portal",
           "Unlimited unmetered API quotas"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    inquest: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Standard FOIA exemption processing and indexing for individual researchers.",
-        features: [
-          "Single User Browser Access",
-          "Public records act discovery workflow",
-          "Standard FOIA exemption 1-9 templating"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Automated redaction pipelines and case chain of custody for individual legal analysts.",
-        features: [
-          "Everything in Community",
-          "Automated redaction engine",
-          "Case audit logging & chain of custody",
-          "Priority API processing pipeline"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
-        description: "Organization-wide deployments and multi-agency collaboration support.",
-        features: [
-          "Everything in Pro",
-          "Firm/Agency Volume Entitlements (Multi-seat)",
-          "Multi-agency collaboration portal",
-          "White-glove data ingestion services"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -327,6 +281,52 @@ function SubscriptionContent() {
         isPopular: true
       }
     ],
+    inquest: [
+      {
+        tier: "free",
+        name: "Community",
+        priceMonthly: 0,
+        priceAnnual: 0,
+        description: "Standard FOIA exemption processing and indexing for individual researchers.",
+        features: [
+          "Single User Browser Access",
+          "Public records act discovery workflow",
+          "Standard FOIA exemption 1-9 templating"
+        ],
+        cta: "Current Free Tier",
+        isPopular: false
+      },
+      {
+        tier: "pro",
+        name: "Pro",
+        priceMonthly: 49,
+        priceAnnual: 39,
+        description: "Automated redaction pipelines and case chain of custody for individual legal analysts.",
+        features: [
+          "Everything in Community",
+          "Automated redaction engine",
+          "Case audit logging & chain of custody",
+          "Priority API processing pipeline"
+        ],
+        cta: "Upgrade to Pro",
+        isPopular: true
+      },
+      {
+        tier: "enterprise",
+        name: "Enterprise",
+        priceMonthly: 149,
+        priceAnnual: 119,
+        description: "Organization-wide deployments and multi-agency collaboration support.",
+        features: [
+          "Everything in Pro",
+          "Firm/Agency Volume Entitlements (Multi-seat)",
+          "Multi-agency collaboration portal",
+          "White-glove data ingestion services"
+        ],
+        cta: "Upgrade to Enterprise",
+        isPopular: false
+      }
+    ],
     multipass: [
       {
         tier: "pro",
@@ -382,13 +382,6 @@ function SubscriptionContent() {
       color: "#8B5CF6",
       bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
     },
-    inquest: {
-      name: "Inquest",
-      subtitle: "Autonomous public records compliance & 9-exemption discovery vault",
-      icon: <InquestIcon size={18} glow={false} />,
-      color: "#06B6D4",
-      bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
-    },
     fixlist: {
       name: "Praxis",
       subtitle: "Surgical vulnerability remediation & automated patch payloads",
@@ -409,6 +402,13 @@ function SubscriptionContent() {
       icon: <AxiomIcon size={18} glow={false} />,
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
+    },
+    inquest: {
+      name: "Inquest",
+      subtitle: "Autonomous public records compliance & 9-exemption discovery vault",
+      icon: <InquestIcon size={18} glow={false} />,
+      color: "#06B6D4",
+      bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
     },
     multipass: {
       name: "MultiPass",
