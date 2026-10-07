@@ -8,6 +8,34 @@ import { Download, FileCode } from 'lucide-react';
 type SubscriptionTier = 'Free' | 'Pro' | 'Enterprise';
 type ActiveTab = 'base' | 'hardening' | 'packages' | 'scanner' | 'output';
 
+
+interface OsPackage {
+  name: string;
+  category: string;
+  description: string;
+  downloadCount: number;
+  securityGrade: "A+" | "B" | "C";
+  cveCount: number;
+  cveAdvisory?: { id: string };
+  verified: boolean;
+}
+
+const OS_PACKAGES: OsPackage[] = [
+  { name: "curl", category: "Networking", description: "Command line tool and library for transferring data with URLs.", downloadCount: 500000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "wget", category: "Networking", description: "The non-interactive network downloader.", downloadCount: 300000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "jq", category: "Utilities", description: "Command-line JSON processor.", downloadCount: 80000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "git", category: "Development", description: "Fast, scalable, distributed revision control system.", downloadCount: 400000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "python3", category: "Language", description: "Interactive high-level object-oriented language.", downloadCount: 200000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "nodejs", category: "Language", description: "Evented I/O for V8 javascript.", downloadCount: 150000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "docker", category: "Systems", description: "Linux container runtime.", downloadCount: 100000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-21626" }, verified: true },
+  { name: "vim", category: "Utilities", description: "Vi IMproved - enhanced vi editor.", downloadCount: 90000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "htop", category: "Utilities", description: "Interactive processes viewer.", downloadCount: 50000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "tmux", category: "Utilities", description: "Terminal multiplexer.", downloadCount: 40000000, securityGrade: "A+", cveCount: 0, verified: true },
+  { name: "apache-log4j", category: "Library", description: "Log4j logging library.", downloadCount: 10000000, securityGrade: "C", cveCount: 3, cveAdvisory: { id: "CVE-2021-44228" }, verified: false },
+  { name: "openssh-server", category: "Networking", description: "Secure shell server.", downloadCount: 200000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-6387" }, verified: true },
+  { name: "xz-utils", category: "Utilities", description: "XZ-format compression utilities.", downloadCount: 100000000, securityGrade: "C", cveCount: 1, cveAdvisory: { id: "CVE-2024-3094" }, verified: false },
+];
+
 export default function PureOSConfigurator() {
   const [tier, setTier] = useState<SubscriptionTier>('Free');
   const [activeTab, setActiveTab] = useState<ActiveTab>('base');
@@ -29,6 +57,10 @@ export default function PureOSConfigurator() {
     tmux: false,
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [inspectingPkg, setInspectingPkg] = useState<OsPackage | null>(null);
+  
+  // Convert includeTools to an array for easy rendering, but keep backward compatibility
   const [showSbomModal, setShowSbomModal] = useState(false);
 
   const isPro = tier === 'Pro' || tier === 'Enterprise';
@@ -447,33 +479,199 @@ export default function PureOSConfigurator() {
           )}
 
           {activeTab === 'packages' && (
-            <div className="fade-in">
-              <h2 style={{ fontSize: "1.5rem", margin: "0 0 1.5rem 0", color: "white" }}>Inject Utilities & Runtimes</h2>
-              <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>Select the packages to pre-bake into your image. PureOS automatically verifies supply chain signatures for all selected tools.</p>
+            <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', height: '100%' }}>
               
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1rem" }}>
-                {Object.keys(includeTools).map(tool => (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.25rem', flexWrap: 'wrap', marginBottom: '0.6rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div>
+                  <h2 style={{ fontSize: "1.5rem", margin: "0", color: "white" }}>Verified OS Marketplace</h2>
+                  <p style={{ color: "var(--text-muted)", margin: "0.25rem 0 0 0", fontSize: "0.9rem" }}>Select packages to pre-bake. Callouts indicate open vulnerabilities or supply chain risks.</p>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: '240px', justifyContent: 'flex-end' }}>
+                  <div style={{ position: 'relative', flex: 1, maxWidth: '380px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Search packages..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.52rem 0.9rem 0.52rem 2.2rem',
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '8px',
+                        fontSize: '0.85rem',
+                        color: 'var(--text-main)',
+                        outline: 'none'
+                      }}
+                    />
+                    <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.45, fontSize: '0.8rem', pointerEvents: 'none' }}>
+                      🔍
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <div 
-                    key={tool}
-                    onClick={() => toggleTool(tool)}
                     style={{ 
-                      display: "flex", 
-                      gap: "1rem", 
-                      alignItems: "center", 
-                      cursor: "pointer", 
-                      background: includeTools[tool] ? "rgba(16, 185, 129, 0.1)" : "rgba(0,0,0,0.2)", 
-                      border: includeTools[tool] ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid var(--border-color)",
-                      padding: "1rem 1.5rem", 
-                      borderRadius: "12px",
-                      transition: "all 0.2s ease"
+                      maxHeight: 'calc(100vh - 280px)',
+                      minHeight: '340px',
+                      overflowY: 'auto', 
+                      overflowX: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column'
                     }}
                   >
-                    <div style={{ width: "20px", height: "20px", borderRadius: "4px", border: "2px solid " + (includeTools[tool] ? "#10B981" : "var(--border-color)"), display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {includeTools[tool] && <div style={{ width: "10px", height: "10px", background: "#10B981", borderRadius: "2px" }} />}
+                    <div 
+                      style={{ 
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10,
+                        display: 'grid', 
+                        gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px', 
+                        padding: '0.75rem 1rem', 
+                        background: 'rgba(15, 23, 42, 0.98)', 
+                        backdropFilter: 'blur(16px)',
+                        borderBottom: '1px solid var(--border-color)', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 700, 
+                        color: 'var(--text-muted)', 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.05em', 
+                        alignItems: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.35)'
+                      }}
+                    >
+                      <div style={{ textAlign: 'center' }}>
+                      </div>
+                      <div>Package & Category</div>
+                      <div>Downloads</div>
+                      <div>Provenance</div>
+                      <div>Security / CVE</div>
+                      <div style={{ textAlign: 'right' }}>Audit</div>
                     </div>
-                    <span style={{ textTransform: "capitalize", fontWeight: 600, color: "white" }}>{tool}</span>
+
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {OS_PACKAGES.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase())).map((pkg, rowIdx) => {
+                        const inCart = !!includeTools[pkg.name];
+                        const formattedDownloads = pkg.downloadCount >= 1000000 
+                            ? `${(pkg.downloadCount / 1000000).toFixed(1)}M` 
+                            : `${pkg.downloadCount}`;
+
+                        return (
+                          <div 
+                            key={pkg.name}
+                            onClick={(e) => {
+                              if ((e.target as HTMLElement).closest('button, a, input')) return;
+                              if (pkg.cveCount > 0 && !inCart) {
+                                setInspectingPkg(pkg);
+                              } else {
+                                toggleTool(pkg.name);
+                              }
+                            }}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px',
+                              padding: '0.6rem 1rem',
+                              borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                              background: inCart ? 'rgba(59, 130, 246, 0.08)' : rowIdx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.015)',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease'
+                            }}>
+                            
+                            <div style={{ textAlign: 'center' }}>
+                              <input 
+                                type="checkbox"
+                                checked={inCart}
+                                onChange={() => {
+                                  if (pkg.cveCount > 0 && !inCart) {
+                                    setInspectingPkg(pkg);
+                                  } else {
+                                    toggleTool(pkg.name);
+                                  }
+                                }}
+                                style={{ cursor: 'pointer', transform: 'scale(1.15)', accentColor: 'var(--accent-primary)' }}
+                              />
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, paddingRight: '0.5rem' }}>
+                              <div style={{ fontSize: '1.5rem', flexShrink: 0 }}>📦</div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  <span style={{ fontWeight: 600, fontSize: '0.88rem', color: inCart ? '#93C5FD' : 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {pkg.name}
+                                  </span>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                    {pkg.category}
+                                  </span>
+                                </div>
+                                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {pkg.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: 500 }}>
+                              {formattedDownloads}
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}>
+                              {pkg.verified ? (
+                                <span className="github-badge" style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', background: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.25)' }} title="Verified Publisher Identity">
+                                  ✓ Verified
+                                </span>
+                              ) : (
+                                <span className="github-badge unverified" style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.35)' }}>
+                                  Unverified
+                                </span>
+                              )}
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span className={`risk-grade ${pkg.securityGrade === 'A+' ? 'grade-a' : pkg.securityGrade === 'B' ? 'grade-b' : 'grade-c'}`} style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
+                                {pkg.securityGrade}
+                              </span>
+                              {pkg.cveCount > 0 ? (
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); setInspectingPkg(pkg); }}
+                                  className="github-badge unverified" 
+                                  title="Click to view CVE advisory and risk audit"
+                                  style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#F87171', border: '1px solid rgba(239, 68, 68, 0.35)', cursor: 'pointer', fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}>
+                                  🚨 {pkg.cveAdvisory?.id || 'CVE'}
+                                </button>
+                              ) : (
+                                <span style={{ fontSize: '0.72rem', color: '#34D399', fontWeight: 500 }}>
+                                  0 CVE
+                                </span>
+                              )}
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.3rem' }}>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); setInspectingPkg(pkg); }}
+                                style={{
+                                  padding: '0.25rem 0.6rem',
+                                  borderRadius: '6px',
+                                  border: '1px solid var(--border-color)',
+                                  background: 'rgba(255,255,255,0.06)',
+                                  color: 'var(--text-muted)',
+                                  fontSize: '0.75rem',
+                                  cursor: 'pointer'
+                                }}
+                                title="Audit package security metadata">
+                                Audit
+                              </button>
+                            </div>
+
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           )}
