@@ -16,9 +16,17 @@ export default function PureOSConfigurator() {
   const [hardeningLevel, setHardeningLevel] = useState('standard');
   const [includeTools, setIncludeTools] = useState<Record<string, boolean>>({
     curl: true,
+    wget: false,
     jq: false,
+    git: false,
     python: false,
     node: false,
+    go: false,
+    rust: false,
+    docker: false,
+    vim: false,
+    htop: false,
+    tmux: false,
   });
 
   const [showSbomModal, setShowSbomModal] = useState(false);
@@ -223,7 +231,9 @@ export default function PureOSConfigurator() {
               </div>
             </div>
             
-            <button style={{ 
+            <button 
+              onClick={() => setActiveTab('output')}
+              style={{ 
               marginTop: "1.5rem",
               width: "100%", 
               padding: "0.85rem", 
