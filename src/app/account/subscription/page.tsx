@@ -410,9 +410,9 @@ function SubscriptionContent() {
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
     },
-    omnipass: {
-      name: "Exultia OmniPass",
-      subtitle: "The ultimate 6-in-1 bundled suite—buy all, get one free",
+    multipass: {
+      name: "Exultia MultiPass",
+      subtitle: "Leeloo Dallas MultiPass! The ultimate bundled suite.",
       icon: <Sparkles size={18} />,
       color: "#EC4899",
       bgGradient: "linear-gradient(135deg, #EC4899, #BE185D)"
