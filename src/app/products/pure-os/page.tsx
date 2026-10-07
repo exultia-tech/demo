@@ -27,7 +27,7 @@ export default function PureOSMarketingPage() {
             Browse Catalogue →
           </Link>
           <Link href="/products/pure-os/pricing" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            Plans & Pricing ($0, $49, $149)
+            Plans & Pricing
           </Link>
           <Link href="/account/subscription?product=pureos" className="btn-primary" style={{ padding: "0.95rem 1.85rem", fontSize: "0.95rem", textDecoration: "none", background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}>
             Subscribe Now →
@@ -90,7 +90,7 @@ export default function PureOSMarketingPage() {
               Launch Configurator Free →
             </Link>
             <Link href="/account/subscription?product=pureos" style={{ padding: "0.95rem 1.85rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid var(--border-color)", color: "white", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-              Plans & Pricing ($0, $49, $149) →
+              Plans & Pricing →
             </Link>
           </div>
         </div>

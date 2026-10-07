@@ -616,7 +616,7 @@ export default function Navbar() {
                 href="/account/subscription?product=pureide" 
                 className="submenu-link"
                 style={{ color: "#93C5FD", fontWeight: 700 }}>
-                Plans & Pricing ($0, $49, $149)
+                Plans & Pricing
               </Link>
               <Link 
                 href="/app/pureide" 
@@ -649,7 +649,7 @@ export default function Navbar() {
                 href="/account/subscription?product=uvi" 
                 className="submenu-link"
                 style={{ color: "#C084FC", fontWeight: 700 }}>
-                Plans & Pricing ($0, $49, $149)
+                Plans & Pricing
               </Link>
               <Link 
                 href="/app/uvi/best-practices" 
@@ -688,7 +688,7 @@ export default function Navbar() {
                 href="/account/subscription?product=inquest" 
                 className="submenu-link"
                 style={{ color: "#67E8F9", fontWeight: 700 }}>
-                Plans & Pricing ($0, $49, $149)
+                Plans & Pricing
               </Link>
               <Link 
                 href="/app/inquest" 
@@ -716,7 +716,7 @@ export default function Navbar() {
                 href="/account/subscription?product=fixlist" 
                 className="submenu-link"
                 style={{ color: "#FDE68A", fontWeight: 700 }}>
-                Plans & Pricing ($0, $49, $149)
+                Plans & Pricing
               </Link>
             </div>
           )}
@@ -738,7 +738,7 @@ export default function Navbar() {
                 href="/account/subscription?product=pureos" 
                 className="submenu-link"
                 style={{ color: "#FBBF24", fontWeight: 700 }}>
-                Plans & Pricing ($0, $49, $149)
+                Plans & Pricing
               </Link>
               <Link 
                 href="/app/pureos" 

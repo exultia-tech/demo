@@ -43,7 +43,7 @@ export default function InquestProductLandingPage() {
           <Link 
             href="/products/inquest/pricing" 
             style={{ padding: "0.95rem 1.7rem", borderRadius: "10px", background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.3)", color: "#67E8F9", textDecoration: "none", fontWeight: 600, fontSize: "0.95rem" }}>
-            Plans & Pricing ($0, $49, $149)
+            Plans & Pricing
           </Link>
         </div>
       </section>

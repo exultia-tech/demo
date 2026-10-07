@@ -219,7 +219,7 @@ export default function PureOSConfigurator() {
                 whiteSpace: "nowrap"
               }}
             >
-              Plans & Pricing ($0, $49, $149) →
+              Plans & Pricing →
             </Link>
           </div>
         </div>
@@ -377,7 +377,7 @@ export default function PureOSConfigurator() {
                             whiteSpace: "nowrap"
                           }}
                         >
-                          Get Subscription ($0, $49, $149) →
+                          Get Subscription →
                         </Link>
                       </div>
                       

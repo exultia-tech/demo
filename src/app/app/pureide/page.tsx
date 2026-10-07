@@ -4242,7 +4242,7 @@ build_hardened_ide:
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  Manage / Purchase Plans ($0, $49, $149) →
+                  Manage / Purchase Plans →
                 </Link>
               </div>
             </div>

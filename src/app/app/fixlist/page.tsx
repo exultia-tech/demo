@@ -219,7 +219,7 @@ export default function PraxisPage() {
                 whiteSpace: "nowrap"
               }}
             >
-              Plans & Pricing ($0, $49, $149) →
+              Plans & Pricing →
             </Link>
 
             <div style={{ position: "relative" }}>

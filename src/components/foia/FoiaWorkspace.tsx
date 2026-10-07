@@ -259,7 +259,7 @@ export const FoiaWorkspace: React.FC<FoiaWorkspaceProps> = ({ initialTab = 'wiza
               whiteSpace: 'nowrap'
             }}
           >
-            <span>Plans & Pricing ($0, $49, $149) →</span>
+            <span>Plans & Pricing →</span>
           </Link>
 
           {/* Settings Button */}
