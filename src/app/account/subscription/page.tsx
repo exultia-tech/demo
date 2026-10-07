@@ -369,21 +369,21 @@ function SubscriptionContent() {
 
   const productMeta: Record<ProductKey, { name: string; subtitle: string; icon: React.ReactNode; color: string; bgGradient: string }> = {
     pureide: {
-      name: "PureIDE Workstations",
+      name: "PureIDE",
       subtitle: "Zero-telemetry developer environment compiler & egress firewall",
       icon: <PureIdeIcon size={18} glow={false} />,
       color: "#3B82F6",
       bgGradient: "linear-gradient(135deg, #3B82F6, #2563EB)"
     },
     uvi: {
-      name: "Vantage Threat Intel",
+      name: "Vantage",
       subtitle: "Universal vulnerability feed aggregating 110+ threat sources",
       icon: <VantageIcon size={18} glow={false} />,
       color: "#8B5CF6",
       bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
     },
     inquest: {
-      name: "Inquest FOIA Legal",
+      name: "Inquest",
       subtitle: "Autonomous public records compliance & 9-exemption discovery vault",
       icon: <InquestIcon size={18} glow={false} />,
       color: "#06B6D4",
@@ -397,21 +397,21 @@ function SubscriptionContent() {
       bgGradient: "linear-gradient(135deg, #F59E0B, #D97706)"
     },
     pureos: {
-      name: "PureOS Containers",
+      name: "PureOS",
       subtitle: "Pre-hardened CIS container images synchronized to Vantage",
       icon: <PureOsIcon size={18} glow={false} />,
       color: "#10B981",
       bgGradient: "linear-gradient(135deg, #10B981, #059669)"
     },
     axiom: {
-      name: "Axiom Simulator",
+      name: "Axiom",
       subtitle: "Cybersecurity certification prep & enterprise LMS API engine",
       icon: <AxiomIcon size={18} glow={false} />,
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
     },
     multipass: {
-      name: "Exultia MultiPass",
+      name: "MultiPass",
       subtitle: "Leeloo Dallas MultiPass! The ultimate bundled suite.",
       icon: <Sparkles size={18} />,
       color: "#EC4899",
