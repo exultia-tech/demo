@@ -16,7 +16,7 @@ interface OsPackage {
   downloadCount: number;
   securityGrade: "A+" | "B" | "C";
   cveCount: number;
-  cveAdvisory?: { id: string };
+  cveAdvisory?: { id: string; details: string; severity: "CRITICAL" | "HIGH" | "MEDIUM" };
   verified: boolean;
 }
 
@@ -27,13 +27,13 @@ const OS_PACKAGES: OsPackage[] = [
   { name: "git", category: "Development", description: "Fast, scalable, distributed revision control system.", downloadCount: 400000000, securityGrade: "A+", cveCount: 0, verified: true },
   { name: "python3", category: "Language", description: "Interactive high-level object-oriented language.", downloadCount: 200000000, securityGrade: "A+", cveCount: 0, verified: true },
   { name: "nodejs", category: "Language", description: "Evented I/O for V8 javascript.", downloadCount: 150000000, securityGrade: "A+", cveCount: 0, verified: true },
-  { name: "docker", category: "Systems", description: "Linux container runtime.", downloadCount: 100000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-21626" }, verified: true },
+  { name: "docker", category: "Systems", description: "Linux container runtime.", downloadCount: 100000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-21626", severity: "HIGH", details: "LeakyCrates container breakout vulnerability. A vulnerability in runc allows malicious containers to break out and gain host access." }, verified: true },
   { name: "vim", category: "Utilities", description: "Vi IMproved - enhanced vi editor.", downloadCount: 90000000, securityGrade: "A+", cveCount: 0, verified: true },
   { name: "htop", category: "Utilities", description: "Interactive processes viewer.", downloadCount: 50000000, securityGrade: "A+", cveCount: 0, verified: true },
   { name: "tmux", category: "Utilities", description: "Terminal multiplexer.", downloadCount: 40000000, securityGrade: "A+", cveCount: 0, verified: true },
-  { name: "apache-log4j", category: "Library", description: "Log4j logging library.", downloadCount: 10000000, securityGrade: "C", cveCount: 3, cveAdvisory: { id: "CVE-2021-44228" }, verified: false },
-  { name: "openssh-server", category: "Networking", description: "Secure shell server.", downloadCount: 200000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-6387" }, verified: true },
-  { name: "xz-utils", category: "Utilities", description: "XZ-format compression utilities.", downloadCount: 100000000, securityGrade: "C", cveCount: 1, cveAdvisory: { id: "CVE-2024-3094" }, verified: false },
+  { name: "apache-log4j", category: "Library", description: "Log4j logging library.", downloadCount: 10000000, securityGrade: "C", cveCount: 3, cveAdvisory: { id: "CVE-2021-44228", severity: "CRITICAL", details: "Log4Shell. JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints." }, verified: false },
+  { name: "openssh-server", category: "Networking", description: "Secure shell server.", downloadCount: 200000000, securityGrade: "B", cveCount: 1, cveAdvisory: { id: "CVE-2024-6387", severity: "HIGH", details: "regreSSHion: Unauthenticated remote code execution vulnerability in OpenSSH's server (sshd) granting full root access." }, verified: true },
+  { name: "xz-utils", category: "Utilities", description: "XZ-format compression utilities.", downloadCount: 100000000, securityGrade: "C", cveCount: 1, cveAdvisory: { id: "CVE-2024-3094", severity: "CRITICAL", details: "Supply chain compromise in liblzma affecting sshd. Malicious code allows unauthorized access and arbitrary code execution." }, verified: false },
 ];
 
 export default function PureOSConfigurator() {
@@ -833,9 +833,17 @@ ${baseImage.startsWith('win-') ? `    {
                 <strong style={{ color: inspectingPkg.cveCount === 0 ? '#34D399' : '#F87171' }}>{inspectingPkg.cveCount} Detected</strong>
               </div>
               {inspectingPkg.cveAdvisory && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
-                  <span>Latest Advisory:</span>
-                  <strong style={{ color: '#F87171' }}>{inspectingPkg.cveAdvisory.id}</strong>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', marginTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 600, color: '#F87171' }}>⚠️ Security Advisory</span>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.8rem', background: inspectingPkg.cveAdvisory.severity === 'CRITICAL' ? '#EF4444' : '#F97316', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>{inspectingPkg.cveAdvisory.severity}</span>
+                      <strong style={{ color: '#F87171' }}>{inspectingPkg.cveAdvisory.id}</strong>
+                    </div>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    {inspectingPkg.cveAdvisory.details}
+                  </p>
                 </div>
               )}
             </div>
