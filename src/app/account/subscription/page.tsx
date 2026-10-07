@@ -30,7 +30,7 @@ import {
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom";
+type ProductKey = "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom" | "omnipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +46,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "inquest", "fixlist", "pureos", "axiom"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "inquest", "fixlist", "pureos", "axiom", "omnipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -378,6 +378,45 @@ function SubscriptionContent() {
         cta: "Upgrade to Enterprise",
         isPopular: true
       }
+    ],
+    omnipass: [
+      {
+        tier: "pro",
+        name: "OmniPass Vanguard",
+        priceMonthly: 245,
+        priceAnnual: 195,
+        description: "Buy all, get one free! Get individual Pro-level access to all six Exultia products for the price of five.",
+        features: [
+          "PureIDE Pro Workstation",
+          "Vantage Threat Intel Pro",
+          "Inquest FOIA Legal Pro",
+          "Praxis Fix-List Pro",
+          "PureOS Containers Pro",
+          "Axiom Simulator Pro",
+          "100% bundled 6-for-5 discount"
+        ],
+        cta: "Unlock OmniPass Vanguard",
+        isPopular: true
+      },
+      {
+        tier: "enterprise",
+        name: "OmniPass Enterprise",
+        priceMonthly: 745,
+        priceAnnual: 595,
+        description: "Buy all, get one free! Organization-wide Enterprise-level access to all six Exultia products for the price of five.",
+        features: [
+          "PureIDE Hermetic Enterprise",
+          "Vantage Global Feed Enterprise",
+          "Inquest Enterprise Archival",
+          "Praxis Autonomic Enterprise",
+          "PureOS Fleet Enterprise",
+          "Axiom Institutional Enterprise",
+          "100% bundled 6-for-5 discount",
+          "Dedicated priority support engineer"
+        ],
+        cta: "Unlock OmniPass Enterprise",
+        isPopular: false
+      }
     ]
   };
 
@@ -423,6 +462,13 @@ function SubscriptionContent() {
       icon: <AxiomIcon size={18} glow={false} />,
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
+    },
+    omnipass: {
+      name: "Exultia OmniPass",
+      subtitle: "The ultimate 6-in-1 bundled suite—buy all, get one free",
+      icon: <Sparkles size={18} />,
+      color: "#EC4899",
+      bgGradient: "linear-gradient(135deg, #EC4899, #BE185D)"
     }
   };
 
