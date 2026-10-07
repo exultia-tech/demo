@@ -62,6 +62,15 @@ export default function PureOSConfigurator() {
   
   // Convert includeTools to an array for easy rendering, but keep backward compatibility
   const [showSbomModal, setShowSbomModal] = useState(false);
+  const [isCompiling, setIsCompiling] = useState(false);
+  const handleCompile = () => {
+    setIsCompiling(true);
+    setTimeout(() => {
+      setIsCompiling(false);
+      setActiveTab('output');
+    }, 1500);
+  };
+
 
   const isPro = tier === 'Pro' || tier === 'Enterprise';
   const isEnterprise = tier === 'Enterprise';
@@ -264,7 +273,7 @@ export default function PureOSConfigurator() {
             </div>
             
             <button 
-              onClick={() => setActiveTab('output')}
+              onClick={handleCompile}
               style={{ 
               marginTop: "1.5rem",
               width: "100%", 
@@ -280,7 +289,7 @@ export default function PureOSConfigurator() {
               justifyContent: "center",
               gap: "0.5rem"
             }}>
-              <span>Compile Image</span>
+              <span>{isCompiling ? 'Compiling...' : 'Compile Image'}</span>
             </button>
           </div>
         </div>
@@ -530,7 +539,7 @@ export default function PureOSConfigurator() {
                         top: 0,
                         zIndex: 10,
                         display: 'grid', 
-                        gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px', 
+                        gridTemplateColumns: '36px minmax(200px, 2fr) 100px 110px 140px 75px', 
                         padding: '0.75rem 1rem', 
                         background: 'rgba(15, 23, 42, 0.98)', 
                         backdropFilter: 'blur(16px)',
@@ -573,7 +582,7 @@ export default function PureOSConfigurator() {
                             }}
                             style={{
                               display: 'grid',
-                              gridTemplateColumns: '36px minmax(170px, 2fr) minmax(60px, 80px) minmax(90px, 120px) minmax(95px, 120px) 55px',
+                              gridTemplateColumns: '36px minmax(200px, 2fr) 100px 110px 140px 75px',
                               padding: '0.6rem 1rem',
                               borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                               background: inCart ? 'rgba(59, 130, 246, 0.08)' : rowIdx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.015)',
@@ -808,6 +817,41 @@ ${baseImage.startsWith('win-') ? `    {
         </div>
       )}
 
+
+      {/* AUDIT MODAL */}
+      {inspectingPkg && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "2rem" }} onClick={() => setInspectingPkg(null)}>
+          <div className="glass-card" onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: "600px", borderRadius: "16px", display: "flex", flexDirection: "column", background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "2rem" }}>
+            <h2 style={{ margin: "0 0 1rem 0", fontSize: "1.5rem" }}>Audit: {inspectingPkg.name}</h2>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', marginBottom: '0.5rem' }}>
+                <span>Security Grade:</span>
+                <strong style={{ color: inspectingPkg.securityGrade === 'A+' ? '#34D399' : inspectingPkg.securityGrade === 'B' ? '#FBBF24' : '#F87171' }}>{inspectingPkg.securityGrade}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', marginBottom: '0.5rem' }}>
+                <span>CVE Count:</span>
+                <strong style={{ color: inspectingPkg.cveCount === 0 ? '#34D399' : '#F87171' }}>{inspectingPkg.cveCount} Detected</strong>
+              </div>
+              {inspectingPkg.cveAdvisory && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
+                  <span>Latest Advisory:</span>
+                  <strong style={{ color: '#F87171' }}>{inspectingPkg.cveAdvisory.id}</strong>
+                </div>
+              )}
+            </div>
+            
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+              <button onClick={() => setInspectingPkg(null)} className="btn-secondary" style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", background: "rgba(255,255,255,0.08)", color: "white", border: "1px solid var(--border-color)", cursor: "pointer" }}>Close</button>
+              
+              <button 
+                onClick={() => { toggleTool(inspectingPkg.name); setInspectingPkg(null); }}
+                style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", background: inspectingPkg.cveCount > 0 ? "rgba(239, 68, 68, 0.85)" : "var(--accent-primary)", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                {includeTools[inspectingPkg.name] ? 'Remove from Build' : inspectingPkg.cveCount > 0 ? '⚠️ Acknowledge Risk & Add' : 'Add to Build'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
