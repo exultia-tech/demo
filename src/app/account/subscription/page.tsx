@@ -66,7 +66,7 @@ function SubscriptionContent() {
     pureide: [
       {
         tier: "free",
-        name: "Community Developer",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Zero-telemetry open-source workstation compiler for individual security researchers.",
@@ -83,7 +83,7 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Pro Workstation (1 User)",
+        name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
         description: "Priority compiler engine, dedicated build runner, and real-time egress firewall for single developers.",
@@ -101,7 +101,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Hermetic Enterprise",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
@@ -122,7 +122,7 @@ function SubscriptionContent() {
     uvi: [
       {
         tier: "free",
-        name: "Community Intel",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Web catalog access to 110+ aggregated vulnerability feeds with basic search.",
@@ -139,7 +139,7 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Threat Intel Pro (1 User)",
+        name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
         description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors for individual analysts.",
@@ -157,7 +157,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Global Feed Enterprise",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "High-throughput webhook ingestion, raw bulk dataset dumps, and enterprise volume team entitlements.",
@@ -178,7 +178,7 @@ function SubscriptionContent() {
     inquest: [
       {
         tier: "free",
-        name: "Community Standard",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Basic FOIA drafting and statutory agency routing for journalists and researchers.",
@@ -214,7 +214,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Firm & Agency Suite",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "Multi-seat litigation workspace, court filing export, and dedicated legal tech support.",
@@ -235,7 +235,7 @@ function SubscriptionContent() {
     fixlist: [
       {
         tier: "free",
-        name: "Community Remediation",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Essential vulnerability tracking and manual fix script generation for security researchers.",
@@ -252,7 +252,7 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Automated Remediation Pro (1 User)",
+        name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
         description: "Automated patch generation with surgical Bash, PowerShell, and Ansible fix payloads for individual operators.",
@@ -270,7 +270,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Fleet Patch Automation",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "Enterprise-wide fleet automated patch deployment, SIEM hooks, and fleet volume entitlements.",
@@ -290,7 +290,7 @@ function SubscriptionContent() {
     pureos: [
       {
         tier: "free",
-        name: "Community Base Images",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Essential CIS Level 1 hardened container images for independent developers.",
@@ -307,7 +307,7 @@ function SubscriptionContent() {
       },
       {
         tier: "pro",
-        name: "Verified Stacks Pro (1 User)",
+        name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
         description: "Production-ready hardened runtimes with daily zero-day patch rebuilds for single developer workstations.",
@@ -325,7 +325,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Sovereign Airgap Hub",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "Private container registry proxy, custom golden images, and enclave-based hardware attestation.",
@@ -345,7 +345,7 @@ function SubscriptionContent() {
     axiom: [
       {
         tier: "free",
-        name: "Student / Foundation",
+        name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
         description: "Comprehensive exam prep and simulator for individual cybersecurity researchers and students (1 user).",
@@ -362,7 +362,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "LMS API Integration",
+        name: "Enterprise",
         priceMonthly: 149,
         priceAnnual: 119,
         description: "Campus & institutional volume entitlements, LMS API integration, SCORM packages, and student seat management.",
@@ -382,7 +382,7 @@ function SubscriptionContent() {
     omnipass: [
       {
         tier: "pro",
-        name: "OmniPass Vanguard",
+        name: "Pro",
         priceMonthly: 245,
         priceAnnual: 195,
         description: "Buy all, get one free! Get individual Pro-level access to all six Exultia products for the price of five.",
@@ -400,7 +400,7 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "OmniPass Enterprise",
+        name: "Enterprise",
         priceMonthly: 745,
         priceAnnual: 595,
         description: "Buy all, get one free! Organization-wide Enterprise-level access to all six Exultia products for the price of five.",
