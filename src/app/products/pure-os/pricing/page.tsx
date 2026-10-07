@@ -41,7 +41,7 @@ export default function PureOSPricingPage() {
         
         {/* OPEN SOURCE TIER */}
         <div className="glass-card" style={{ padding: "2.5rem", borderRadius: "24px", display: "flex", flexDirection: "column" }}>
-          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Community Base</h3>
+          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Community</h3>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
             Essential CIS Level 1 hardening for independent developers.
           </p>
@@ -72,7 +72,7 @@ export default function PureOSPricingPage() {
           <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", color: "white", padding: "4px 16px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.05em" }}>
             MOST POPULAR
           </div>
-          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "#FBBF24" }}>PureOS Pro</h3>
+          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "#FBBF24" }}>Pro</h3>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
             Advanced hardening and real-time threat sync for production.
           </p>
@@ -109,7 +109,7 @@ export default function PureOSPricingPage() {
 
         {/* ENTERPRISE TIER */}
         <div className="glass-card" style={{ padding: "2.5rem", borderRadius: "24px", display: "flex", flexDirection: "column" }}>
-          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Enterprise Hub</h3>
+          <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Enterprise</h3>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
             Custom golden images, private registry integration, and volume organization entitlements.
           </p>

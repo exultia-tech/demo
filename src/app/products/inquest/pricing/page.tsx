@@ -127,7 +127,7 @@ export default function InquestPricingPage() {
         }}>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Civic Baseline</h3>
+              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Community</h3>
               <span style={{ 
                 fontSize: "0.72rem", 
                 color: "#34D399", 
@@ -236,7 +236,7 @@ export default function InquestPricingPage() {
 
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Investigator Pro</h3>
+              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Pro</h3>
               <span style={{ 
                 fontSize: "0.72rem", 
                 color: "#67E8F9", 
@@ -327,7 +327,7 @@ export default function InquestPricingPage() {
         }}>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Newsroom & Legal</h3>
+              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Enterprise</h3>
               <span style={{ 
                 fontSize: "0.72rem", 
                 color: "#A78BFA", 

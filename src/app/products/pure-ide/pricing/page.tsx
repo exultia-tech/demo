@@ -203,7 +203,7 @@ export default function PricingPage() {
           {/* HEADER BLOCK (UNIFIED HEIGHT: 80px) */}
           <div style={{ minHeight: '80px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Pro Workstation</h3>
+              <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Pro</h3>
               <span style={{ fontSize: '0.68rem', color: '#60A5FA', background: 'rgba(96,165,250,0.12)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                 1 User License
               </span>

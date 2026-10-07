@@ -217,7 +217,7 @@ export default function InquestProductLandingPage() {
           }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Civic Baseline</h3>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Community</h3>
                 <span style={{ fontSize: "0.7rem", color: "#34D399", background: "rgba(52, 211, 153, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
                   Free Forever
                 </span>
@@ -267,7 +267,7 @@ export default function InquestProductLandingPage() {
           }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Investigator Pro</h3>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Pro</h3>
                 <span style={{ fontSize: "0.7rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
                   1 User License
                 </span>
@@ -317,7 +317,7 @@ export default function InquestProductLandingPage() {
           }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Newsroom & Legal</h3>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#FFFFFF" }}>Enterprise</h3>
                 <span style={{ fontSize: "0.7rem", color: "#A78BFA", background: "rgba(167, 139, 250, 0.15)", padding: "2px 8px", borderRadius: "999px", fontWeight: 700 }}>
                   5 Licenses (Volume Entitlement)
                 </span>
