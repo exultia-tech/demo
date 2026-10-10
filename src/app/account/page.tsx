@@ -69,7 +69,7 @@ type AccountTab =
   | "uvi" 
   | "inquest" 
   | "axiom" 
-  | "fixlist" 
+  | "praxis" 
   | "pureos" 
   | "tokens" 
   | "workflows" 
@@ -148,7 +148,7 @@ function AccountPageContent() {
         "uvi", 
         "inquest", 
         "axiom", 
-        "fixlist", 
+        "praxis", 
         "pureos", 
         "tokens", 
         "workflows", 
@@ -417,11 +417,11 @@ function AccountPageContent() {
       actionLabel: "Open Exam Simulator →",
       actionHref: "/app/axiom"
     },
-    fixlist: {
+    praxis: {
       title: "Praxis Threat Remediation",
       subtitle: "Deterministic automated CVE fix scripts, airgap patch recipes, and CLI client tools.",
       actionLabel: "Launch Remediation →",
-      actionHref: "/app/fixlist"
+      actionHref: "/app/praxis"
     },
     pureos: {
       title: "PureOS Hardened Containers",
@@ -600,14 +600,14 @@ function AccountPageContent() {
 
           <button 
             type="button"
-            className={`console-sidebar-item ${activeTab === "fixlist" ? "active" : ""}`}
-            onClick={() => setActiveTab("fixlist")}
+            className={`console-sidebar-item ${activeTab === "praxis" ? "active" : ""}`}
+            onClick={() => setActiveTab("praxis")}
             title="Praxis Threat Remediation"
           >
             <PraxisIcon size={16} />
-            {!sidebarCollapsed && <span>Praxis Fix List</span>}
+            {!sidebarCollapsed && <span>Praxis Praxis</span>}
             {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("fixlist").toUpperCase()}</span>
+              <span className="console-sidebar-badge">{getSubTier("praxis").toUpperCase()}</span>
             )}
           </button>
 
@@ -1442,7 +1442,7 @@ function AccountPageContent() {
               {/* CARD 5: PRAXIS (FIX LIST) */}
               <div style={{
                 background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("fixlist") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+                border: getSubTier("praxis") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "16px",
                 padding: "1.5rem",
                 display: "flex",
@@ -1452,21 +1452,21 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <PraxisIcon size={32} />
                     <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Fix List</h3>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Praxis</h3>
                       <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>CVE Threat Remediation</div>
                     </div>
                   </div>
                   <span style={{
                     fontSize: "0.68rem",
-                    background: getSubTier("fixlist") !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("fixlist") !== "free" ? "#FDE68A" : "#94A3B8",
-                    border: getSubTier("fixlist") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                    background: getSubTier("praxis") !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    color: getSubTier("praxis") !== "free" ? "#FDE68A" : "#94A3B8",
+                    border: getSubTier("praxis") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
                     padding: "2px 8px",
                     borderRadius: "6px",
                     fontWeight: 800,
                     textTransform: "uppercase"
                   }}>
-                    {getSubTier("fixlist")}
+                    {getSubTier("praxis")}
                   </span>
                 </div>
 
@@ -1478,17 +1478,17 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#F59E0B" />
                     <span>
-                      {getSubTier("fixlist") === "enterprise" ? "Fleet Airgap Auto-Patch (Volume $149)" : (getSubTier("fixlist") === "pro" ? "Automated Shell Fix Scripts (1 User $49)" : "Public Fix Index (Free $0)")}
+                      {getSubTier("praxis") === "enterprise" ? "Fleet Airgap Auto-Patch (Volume $149)" : (getSubTier("praxis") === "pro" ? "Automated Shell Fix Scripts (1 User $49)" : "Public Fix Index (Free $0)")}
                     </span>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                     <button
-                      onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "fixlist"}
+                      onClick={() => handleQuickTierSwitch("praxis", getSubTier("praxis") === "pro" ? "free" : "pro")}
+                      disabled={updatingSubProduct === "praxis"}
                       style={{
                         padding: "8px",
-                        background: getSubTier("fixlist") === "pro" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                        background: getSubTier("praxis") === "pro" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
                         border: "1px solid rgba(245, 158, 11, 0.3)",
                         borderRadius: "8px",
                         color: "#FFFFFF",
@@ -1497,14 +1497,14 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("fixlist") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
+                      {getSubTier("praxis") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
                     </button>
                     <button
-                      onClick={() => handleQuickTierSwitch("fixlist", getSubTier("fixlist") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "fixlist"}
+                      onClick={() => handleQuickTierSwitch("praxis", getSubTier("praxis") === "enterprise" ? "free" : "enterprise")}
+                      disabled={updatingSubProduct === "praxis"}
                       style={{
                         padding: "8px",
-                        background: getSubTier("fixlist") === "enterprise" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.05)",
+                        background: getSubTier("praxis") === "enterprise" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.05)",
                         border: "1px solid rgba(245, 158, 11, 0.4)",
                         borderRadius: "8px",
                         color: "#FDE68A",
@@ -1513,7 +1513,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("fixlist") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("praxis") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
                     </button>
                   </div>
                 </div>
@@ -1708,7 +1708,7 @@ function AccountPageContent() {
         {/* ========================================================================= */}
         {/* VIEW 9: PRAXIS THREAT REMEDIATION */}
         {/* ========================================================================= */}
-        {activeTab === "fixlist" && (
+        {activeTab === "praxis" && (
           <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
             <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
             <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Praxis Threat Remediation</h2>
@@ -1716,10 +1716,10 @@ function AccountPageContent() {
               Surgical automated remediation payloads and fix scripts correlated to universal threat feed disclosures.
             </p>
             <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/fixlist" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
+              <Link href="/app/praxis" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
                 Launch Remediation Console →
               </Link>
-              <Link href="/account/subscription?product=fixlist" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+              <Link href="/account/subscription?product=praxis" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
                 Manage Praxis Tier
               </Link>
             </div>

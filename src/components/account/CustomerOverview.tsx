@@ -39,12 +39,12 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   const pureIdeTier = getUserTier("pureide");
   const uviTier = getUserTier("uvi");
   const inquestTier = getUserTier("inquest");
-  const fixlistTier = getUserTier("fixlist");
+  const praxisTier = getUserTier("praxis");
   const pureosTier = getUserTier("pureos");
   const axiomTier = getUserTier("axiom");
 
   // Calculate unlocked capabilities percentage across the full 6-product suite
-  const productTiers = [pureIdeTier, uviTier, inquestTier, fixlistTier, pureosTier, axiomTier];
+  const productTiers = [pureIdeTier, uviTier, inquestTier, praxisTier, pureosTier, axiomTier];
   let unlockedScore = 0;
   productTiers.forEach(tier => {
     if (tier === "enterprise") unlockedScore += 16.66;
@@ -144,9 +144,9 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis Remediation</span>
             </div>
             <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-              {fixlistTier === "enterprise" 
+              {praxisTier === "enterprise" 
                 ? "Global Fleet Patch Automation, SIEM Webhooks & Air-gapped Script Signing" 
-                : (fixlistTier === "pro" ? "Automated Bash/Ansible Payloads & SIEM Export Formats" : "Standard Manual Fix Generations & CVE Tracking")}
+                : (praxisTier === "pro" ? "Automated Bash/Ansible Payloads & SIEM Export Formats" : "Standard Manual Fix Generations & CVE Tracking")}
             </div>
           </div>
 
@@ -432,15 +432,15 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               </div>
               <span style={{
                 fontSize: "0.68rem",
-                background: fixlistTier !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                color: fixlistTier !== "free" ? "#FDE68A" : "#94A3B8",
-                border: fixlistTier !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                background: praxisTier !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                color: praxisTier !== "free" ? "#FDE68A" : "#94A3B8",
+                border: praxisTier !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
                 padding: "2px 8px",
                 borderRadius: "6px",
                 fontWeight: 800,
                 textTransform: "uppercase"
               }}>
-                {fixlistTier}
+                {praxisTier}
               </span>
             </div>
 
@@ -449,22 +449,22 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
                 <CheckCircle2 size={14} color="#F59E0B" />
                 <span>CVE Fix Payload Generation (Bash / PS)</span>
               </li>
-              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: fixlistTier !== "free" ? "#E2E8F0" : "#64748B" }}>
-                {fixlistTier !== "free" ? <CheckCircle2 size={14} color="#F59E0B" /> : <Lock size={14} color="#64748B" />}
+              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: praxisTier !== "free" ? "#E2E8F0" : "#64748B" }}>
+                {praxisTier !== "free" ? <CheckCircle2 size={14} color="#F59E0B" /> : <Lock size={14} color="#64748B" />}
                 <span>SIEM & Firewall Custom Format Exporters</span>
               </li>
-              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: fixlistTier !== "free" ? "#E2E8F0" : "#64748B" }}>
-                {fixlistTier !== "free" ? <CheckCircle2 size={14} color="#F59E0B" /> : <Lock size={14} color="#64748B" />}
+              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: praxisTier !== "free" ? "#E2E8F0" : "#64748B" }}>
+                {praxisTier !== "free" ? <CheckCircle2 size={14} color="#F59E0B" /> : <Lock size={14} color="#64748B" />}
                 <span>Automated Vantage Correlation Engine</span>
               </li>
-              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: fixlistTier === "enterprise" ? "#E2E8F0" : "#64748B" }}>
-                {fixlistTier === "enterprise" ? <CheckCircle2 size={14} color="#34D399" /> : <Lock size={14} color="#64748B" />}
+              <li style={{ display: "flex", alignItems: "center", gap: "8px", color: praxisTier === "enterprise" ? "#E2E8F0" : "#64748B" }}>
+                {praxisTier === "enterprise" ? <CheckCircle2 size={14} color="#34D399" /> : <Lock size={14} color="#64748B" />}
                 <span>Global Fleet Patch Orchestration & SLA</span>
               </li>
             </ul>
 
             <button
-              onClick={() => onSelectTab("fixlist")}
+              onClick={() => onSelectTab("praxis")}
               className="btn-primary"
               style={{
                 width: "100%",

@@ -82,10 +82,10 @@ export function compileRemediationBlock(
           }
           break;
         case 'juniper':
-          lines.push(`# Juniper SRX prefix-list set commands`);
+          lines.push(`# Juniper SRX prepraxis set commands`);
           for (const ind of indicators) {
             const ip = ind.split(' ')[0];
-            lines.push(`set policy-options prefix-list EXULTIA-BLOCK ${ip}/32  # ${uviId}`);
+            lines.push(`set policy-options prepraxis EXULTIA-BLOCK ${ip}/32  # ${uviId}`);
           }
           break;
         default: // plain

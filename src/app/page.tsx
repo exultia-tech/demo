@@ -195,13 +195,13 @@ export default function HomePage() {
 
             <div>
               <Link 
-                href="/app/fixlist" 
+                href="/app/praxis" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
                 Generate Scripts →
               </Link>
               <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=fixlist" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
+                <Link href="/account/subscription?product=praxis" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
                   Plans & Pricing →
                 </Link>
               </div>

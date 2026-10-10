@@ -234,7 +234,7 @@ export async function GET(
       });
 
       // Provision default product subscriptions
-      const defaultProducts = ['pureide', 'uvi', 'inquest', 'axiom', 'fixlist', 'pureos'];
+      const defaultProducts = ['pureide', 'uvi', 'inquest', 'axiom', 'praxis', 'pureos'];
       for (const prod of defaultProducts) {
         await db.insert(subscriptions).values({
           id: `sub_${prod}_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`,

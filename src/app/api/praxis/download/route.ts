@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scriptStore } from '@/lib/fix-list-store';
+import { scriptStore } from '@/lib/praxis-store';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

@@ -267,9 +267,9 @@ export default function InquestPricingPage() {
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
                   "Everything in Community",
-                  "Automated redaction engine",
-                  "Case audit logging & chain of custody",
-                  "Priority API processing pipeline"
+                  "Multi-Agency Campaign Blasts",
+                  "Automated Statutory Escalation Bot",
+                  "Judicial Precedent Citation Engine"
                 ].map((item, idx) => (
                   <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.86rem", color: "#F1F5F9", lineHeight: "1.4" }}>
                     <Check size={16} color="#06B6D4" style={{ flexShrink: 0, marginTop: "2px" }} />
@@ -351,9 +351,9 @@ export default function InquestPricingPage() {
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 {[
                   "Everything in Pro",
-                  "Firm/Agency Volume Entitlements (Multi-seat)",
-                  "Multi-agency collaboration portal",
-                  "White-glove data ingestion services"
+                  "5 Licenses (Volume Entitlement)",
+                  "Full Appellate Petitions",
+                  "Court-Ready Evidence Dossier Export"
                 ].map((item, idx) => (
                   <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.86rem", color: "#CBD5E1", lineHeight: "1.4" }}>
                     <Check size={16} color="#A78BFA" style={{ flexShrink: 0, marginTop: "2px" }} />
@@ -383,106 +383,6 @@ export default function InquestPricingPage() {
         </div>
 
       </div>
-
-      {/* HIGH-VALUE ADD-ON SERVICES */}
-      <section style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <h2 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-            High-Value Operational Add-Ons
-          </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px", margin: "0 auto" }}>
-            Optional pay-as-you-go infrastructure for physical fulfillment, heavy redaction audits, and automated portal submissions.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
-          
-          <div style={{
-            background: "rgba(10, 15, 26, 0.7)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "14px",
-            padding: "1.75rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-                <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(6, 182, 212, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#06B6D4" }}>
-                  <Send size={18} />
-                </div>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700 }}>USPS Certified Mail Dispatch</h4>
-                  <span style={{ fontSize: "0.8rem", color: "#06B6D4", fontWeight: 700 }}>$9.95 / filing</span>
-                </div>
-              </div>
-              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", margin: 0 }}>
-                Automatic printing, barcoding, and certified mail delivery with USPS Return Receipt tracking for recalcitrant agencies ignoring electronic transmissions.
-              </p>
-            </div>
-            <div style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "#64748B" }}>
-              Includes electronic green card tracking & court-stamped proof of service.
-            </div>
-          </div>
-
-          <div style={{
-            background: "rgba(10, 15, 26, 0.7)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "14px",
-            padding: "1.75rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-                <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(59, 130, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60A5FA" }}>
-                  <FileText size={18} />
-                </div>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700 }}>Deep Redaction Audit Engine</h4>
-                  <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 700 }}>$0.05 / page</span>
-                </div>
-              </div>
-              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", margin: 0 }}>
-                High-throughput automated PDF scanning to uncover unlawful black-box over-redaction, stripped OCR layers, and missed segregable factual paragraphs.
-              </p>
-            </div>
-            <div style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "#64748B" }}>
-              Generates itemized Vaughn Index challenges for administrative appeal briefs.
-            </div>
-          </div>
-
-          <div style={{
-            background: "rgba(10, 15, 26, 0.7)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "14px",
-            padding: "1.75rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-                <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(16, 185, 129, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#34D399" }}>
-                  <Zap size={18} />
-                </div>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700 }}>Robotic Portal Submission</h4>
-                  <span style={{ fontSize: "0.8rem", color: "#34D399", fontWeight: 700 }}>$2.50 / submission</span>
-                </div>
-              </div>
-              <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", margin: 0 }}>
-                Automated submission bot through proprietary municipal portals (NextRequest, GovQA, FOIA.gov) bypassing repetitive manual form entry.
-              </p>
-            </div>
-            <div style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "#64748B" }}>
-              Extracts agency reference ID and portal status immediately back into Inquest.
-            </div>
-          </div>
-
-        </div>
-      </section>
 
       {/* COMPREHENSIVE FEATURE MATRIX */}
       <section style={{ marginBottom: "5rem" }}>

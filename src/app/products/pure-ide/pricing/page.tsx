@@ -160,11 +160,9 @@ export default function PricingPage() {
 
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included">✓ Multi-IDE Builds (6 Engines)</li>
-            <li className="included">✓ 0-CVE Verified Whitelist</li>
             <li className="included">✓ Vantage Sync</li>
             <li className="included">✓ CycloneDX 1.5 JSON SBOMs</li>
             <li className="included">✓ Zero Outbound Telemetry</li>
-            <li className="included">✓ Marketplace Catalog Carting</li>
           </ul>
 
           <div style={{ marginTop: 'auto' }}>
@@ -230,9 +228,9 @@ export default function PricingPage() {
           <ul className="pricing-features-list" style={{ fontSize: '0.8rem', marginBottom: '1.5rem', gap: '0.6rem' }}>
             <li className="included" style={{ fontWeight: 700, color: '#93C5FD' }}>✓ Everything in Community, plus:</li>
             <li className="included">✓ Single Developer License (1 User Seat)</li>
-            <li className="included">✓ Priority Dedicated Cloud Builds</li>
+            <li className="included">✓ Extension Sandboxing</li>
             <li className="included">✓ Real-time Egress Socket Firewall</li>
-            <li className="included">✓ Secrets Scanner & Token Redaction</li>
+            <li className="included">✓ 1-Click Role Blueprints</li>
             <li className="included">✓ Automated SBOM generation</li>
             <li className="included">✓ 1 Active Developer Workstation</li>
           </ul>

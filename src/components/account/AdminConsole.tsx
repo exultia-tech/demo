@@ -116,7 +116,7 @@ export default function AdminConsole({ currentUserEmail }: { currentUserEmail: s
       case "pureide": return <PureIdeIcon size={16} />;
       case "uvi": return <VantageIcon size={16} />;
       case "inquest": return <InquestIcon size={16} />;
-      case "fixlist": return <PraxisIcon size={16} />;
+      case "praxis": return <PraxisIcon size={16} />;
       case "pureos": return <PureOsIcon size={16} />;
       case "axiom": return <AxiomIcon size={16} />;
       default: return <Server size={14} color="#94A3B8" />;

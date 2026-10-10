@@ -153,7 +153,7 @@ export default function PraxisPricingPage() {
               </button>
             ) : (
               <Link 
-                href="/account/subscription?product=fixlist" 
+                href="/account/subscription?product=praxis" 
                 style={{
                   display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
                   background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-main)', fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -180,7 +180,7 @@ export default function PraxisPricingPage() {
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> SIEM webhook export formats (Splunk, QRadar)</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Email Support</li>
           </ul>
-          <Link href="/account/subscription?product=fixlist" style={{
+          <Link href="/account/subscription?product=praxis" style={{
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
             background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)',
             textDecoration: 'none', transition: 'all 0.2s ease'
@@ -203,7 +203,7 @@ export default function PraxisPricingPage() {
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Organization Volume Entitlements</li>
             <li style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}><span style={{ color: '#10B981' }}>✓</span> Air-gapped deployment options</li>
           </ul>
-          <Link href="/account/subscription?product=fixlist" style={{
+          <Link href="/account/subscription?product=praxis" style={{
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
             background: 'linear-gradient(135deg, #10B981, #059669)', color: 'white', fontWeight: 700,
             textDecoration: 'none', transition: 'all 0.2s ease', border: 'none', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
@@ -290,7 +290,7 @@ export default function PraxisPricingPage() {
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <Link
-                    href="/app/fixlist"
+                    href="/app/praxis"
                     onClick={() => setShowDonationModal(false)}
                     className="btn-primary"
                     style={{ flex: 1, padding: '0.75rem', textAlign: 'center', textDecoration: 'none', fontSize: '0.9rem', border: 'none', borderRadius: '8px', background: '#34D399', color: '#000', fontWeight: 600 }}

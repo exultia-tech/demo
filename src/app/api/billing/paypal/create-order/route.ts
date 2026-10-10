@@ -22,7 +22,7 @@ const PRICING_CATALOG: Record<string, Record<string, { monthly: number; annual: 
   axiom: {
     enterprise: { monthly: 149, annual: 119 * 12 },
   },
-  fixlist: {
+  praxis: {
     pro: { monthly: 49, annual: 39 * 12 },
     enterprise: { monthly: 149, annual: 119 * 12 },
   },

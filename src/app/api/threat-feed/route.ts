@@ -16,16 +16,51 @@ export const dynamic = 'force-dynamic';
 
 export type { UviAdvisoryRecord, PublicFeedSource, ThreatSeverity, DomainCategory, IdeBuildImpactAssessment };
 
+const rateLimitMap = new Map<string, number>();
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
 export async function GET(request: Request) {
   // Ensure autonomous CTI research agent background worker is active
   ctiResearchAgent.ensureInitialized();
 
   // Non-blocking trust-but-verify license telemetry
-  getCurrentUser().then(user => {
-    if (user) {
-      recordLicenseActivity(user.id, 'uvi', request, 'feed_query');
+  const user = await getCurrentUser();
+  if (user) {
+    recordLicenseActivity(user.id, 'uvi', request, 'feed_query').catch(() => {});
+  }
+
+  // Rate Limiting Logic: 1 request per hour for free tier/unauthenticated users
+  const isPremium = user?.subscriptions?.some(s => 
+    (s.product === 'multipass' || s.product === 'uvi' || s.product === 'praxis') &&
+    (s.tier === 'pro' || s.tier === 'enterprise') &&
+    s.status === 'active'
+  );
+
+  if (!isPremium) {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown-ip';
+    const identifier = user ? user.id : ip;
+    const now = Date.now();
+    
+    const lastRequest = rateLimitMap.get(identifier);
+    if (lastRequest && (now - lastRequest < RATE_LIMIT_WINDOW_MS)) {
+      return NextResponse.json(
+        { error: 'Free tier rate limit exceeded. You are limited to 1 request per hour. Please upgrade to Pro or Enterprise for unlimited API access.' },
+        { status: 429 }
+      );
     }
-  }).catch(() => {});
+    
+    // Simple memory cleanup for stale rate limit entries
+    if (rateLimitMap.size > 5000) {
+      const oneHourAgo = now - RATE_LIMIT_WINDOW_MS;
+      for (const [key, timestamp] of rateLimitMap.entries()) {
+        if (timestamp < oneHourAgo) {
+          rateLimitMap.delete(key);
+        }
+      }
+    }
+
+    rateLimitMap.set(identifier, now);
+  }
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query')?.trim().toLowerCase();

@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       { source: "/app/axiom", headers: antiFramingHeaders },
       { source: "/app/axiom/:path*", headers: antiFramingHeaders },
       { source: "/api/axiom/:path*", headers: antiFramingHeaders },
+      // UVI Feed; block embedding to prevent API circumvention
+      { source: "/app/uvi", headers: antiFramingHeaders },
+      { source: "/app/uvi/:path*", headers: antiFramingHeaders },
     ];
   },
 };

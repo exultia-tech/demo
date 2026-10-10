@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { compileRemediationBlock } from "@/lib/fix-list-compiler";
+import { compileRemediationBlock } from "@/lib/praxis-compiler";
 import { UviAdvisoryRecord } from "@/lib/threat-feed-data";
 
-describe("FixList Compiler & Remediation Engine Tests", () => {
+describe("praxis Compiler & Remediation Engine Tests", () => {
   const sampleNetworkAdvisory: any = {
     uviId: "UVI-2026-TEST-001",
     title: "Test C2 Beacon Infrastructure",
@@ -89,9 +89,9 @@ describe("FixList Compiler & Remediation Engine Tests", () => {
       expect(forti).toContain("set subnet 192.0.2.1 255.255.255.255");
     });
 
-    it("should format Juniper SRX prefix-list set statements", () => {
+    it("should format Juniper SRX prepraxis set statements", () => {
       const juniper = compileRemediationBlock(sampleNetworkAdvisory, "linux", "export", "juniper");
-      expect(juniper).toContain("set policy-options prefix-list EXULTIA-BLOCK 192.0.2.1/32");
+      expect(juniper).toContain("set policy-options prepraxis EXULTIA-BLOCK 192.0.2.1/32");
     });
 
     it("should format JSON output for SIEM/SOAR ingestion", () => {
@@ -102,3 +102,4 @@ describe("FixList Compiler & Remediation Engine Tests", () => {
     });
   });
 });
+

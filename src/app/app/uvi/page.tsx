@@ -5,7 +5,6 @@ import Link from "next/link";
 import VirtualCisoView from "@/components/VirtualCisoView";
 import { VantageIcon } from "@/components/BrandIcons";
 import { 
-  CONSOLIDATED_UVI_ADVISORIES, 
   UVI_PUBLIC_FEED_SOURCES, 
   UviAdvisoryRecord, 
   PublicFeedSource,
@@ -32,8 +31,8 @@ export default function ThreatFeedPage() {
 
   // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
-  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(9203);
-  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(107);
+  const [nonCveThreatsCount, setNonCveThreatsCount] = useState<number>(0);
+  const [informationalDisclosuresCount, setInformationalDisclosuresCount] = useState<number>(0);
 
   // AI CTI Research Agent Background Telemetry
   const [agentTelemetry, setAgentTelemetry] = useState<{
@@ -90,11 +89,11 @@ export default function ThreatFeedPage() {
   const [pageSize, setPageSize] = useState<number>(50);
 
   // Live Aggregated Data State
-  const [advisories, setAdvisories] = useState<UviAdvisoryRecord[]>(CONSOLIDATED_UVI_ADVISORIES);
-  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(11090);
-  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(5307);
-  const [matchedCount, setMatchedCount] = useState<number>(11090);
-  const [totalPages, setTotalPages] = useState<number>(222);
+  const [advisories, setAdvisories] = useState<UviAdvisoryRecord[]>([]);
+  const [totalUniversalCount, setTotalUniversalCount] = useState<number>(0);
+  const [directBuildImpactCount, setDirectBuildImpactCount] = useState<number>(0);
+  const [matchedCount, setMatchedCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLiveSynced, setHasLiveSynced] = useState<boolean>(false);
 
@@ -293,7 +292,10 @@ export default function ThreatFeedPage() {
   const totalUpstreamRecords = UVI_PUBLIC_FEED_SOURCES.reduce((acc, f) => acc + f.recordsIngested, 0);
 
   return (
-    <div style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%" }}>
+    <div 
+      style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%", userSelect: "none" }}
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {/* Direct Subscription / Referral Banner */}
       <div style={{
         display: "flex",

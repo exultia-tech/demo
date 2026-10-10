@@ -193,8 +193,8 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>DevSecOps Tooling</div>
           <h4>Remediation & Hardening</h4>
           <ul>
-            <li><Link href="/app/fixlist">Praxis Generator</Link></li>
-            <li><Link href="/products/fix-list/pricing">Praxis Licensing</Link></li>
+            <li><Link href="/app/praxis">Praxis Generator</Link></li>
+            <li><Link href="/products/praxis/pricing">Praxis Licensing</Link></li>
             <li><Link href="/app/pureos">PureOS</Link></li>
             <li><Link href="/products/pure-os">PureOS Overview</Link></li>
           </ul>

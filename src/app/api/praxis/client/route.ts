@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 # This script retrieves and applies threat remediations from Exultia.
 # Zero system telemetry is collected.
 
-FEED_URL="${baseUrl}/api/fix-list/feed?os=${os}"
+FEED_URL="${baseUrl}/api/praxis/feed?os=${os}"
 
 fetch_and_apply() {
   # Attempt to use curl, fallback to wget

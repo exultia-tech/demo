@@ -7,7 +7,7 @@ import { Lock, Sparkles, ShieldCheck, ArrowRight, Zap, KeyRound, Cpu, Terminal }
 import { PureIdeIcon, VantageIcon, InquestIcon } from "@/components/BrandIcons";
 
 interface PlanGateProps {
-  product: "pureide" | "uvi" | "inquest" | "fixlist" | "pureos" | "axiom";
+  product: "pureide" | "uvi" | "inquest" | "praxis" | "pureos" | "axiom";
   requiredTier: "free" | "pro" | "legal" | "enterprise";
   featureTitle?: string;
   featureDescription?: string;
@@ -50,7 +50,7 @@ export function PlanGate({
     pureide: "PureIDE Workstations",
     uvi: "Vantage Threat Intel",
     inquest: "Inquest FOIA Discovery",
-    fixlist: "Praxis Threat Remediation",
+    praxis: "Praxis Threat Remediation",
     pureos: "PureOS Hardened Containers",
     axiom: "Axiom Certification Prep",
   };
@@ -59,7 +59,7 @@ export function PlanGate({
     pureide: "rgba(59, 130, 246, 0.2)",
     uvi: "rgba(139, 92, 246, 0.2)",
     inquest: "rgba(6, 182, 212, 0.2)",
-    fixlist: "rgba(245, 158, 11, 0.2)",
+    praxis: "rgba(245, 158, 11, 0.2)",
     pureos: "rgba(16, 185, 129, 0.2)",
     axiom: "rgba(244, 63, 94, 0.2)",
   };
@@ -68,7 +68,7 @@ export function PlanGate({
     pureide: "#60A5FA",
     uvi: "#C084FC",
     inquest: "#67E8F9",
-    fixlist: "#FBBF24",
+    praxis: "#FBBF24",
     pureos: "#34D399",
     axiom: "#FDA4AF",
   };

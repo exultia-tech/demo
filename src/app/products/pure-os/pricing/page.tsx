@@ -99,7 +99,7 @@ export default function PureOSPricingPage() {
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Distroless Builds (No Package Managers)</span>
+              <span>Minimal Attack Surface (No Shells/Package Managers)</span>
             </li>
           </ul>
           <Link href="/account/subscription?product=pureos" className="btn-primary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 700, background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", textDecoration: "none", textAlign: "center", display: "block", color: "white", boxSizing: "border-box" }}>
@@ -124,15 +124,7 @@ export default function PureOSPricingPage() {
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Air-gapped deployment compatibility</span>
-            </li>
-            <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
-              <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>Signed cryptographic provenance</span>
-            </li>
-            <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
-              <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />
-              <span>FIPS 140-2 compliance modules</span>
+              <span>Infrastructure-as-Code Deliverables</span>
             </li>
             <li style={{ display: "flex", gap: "12px", alignItems: "flex-start", color: "#E2E8F0" }}>
               <CheckCircle size={18} color="#F59E0B" style={{ flexShrink: 0, marginTop: "2px" }} />

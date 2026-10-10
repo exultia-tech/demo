@@ -56,8 +56,8 @@ export default function Navbar() {
   );
 
   const isPraxisContext = !isIsolated && (
-    pathname.startsWith("/app/fixlist") || 
-    pathname.startsWith("/products/fix-list")
+    pathname.startsWith("/app/praxis") || 
+    pathname.startsWith("/products/praxis")
   );
 
   const isPureOsContext = !isIsolated && (
@@ -247,7 +247,7 @@ export default function Navbar() {
 
                     {/* PRODUCT 4: praxis */}
                     <Link 
-                      href="/app/fixlist" 
+                      href="/app/praxis" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -675,12 +675,12 @@ export default function Navbar() {
               </span>
 
               <Link 
-                href="/app/fixlist" 
-                className={`submenu-link ${pathname === "/app/fixlist" ? "active-emerald" : ""}`}>
+                href="/app/praxis" 
+                className={`submenu-link ${pathname === "/app/praxis" ? "active-emerald" : ""}`}>
                 Client Generator
               </Link>
               <Link 
-                href="/account/subscription?product=fixlist" 
+                href="/account/subscription?product=praxis" 
                 className="submenu-link"
                 style={{ color: "#FDE68A", fontWeight: 700 }}>
                 Plans & Pricing

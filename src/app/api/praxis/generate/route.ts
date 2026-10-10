@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scriptStore } from '@/lib/fix-list-store';
+import { scriptStore } from '@/lib/praxis-store';
 import { queryThreatFeedFromDb } from '@/lib/db/threats-query';
-import { compileRemediationBlock } from '@/lib/fix-list-compiler';
+import { compileRemediationBlock } from '@/lib/praxis-compiler';
 import { getCurrentUser } from '@/lib/auth/session';
 import { recordLicenseActivity } from '@/lib/licensing/audit';
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Non-blocking trust-but-verify license telemetry
     getCurrentUser().then(user => {
       if (user) {
-        recordLicenseActivity(user.id, 'fixlist', request, 'generate_script');
+        recordLicenseActivity(user.id, 'praxis', request, 'generate_script');
       }
     }).catch(() => {});
 

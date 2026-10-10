@@ -129,9 +129,9 @@ export async function POST(req: Request) {
         createdAt: new Date(),
       },
       {
-        id: `sub_fixlist_${userId}`,
+        id: `sub_praxis_${userId}`,
         userId,
-        product: 'fixlist',
+        product: 'praxis',
         tier: 'free',
         status: 'active',
         createdAt: new Date(),
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
           { product: 'inquest', tier: 'free', status: 'active' },
           { product: 'uvi', tier: 'free', status: 'active' },
           { product: 'axiom', tier: 'free', status: 'active' },
-          { product: 'fixlist', tier: 'free', status: 'active' }
+          { product: 'praxis', tier: 'free', status: 'active' }
         ]
       }
     });

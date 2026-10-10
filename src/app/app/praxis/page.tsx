@@ -124,7 +124,7 @@ export default function PraxisPage() {
     const fetchPreview = async () => {
       setPreviewLoading(true);
       try {
-        const res = await fetch(`${baseUrl}/api/fix-list/generate`, {
+        const res = await fetch(`${baseUrl}/api/praxis/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -154,7 +154,7 @@ export default function PraxisPage() {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const res = await fetch(`${baseUrl}/api/fix-list/generate`, {
+      const res = await fetch(`${baseUrl}/api/praxis/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -182,8 +182,8 @@ export default function PraxisPage() {
 
   const command = generatedId
     ? filenamePattern
-      ? `curl -sL -O -J "${baseUrl}/api/fix-list/download?id=${generatedId}"`
-      : `curl -sL "${baseUrl}/api/fix-list/download?id=${generatedId}" | sh`
+      ? `curl -sL -O -J "${baseUrl}/api/praxis/download?id=${generatedId}"`
+      : `curl -sL "${baseUrl}/api/praxis/download?id=${generatedId}" | sh`
     : '';
 
   return (
@@ -206,7 +206,7 @@ export default function PraxisPage() {
 
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
             <Link
-              href="/account/subscription?product=fixlist"
+              href="/account/subscription?product=praxis"
               style={{
                 padding: "0.45rem 0.9rem",
                 borderRadius: "8px",
@@ -433,7 +433,7 @@ export default function PraxisPage() {
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Export Filename Pattern</label>
-                <input type="text" placeholder="praxis-fixlist-export.sh" value={filenamePattern}
+                <input type="text" placeholder="praxis-praxis-export.sh" value={filenamePattern}
                   onChange={e => setFilenamePattern(e.target.value)} style={{
                     width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
                     border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',

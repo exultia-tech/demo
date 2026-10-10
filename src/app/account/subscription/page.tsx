@@ -30,7 +30,7 @@ import {
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "fixlist" | "pureos" | "axiom" | "inquest" | "multipass";
+type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "inquest" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +46,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "fixlist", "pureos", "axiom", "inquest", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "inquest", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -87,10 +87,10 @@ function SubscriptionContent() {
         description: "Priority compiler engine, dedicated build runner, and real-time egress firewall for single developers.",
         features: [
           "Everything in Community",
-          "Priority dedicated cloud builds",
-          "Real-time egress socket firewall",
-          "Secrets scanner & token redaction",
-          "Automated SBOM generation"
+          "Isolated cloud pipeline builds",
+          "Network egress sandboxing",
+          "Environment token isolation",
+          "Automated CycloneDX SBOMs"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -103,10 +103,10 @@ function SubscriptionContent() {
         description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
         features: [
           "Everything in Pro",
-          "Hermetic offline binary cosign",
-          "Custom organization extension policies",
-          "Zero-egress hardware attestation",
-          "Dedicated self-hosted compiler agent"
+          "Code-signing & EDR integrity",
+          "Custom enterprise role blueprints",
+          "Immutable binary encapsulation",
+          "Priority enterprise cloud runners"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -158,7 +158,7 @@ function SubscriptionContent() {
         isPopular: false
       }
     ],
-    fixlist: [
+    praxis: [
       {
         tier: "free",
         name: "Community",
@@ -212,7 +212,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Standard CIS baselines and vulnerability scanning.",
         features: [
-          "Single Developer Docker Pulls",
+          "Single Developer Config Generation",
           "Standard CIS baseline images",
           "Public CVE vulnerability scans"
         ],
@@ -228,8 +228,8 @@ function SubscriptionContent() {
         features: [
           "Everything in Community",
           "Zero-trust hardened OS variants",
-          "Automated SBOM manifests",
-          "1 active registry connection"
+          "Automated SBOM recipes",
+          "Advanced CI/CD integration templates"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -304,9 +304,9 @@ function SubscriptionContent() {
         description: "Automated redaction pipelines and case chain of custody for individual legal analysts.",
         features: [
           "Everything in Community",
-          "Automated redaction engine",
-          "Case audit logging & chain of custody",
-          "Priority API processing pipeline"
+          "Denial letter & exemption analyzer",
+          "Statutory deadlines & case dashboard",
+          "Advanced appeal letter generator"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -321,7 +321,7 @@ function SubscriptionContent() {
           "Everything in Pro",
           "Firm/Agency Volume Entitlements (Multi-seat)",
           "Multi-agency collaboration portal",
-          "White-glove data ingestion services"
+          "Local-first bring-your-own-key (BYOK)"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -335,11 +335,11 @@ function SubscriptionContent() {
         priceAnnual: 156,
         description: "Buy 4, get 1 free! Get individual Pro-level access to all five eligible Exultia products for the price of four.",
         features: [
-          "PureIDE Pro Workstation",
-          "Vantage Threat Intel Pro",
-          "Inquest FOIA Legal Pro",
+          "PureIDE Pro",
+          "Vantage Pro",
+          "Inquest Pro",
           "Praxis Pro",
-          "PureOS Containers Pro",
+          "PureOS Pro",
           "100% bundled 5-for-4 discount"
         ],
         cta: "Unlock MultiPass Pro",
@@ -382,7 +382,7 @@ function SubscriptionContent() {
       color: "#8B5CF6",
       bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
     },
-    fixlist: {
+    praxis: {
       name: "Praxis",
       subtitle: "Surgical vulnerability remediation & automated patch payloads",
       icon: <PraxisIcon size={18} glow={false} />,
