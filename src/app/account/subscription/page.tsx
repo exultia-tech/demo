@@ -137,7 +137,7 @@ function SubscriptionContent() {
         features: [
           "Everything in Community",
           "Workstation & IDE specific exploit warnings",
-          "API rate limit: 10,000 requests/min"
+          "API rate limit: 300 requests/min"
         ],
         cta: "Upgrade to Pro",
         isPopular: true

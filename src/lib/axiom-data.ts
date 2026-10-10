@@ -175,9 +175,68 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { type: "Lab", name: "Proving Grounds", url: "#" },
       { type: "Notes", name: "PayloadsAllTheThings (GitHub)", url: "https://github.com/swisskyrepo/PayloadsAllTheThings" }
     ]
+  },
+  "isaca-cisa": {
+    id: "isaca-cisa",
+    title: "Certified Information Systems Auditor (CISA)",
+    vendor: "ISACA",
+    level: "Advanced",
+    description: "Validates your expertise in auditing, controlling, and monitoring information systems.",
+    domains: [
+      { id: "cisa-1", title: "Information Systems Auditing Process", weight: "21%", topics: ["IT Audit Planning", "IT Audit Execution"] },
+      { id: "cisa-2", title: "Governance and Management of IT", weight: "17%", topics: ["IT Governance", "IT Management Practices"] },
+      { id: "cisa-3", title: "Information Systems Acquisition, Development, and Implementation", weight: "12%", topics: ["Business Case Development", "System Development Methodologies"] },
+      { id: "cisa-4", title: "Information Systems Operations and Business Resilience", weight: "23%", topics: ["IT Operations", "Disaster Recovery Planning"] },
+      { id: "cisa-5", title: "Protection of Information Assets", weight: "27%", topics: ["Information Asset Security", "Network and Endpoint Security"] }
+    ],
+    resources: []
+  },
+  "isaca-crisc": {
+    id: "isaca-crisc",
+    title: "Certified in Risk and Information Systems Control (CRISC)",
+    vendor: "ISACA",
+    level: "Advanced",
+    description: "Indicates expertise in identifying and managing enterprise IT risk and implementing and maintaining IS controls.",
+    domains: [
+      { id: "crisc-1", title: "Governance", weight: "26%", topics: ["Organizational Governance", "Risk Governance"] },
+      { id: "crisc-2", title: "IT Risk Assessment", weight: "20%", topics: ["Risk Identification", "Risk Analysis and Evaluation"] },
+      { id: "crisc-3", title: "Risk Response and Reporting", weight: "32%", topics: ["Risk Response", "Control Design and Implementation", "Risk Monitoring and Reporting"] },
+      { id: "crisc-4", title: "Information Technology and Security", weight: "22%", topics: ["Information Technology Principles", "Information Security Principles"] }
+    ],
+    resources: []
+  },
+  "comptia-secaiplus": {
+    id: "comptia-secaiplus",
+    title: "Security+ with AI (SecAI+)",
+    vendor: "CompTIA",
+    level: "Intermediate",
+    description: "Validates the skills required to secure AI systems and leverage AI-assisted cybersecurity tools.",
+    domains: [
+      { id: "secai-1", title: "AI Fundamentals for Security", weight: "20%", topics: ["Machine Learning Basics", "AI System Architecture"] },
+      { id: "secai-2", title: "AI-Assisted Security Operations", weight: "30%", topics: ["AI in Threat Detection", "Automated Incident Response"] },
+      { id: "secai-3", title: "Securing AI Systems", weight: "30%", topics: ["Adversarial Machine Learning", "Data Poisoning Mitigation", "Model Inversion Defenses"] },
+      { id: "secai-4", title: "AI Governance, Risk, and Compliance", weight: "20%", topics: ["AI Ethics", "Regulatory Compliance for AI"] }
+    ],
+    resources: []
+  },
+  "isc2-cgrc": {
+    id: "isc2-cgrc",
+    title: "Certified in Governance, Risk and Compliance (CGRC)",
+    vendor: "ISC2",
+    level: "Intermediate",
+    description: "Demonstrates knowledge and skills to integrate governance, performance management, risk management, and regulatory compliance.",
+    domains: [
+      { id: "cgrc-1", title: "Information Security Risk Management Program", weight: "16%", topics: ["Risk Management Frameworks", "System Categorization"] },
+      { id: "cgrc-2", title: "Scope of the Information System", weight: "11%", topics: ["System Boundaries", "Information Types"] },
+      { id: "cgrc-3", title: "Selection and Approval of Security and Privacy Controls", weight: "15%", topics: ["Control Baselines", "Tailoring Controls"] },
+      { id: "cgrc-4", title: "Implementation of Security and Privacy Controls", weight: "16%", topics: ["Control Implementation Strategies", "Documentation"] },
+      { id: "cgrc-5", title: "Assessment/Audit of Security and Privacy Controls", weight: "16%", topics: ["Assessment Planning", "Conducting Assessments"] },
+      { id: "cgrc-6", title: "Authorization/Approval of Information System", weight: "10%", topics: ["Authorization Packages", "Risk Acceptance"] },
+      { id: "cgrc-7", title: "Continuous Monitoring", weight: "16%", topics: ["Continuous Monitoring Strategies", "Status Reporting"] }
+    ],
+    resources: []
   }
 };
-
 
 export type AxiomLab = {
   id: string;

@@ -651,11 +651,6 @@ export default function Navbar() {
                 style={{ color: "#C084FC", fontWeight: 700 }}>
                 Plans & Pricing
               </Link>
-              <Link 
-                href="/app/uvi/best-practices" 
-                className={`submenu-link ${pathname.includes("/best-practices") ? "active-purple" : ""}`}>
-                Best Practices
-              </Link>
               <a 
                 href="/api/threat-feed" 
                 target="_blank" 

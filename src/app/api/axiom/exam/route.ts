@@ -37,6 +37,7 @@ interface SessionPayload {
   a: string; // answers so far, one char each: '0'-'9' or 'x' for skipped
   iv: boolean; // instant validation
   ci: number; // checkpoint interval (0 = off)
+  c: string | null; // cert filter
   exp: number; // epoch ms deadline
 }
 
@@ -84,8 +85,13 @@ function mulberry32(seed: number) {
 }
 
 /** Deterministic server-side shuffle: position -> index into the question bank */
-function orderFor(seed: number, n: number): number[] {
-  const idx = Array.from({ length: MOCK_EXAM_DB.length }, (_, k) => k);
+function orderFor(seed: number, n: number, certFilter: string | null): number[] {
+  const idx = [];
+  for (let k = 0; k < MOCK_EXAM_DB.length; k++) {
+    if (!certFilter || MOCK_EXAM_DB[k].cert === certFilter) {
+      idx.push(k);
+    }
+  }
   const rnd = mulberry32(seed);
   for (let k = idx.length - 1; k > 0; k--) {
     const j = Math.floor(rnd() * (k + 1));
@@ -104,7 +110,7 @@ function charToAnswer(c: string): number {
 }
 
 function buildFinal(p: SessionPayload) {
-  const order = orderFor(p.seed, p.n);
+  const order = orderFor(p.seed, p.n, p.c);
   // Unanswered questions are marked skipped
   const answers = p.a.padEnd(p.n, 'x');
   let score = 0;
@@ -143,8 +149,12 @@ export async function POST(request: Request) {
 
   // ---- START ----
   if (action === 'start') {
-    const bank = MOCK_EXAM_DB.length;
-    const n = Math.min(Math.max(1, Math.floor(Number(body.count) || 1)), bank);
+    const certFilter = typeof body.cert === 'string' ? body.cert : null;
+    let bankSize = 0;
+    for (let k = 0; k < MOCK_EXAM_DB.length; k++) {
+      if (!certFilter || MOCK_EXAM_DB[k].cert === certFilter) bankSize++;
+    }
+    const n = Math.min(Math.max(1, Math.floor(Number(body.count) || 1)), bankSize);
     const minutes = Math.min(Math.max(1, Number(body.durationMinutes) || 90), MAX_MINUTES);
     const ci = Math.max(0, Math.floor(Number(body.checkpointInterval) || 0));
     const seed = randomBytes(4).readUInt32BE(0);
@@ -156,10 +166,11 @@ export async function POST(request: Request) {
       a: '',
       iv: !!body.instantValidation,
       ci,
+      c: certFilter,
       exp: Date.now() + minutes * 60_000 + GRACE_MS,
     };
     latestIndex.set(payload.sid, 0);
-    const order = orderFor(seed, n);
+    const order = orderFor(seed, n, certFilter);
     return NextResponse.json(
       { token: signToken(payload), total: n, index: 0, question: publicQuestion(order[0], 0) },
       { headers: NO_STORE }
@@ -189,7 +200,7 @@ export async function POST(request: Request) {
       return NextResponse.json(buildFinal(p), { headers: NO_STORE });
     }
 
-    const order = orderFor(p.seed, p.n);
+    const order = orderFor(p.seed, p.n, p.c);
     const q = MOCK_EXAM_DB[order[p.i]];
     let ans = Number(body.answer);
     if (!Number.isInteger(ans) || ans < 0 || ans >= q.options.length) ans = -1;

@@ -51,5 +51,242 @@ export const MOCK_EXAM_DB: MockQuestion[] = [
   { id: "q23", cert: "isc2-cissp", question: "According to the (ISC)² Code of Ethics, which canon requires professionals to provide diligent and competent service to principals?", options: ["Protect society, the common good, necessary public trust and confidence, and the infrastructure.", "Act honorably, honestly, justly, responsibly, and legally.", "Provide diligent and competent service to principals.", "Advance and protect the profession."], correctAnswer: 2, explanation: "The third canon of the (ISC)² Code of Ethics explicitly states: Provide diligent and competent service to principals." },
   { id: "q24", cert: "isaca-cism", question: "When developing an incident response plan, what is the most critical first step to ensure the plan's success?", options: ["Purchasing a SIEM solution", "Identifying and classifying critical assets", "Obtaining executive management support and alignment with business objectives", "Conducting a table-top exercise"], correctAnswer: 2, explanation: "Without executive management support and alignment with business objectives, any security initiative (including incident response) will lack the necessary authority, funding, and cross-departmental cooperation." },
   { id: "q25", cert: "comptia-secplus", question: "An organization wants to securely exchange symmetric keys over an insecure channel. Which algorithm should they use?", options: ["AES", "Diffie-Hellman", "SHA-256", "RC4"], correctAnswer: 1, explanation: "Diffie-Hellman (DH) is an asymmetric cryptographic protocol specifically designed to allow two parties to securely establish a shared secret (symmetric key) over an insecure channel." },
+  {
+    id: "cisa-q1",
+    cert: "isaca-cisa",
+    question: "When reviewing an organization's disaster recovery plan (DRP), what is the PRIMARY concern for an IS auditor?",
+    options: [
+      "The plan does not include a detailed hardware inventory.",
+      "The plan has not been tested in the last 12 months.",
+      "The alternate processing facility is located 20 miles away.",
+      "The DRP team lacks a communications representative."
+    ],
+    correctAnswer: 1,
+    explanation: "An untested DRP provides no assurance that the organization can recover operations effectively. Testing is the most critical component to validate the plan's viability."
+  },
+  {
+    id: "crisc-q1",
+    cert: "isaca-crisc",
+    question: "Which of the following is the BEST indicator that risk management is integrated into enterprise management?",
+    options: [
+      "Risk assessments are performed continuously.",
+      "A dedicated risk management department exists.",
+      "Business managers are accountable for risk mitigation.",
+      "Risk reporting is standardized across the organization."
+    ],
+    correctAnswer: 2,
+    explanation: "Integration of risk management is best evidenced when business owners (management) take accountability and ownership for mitigating risks within their operational areas, aligning risk management with business objectives."
+  },
+  {
+    id: "secai-q1",
+    cert: "comptia-secaiplus",
+    question: "Which type of attack involves subtly altering input data to cause an AI model to misclassify it, while remaining imperceptible to human observers?",
+    options: [
+      "Data Poisoning",
+      "Model Inversion",
+      "Adversarial Evasion",
+      "Prompt Injection"
+    ],
+    correctAnswer: 2,
+    explanation: "Adversarial evasion attacks occur during the inference phase, where input data (like an image) is perturbed to trick the model into producing an incorrect output."
+  },
+  {
+    id: "cgrc-q1",
+    cert: "isc2-cgrc",
+    question: "According to the NIST Risk Management Framework (RMF), during which step are security controls assessed to determine if they are implemented correctly and operating as intended?",
+    options: [
+      "Step 2: Select",
+      "Step 3: Implement",
+      "Step 4: Assess",
+      "Step 6: Monitor"
+    ],
+    correctAnswer: 2,
+    explanation: "Step 4 of the NIST RMF is 'Assess', where security and privacy controls are evaluated to determine their effectiveness."
+  },
+  {
+    id: "cisa-q2",
+    cert: "isaca-cisa",
+    question: "Which of the following is the BEST control to mitigate the risk of unauthorized access to a production database?",
+    options: [
+      "Implement a robust backup strategy",
+      "Apply the principle of least privilege",
+      "Use strong encryption for data at rest",
+      "Enable database query logging"
+    ],
+    correctAnswer: 1,
+    explanation: "Applying the principle of least privilege ensures that users and applications only have the access necessary to perform their jobs, which is the most effective preventative control against unauthorized access."
+  },
+  {
+    id: "crisc-q2",
+    cert: "isaca-crisc",
+    question: "When a critical risk exceeds the organization's risk appetite, what is the MOST appropriate initial action?",
+    options: [
+      "Immediately implement technical controls",
+      "Report the risk to executive management",
+      "Accept the risk temporarily",
+      "Transfer the risk via insurance"
+    ],
+    correctAnswer: 1,
+    explanation: "When a risk exceeds the defined risk appetite, it must be escalated to executive management or the board, as they hold the authority to decide on the appropriate risk response strategy."
+  },
+  {
+    id: "secai-q2",
+    cert: "comptia-secaiplus",
+    question: "An attacker intentionally alters the training data of a machine learning model to introduce a backdoor. What type of attack is this?",
+    options: [
+      "Model Inversion",
+      "Data Poisoning",
+      "Data Exfiltration",
+      "Adversarial Evasion"
+    ],
+    correctAnswer: 1,
+    explanation: "Data poisoning occurs during the training phase, where an attacker injects malicious data into the training set to manipulate the model's future behavior or introduce vulnerabilities."
+  },
+  {
+    id: "cgrc-q2",
+    cert: "isc2-cgrc",
+    question: "In the context of the NIST RMF, who is ultimately responsible for accepting the residual risk and authorizing an information system to operate?",
+    options: [
+      "Information System Security Officer (ISSO)",
+      "Chief Information Security Officer (CISO)",
+      "System Owner",
+      "Authorizing Official (AO)"
+    ],
+    correctAnswer: 3,
+    explanation: "The Authorizing Official (AO) is the senior management official with the authority to formally assume responsibility for operating an information system at an acceptable level of risk."
+  },
+  {
+    id: "cisa-q3",
+    cert: "isaca-cisa",
+    question: "During an audit of an organization's logical access controls, an IS auditor finds that terminated employees' accounts are disabled within 30 days. What should the auditor recommend?",
+    options: [
+      "No action is needed as 30 days is an acceptable industry standard.",
+      "Accounts should be deleted immediately instead of disabled.",
+      "Access should be revoked immediately upon termination.",
+      "A script should be written to disable accounts after 90 days of inactivity."
+    ],
+    correctAnswer: 2,
+    explanation: "To minimize the risk of unauthorized access or malicious activity by disgruntled former employees, logical access (accounts) must be revoked immediately upon termination."
+  },
+  {
+    id: "cissp-q26",
+    cert: "isc2-cissp",
+    question: "Which access control model relies on security labels attached to objects and clearance levels assigned to subjects?",
+    options: ["Discretionary Access Control (DAC)", "Mandatory Access Control (MAC)", "Role-Based Access Control (RBAC)", "Attribute-Based Access Control (ABAC)"],
+    correctAnswer: 1,
+    explanation: "Mandatory Access Control (MAC) is based on security labels assigned to both subjects (clearance) and objects (classification)."
+  },
+  {
+    id: "cysa-q27",
+    cert: "comptia-cysa",
+    question: "During a vulnerability scan, a security analyst discovers a high-severity vulnerability on a legacy system that cannot be patched. What is the BEST course of action?",
+    options: ["Accept the risk and document it", "Isolate the system on a segmented VLAN", "Turn off the system immediately", "Deploy a host-based firewall on the system"],
+    correctAnswer: 1,
+    explanation: "Isolating the system on a segmented VLAN (network segmentation) acts as a compensating control, limiting the system's exposure while keeping it functional."
+  },
+  {
+    id: "casp-q28",
+    cert: "comptia-casp",
+    question: "A global enterprise requires a federated identity solution to allow employees seamless access to third-party SaaS applications. Which protocol is MOST appropriate for web-based SSO?",
+    options: ["RADIUS", "Kerberos", "SAML 2.0", "LDAP"],
+    correctAnswer: 2,
+    explanation: "SAML 2.0 (Security Assertion Markup Language) is an XML-based standard specifically designed for exchanging authentication and authorization data between identity providers and service providers, ideal for web-based SSO."
+  },
+  {
+    id: "secai-q29",
+    cert: "comptia-secaiplus",
+    question: "A security operations center (SOC) deploys an AI-driven behavioral analytics tool. What is the PRIMARY advantage of this over traditional signature-based IDS?",
+    options: ["It has zero false positives.", "It can detect novel, zero-day attacks.", "It operates without consuming network bandwidth.", "It automatically blocks all encrypted traffic."],
+    correctAnswer: 1,
+    explanation: "Behavioral analytics (often powered by AI/ML) establishes baselines and detects anomalies, enabling it to identify novel or zero-day attacks that signature-based systems would miss."
+  },
+  {
+    id: "cgrc-q30",
+    cert: "isc2-cgrc",
+    question: "Within the NIST Risk Management Framework, what defines the minimum set of security controls required for a specific information system category?",
+    options: ["System Security Plan (SSP)", "Security Control Baseline", "Risk Assessment Report (RAR)", "Plan of Action and Milestones (POA&M)"],
+    correctAnswer: 1,
+    explanation: "A Security Control Baseline is a predefined set of controls tailored to the specific impact level (Low, Moderate, High) of an information system as defined by FIPS 199."
+  },
+  {
+    id: "cisa-q31",
+    cert: "isaca-cisa",
+    question: "An IS auditor is evaluating an organization's change management process. What finding poses the GREATEST risk?",
+    options: ["Change requests lack minor documentation.", "Developers have access to migrate code into the production environment.", "The Change Advisory Board (CAB) meets bi-weekly instead of weekly.", "Testing is conducted in a staging environment instead of production."],
+    correctAnswer: 1,
+    explanation: "Allowing developers to migrate code into production violates the principle of segregation of duties, introducing the risk of unauthorized or unreviewed changes."
+  },
+  {
+    id: "crisc-q32",
+    cert: "isaca-crisc",
+    question: "Which of the following BEST describes a Key Risk Indicator (KRI)?",
+    options: ["A metric that measures how well a process is performing.", "A metric that indicates the probability of a risk event materializing.", "A goal set by executive management for risk reduction.", "A financial value representing the maximum possible loss."],
+    correctAnswer: 1,
+    explanation: "Key Risk Indicators (KRIs) act as early warning signals that provide management with a prospective indication of changes in the risk profile."
+  },
+  {
+    id: "secplus-q33",
+    cert: "comptia-secplus",
+    question: "An attacker intercepts communication between a client and a server, altering the data in transit without either party knowing. What type of attack is this?",
+    options: ["Denial of Service (DoS)", "Replay Attack", "Man-in-the-Middle (MitM)", "MAC Spoofing"],
+    correctAnswer: 2,
+    explanation: "A Man-in-the-Middle (MitM) attack occurs when an attacker secretly relays and possibly alters the communication between two parties who believe they are communicating directly."
+  },
+  {
+    id: "cism-q34",
+    cert: "isaca-cism",
+    question: "When aligning the information security strategy with the business strategy, the Information Security Manager should FIRST:",
+    options: ["Determine the current security maturity level.", "Understand the organization's business goals and objectives.", "Perform a comprehensive risk assessment.", "Develop a balanced scorecard."],
+    correctAnswer: 1,
+    explanation: "To align security with the business, the foundational first step is to thoroughly understand the business's goals, objectives, and overall strategy."
+  },
+  {
+    id: "cissp-q35",
+    cert: "isc2-cissp",
+    question: "What cryptographic concept ensures that if a single key is compromised, past communications remain secure?",
+    options: ["Non-repudiation", "Key Escrow", "Perfect Forward Secrecy", "Digital Signatures"],
+    correctAnswer: 2,
+    explanation: "Perfect Forward Secrecy (PFS) ensures that session keys are ephemeral and not derived directly from long-term private keys, protecting past sessions against future key compromises."
+  },
+  {
+    id: "oscp-q36",
+    cert: "offensive-oscp",
+    question: "During a penetration test on a Linux server, you discover a cron job running as root that executes a world-writable bash script. What is the BEST way to escalate privileges?",
+    options: ["Brute force the root password using Hydra.", "Append a reverse shell payload to the world-writable script.", "Exploit a kernel vulnerability.", "Use the 'sudo -l' command."],
+    correctAnswer: 1,
+    explanation: "Since the script is executed by root (via cron) and is world-writable, any user can append malicious commands (like a reverse shell) to it, which will then be executed with root privileges."
+  },
+  {
+    id: "secai-q37",
+    cert: "comptia-secaiplus",
+    question: "An organization is deploying a generative AI chatbot for customer service. To prevent the chatbot from revealing sensitive PII to users, which defense mechanism is most critical?",
+    options: ["Input sanitization", "Output filtering and guardrails", "Using a smaller LLM", "Homomorphic encryption"],
+    correctAnswer: 1,
+    explanation: "Output filtering and guardrails monitor and intercept the model's generated responses to ensure no sensitive or unauthorized data (like PII) is transmitted to the user."
+  },
+  {
+    id: "cysa-q38",
+    cert: "comptia-cysa",
+    question: "An analyst notes repeated DNS requests for unusually long, random subdomains (e.g., k39djd82.example.com). This is MOST likely an indication of:",
+    options: ["DNS amplification attack", "DNS poisoning", "DNS tunneling (C2 traffic)", "Fast-flux DNS"],
+    correctAnswer: 2,
+    explanation: "DNS tunneling encapsulates data within DNS queries and responses (often using long, randomized subdomains) to bypass network security controls or establish C2 communications."
+  },
+  {
+    id: "cgrc-q39",
+    cert: "isc2-cgrc",
+    question: "Which document provides a formalized description of an information system, its security requirements, and the controls in place to meet those requirements?",
+    options: ["Privacy Impact Assessment (PIA)", "System Security Plan (SSP)", "Risk Assessment Report (RAR)", "Business Impact Analysis (BIA)"],
+    correctAnswer: 1,
+    explanation: "The System Security Plan (SSP) provides a comprehensive overview of the system boundaries, the environment, and the implementation details of the selected security controls."
+  },
+  {
+    id: "casp-q40",
+    cert: "comptia-casp",
+    question: "A company wants to securely integrate two distinct cloud environments (AWS and Azure) using a VPN. Which protocol suite is the industry standard for this site-to-site connection?",
+    options: ["PPTP", "IPsec", "TLS", "L2TP"],
+    correctAnswer: 1,
+    explanation: "IPsec is the industry standard protocol suite used to establish secure, encrypted site-to-site VPN tunnels between corporate networks and diverse cloud environments."
+  },
   ...(generatedQuestions as MockQuestion[])
 ];

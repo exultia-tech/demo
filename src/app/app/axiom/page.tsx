@@ -63,6 +63,9 @@ export default function AxiomDashboard() {
   const [examDurationMinutes, setExamDurationMinutes] = useState<number>(90);
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState<number | null>(null);
 
+  // Cert Filter
+  const [simulatorCertFilter, setSimulatorCertFilter] = useState<string>('all');
+
   // Labs State
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
   const [terminalInput, setTerminalInput] = useState("");
@@ -91,6 +94,7 @@ export default function AxiomDashboard() {
         durationMinutes: examDurationMinutes,
         checkpointInterval,
         instantValidation,
+        cert: simulatorCertFilter !== 'all' ? simulatorCertFilter : undefined,
       });
       tokenRef.current = data.token;
       setTotalQuestions(data.total);
@@ -478,6 +482,19 @@ export default function AxiomDashboard() {
                     min={1}
                     style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}
                   />
+                </div>
+                <div>
+                  <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Certification Focus</label>
+                  <select 
+                    value={simulatorCertFilter} 
+                    onChange={(e) => setSimulatorCertFilter(e.target.value)} 
+                    style={{ width: "100%", padding: "0.75rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF", WebkitAppearance: "none", cursor: "pointer" }}
+                  >
+                    <option value="all">All Certifications (Global Simulator)</option>
+                    {certsList.map(c => (
+                      <option key={c.id} value={c.id}>{c.title}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label style={{ display: "block", color: "#E2E8F0", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Exam Duration (Minutes)</label>

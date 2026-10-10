@@ -17,7 +17,10 @@ export const dynamic = 'force-dynamic';
 export type { UviAdvisoryRecord, PublicFeedSource, ThreatSeverity, DomainCategory, IdeBuildImpactAssessment };
 
 const rateLimitMap = new Map<string, number>();
+const proRateLimitMap = new Map<string, { count: number; windowStart: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const PRO_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const PRO_MAX_REQUESTS = 300;
 
 export async function GET(request: Request) {
   // Ensure autonomous CTI research agent background worker is active
@@ -29,17 +32,24 @@ export async function GET(request: Request) {
     recordLicenseActivity(user.id, 'uvi', request, 'feed_query').catch(() => {});
   }
 
-  // Rate Limiting Logic: 1 request per hour for free tier/unauthenticated users
-  const isPremium = user?.subscriptions?.some(s => 
+  // Rate Limiting Logic
+  const isPro = user?.subscriptions?.some(s => 
     (s.product === 'multipass' || s.product === 'uvi' || s.product === 'praxis') &&
-    (s.tier === 'pro' || s.tier === 'enterprise') &&
+    s.tier === 'pro' &&
+    s.status === 'active'
+  );
+  
+  const isEnterprise = user?.subscriptions?.some(s => 
+    (s.product === 'multipass' || s.product === 'uvi' || s.product === 'praxis') &&
+    s.tier === 'enterprise' &&
     s.status === 'active'
   );
 
-  if (!isPremium) {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown-ip';
-    const identifier = user ? user.id : ip;
-    const now = Date.now();
+  const ip = request.headers.get('x-forwarded-for') || 'unknown-ip';
+  const identifier = user ? user.id : ip;
+  const now = Date.now();
+
+  if (!isPro && !isEnterprise) {
     
     const lastRequest = rateLimitMap.get(identifier);
     if (lastRequest && (now - lastRequest < RATE_LIMIT_WINDOW_MS)) {
@@ -60,6 +70,32 @@ export async function GET(request: Request) {
     }
 
     rateLimitMap.set(identifier, now);
+  } else if (isPro) {
+    const record = proRateLimitMap.get(identifier) || { count: 0, windowStart: now };
+    
+    if (now - record.windowStart > PRO_RATE_LIMIT_WINDOW_MS) {
+      record.count = 1;
+      record.windowStart = now;
+    } else {
+      record.count++;
+      if (record.count > PRO_MAX_REQUESTS) {
+        return NextResponse.json(
+          { error: 'Pro tier rate limit exceeded. You are limited to 300 requests per minute. Please upgrade to Enterprise for unlimited API access.' },
+          { status: 429 }
+        );
+      }
+    }
+
+    if (proRateLimitMap.size > 5000) {
+      const oneMinuteAgo = now - PRO_RATE_LIMIT_WINDOW_MS;
+      for (const [key, data] of proRateLimitMap.entries()) {
+        if (data.windowStart < oneMinuteAgo) {
+          proRateLimitMap.delete(key);
+        }
+      }
+    }
+
+    proRateLimitMap.set(identifier, record);
   }
 
   const { searchParams } = new URL(request.url);
