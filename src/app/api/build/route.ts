@@ -235,7 +235,8 @@ export async function POST(req: NextRequest) {
       start(controller) {
         const encoder = new TextEncoder();
         controller.enqueue(encoder.encode(`>>> [LOCAL ASSEMBLY ENGINE] Initializing build pipeline (${targetOs.toUpperCase()} / ${safeVersion} / ${safeLocale.toUpperCase()})...\n`));
-        controller.enqueue(encoder.encode(`>>> [NOTICE] Cloud build engine active in standard environment.\n\n`));
+        controller.enqueue(encoder.encode(`>>> [NOTICE] Cloud build engine active in standard environment.\n`));
+        controller.enqueue(encoder.encode(`>>> [DEBUG] GITHUB_TOKEN exists: ${!!githubToken}, GITHUB_OWNER exists: ${!!githubOwner}, GITHUB_REPO exists: ${!!githubRepo}\n\n`));
 
         child.stdout.on('data', (data) => {
           controller.enqueue(data);
