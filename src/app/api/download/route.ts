@@ -70,6 +70,8 @@ export async function GET(request: Request) {
             'Cache-Control': 'no-store, no-cache, must-revalidate',
           },
         });
+      }
+    }
     // 4. In cloud production environments, check Vercel Blob for the compiled artifact
     try {
       const { list } = require('@vercel/blob');
