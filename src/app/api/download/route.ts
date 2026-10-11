@@ -73,16 +73,9 @@ export async function GET(request: Request) {
       }
     }
 
-    // 4. In cloud production environments, redirect to official GitHub release or return fallback status
+    // 4. In cloud production environments, redirect to official GitHub release
     const githubReleaseFallback = 'https://github.com/wstrika/secure-ide/releases/latest';
-    if (searchParams.get('redirect') === 'true') {
-      return NextResponse.redirect(githubReleaseFallback);
-    }
-
-    return NextResponse.json({
-      error: 'Release artifact is being compiled. Please download from GitHub Releases or retry after build completion.',
-      releaseUrl: githubReleaseFallback
-    }, { status: 404 });
+    return NextResponse.redirect(githubReleaseFallback);
 
   } catch (error: any) {
     console.error('Download route error:', error);
