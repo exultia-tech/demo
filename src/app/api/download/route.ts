@@ -72,15 +72,22 @@ export async function GET(request: Request) {
         });
       }
     }
+    const debug = searchParams.get('debug') === '1' || searchParams.get('debug') === 'true';
+
     // 4. In cloud production environments, check Vercel Blob for the compiled artifact
+    let blobListError: string | null = null;
+    let foundBlobs: any[] = [];
+    let matches: any[] = [];
+
     try {
       const { list } = require('@vercel/blob');
       // Fetch up to 100 recent blobs to do a resilient, case-insensitive match
       const baseNameWithoutExt = safeFileName.replace(/\.(exe|zip|tar\.gz|dmg)$/i, '').toLowerCase();
-      const { blobs } = await list({ limit: 100 });
+      const res = await list({ limit: 100 });
+      foundBlobs = res?.blobs || [];
       
-      if (blobs && blobs.length > 0) {
-        const matches = blobs.filter((b: any) => {
+      if (foundBlobs.length > 0) {
+        matches = foundBlobs.filter((b: any) => {
           const blobName = path.basename(b.pathname).replace(/\.(exe|zip|tar\.gz|dmg)$/i, '').toLowerCase();
           // Match the base name, ignoring the random hash suffix Vercel Blob adds (e.g. PureIDE_vscodium_Setup-xxxxx)
           return blobName.startsWith(baseNameWithoutExt);
@@ -88,11 +95,28 @@ export async function GET(request: Request) {
 
         if (matches.length > 0) {
           matches.sort((a: any, b: any) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-          return NextResponse.redirect(matches[0].url);
+          if (!debug) {
+            return NextResponse.redirect(matches[0].url);
+          }
         }
       }
-    } catch (blobErr) {
+    } catch (blobErr: any) {
+      blobListError = blobErr?.message || String(blobErr);
       console.warn("Vercel Blob check failed or unconfigured:", blobErr);
+    }
+
+    if (debug) {
+      return NextResponse.json({
+        safeFileName,
+        baseNameWithoutExt: safeFileName.replace(/\.(exe|zip|tar\.gz|dmg)$/i, '').toLowerCase(),
+        hasBlobToken: !!process.env.BLOB_READ_WRITE_TOKEN,
+        blobListError,
+        totalBlobsInStore: foundBlobs.length,
+        blobs: foundBlobs.map((b: any) => ({ pathname: b.pathname, url: b.url, uploadedAt: b.uploadedAt })),
+        matches: matches.map((b: any) => ({ pathname: b.pathname, url: b.url, uploadedAt: b.uploadedAt })),
+        localFilePath,
+        fallbackTarget: 'https://github.com/wstrika/secure-ide/releases/latest'
+      });
     }
 
     // 5. If not found in local OR blob, redirect to official GitHub release fallback

@@ -166,14 +166,27 @@ jobs:
         run: |
           npm install @vercel/blob
           node -e "
-          const { put } = require('@vercel/blob');
-          const fs = require('fs');
-          const path = require('path');
-          const files = fs.readdirSync('./dist').filter(f => f.endsWith('.zip') || f.endsWith('.exe') || f.endsWith('.dmg') || f.endsWith('.tar.gz'));
-          for (const f of files) {
-            console.log('Uploading ' + f + ' to Vercel Blob...');
-            put(f, fs.readFileSync(path.join('./dist', f)), { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN })
-              .then(b => console.log('Successfully uploaded:', b.url))
-              .catch(e => { console.error('Upload failed:', e); process.exit(1); });
-          }
+          (async () => {
+            const { put } = require('@vercel/blob');
+            const fs = require('fs');
+            const path = require('path');
+            const token = process.env.BLOB_READ_WRITE_TOKEN;
+            if (!token) {
+              console.error('Error: BLOB_READ_WRITE_TOKEN is not defined in environment!');
+              process.exit(1);
+            }
+            const files = fs.readdirSync('./dist').filter(f => f.endsWith('.zip') || f.endsWith('.exe') || f.endsWith('.dmg') || f.endsWith('.tar.gz'));
+            console.log('Found dist files to upload:', files);
+            for (const f of files) {
+              const fullPath = path.join('./dist', f);
+              const stat = fs.statSync(fullPath);
+              console.log('Uploading ' + f + ' (' + stat.size + ' bytes) to Vercel Blob...');
+              const res = await put(f, fs.readFileSync(fullPath), { access: 'public', token });
+              console.log('Successfully uploaded to Vercel Blob:', res.url);
+            }
+            console.log('All artifacts successfully cached to Vercel Blob.');
+          })().catch(err => {
+            console.error('Vercel Blob upload failed:', err);
+            process.exit(1);
+          });
           "
