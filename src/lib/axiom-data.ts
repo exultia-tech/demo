@@ -189,7 +189,9 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cisa-4", title: "Information Systems Operations and Business Resilience", weight: "23%", topics: ["IT Operations", "Disaster Recovery Planning"] },
       { id: "cisa-5", title: "Protection of Information Assets", weight: "27%", topics: ["Information Asset Security", "Network and Endpoint Security"] }
     ],
-    resources: []
+    resources: [
+      { type: "Link", name: "ISACA CISA Guide", url: "#" }
+    ]
   },
   "isaca-crisc": {
     id: "isaca-crisc",
@@ -203,7 +205,9 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "crisc-3", title: "Risk Response and Reporting", weight: "32%", topics: ["Risk Response", "Control Design and Implementation", "Risk Monitoring and Reporting"] },
       { id: "crisc-4", title: "Information Technology and Security", weight: "22%", topics: ["Information Technology Principles", "Information Security Principles"] }
     ],
-    resources: []
+    resources: [
+      { type: "Link", name: "ISACA CRISC Guide", url: "#" }
+    ]
   },
   "comptia-secaiplus": {
     id: "comptia-secaiplus",
@@ -217,7 +221,9 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "secai-3", title: "Securing AI Systems", weight: "30%", topics: ["Adversarial Machine Learning", "Data Poisoning Mitigation", "Model Inversion Defenses"] },
       { id: "secai-4", title: "AI Governance, Risk, and Compliance", weight: "20%", topics: ["AI Ethics", "Regulatory Compliance for AI"] }
     ],
-    resources: []
+    resources: [
+      { type: "Link", name: "CompTIA SecAI+ Guide", url: "#" }
+    ]
   },
   "isc2-cgrc": {
     id: "isc2-cgrc",
@@ -234,7 +240,9 @@ export const CERTIFICATIONS: Record<string, Certification> = {
       { id: "cgrc-6", title: "Authorization/Approval of Information System", weight: "10%", topics: ["Authorization Packages", "Risk Acceptance"] },
       { id: "cgrc-7", title: "Continuous Monitoring", weight: "16%", topics: ["Continuous Monitoring Strategies", "Status Reporting"] }
     ],
-    resources: []
+    resources: [
+      { type: "Link", name: "ISC2 CGRC Guide", url: "#" }
+    ]
   }
 };
 
