@@ -75,9 +75,13 @@ export async function GET(request: Request) {
     // 4. In cloud production environments, check Vercel Blob for the compiled artifact
     try {
       const { list } = require('@vercel/blob');
-      const { blobs } = await list({ prefix: safeFileName, limit: 1 });
+      // Vercel Blob adds a random hash before the extension (e.g. file-hash.exe)
+      const baseNameWithoutExt = safeFileName.replace(/\.(exe|zip|tar\.gz|dmg)$/i, '');
+      const { blobs } = await list({ prefix: baseNameWithoutExt, limit: 10 });
       
       if (blobs && blobs.length > 0) {
+        // Sort by uploadedAt descending to get the freshest build
+        blobs.sort((a: any, b: any) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
         return NextResponse.redirect(blobs[0].url);
       }
     } catch (blobErr) {
