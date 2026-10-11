@@ -70,10 +70,19 @@ export async function GET(request: Request) {
             'Cache-Control': 'no-store, no-cache, must-revalidate',
           },
         });
+    // 4. In cloud production environments, check Vercel Blob for the compiled artifact
+    try {
+      const { list } = require('@vercel/blob');
+      const { blobs } = await list({ prefix: safeFileName, limit: 1 });
+      
+      if (blobs && blobs.length > 0) {
+        return NextResponse.redirect(blobs[0].url);
       }
+    } catch (blobErr) {
+      console.warn("Vercel Blob check failed or unconfigured:", blobErr);
     }
 
-    // 4. In cloud production environments, redirect to official GitHub release
+    // 5. If not found in local OR blob, redirect to official GitHub release fallback
     const githubReleaseFallback = 'https://github.com/wstrika/secure-ide/releases/latest';
     return NextResponse.redirect(githubReleaseFallback);
 

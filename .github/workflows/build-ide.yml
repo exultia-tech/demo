@@ -158,3 +158,22 @@ jobs:
           name: ${{ inputs.brand_name }}-${{ matrix.os }}-${{ inputs.tier }}-${{ inputs.build_id }}
           path: ./dist/*
           retention-days: 7
+
+      - name: Cache Artifact to Vercel Blob (Exultia CDN)
+        if: ${{ matrix.enable && env.BLOB_READ_WRITE_TOKEN != '' }}
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          npm install @vercel/blob
+          node -e "
+          const { put } = require('@vercel/blob');
+          const fs = require('fs');
+          const path = require('path');
+          const files = fs.readdirSync('./dist').filter(f => f.endsWith('.zip') || f.endsWith('.exe') || f.endsWith('.dmg') || f.endsWith('.tar.gz'));
+          for (const f of files) {
+            console.log('Uploading ' + f + ' to Vercel Blob...');
+            put(f, fs.readFileSync(path.join('./dist', f)), { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN })
+              .then(b => console.log('Successfully uploaded:', b.url))
+              .catch(e => { console.error('Upload failed:', e); process.exit(1); });
+          }
+          "
