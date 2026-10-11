@@ -420,7 +420,7 @@ export default function ConsolePage() {
   const [pipelineFormat, setPipelineFormat] = useState<"github" | "gitlab" | "azure" | "jenkins">("github");
 
   // Build & Dry Run State
-  const [buildState, setBuildState] = useState<"IDLE" | "BUILDING" | "SUCCESS">("IDLE");
+  const [buildState, setBuildState] = useState<"IDLE" | "BUILDING" | "SUCCESS" | "ERROR">("IDLE");
   const [buildLogs, setBuildLogs] = useState<string[]>([]);
   const [generatedSbom, setGeneratedSbom] = useState<string | null>(null);
 
