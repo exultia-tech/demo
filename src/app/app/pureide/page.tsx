@@ -1998,6 +1998,7 @@ build_hardened_ide:
       let artifactPath = "";
       let installerPath = "";
       let currentBuildId = "";
+      let hasFatalError = false;
 
       while (true) {
         const { value, done } = await reader.read();
@@ -2035,6 +2036,10 @@ build_hardened_ide:
               if (pathMatch) installerPath = pathMatch.trim();
             }
 
+            if (line.includes("[CRITICAL]") || line.includes("[ERROR]")) {
+              hasFatalError = true;
+            }
+
             if (newLogs.length > 0 && !newLogs[newLogs.length - 1].endsWith("\n") && !line.startsWith(">>>")) {
               newLogs[newLogs.length - 1] += line;
             } else {
@@ -2043,6 +2048,11 @@ build_hardened_ide:
           });
           return newLogs;
         });
+      }
+
+      if (hasFatalError) {
+        setBuildState("ERROR");
+        return;
       }
 
       const cleanBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
