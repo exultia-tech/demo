@@ -83,9 +83,13 @@ export async function POST(req: NextRequest) {
         token: githubToken,
       });
 
-      const distDir = path.join(process.cwd(), 'public', 'downloads');
-      if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir, { recursive: true });
+      const distDir = process.env.VERCEL ? '/tmp/downloads' : path.join(process.cwd(), 'public', 'downloads');
+      try {
+        if (!fs.existsSync(distDir)) {
+          fs.mkdirSync(distDir, { recursive: true });
+        }
+      } catch (fsErr) {
+        console.warn("Could not create dist directory", fsErr);
       }
 
       const stream = new ReadableStream({
@@ -188,9 +192,13 @@ export async function POST(req: NextRequest) {
     // MODE B: LOCAL PIPELINE ASSEMBLY ENGINE (Standard / Development Mode)
     // -----------------------------------------------------------------------
     const scriptPath = path.join(process.cwd(), 'scripts', 'assemble-ide.ps1');
-    const distDir = path.join(process.cwd(), 'public', 'downloads');
-    if (!fs.existsSync(distDir)) {
-      fs.mkdirSync(distDir, { recursive: true });
+    const distDir = process.env.VERCEL ? '/tmp/downloads' : path.join(process.cwd(), 'public', 'downloads');
+    try {
+      if (!fs.existsSync(distDir)) {
+        fs.mkdirSync(distDir, { recursive: true });
+      }
+    } catch (fsErr) {
+      console.warn("Could not create dist directory", fsErr);
     }
 
     const psArgs = [
