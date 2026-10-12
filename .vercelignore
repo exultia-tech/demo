@@ -1,0 +1,8 @@
+node_modules
+.next
+dist
+public/downloads/*
+!public/downloads/.gitkeep
+local.db
+local.db-journal
+tmp_orchestrator.ps1
