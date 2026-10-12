@@ -388,7 +388,9 @@ if ($TargetOS -eq "windows" -or $TargetOS -eq "macos") {
 
     if ($IsccCmd) {
         Write-Host "    -> Compressing Windows Setup Installer (.exe) with Inno Setup..." -ForegroundColor Cyan
-        $IssPath = Join-Path $OutputDir "setup_$BuildId.iss"
+        $AbsoluteOutputDir = (Resolve-Path $OutputDir).Path
+        $AbsoluteAppDir = (Resolve-Path $AppDir).Path
+        $IssPath = Join-Path $AbsoluteOutputDir "setup_$BuildId.iss"
         $ExeOutputBase = "${CleanBrandSlug}_${Engine}_Setup"
         $IssContent = @"
 [Setup]
@@ -396,7 +398,7 @@ AppName=$BrandName
 AppVersion=1.0.0
 DefaultDirName={autopf}\$BrandName
 DefaultGroupName=$BrandName
-OutputDir=$OutputDir
+OutputDir=$AbsoluteOutputDir
 OutputBaseFilename=$ExeOutputBase
 Compression=lzma2/ultra64
 SolidCompression=yes
@@ -405,7 +407,7 @@ PrivilegesRequired=lowest
 DisableProgramGroupPage=yes
 
 [Files]
-Source: "$AppDir\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "$AbsoluteAppDir\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\$BrandName"; Filename: "{app}\Code.exe"
@@ -417,7 +419,7 @@ Filename: "{app}\Code.exe"; Description: "Launch $BrandName"; Flags: nowait post
         Set-Content -Path $IssPath -Value $IssContent -Encoding utf8
         try {
             & $IsccCmd "$IssPath"
-            $InstallerExe = Join-Path $OutputDir "$ExeOutputBase.exe"
+            $InstallerExe = Join-Path $AbsoluteOutputDir "$ExeOutputBase.exe"
             if (Test-Path $InstallerExe) {
                 Write-Host "    [OK] Windows Setup Wizard installer generated: $InstallerExe" -ForegroundColor Green
                 Write-Host ">>> [SUCCESS] Windows Setup installer generated: $InstallerExe"
