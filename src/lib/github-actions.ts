@@ -6,7 +6,7 @@ import { pipeline } from 'stream/promises';
 
 const DEFAULT_GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const DEFAULT_GITHUB_OWNER = process.env.GITHUB_OWNER || 'wstrika';
-const DEFAULT_GITHUB_REPO = process.env.GITHUB_REPO || 'secure-ide';
+const DEFAULT_GITHUB_REPO = process.env.GITHUB_REPO || 'exultia';
 const DEFAULT_GITHUB_WORKFLOW = process.env.GITHUB_WORKFLOW || 'build-ide.yml';
 
 export interface WorkflowDispatchParams {
