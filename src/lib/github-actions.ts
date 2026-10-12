@@ -218,34 +218,34 @@ export async function downloadAndExtractArtifact(
     // @ts-ignore - Readable.fromWeb handles web streams in Node 18+
     await pipeline(Readable.fromWeb(dlRes.body as any), fileStream);
 
-    // 3. Inspect artifact archive entries using tar
-    const filesList = execSync(`tar -tf "${tempZipPath}"`, { encoding: 'utf8', maxBuffer: 1024 * 1024 * 20 })
-      .split('\n')
-      .map(f => f.trim())
-      .filter(f => f.length > 0);
+    // 3. Inspect and extract artifact archive entries using pure JavaScript AdmZip (portable, no shell tar dependency)
+    const AdmZip = require('adm-zip');
+    const zip = new AdmZip(tempZipPath);
+    const zipEntries = zip.getEntries();
+    const filesList = zipEntries.map((e: any) => e.entryName);
 
     let extractedZip = '';
     let extractedExe = '';
     let extractedSbom = '';
 
     // Extract distribution .zip
-    const zipEntry = filesList.find(f => f.endsWith('.zip') && !f.includes('temp_artifact'));
+    const zipEntry = filesList.find((f: string) => f.endsWith('.zip') && !f.includes('temp_artifact'));
     if (zipEntry) {
-      execSync(`tar -xf "${tempZipPath}" -C "${outputDir}" "${zipEntry}"`);
+      zip.extractEntryTo(zipEntry, outputDir, false, true);
       extractedZip = path.join(outputDir, zipEntry);
     }
 
     // Extract installer .exe if present
-    const exeEntry = filesList.find(f => f.endsWith('.exe'));
+    const exeEntry = filesList.find((f: string) => f.endsWith('.exe'));
     if (exeEntry) {
-      execSync(`tar -xf "${tempZipPath}" -C "${outputDir}" "${exeEntry}"`);
+      zip.extractEntryTo(exeEntry, outputDir, false, true);
       extractedExe = path.join(outputDir, exeEntry);
     }
 
     // Extract cyclonedx-sbom.json if present
-    const sbomEntry = filesList.find(f => f.endsWith('cyclonedx-sbom.json'));
+    const sbomEntry = filesList.find((f: string) => f.endsWith('cyclonedx-sbom.json'));
     if (sbomEntry) {
-      execSync(`tar -xf "${tempZipPath}" -C "${outputDir}" "${sbomEntry}"`);
+      zip.extractEntryTo(sbomEntry, outputDir, false, true);
       extractedSbom = path.join(outputDir, sbomEntry);
     }
 
