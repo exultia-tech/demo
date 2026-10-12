@@ -33,12 +33,18 @@ export async function POST(req: Request) {
     let finalTier = tier;
     let finalBillingCycle = billingCycle || 'annual';
 
-    if ((!finalProduct || !finalTier) && captureResult.customId) {
+    if (captureResult.customId) {
       const parts = captureResult.customId.split(':');
       if (parts.length >= 3) {
-        finalProduct = parts[1];
-        finalTier = parts[2];
+        if (!finalProduct) finalProduct = parts[1];
+        if (!finalTier) finalTier = parts[2];
         if (parts[3]) finalBillingCycle = parts[3];
+        if (parts[4]) {
+          const paidAmt = parseFloat(parts[4]);
+          if (!isNaN(paidAmt)) {
+            finalTier = paidAmt >= 149 ? 'enterprise' : paidAmt >= 49 ? 'pro' : 'community';
+          }
+        }
       }
     }
 

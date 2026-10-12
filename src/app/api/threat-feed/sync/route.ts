@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { syncUviThreatsToDb, getDbThreatMetrics } from '@/lib/db/sync-threats';
+import { getCurrentUser } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { force } = await req.json().catch(() => ({ force: false }));
     const result = await syncUviThreatsToDb(Boolean(force));
     return NextResponse.json(result);

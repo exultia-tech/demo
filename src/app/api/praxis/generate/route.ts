@@ -16,14 +16,19 @@ const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?
 
 export async function POST(request: NextRequest) {
   try {
-    // Non-blocking trust-but-verify license telemetry
-    getCurrentUser().then(user => {
-      if (user) {
-        recordLicenseActivity(user.id, 'praxis', request, 'generate_script');
-      }
-    }).catch(() => {});
-
     const { os, cron, proxy, preview, classes = [], networkMode = 'localhost', firewallFormat = 'plain', customShebang = '#!/bin/sh', filenamePattern } = await request.json();
+
+    const user = await getCurrentUser();
+    if (!preview && !user) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in or create a free account to generate deployment packages.' },
+        { status: 401 }
+      );
+    }
+
+    if (user) {
+      recordLicenseActivity(user.id, 'praxis', request, preview ? 'preview_script' : 'generate_script').catch(() => {});
+    }
 
     let script = `${customShebang}\n`;
     script += `# ============================================================\n`;

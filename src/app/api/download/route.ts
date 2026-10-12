@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getCurrentUser } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      const isHtml = request.headers.get('accept')?.includes('text/html');
+      if (isHtml) {
+        return NextResponse.redirect(new URL('/login?error=auth_required&redirect=/app/pureide', request.url));
+      }
+      return NextResponse.json({ error: 'Authentication required to download builds. Please sign in.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const buildId = searchParams.get('buildId') || '';
     const requestedPath = searchParams.get('path') || '';

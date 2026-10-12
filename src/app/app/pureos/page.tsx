@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PureOsIcon } from '@/components/BrandIcons';
 import { Download, FileCode } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 type SubscriptionTier = 'Free' | 'Pro' | 'Enterprise';
 type ActiveTab = 'base' | 'hardening' | 'packages' | 'scanner' | 'output';
@@ -37,6 +38,7 @@ const OS_PACKAGES: OsPackage[] = [
 ];
 
 export default function PureOSConfigurator() {
+  const { user, openAuthModal } = useAuth();
   const [tier, setTier] = useState<SubscriptionTier>('Free');
   const [activeTab, setActiveTab] = useState<ActiveTab>('base');
   
@@ -64,6 +66,10 @@ export default function PureOSConfigurator() {
   const [showSbomModal, setShowSbomModal] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const handleCompile = () => {
+    if (!user) {
+      openAuthModal("login");
+      return;
+    }
     setIsCompiling(true);
     setTimeout(() => {
       setIsCompiling(false);
@@ -289,7 +295,7 @@ export default function PureOSConfigurator() {
               justifyContent: "center",
               gap: "0.5rem"
             }}>
-              <span>{isCompiling ? 'Compiling...' : 'Compile Image'}</span>
+              <span>{isCompiling ? 'Compiling...' : !user ? '🔒 Sign In to Compile Image (Free)' : 'Compile Image'}</span>
             </button>
           </div>
         </div>
@@ -811,7 +817,25 @@ ${baseImage.startsWith('win-') ? `    {
             </div>
             <div style={{ padding: "1.5rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
               <button onClick={() => setShowSbomModal(false)} className="btn-secondary" style={{ padding: "0.75rem 1.5rem", borderRadius: "8px" }}>Close</button>
-              <button className="btn-primary" style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px" }}><Download size={16} /> Download JSON</button>
+              <button 
+                onClick={() => {
+                  if (!user) {
+                    openAuthModal("login");
+                    return;
+                  }
+                  const element = document.createElement("a");
+                  const file = new Blob([JSON.stringify({ bomFormat: "CycloneDX", specVersion: "1.4", component: { name: `exultia/pureos-${baseImage}` } }, null, 2)], { type: 'application/json' });
+                  element.href = URL.createObjectURL(file);
+                  element.download = `pureos-${baseImage}-sbom.json`;
+                  document.body.appendChild(element);
+                  element.click();
+                  document.body.removeChild(element);
+                }} 
+                className="btn-primary" 
+                style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <Download size={16} /> {!user ? "Sign In to Download" : "Download JSON"}
+              </button>
             </div>
           </div>
         </div>

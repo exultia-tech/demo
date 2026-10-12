@@ -539,6 +539,56 @@ function SubscriptionContent() {
           })}
         </div>
 
+        {/* Pay What You Want Notice */}
+        <div style={{
+          marginTop: "1.5rem",
+          background: "linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(245, 158, 11, 0.12) 100%)",
+          border: "1px solid rgba(139, 92, 246, 0.35)",
+          borderRadius: "14px",
+          padding: "1rem 1.5rem",
+          maxWidth: "920px",
+          margin: "1.5rem auto 0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1.25rem",
+          flexWrap: "wrap",
+        }}>
+          <div style={{ textAlign: "left" }}>
+            <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>💝</span> Pay What You Want Pricing Architecture
+            </div>
+            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "3px" }}>
+              <strong style={{ color: "#38BDF8" }}>Pro unlocks at $49</strong> · <strong style={{ color: "#FDE047" }}>Enterprise unlocks at $149</strong>. Generous supporters can contribute any custom amount at checkout!
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              openPaymentModal({
+                product: selectedProduct,
+                tier: "pro",
+                price: 49,
+                billingCycle,
+                planName: `${selectedProduct.toUpperCase()} - Pay What You Want`,
+              });
+            }}
+            style={{
+              padding: "0.6rem 1.25rem",
+              background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
+              color: "#041019",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 800,
+              fontSize: "0.84rem",
+              cursor: "pointer",
+              boxShadow: "0 2px 10px rgba(6, 182, 212, 0.3)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Custom Contribution ($) →
+          </button>
+        </div>
+
         {/* Current Product Descriptor Banner */}
         <div style={{ marginTop: "1.25rem", color: "#64748B", fontSize: "0.9rem" }}>
           Selected Product: <strong style={{ color: productMeta[selectedProduct].color }}>{productMeta[selectedProduct].name}</strong> — {productMeta[selectedProduct].subtitle}
@@ -662,15 +712,22 @@ function SubscriptionContent() {
               </p>
 
               {/* Price */}
-              <div style={{ marginBottom: "1.75rem", display: "flex", alignItems: "baseline", gap: "4px" }}>
-                <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
-                <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
-                  {price === 0 ? "forever" : "/mo"}
-                </span>
-                {price > 0 && billingCycle === "annual" && (
-                  <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "6px", fontWeight: 600 }}>
-                    billed annually
+              <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+                  <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
+                  <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
+                    {price === 0 ? "forever" : "/mo"}
                   </span>
+                  {price > 0 && billingCycle === "annual" && (
+                    <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "6px", fontWeight: 600 }}>
+                      billed annually
+                    </span>
+                  )}
+                </div>
+                {price > 0 && (
+                  <div style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600 }}>
+                    ✨ Pay What You Want (Unlocks at ${price}+)
+                  </div>
                 )}
               </div>
 

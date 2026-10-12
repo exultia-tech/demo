@@ -46,20 +46,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Product and tier are required' }, { status: 400 });
     }
 
-    // Determine price
+    // Determine price with Pay What You Want support
     let amount = 0;
-    const productCatalog = PRICING_CATALOG[product.toLowerCase()];
-    if (productCatalog && productCatalog[tier.toLowerCase()]) {
-      const tierPricing = productCatalog[tier.toLowerCase()];
-      amount = billingCycle === 'annual' ? tierPricing.annual : tierPricing.monthly;
-    } else if (typeof customPrice === 'number' && customPrice > 0) {
+    if (typeof customPrice === 'number' && customPrice > 0) {
       amount = customPrice;
     } else {
-      amount = 49.00; // Baseline fallback
+      const productCatalog = PRICING_CATALOG[product.toLowerCase()];
+      if (productCatalog && productCatalog[tier.toLowerCase()]) {
+        const tierPricing = productCatalog[tier.toLowerCase()];
+        amount = billingCycle === 'annual' ? tierPricing.annual : tierPricing.monthly;
+      } else {
+        amount = 49.00; // Baseline fallback
+      }
     }
 
-    const customId = `${user.id}:${product}:${tier}:${billingCycle || 'monthly'}`;
-    const description = `Exultia ${product.toUpperCase()} - ${tier.toUpperCase()} (${billingCycle || 'monthly'})`;
+    // Pay-what-you-want dynamic tier entitlement unlocking:
+    // Pro entitlements unlock at 49, Enterprise entitlements unlock at 149
+    let resolvedTier = (tier || 'pro').toLowerCase();
+    if (amount >= 149) {
+      resolvedTier = 'enterprise';
+    } else if (amount >= 49) {
+      resolvedTier = 'pro';
+    } else {
+      resolvedTier = 'community';
+    }
+
+    const customId = `${user.id}:${product}:${resolvedTier}:${billingCycle || 'monthly'}:${amount}`;
+    const description = `Exultia ${product.toUpperCase()} - ${resolvedTier.toUpperCase()} [Pay What You Want: $${amount}]`;
 
     const order = await createPayPalOrder({
       amount,

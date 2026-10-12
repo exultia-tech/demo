@@ -169,7 +169,10 @@ export default function PraxisPricingPage() {
         {/* Pro Tier */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '2.5rem' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Pro</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$49<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>$49<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
+          <div style={{ fontSize: '0.8rem', color: '#34D399', fontWeight: 700, marginBottom: '1rem' }}>
+            Pay What You Want · Unlocks at $49+
+          </div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
             Ideal for individual security engineers and operators needing API access to Vantage and automated script generation.
           </p>
@@ -184,14 +187,17 @@ export default function PraxisPricingPage() {
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
             background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)',
             textDecoration: 'none', transition: 'all 0.2s ease'
-          }}>Subscribe to Pro ($49/mo) →</Link>
+          }}>Unlock Pro ($49+) →</Link>
         </div>
 
         {/* Enterprise Tier */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '2.5rem', borderColor: 'rgba(16, 185, 129, 0.5)', background: 'rgba(16, 185, 129, 0.03)', position: 'relative' }}>
           <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #10B981, #059669)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Most Popular</div>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>Enterprise</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>$149<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>$149<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span></div>
+          <div style={{ fontSize: '0.8rem', color: '#10B981', fontWeight: 700, marginBottom: '1rem' }}>
+            Pay What You Want · Unlocks at $149+
+          </div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', flex: 1 }}>
             Full fleet deployment, custom SIEM integrations, and white-glove onboarding for large enterprises.
           </p>
@@ -207,7 +213,7 @@ export default function PraxisPricingPage() {
             display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px',
             background: 'linear-gradient(135deg, #10B981, #059669)', color: 'white', fontWeight: 700,
             textDecoration: 'none', transition: 'all 0.2s ease', border: 'none', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
-          }}>Subscribe to Enterprise ($149/mo) →</Link>
+          }}>Unlock Enterprise ($149+) →</Link>
         </div>
 
       </div>

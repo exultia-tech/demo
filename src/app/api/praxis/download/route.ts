@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { scriptStore } from '@/lib/praxis-store';
+import { getCurrentUser } from '@/lib/auth/session';
 
 export async function GET(request: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Authentication required. Please sign in to download scripts.' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 

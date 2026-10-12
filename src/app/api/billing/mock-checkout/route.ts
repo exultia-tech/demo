@@ -12,10 +12,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'You must be signed in to upgrade or subscribe' }, { status: 401 });
     }
 
-    const { product, tier, billingCycle } = await req.json();
+    const { product, tier, billingCycle, customPrice, amount } = await req.json();
 
-    if (!product || !tier) {
-      return NextResponse.json({ error: 'Product and tier are required' }, { status: 400 });
+    if (!product) {
+      return NextResponse.json({ error: 'Product is required' }, { status: 400 });
+    }
+
+    const paidAmount = typeof customPrice === 'number' ? customPrice : (typeof amount === 'number' ? amount : null);
+    let resolvedTier = (tier || 'pro').toLowerCase();
+
+    // Pay-what-you-want dynamic entitlement unlocking:
+    // Pro entitlements unlock at 49, Enterprise entitlements unlock at 149
+    if (paidAmount !== null) {
+      if (paidAmount >= 149) {
+        resolvedTier = 'enterprise';
+      } else if (paidAmount >= 49) {
+        resolvedTier = 'pro';
+      } else {
+        resolvedTier = 'community';
+      }
     }
 
     const subId = `sub_${product}_${user.id}`;
@@ -34,7 +49,7 @@ export async function POST(req: Request) {
     if (existing) {
       await db.update(subscriptions)
         .set({
-          tier,
+          tier: resolvedTier,
           status: 'active',
           currentPeriodEnd: expiresAt,
         })
@@ -44,7 +59,7 @@ export async function POST(req: Request) {
         id: subId,
         userId: user.id,
         product,
-        tier,
+        tier: resolvedTier,
         status: 'active',
         currentPeriodEnd: expiresAt,
         createdAt: new Date(),
@@ -53,10 +68,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Successfully upgraded ${product.toUpperCase()} to ${tier.toUpperCase()} tier!`,
+      message: `Successfully upgraded ${product.toUpperCase()} to ${resolvedTier.toUpperCase()} tier!`,
       subscription: {
         product,
-        tier,
+        tier: resolvedTier,
         status: 'active',
         currentPeriodEnd: expiresAt,
       }

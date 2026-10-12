@@ -220,8 +220,8 @@ export default function PricingPage() {
 
           {/* SUBTITLE BLOCK (UNIFIED HEIGHT: 36px) */}
           <div style={{ minHeight: '36px', display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.35 }}>
-              {billingCycle === "annual" ? "Billed annually ($39/mo) • Save 20%" : "Billed monthly ($49/mo) • Cancel anytime"}
+            <p style={{ fontSize: '0.72rem', color: '#93C5FD', margin: 0, lineHeight: 1.35 }}>
+              Pay What You Want • Unlocks at $49+ • Generous users can contribute more
             </p>
           </div>
 
@@ -237,7 +237,7 @@ export default function PricingPage() {
 
           <div style={{ marginTop: 'auto' }}>
             <Link href="/account/subscription?product=pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid var(--accent-primary)', color: '#93C5FD', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', fontWeight: 700 }}>
-              Subscribe to Pro ($49/mo) →
+              Unlock Pro ($49+) →
             </Link>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default function PricingPage() {
               </a>
             ) : (
               <Link href="/account/subscription?product=pureide" className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', fontSize: '0.82rem', padding: '0.75rem', display: 'block', width: '100%', boxSizing: 'border-box', fontWeight: 700 }}>
-                Subscribe to Enterprise ($149/mo) →
+                Unlock Enterprise ($149+) →
               </Link>
             )}
           </div>

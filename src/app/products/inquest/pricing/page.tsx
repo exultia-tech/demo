@@ -255,7 +255,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#67E8F9", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($468/yr) · 14-day free trial" : "Billed monthly ($49/mo) · Cancel anytime"}
+                Pay What You Want · Unlocks at $49+ · Generous contributors welcome
               </div>
             </div>
 
@@ -295,7 +295,7 @@ export default function InquestPricingPage() {
               cursor: "pointer",
               boxShadow: "0 0 20px rgba(6, 182, 212, 0.4)"
             }}>
-            Start 14-Day Pro Trial →
+            Unlock Investigator Pro ($49+) →
           </button>
         </div>
 
@@ -339,7 +339,7 @@ export default function InquestPricingPage() {
                 <span style={{ color: "#94A3B8", fontSize: "0.95rem" }}>/ month</span>
               </div>
               <div style={{ fontSize: "0.8rem", color: "#A78BFA", marginTop: "0.35rem", fontWeight: 600 }}>
-                {billingCycle === "annual" ? "Billed annually ($1,428/yr) · 5 team licenses" : "Billed monthly ($149/mo) · 5 team licenses"}
+                Pay What You Want · Unlocks at $149+ · Generous contributors welcome
               </div>
             </div>
 
@@ -378,7 +378,7 @@ export default function InquestPricingPage() {
               cursor: "pointer",
               transition: "all 0.15s ease"
             }}>
-            Deploy Newsroom Suite →
+            Unlock Enterprise ($149+) →
           </button>
         </div>
 

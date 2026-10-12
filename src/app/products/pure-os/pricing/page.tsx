@@ -73,9 +73,12 @@ export default function PureOSPricingPage() {
             MOST POPULAR
           </div>
           <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "#FBBF24" }}>Pro</h3>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "0.5rem", minHeight: "45px" }}>
             Advanced hardening and real-time threat sync for production.
           </p>
+          <div style={{ fontSize: "0.8rem", color: "#FBBF24", fontWeight: 700, marginBottom: "1rem" }}>
+            Pay What You Want · Unlocks at $49+
+          </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "2rem" }}>
             ${isAnnual ? "39" : "49"}
             <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: 400 }}>/mo</span>
@@ -103,16 +106,19 @@ export default function PureOSPricingPage() {
             </li>
           </ul>
           <Link href="/account/subscription?product=pureos" className="btn-primary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 700, background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", textDecoration: "none", textAlign: "center", display: "block", color: "white", boxSizing: "border-box" }}>
-            Subscribe to Pro ($49/mo) →
+            Unlock Pro ($49+) →
           </Link>
         </div>
 
         {/* ENTERPRISE TIER */}
         <div className="glass-card" style={{ padding: "2.5rem", borderRadius: "24px", display: "flex", flexDirection: "column" }}>
           <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Enterprise</h3>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", minHeight: "45px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "0.5rem", minHeight: "45px" }}>
             Custom golden images, private registry integration, and volume organization entitlements.
           </p>
+          <div style={{ fontSize: "0.8rem", color: "#A78BFA", fontWeight: 700, marginBottom: "1rem" }}>
+            Pay What You Want · Unlocks at $149+
+          </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "2rem" }}>
             ${isAnnual ? "119" : "149"}
             <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: 400 }}>/mo</span>
@@ -132,7 +138,7 @@ export default function PureOSPricingPage() {
             </li>
           </ul>
           <Link href="/account/subscription?product=pureos" className="btn-secondary" style={{ width: "100%", padding: "1rem", borderRadius: "12px", fontSize: "1rem", fontWeight: 700, textDecoration: "none", textAlign: "center", display: "block", color: "white", boxSizing: "border-box" }}>
-            Subscribe to Enterprise ($149/mo) →
+            Unlock Enterprise ($149+) →
           </Link>
         </div>
       </section>

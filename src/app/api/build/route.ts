@@ -43,13 +43,19 @@ export async function POST(req: NextRequest) {
     const safeLocale = (locale || 'en').replace(/[^a-zA-Z0-9\-_]/g, '').toLowerCase().trim();
     const safeVersion = (version || 'latest').replace(/[^a-zA-Z0-9\-._/]/g, '').trim();
 
-    // Check user entitlements
+    // Enforce mandatory user authentication for build execution
     const user = await getCurrentUser();
-    if (user) {
-      recordLicenseActivity(user.id, 'pureide', req, 'trigger_build').catch(() => {});
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in or create a free account to execute builds.' },
+        { status: 401 }
+      );
     }
+
+    recordLicenseActivity(user.id, 'pureide', req, 'trigger_build').catch(() => {});
+
     const isEnterprise = Boolean(
-      user?.role === 'admin' || user?.subscriptions?.some(
+      user.role === 'admin' || user.subscriptions?.some(
         s => s.status === 'active' && (s.tier.toLowerCase() === 'enterprise' || s.tier.toLowerCase() === 'developer')
       )
     );

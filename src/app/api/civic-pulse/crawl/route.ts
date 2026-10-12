@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlMunicipalEndpoint } from '@/lib/civic-pulse/liveCrawler';
 import { SearchQueryParams } from '@/lib/civic-pulse/agentEngine';
+import { getCurrentUser } from '@/lib/auth/session';
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in or create a free account to execute live crawler agents.' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const params: SearchQueryParams = {
       city: body.city || '',

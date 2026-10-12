@@ -61,9 +61,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (user) {
-      recordLicenseActivity(user.id, 'inquest', req, 'create_case').catch(() => {});
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in or create a free account to save cases.' },
+        { status: 401 }
+      );
     }
+    recordLicenseActivity(user.id, 'inquest', req, 'create_case').catch(() => {});
     const body = await req.json();
     const { title, agency, jurisdiction, foiaTrackingNumber, exemptionCodes, denialCategory, notes } = body;
 

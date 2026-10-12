@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 const REMEDIATION_CLASSES = [
   {
@@ -54,6 +55,7 @@ const FIREWALL_FORMATS = [
 ];
 
 export default function PraxisPage() {
+  const { user, openAuthModal } = useAuth();
   const [os, setOs] = useState('linux');
   const [cron, setCron] = useState(false);
   const [proxy, setProxy] = useState('');
@@ -152,6 +154,10 @@ export default function PraxisPage() {
   }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl]);
 
   const handleGenerate = async () => {
+    if (!user) {
+      openAuthModal("login");
+      return;
+    }
     setGenerating(true);
     try {
       const res = await fetch(`${baseUrl}/api/praxis/generate`, {
@@ -452,7 +458,7 @@ export default function PraxisPage() {
             boxShadow: selectedClasses.size > 0 ? '0 0 20px rgba(59,130,246,0.3)' : 'none',
             transition: 'all 0.2s ease',
           }}>
-            {generating ? '⏳ Compiling payload...' : '⚡ Generate One-Time Payload Link'}
+            {generating ? '⏳ Compiling payload...' : !user ? '🔒 Sign In to Generate Payload (Free)' : '⚡ Generate One-Time Payload Link'}
           </button>
         </div>
 

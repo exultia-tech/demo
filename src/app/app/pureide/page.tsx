@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 // Multi-IDE Types
 type IdeEngine = "vscode" | "theia" | "zed" | "neovim" | "jupyter";
@@ -306,6 +307,7 @@ type ActiveTab = "studio" | "blueprints" | "theme" | "policy" | "platforms" | "s
 type MarketplaceFilter = "ALL" | "COMMUNITY_VERIFIED" | "GRADE_A";
 
 export default function ConsolePage() {
+  const { user, openAuthModal } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>("studio");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [buildArtifactPath, setBuildArtifactPath] = useState<string | null>(null);
@@ -1945,6 +1947,10 @@ build_hardened_ide:
 
   // Build via API
   const startBuild = async () => {
+    if (!user) {
+      openAuthModal("login");
+      return;
+    }
     setBuildState("BUILDING");
     setBuildModalOpen(true);
     const currentChannels = ENGINE_CHANNELS[selectedEngine] || ENGINE_CHANNELS.vscode;
@@ -3173,6 +3179,11 @@ build_hardened_ide:
                       <>
                         <span className="animate-spin">⚙️</span>
                         <span>Compiling...</span>
+                      </>
+                    ) : !user ? (
+                      <>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>Sign In to Compile (Free)</span>
                       </>
                     ) : (
                       <>
@@ -4550,6 +4561,10 @@ build_hardened_ide:
                     <button 
                       className="btn-primary" 
                       onClick={() => {
+                        if (!user) {
+                          openAuthModal("login");
+                          return;
+                        }
                         const safeBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
                         const target = buildInstallerPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Setup.exe`;
                         const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
@@ -4563,6 +4578,10 @@ build_hardened_ide:
                     </button>
                     <button 
                       onClick={() => {
+                        if (!user) {
+                          openAuthModal("login");
+                          return;
+                        }
                         const safeBrand = (brandName || 'PureIDE').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim().replace(/\s+/g, '_') || 'PureIDE';
                         const target = buildArtifactPath || `${safeBrand}_${selectedEngine.toUpperCase()}_Portable.zip`;
                         const extList = cart.map(c => `${c.namespace}.${c.name}`).join(",");
@@ -4587,7 +4606,7 @@ build_hardened_ide:
                     onClick={startBuild}
                     style={{ padding: '0.65rem 1.25rem', background: `linear-gradient(135deg, ${brandColor}, var(--accent-secondary))`, border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
                   >
-                    Start Compilation Now
+                    {!user ? "Sign In to Start Compilation (Free)" : "Start Compilation Now"}
                   </button>
                 )}
               </div>

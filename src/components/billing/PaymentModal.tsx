@@ -35,7 +35,18 @@ export default function PaymentModal() {
     }
   }, [isPaymentModalOpen]);
 
+  const [customPrice, setCustomPrice] = useState<number>(paymentOptions?.price || 49);
+
+  useEffect(() => {
+    if (paymentOptions) {
+      setCustomPrice(paymentOptions.price || 49);
+    }
+  }, [paymentOptions]);
+
   if (!isPaymentModalOpen || !paymentOptions) return null;
+
+  const unlockedTier: "community" | "pro" | "enterprise" =
+    customPrice >= 149 ? "enterprise" : customPrice >= 49 ? "pro" : "community";
 
   // Process checkout via PayPal order creation and capture
   const handlePayPalCheckout = async () => {
@@ -49,9 +60,9 @@ export default function PaymentModal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           product: paymentOptions.product,
-          tier: paymentOptions.tier,
+          tier: unlockedTier,
           billingCycle: paymentOptions.billingCycle,
-          customPrice: paymentOptions.price,
+          customPrice: customPrice,
         }),
       });
 
@@ -70,8 +81,9 @@ export default function PaymentModal() {
         body: JSON.stringify({
           orderId: orderData.orderId,
           product: paymentOptions.product,
-          tier: paymentOptions.tier,
+          tier: unlockedTier,
           billingCycle: paymentOptions.billingCycle,
+          customPrice: customPrice,
         }),
       });
 
@@ -110,8 +122,10 @@ export default function PaymentModal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           product: paymentOptions.product,
-          tier: paymentOptions.tier,
+          tier: unlockedTier,
           billingCycle: paymentOptions.billingCycle,
+          customPrice: customPrice,
+          amount: customPrice,
         }),
       });
 
@@ -234,30 +248,134 @@ export default function PaymentModal() {
               </p>
             </div>
 
-            {/* Price Box */}
+            {/* Pay What You Want Contribution Box */}
             <div
               style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "14px",
-                padding: "1rem 1.25rem",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                background: "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: "16px",
+                padding: "1.15rem 1.25rem",
                 marginBottom: "1.25rem",
               }}
             >
-              <div>
-                <div style={{ fontSize: "0.82rem", color: "#94A3B8" }}>Total Due Today</div>
-                <div style={{ fontSize: "0.75rem", color: "#64748B" }}>
-                  Billed {paymentOptions.billingCycle === "annual" ? "Annually" : "Monthly"}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <div>
+                  <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>💝</span> Pay What You Want
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    Pro unlocks at $49 · Enterprise unlocks at $149
+                  </div>
+                </div>
+
+                {/* Amount input */}
+                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <span style={{ fontSize: "1.4rem", fontWeight: 800, color: "#38BDF8" }}>$</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={customPrice}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      setCustomPrice(isNaN(val) ? 0 : val);
+                    }}
+                    style={{
+                      width: "88px",
+                      fontSize: "1.4rem",
+                      fontWeight: 800,
+                      color: "#FFFFFF",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      border: "1px solid rgba(56, 189, 248, 0.4)",
+                      borderRadius: "8px",
+                      padding: "4px 8px",
+                      textAlign: "right",
+                      outline: "none",
+                    }}
+                  />
                 </div>
               </div>
-              <div style={{ fontSize: "1.85rem", fontWeight: 900, color: "#FFFFFF" }}>
-                ${paymentOptions.price}
-                <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>
-                  /{paymentOptions.billingCycle === "annual" ? "mo" : "mo"}
+
+              {/* Quick Presets */}
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "0.85rem" }}>
+                {[
+                  { label: "$25", value: 25, hint: "Supporter" },
+                  { label: "$49", value: 49, hint: "Pro" },
+                  { label: "$100", value: 100, hint: "Pro Backer" },
+                  { label: "$149", value: 149, hint: "Enterprise" },
+                  { label: "$250", value: 250, hint: "Sponsor" },
+                ].map((preset) => {
+                  const isSelected = customPrice === preset.value;
+                  return (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => setCustomPrice(preset.value)}
+                      style={{
+                        padding: "4px 10px",
+                        fontSize: "0.76rem",
+                        fontWeight: 700,
+                        borderRadius: "6px",
+                        border: isSelected ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.1)",
+                        background: isSelected ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.04)",
+                        color: isSelected ? "#38BDF8" : "#94A3B8",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      <span>{preset.label}</span>
+                      <span style={{ fontSize: "0.65rem", opacity: 0.75 }}>({preset.hint})</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Entitlement Status Banner */}
+              <div
+                style={{
+                  padding: "0.75rem 0.9rem",
+                  borderRadius: "10px",
+                  fontSize: "0.8rem",
+                  lineHeight: 1.4,
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "10px",
+                  background:
+                    unlockedTier === "enterprise"
+                      ? "linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)"
+                      : unlockedTier === "pro"
+                      ? "rgba(14, 165, 233, 0.15)"
+                      : "rgba(16, 185, 129, 0.12)",
+                  border:
+                    unlockedTier === "enterprise"
+                      ? "1px solid rgba(167, 139, 250, 0.4)"
+                      : unlockedTier === "pro"
+                      ? "1px solid rgba(56, 189, 248, 0.4)"
+                      : "1px solid rgba(52, 211, 153, 0.3)",
+                }}
+              >
+                <span style={{ fontSize: "1.2rem", lineHeight: 1 }}>
+                  {unlockedTier === "enterprise" ? "👑" : unlockedTier === "pro" ? "🚀" : "🎁"}
                 </span>
+                <div>
+                  <div style={{ fontWeight: 800, color: unlockedTier === "enterprise" ? "#FDE047" : unlockedTier === "pro" ? "#38BDF8" : "#34D399" }}>
+                    {unlockedTier === "enterprise"
+                      ? "Enterprise Entitlements Unlocked"
+                      : unlockedTier === "pro"
+                      ? "Pro Entitlements Unlocked"
+                      : "Community Supporter Tier"}
+                  </div>
+                  <div style={{ color: "#CBD5E1", fontSize: "0.75rem", marginTop: "2px" }}>
+                    {unlockedTier === "enterprise"
+                      ? "Full access to private cloud runners, unlimited builds, airgap containers, and multi-seat entitlements."
+                      : unlockedTier === "pro"
+                      ? `Full access to priority compiler engines, egress sandboxing, and automated SBOMs. (Contribute $${Math.max(0, 149 - customPrice)} more to unlock Enterprise!)`
+                      : `Generous supporter contribution. Pro entitlements unlock at $49 (add $${Math.max(0, 49 - customPrice)} more to unlock).`}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -393,7 +511,7 @@ export default function PaymentModal() {
                     ) : (
                       <>
                         <span style={{ fontStyle: "italic", fontWeight: 900 }}>PayPal</span>
-                        <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>Checkout →</span>
+                        <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>Checkout (${customPrice}) →</span>
                       </>
                     )}
                   </button>
@@ -560,7 +678,7 @@ export default function PaymentModal() {
                     gap: "0.5rem",
                   }}
                 >
-                  {isProcessing ? "Processing..." : `Subscribe Now ($${paymentOptions.price}) →`}
+                  {isProcessing ? "Processing..." : `Pay $${customPrice} & Activate ${unlockedTier.toUpperCase()} →`}
                 </button>
               </form>
             )}
