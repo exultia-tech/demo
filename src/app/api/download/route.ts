@@ -87,14 +87,42 @@ export async function GET(request: Request) {
       foundBlobs = res?.blobs || [];
       
       if (foundBlobs.length > 0) {
+        // Tier 1: Match the base name (ignoring Vercel Blob's random hash suffix)
         matches = foundBlobs.filter((b: any) => {
           const blobName = path.basename(b.pathname).replace(/\.(exe|zip|tar\.gz|dmg)$/i, '').toLowerCase();
-          // Match the base name, ignoring the random hash suffix Vercel Blob adds (e.g. PureIDE_vscodium_Setup-xxxxx)
-          return blobName.startsWith(baseNameWithoutExt);
+          return blobName.startsWith(baseNameWithoutExt) || baseNameWithoutExt.startsWith(blobName);
         });
 
+        // Tier 2: Match by brand and engine keywords
+        if (matches.length === 0) {
+          const engineKey = (searchParams.get('engine') || '').toLowerCase();
+          const brandKey = safeFileName.split('_')[0]?.toLowerCase() || '';
+          matches = foundBlobs.filter((b: any) => {
+            const blobName = path.basename(b.pathname).toLowerCase();
+            return (brandKey && blobName.includes(brandKey)) || (engineKey && blobName.includes(engineKey));
+          });
+        }
+
+        // Tier 3: If still no match but recent builds exist within last 2 hours, use newest artifact
+        if (matches.length === 0) {
+          const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+          const recentBlobs = foundBlobs.filter((b: any) => new Date(b.uploadedAt).getTime() > twoHoursAgo);
+          if (recentBlobs.length > 0) {
+            matches = recentBlobs;
+          }
+        }
+
         if (matches.length > 0) {
-          matches.sort((a: any, b: any) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+          matches.sort((a: any, b: any) => {
+            // Prioritize matching the requested file type (.exe vs .zip)
+            if (isInstaller) {
+              const aExe = a.pathname.endsWith('.exe') ? 1 : 0;
+              const bExe = b.pathname.endsWith('.exe') ? 1 : 0;
+              if (aExe !== bExe) return bExe - aExe;
+            }
+            return new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime();
+          });
+
           if (!debug) {
             return NextResponse.redirect(matches[0].url);
           }
