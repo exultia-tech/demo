@@ -160,21 +160,21 @@ jobs:
           retention-days: 7
 
       - name: Cache Artifact to Vercel Blob (Exultia CDN)
-        if: ${{ matrix.enable && secrets.BLOB_READ_WRITE_TOKEN != '' }}
+        if: ${{ matrix.enable }}
         env:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
         run: |
           npm install @vercel/blob
           node -e "
           (async () => {
+            const token = process.env.BLOB_READ_WRITE_TOKEN;
+            if (!token) {
+              console.log('Notice: BLOB_READ_WRITE_TOKEN not set in GitHub secrets, skipping Vercel Blob upload.');
+              process.exit(0);
+            }
             const { put } = require('@vercel/blob');
             const fs = require('fs');
             const path = require('path');
-            const token = process.env.BLOB_READ_WRITE_TOKEN;
-            if (!token) {
-              console.error('Error: BLOB_READ_WRITE_TOKEN is not defined in environment!');
-              process.exit(1);
-            }
             const files = fs.readdirSync('./dist').filter(f => f.endsWith('.zip') || f.endsWith('.exe') || f.endsWith('.dmg') || f.endsWith('.tar.gz'));
             console.log('Found dist files to upload:', files);
             for (const f of files) {
