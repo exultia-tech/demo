@@ -8,6 +8,20 @@ import { db, githubWorkflows } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 import { recordLicenseActivity } from '@/lib/licensing/audit';
 
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: NextRequest) {
+  return NextResponse.json({
+    isVercel: !!process.env.VERCEL,
+    hasGithubToken: !!process.env.GITHUB_TOKEN,
+    tokenPrefix: process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.substring(0, 4) + '...' : null,
+    githubOwner: process.env.GITHUB_OWNER || null,
+    githubRepo: process.env.GITHUB_REPO || null,
+    githubWorkflow: process.env.GITHUB_WORKFLOW || null,
+    hasBlobToken: !!process.env.BLOB_READ_WRITE_TOKEN,
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -49,8 +63,8 @@ export async function POST(req: NextRequest) {
     }
 
     const githubToken = customWorkflow?.personalAccessToken || process.env.GITHUB_TOKEN;
-    const githubOwner = customWorkflow?.owner || process.env.GITHUB_OWNER;
-    const githubRepo = customWorkflow?.repo || process.env.GITHUB_REPO;
+    const githubOwner = customWorkflow?.owner || process.env.GITHUB_OWNER || 'wstrika';
+    const githubRepo = customWorkflow?.repo || process.env.GITHUB_REPO || 'exultia';
     const workflowFile = customWorkflow?.workflowFile || process.env.GITHUB_WORKFLOW || 'build-ide.yml';
     const repoOpts = { owner: githubOwner, repo: githubRepo, token: githubToken };
 
@@ -223,6 +237,25 @@ export async function POST(req: NextRequest) {
     }
     if (telemetryUrl) {
       psArgs.push('-TelemetryUrl', telemetryUrl);
+    }
+
+    if (process.env.VERCEL) {
+      const stream = new ReadableStream({
+        start(controller) {
+          const encoder = new TextEncoder();
+          controller.enqueue(encoder.encode(`>>> [CRITICAL] Cloud Build Engine requires GITHUB_TOKEN configured in Vercel environment variables.\n`));
+          controller.enqueue(encoder.encode(`>>> [ERROR] GITHUB_TOKEN exists: ${!!githubToken}, GITHUB_OWNER: ${githubOwner}, GITHUB_REPO: ${githubRepo}\n`));
+          controller.enqueue(encoder.encode(`>>> [CRITICAL] Cloud build engine could not be dispatched. Build failed.\n`));
+          controller.close();
+        }
+      });
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Transfer-Encoding': 'chunked',
+          'Cache-Control': 'no-cache, no-transform',
+        },
+      });
     }
 
     const pwshExecutable = process.platform === 'win32' ? 'powershell.exe' : 'pwsh';
