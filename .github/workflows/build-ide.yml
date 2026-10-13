@@ -78,7 +78,7 @@ jobs:
       matrix:
         include:
           - os: windows
-            runner: windows-latest
+            runner: [self-hosted, Windows, X64, baremetal]
             artifact_ext: zip
             enable: ${{ inputs.target_os == 'windows' || inputs.target_os == 'all' }}
           - os: linux
@@ -149,6 +149,21 @@ jobs:
             $hash = Get-FileHash -Path $_.FullName -Algorithm SHA256
             Write-Host ">>> [CHECKSUM] $($_.Name) : $($hash.Hash)"
             "$($hash.Hash)  $($_.Name)" | Out-File -Append -FilePath "./dist/SHA256SUMS.txt" -Encoding utf8
+          }
+
+      - name: Deploy Artifacts to Baremetal NVMe Release CDN (C:\releases)
+        if: ${{ matrix.enable && matrix.os == 'windows' }}
+        shell: pwsh
+        run: |
+          if (Test-Path "C:\releases") {
+            Write-Host ">>> [RELEASE STORAGE] Deploying compiled binaries to C:\releases for $0-egress distribution..."
+            Get-ChildItem -Path "./dist" -File | ForEach-Object {
+              Copy-Item -Path $_.FullName -Destination "C:\releases\$($_.Name)" -Force
+              Write-Host ">>> [DEPLOYED] $($_.Name) ($([math]::Round($_.Length / 1MB, 2)) MB) -> C:\releases\$($_.Name)"
+            }
+            Write-Host ">>> [RELEASE STORAGE] Deployment complete! Accessible at https://download.exultia.tech"
+          } else {
+            Write-Host ">>> [RELEASE STORAGE] Notice: C:\releases not found on this runner, skipping local storage copy."
           }
 
       - name: Upload Release Artifacts

@@ -84,7 +84,60 @@ export async function GET(request: Request) {
     }
     const debug = searchParams.get('debug') === '1' || searchParams.get('debug') === 'true';
 
-    // 4. In cloud production environments, check Vercel Blob for the compiled artifact
+    // 3.5. Primary High-Performance CDN: Exultia Baremetal Release Storage (Cloudflare Tunnel -> 48-Core Precision)
+    const cdnUrl = process.env.EXULTIA_RELEASE_CDN_URL || 'https://download.exultia.tech';
+    let cdnMatchUrl: string | null = null;
+    try {
+      if (safeFileName) {
+        const headRes = await fetch(`${cdnUrl}/${encodeURIComponent(safeFileName)}`, {
+          method: 'HEAD',
+          cache: 'no-store',
+          signal: AbortSignal.timeout(3000)
+        });
+        if (headRes.ok) {
+          cdnMatchUrl = `${cdnUrl}/${encodeURIComponent(safeFileName)}`;
+          if (!debug) {
+            return NextResponse.redirect(cdnMatchUrl);
+          }
+        }
+      }
+
+      if (!cdnMatchUrl) {
+        const manifestRes = await fetch(`${cdnUrl}/`, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(3000)
+        });
+        if (manifestRes.ok) {
+          const manifest = await manifestRes.json();
+          const files: Array<{ name: string; size: number; mtime: string }> = manifest.files || [];
+          if (files.length > 0) {
+            const baseNameWithoutExt = safeFileName.replace(/\.(exe|zip|tar\.gz|dmg)$/i, '').toLowerCase();
+            let cdnMatches = files.filter(f => {
+              const fn = f.name.toLowerCase();
+              return fn.includes(baseNameWithoutExt) || (buildId && fn.includes(buildId));
+            });
+            if (cdnMatches.length > 0) {
+              if (isInstaller) {
+                const exe = cdnMatches.find(f => f.name.endsWith('.exe'));
+                if (exe) {
+                  cdnMatchUrl = `${cdnUrl}/${encodeURIComponent(exe.name)}`;
+                  if (!debug) return NextResponse.redirect(cdnMatchUrl);
+                }
+              }
+              if (!cdnMatchUrl) {
+                cdnMatches.sort((a, b) => new Date(b.mtime).getTime() - new Date(a.mtime).getTime());
+                cdnMatchUrl = `${cdnUrl}/${encodeURIComponent(cdnMatches[0].name)}`;
+                if (!debug) return NextResponse.redirect(cdnMatchUrl);
+              }
+            }
+          }
+        }
+      }
+    } catch (cdnErr) {
+      console.warn('Exultia Baremetal CDN check skipped:', cdnErr);
+    }
+
+    // 4. Secondary Cloud Fallback: Check Vercel Blob for compiled artifacts
     let blobListError: string | null = null;
     let foundBlobs: any[] = [];
     let matches: any[] = [];
