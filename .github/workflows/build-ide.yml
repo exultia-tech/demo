@@ -186,8 +186,9 @@ jobs:
           path: ./dist/*
           retention-days: 7
 
-      - name: Cache Artifact to Vercel Blob (Exultia CDN)
+      - name: Cache Artifact to Vercel Blob (Optional Secondary CDN Fallback)
         if: ${{ matrix.enable }}
+        continue-on-error: true
         env:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
         run: |
@@ -208,12 +209,16 @@ jobs:
               const fullPath = path.join('./dist', f);
               const stat = fs.statSync(fullPath);
               console.log('Uploading ' + f + ' (' + stat.size + ' bytes) to Vercel Blob...');
-              const res = await put(f, fs.readFileSync(fullPath), { access: 'public', token });
-              console.log('Successfully uploaded to Vercel Blob:', res.url);
+              try {
+                const res = await put(f, fs.readFileSync(fullPath), { access: 'public', token });
+                console.log('Successfully uploaded to Vercel Blob:', res.url);
+              } catch (blobErr) {
+                console.warn('Vercel Blob upload skipped for ' + f + ' (store may be suspended or rate-limited):', blobErr.message);
+              }
             }
-            console.log('All artifacts successfully cached to Vercel Blob.');
+            console.log('Vercel Blob cache step complete.');
           })().catch(err => {
-            console.error('Vercel Blob upload failed:', err);
-            process.exit(1);
+            console.warn('Notice: Vercel Blob step encountered an error but will not block pipeline (primary CDN is baremetal download.exultia.tech):', err.message);
+            process.exit(0);
           });
           "
