@@ -163,19 +163,20 @@ jobs:
             "$($hash.Hash)  $($_.Name)" | Out-File -Append -FilePath "./dist/SHA256SUMS.txt" -Encoding utf8
           }
 
-      - name: Deploy Artifacts to Baremetal NVMe Release CDN (C:\releases)
+      - name: Deploy Artifacts to Baremetal Release CDN (D:\releases on RAID 1)
         if: ${{ matrix.enable && matrix.os == 'windows' }}
         shell: pwsh
         run: |
-          if (Test-Path "C:\releases") {
-            Write-Host ">>> [RELEASE STORAGE] Deploying compiled binaries to C:\releases for $0-egress distribution..."
+          $targetReleaseDir = if (Test-Path "D:\releases") { "D:\releases" } elseif (Test-Path "C:\releases") { "C:\releases" } else { $null }
+          if ($targetReleaseDir) {
+            Write-Host ">>> [RELEASE STORAGE] Deploying compiled binaries to $targetReleaseDir on RAID 1 (exultia_prod) for $0-egress distribution..."
             Get-ChildItem -Path "./dist" -File | ForEach-Object {
-              Copy-Item -Path $_.FullName -Destination "C:\releases\$($_.Name)" -Force
-              Write-Host ">>> [DEPLOYED] $($_.Name) ($([math]::Round($_.Length / 1MB, 2)) MB) -> C:\releases\$($_.Name)"
+              Copy-Item -Path $_.FullName -Destination "$targetReleaseDir\$($_.Name)" -Force
+              Write-Host ">>> [DEPLOYED] $($_.Name) ($([math]::Round($_.Length / 1MB, 2)) MB) -> $targetReleaseDir\$($_.Name)"
             }
             Write-Host ">>> [RELEASE STORAGE] Deployment complete! Accessible at https://download.exultia.tech"
           } else {
-            Write-Host ">>> [RELEASE STORAGE] Notice: C:\releases not found on this runner, skipping local storage copy."
+            Write-Host ">>> [RELEASE STORAGE] Notice: Release directory not found on this runner, skipping local storage copy."
           }
 
       - name: Upload Release Artifacts
