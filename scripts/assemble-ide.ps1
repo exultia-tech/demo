@@ -378,8 +378,10 @@ if ($TargetOS -eq "windows" -or $TargetOS -eq "macos") {
     $IsccCmd = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
     if (-not $IsccCmd) {
         $PossiblePaths = @(
+            "C:\inno\ISCC.exe",
             "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
-            "C:\Program Files\Inno Setup 6\ISCC.exe"
+            "C:\Program Files\Inno Setup 6\ISCC.exe",
+            "C:\Users\joeangry\inno\ISCC.exe"
         )
         foreach ($p in $PossiblePaths) {
             if (Test-Path $p) { $IsccCmd = $p; break }

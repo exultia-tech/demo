@@ -122,7 +122,9 @@ function cleanStepName(name: string): string | null {
   if (l.includes('hardening') || l.includes('assembly')) return 'Executing deterministic security hardening';
   if (l.includes('sbom') || l.includes('cyclonedx')) return 'Generating cryptographic SBOM (CycloneDX 1.5)';
   if (l.includes('checksum') || l.includes('sha-256')) return 'Computing cryptographic SHA-256 integrity checksums';
-  if (l.includes('release') || l.includes('blob') || l.includes('cdn')) return 'Packaging and optimizing distribution binaries';
+  if (l.includes('baremetal') || l.includes('c:\\releases') || l.includes('releases')) return 'Deploying to baremetal NVMe release storage';
+  if (l.includes('upload release')) return 'Publishing distribution release bundle';
+  if (l.includes('blob') || l.includes('cdn')) return 'Syncing distribution cache';
   return name.replace(/\s*\(.*\)/, '').trim();
 }
 
@@ -171,11 +173,11 @@ function cleanStepName(name: string): string | null {
             const steps = await getWorkflowJobSteps(run.id, repoOpts);
             for (const step of steps) {
               const key = `${step.number}:${step.name}:${step.status}:${step.conclusion}`;
-              if (key !== lastSeenStep && step.status !== 'queued') {
+              if (key !== lastSeenStep && step.status !== 'queued' && step.conclusion !== 'skipped') {
                 lastSeenStep = key;
                 const cleanName = cleanStepName(step.name);
                 if (cleanName) {
-                  const icon = step.conclusion === 'success' ? '✓' : step.status === 'in_progress' ? '⏳' : '•';
+                  const icon = step.conclusion === 'success' ? '✓' : step.conclusion === 'failure' ? '❌' : step.status === 'in_progress' ? '⏳' : '•';
                   emit(`>>> ${icon} ${cleanName}\n`);
                 }
               }
@@ -188,7 +190,7 @@ function cleanStepName(name: string): string | null {
                 emit(`>>> Windows Setup installer generated: ${safeBrand}_${engine.toUpperCase()}_Setup.exe\n`);
                 emit(`>>> [SUCCESS] Build complete! [${safeBrand}] (${engine.toUpperCase()}) package ready for download.\n`);
               } else {
-                emit(`\n>>> [ERROR] Compilation terminated unexpectedly. Please retry.\n`);
+                emit(`\n>>> [ERROR] Compilation terminated (${currentRun.conclusion || 'failed'}). Please retry.\n`);
               }
               break;
             } else {

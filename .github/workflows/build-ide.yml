@@ -109,8 +109,20 @@ jobs:
         if: ${{ matrix.enable && matrix.os == 'windows' }}
         shell: pwsh
         run: |
-          choco install innosetup -y --no-progress
-          echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          if (Get-Command iscc.exe -ErrorAction SilentlyContinue) {
+            Write-Host ">>> Inno Setup Compiler already available in PATH."
+          } elseif (Test-Path "C:\inno\ISCC.exe") {
+            echo "C:\inno" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            Write-Host ">>> Added C:\inno to GITHUB_PATH."
+          } elseif (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe") {
+            echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            Write-Host ">>> Added Inno Setup 6 to GITHUB_PATH."
+          } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
+            choco install innosetup -y --no-progress
+            echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          } else {
+            Write-Host ">>> Notice: Inno Setup compiler not found; portable ZIP will be packaged without setup installer."
+          }
 
       - name: Execute Deterministic Hardening & Binary Assembly
         if: ${{ matrix.enable }}
