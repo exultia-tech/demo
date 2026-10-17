@@ -1,0 +1,149 @@
+{
+  "PDP-7 (1969)": {
+    "name": "PDP-7 (1969)",
+    "path": "/home/exultia/research-pdp7",
+    "fileCount": "105",
+    "passwdFiles": [],
+    "authSources": [],
+    "cryptUsage": []
+  },
+  "Research V1 (1972)": {
+    "name": "Research V1 (1972)",
+    "path": "/home/exultia/research-v1",
+    "fileCount": "39",
+    "passwdFiles": [],
+    "authSources": [],
+    "cryptUsage": [],
+    "samplePasswd": ""
+  },
+  "Research V2 (1972)": {
+    "name": "Research V2 (1972)",
+    "path": "/home/exultia/research-v2",
+    "fileCount": "120",
+    "passwdFiles": [],
+    "authSources": [
+      "/home/exultia/research-v2/cmd/login.s"
+    ],
+    "cryptUsage": []
+  },
+  "Research V3 (1973)": {
+    "name": "Research V3 (1973)",
+    "path": "/home/exultia/research-v3",
+    "fileCount": "319",
+    "passwdFiles": [
+      "/home/exultia/research-v3/man/man5/passwd.5",
+      "/home/exultia/research-v3/man/man1/passwd.1"
+    ],
+    "authSources": [
+      "/home/exultia/research-v3/man/man8/su.8",
+      "/home/exultia/research-v3/man/manx/login.7",
+      "/home/exultia/research-v3/man/man1/login.1"
+    ],
+    "cryptUsage": [
+      "/home/exultia/research-v3/man/man5/passwd.5:33:SEE ALSO\tlogin(I), crypt(III), passwd(I)",
+      "/home/exultia/research-v3/man/man0/index:10:\t   crypt(III): encrypt  according to a keyword",
+      "/home/exultia/research-v3/man/man0/index:144:\t\t\t        crypt(I): encrypt, decrypt a file",
+      "/home/exultia/research-v3/man/man0/index:145:\t\t\t        crypt(III): encrypt according to a keyword",
+      "/home/exultia/research-v3/man/man0/index:164:\t    crypt(I): encrypt,  decrypt a file"
+    ]
+  },
+  "Research V4 (1973)": {
+    "name": "Research V4 (1973)",
+    "path": "/home/exultia/research-v4",
+    "fileCount": "369",
+    "passwdFiles": [
+      "/home/exultia/research-v4/etc/passwd",
+      "/home/exultia/research-v4/man/man5/passwd.5",
+      "/home/exultia/research-v4/man/man1/passwd.1",
+      "/home/exultia/research-v4/usr/source/s2/passwd.s"
+    ],
+    "authSources": [
+      "/home/exultia/research-v4/man/man8/su.8",
+      "/home/exultia/research-v4/man/man1/login.1",
+      "/home/exultia/research-v4/usr/source/s2/su.c",
+      "/home/exultia/research-v4/usr/source/s1/login.c"
+    ],
+    "cryptUsage": [
+      "/home/exultia/research-v4/man/man3/crypt.3:10:char *crypt(key)",
+      "/home/exultia/research-v4/man/man5/passwd.5:37:login(I), crypt(III), passwd(I)",
+      "/home/exultia/research-v4/man/man0/ptxx:134:.xx \"\" \"crypt(III) password encoding\"",
+      "/home/exultia/research-v4/man/man0/ptxx:204:.xx \"crypt(III) password\" \"encoding\"",
+      "/home/exultia/research-v4/man/man0/ptxx:518:.xx \"crypt(III)\" \"password encoding\""
+    ],
+    "uidDef": "6:\tchar\tu_uid;"
+  },
+  "Research V5 (1974)": {
+    "name": "Research V5 (1974)",
+    "path": "/home/exultia/research-v5",
+    "fileCount": "82",
+    "passwdFiles": [
+      "/home/exultia/research-v5/etc/passwd",
+      "/home/exultia/research-v5/usr/source/s2/passwd.s"
+    ],
+    "authSources": [
+      "/home/exultia/research-v5/usr/source/s2/su.c",
+      "/home/exultia/research-v5/usr/source/s1/login.c"
+    ],
+    "cryptUsage": [
+      "/home/exultia/research-v5/usr/source/s2/su.c:32:\tq = crypt(password);",
+      "/home/exultia/research-v5/usr/source/s1/login.c:77:\t\tnamep = crypt(pwbuf);",
+      "/home/exultia/research-v5/usr/source/s4/crypt.s:2:/ cstring = crypt(key);"
+    ]
+  },
+  "Research V6 (1975)": {
+    "name": "Research V6 (1975)",
+    "path": "/home/exultia/research-v6",
+    "fileCount": "64",
+    "passwdFiles": [
+      "/home/exultia/research-v6/etc/passwd",
+      "/home/exultia/research-v6/usr/doc/man/man5/passwd.5",
+      "/home/exultia/research-v6/usr/doc/man/man1/passwd.1",
+      "/home/exultia/research-v6/usr/source/s2/passwd.c"
+    ],
+    "authSources": [
+      "/home/exultia/research-v6/usr/doc/man/man8/su.8",
+      "/home/exultia/research-v6/usr/doc/man/man1/login.1",
+      "/home/exultia/research-v6/usr/source/s2/su.c",
+      "/home/exultia/research-v6/usr/source/s1/login.c"
+    ],
+    "cryptUsage": [
+      "/home/exultia/research-v6/usr/doc/man/man3/crypt.3:10:char *crypt(key)",
+      "/home/exultia/research-v6/usr/source/s2/newgrp.c:92:\t\tp = crypt(name);",
+      "/home/exultia/research-v6/usr/source/s2/su.c:32:\tq = crypt(password);",
+      "/home/exultia/research-v6/usr/source/s2/passwd.c:91:\t\tp = crypt(argv[2]);",
+      "/home/exultia/research-v6/usr/source/s1/login.c:88:\t\tnamep = crypt(pwbuf);"
+    ],
+    "samplePasswd": "root::0:3::/:\ndaemon::1:1::/:\nbin::3:3::/bin:\nken::6:1::/usr/ken:",
+    "suVulnCode": ""
+  },
+  "Research V7 (1979)": {
+    "name": "Research V7 (1979)",
+    "path": "/home/exultia/research-v7",
+    "fileCount": "115",
+    "passwdFiles": [
+      "/home/exultia/research-v7/etc/passwd",
+      "/home/exultia/research-v7/usr/doc/password",
+      "/home/exultia/research-v7/usr/man/man3/getpass.3",
+      "/home/exultia/research-v7/usr/man/man5/passwd.5",
+      "/home/exultia/research-v7/usr/man/man1/passwd.1",
+      "/home/exultia/research-v7/usr/src/libc/stdio/getpass.c",
+      "/home/exultia/research-v7/usr/src/cmd/passwd.c",
+      "/home/exultia/research-v7/usr/src/cmd/lint/lpass2.c"
+    ],
+    "authSources": [
+      "/home/exultia/research-v7/usr/man/man1/su.1",
+      "/home/exultia/research-v7/usr/man/man1/login.1",
+      "/home/exultia/research-v7/usr/src/cmd/login.c",
+      "/home/exultia/research-v7/usr/src/cmd/su.c"
+    ],
+    "cryptUsage": [
+      "/home/exultia/research-v7/usr/man/man3/getpass.3:21:crypt(3)",
+      "/home/exultia/research-v7/usr/man/man3/crypt.3:5:.B char *crypt(key, salt)",
+      "/home/exultia/research-v7/usr/man/man3/crypt.3:13:.B encrypt(block, edflag)",
+      "/home/exultia/research-v7/usr/man/man5/passwd.5:53:getpwent(3), login(1), crypt(3), passwd(1), group(5)",
+      "/home/exultia/research-v7/usr/man/man5/group.5:37:newgrp(1), crypt(3), passwd(1), passwd(5)"
+    ],
+    "samplePasswd": "root:VwL97VCAx1Qhs:0:1::/:\ndaemon:x:1:1::/:\nsys::2:2::/usr/sys:\nbin::3:3::/bin:\nuucp::4:4::/usr/lib/uucp:/usr/lib/uucico\ndmr::7:3::/usr/dmr:",
+    "suCode": "char\t*getpass();\nchar\t**environ;\n\nmain(argc,argv)\nint\targc;\nchar\t**argv;\n{\n\tregister char **p;\n\tchar *nptr;\n--\n\tpassword = getpass(\"Password:\");\n\tif(badsw || (strcmp(pwd->pw_passwd, crypt(password, pwd->pw_passwd)) != 0)) {\n\t\tprintf(\"Sorry\\n\");\n\t\texit(2);\n\t}\n\nok:\n\tendpwent();\n\tsetgid(pwd->pw_gid);"
+  }
+}
