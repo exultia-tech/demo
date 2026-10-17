@@ -56,11 +56,16 @@ function SubscriptionContent() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
   
-  // Dual-mode slider state: product-relative ($0-$250) vs aggregate multipass ($0-$800)
+  // Multi-mode slider state:
+  // 1. Kinetic: host count slider (1 to 100 hosts)
+  // 2. Individual products: dollar amount slider ($0-$250)
+  // 3. MultiPass: aggregate suite slider ($0-$800)
   const [individualSliderAmount, setIndividualSliderAmount] = useState<number>(49);
   const [multipassSliderAmount, setMultipassSliderAmount] = useState<number>(196);
+  const [kineticHosts, setKineticHosts] = useState<number>(10);
 
   const isMultiPass = selectedProduct === "multipass";
+  const isKinetic = selectedProduct === "kinetic";
   const sliderAmount = isMultiPass ? multipassSliderAmount : individualSliderAmount;
   const setSliderAmount = (val: number) => {
     if (isMultiPass) {
@@ -179,12 +184,12 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation.",
+        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation. Free forever for 1 host.",
         features: [
-          "Single Workstation / Host Node",
+          "1 Active Workstation / Host Node Free Forever",
           "Standard Vantage CVE synchronization",
           "Manual hotfix inspection & verification",
-          "Community rollback recipes",
+          "Deterministic rollback recipes",
           "Local-first execution model"
         ],
         cta: "Current Free Tier",
@@ -193,12 +198,12 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Real-time streaming JSON/bash feed, zero-agent systemd daemon, and automated verification sentinel.",
+        priceMonthly: 4,
+        priceAnnual: 3,
+        description: "Autonomous patch streaming daemon, zero-agent systemd runner, and sub-second deterministic rollback engine. Billed per active host ($4/host/mo).",
         features: [
           "Everything in Community",
-          "Up to 25 Production Nodes / Servers",
+          "$4/host/mo ($3/host/mo billed annually)",
           "Autonomous patch streaming daemon",
           "Deterministic sub-second rollback engine",
           "Automated pre & post-flight sentinels",
@@ -210,16 +215,16 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
-        description: "Phased ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests.",
+        priceMonthly: 12,
+        priceAnnual: 10,
+        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($12/host/mo).",
         features: [
           "Everything in Pro",
-          "Unlimited Node Fleet Licensing",
+          "$12/host/mo ($10/host/mo billed annually)",
           "Phased multi-ring deployment orchestrator",
           "Cosign OIDC SLSA Level 3 signed manifests",
           "Emergency fleet-wide rollback orchestrator",
-          "Dedicated 24/7 patch verification SLA"
+          "Self-hosted automated test harness"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -250,7 +255,7 @@ function SubscriptionContent() {
           "Everything in Community",
           "Automated bash/ansible patching payloads",
           "SIEM webhook export formats (Splunk, QRadar)",
-          "Priority 12-hour support SLA"
+          "Automated compliance verification payload"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -265,7 +270,7 @@ function SubscriptionContent() {
           "Everything in Pro",
           "Organization Volume Entitlements (Fleet licenses)",
           "Custom internal compliance benchmarking",
-          "Dedicated priority incident engineer"
+          "Automated fleet audit runner"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -342,7 +347,7 @@ function SubscriptionContent() {
           "Everything in Community",
           "Institutional Volume Entitlements (Multi-seat)",
           "Dedicated Enterprise REST API endpoints",
-          "SSO SAML 2.0 integration & dedicated support"
+          "SSO SAML 2.0 integration & self-service admin API"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: true
@@ -404,7 +409,7 @@ function SubscriptionContent() {
         features: [
           "PureIDE Pro",
           "Vantage Pro",
-          "Kinetic Pro (Autonomous 25-node stream)",
+          "Kinetic Pro (Autonomous per-host patch stream)",
           "Inquest Pro",
           "Praxis Pro",
           "PureOS Pro",
@@ -418,17 +423,17 @@ function SubscriptionContent() {
         name: "MultiPass Enterprise",
         priceMonthly: 745,
         priceAnnual: 595,
-        description: "Organization-wide Enterprise-level access to the complete Exultia stack with dedicated priority support.",
+        description: "Organization-wide Enterprise-level access to the complete Exultia stack with self-hosted automation & 24/7 AI Support Agent.",
         features: [
           "PureIDE Enterprise",
           "Vantage Enterprise",
-          "Kinetic Enterprise (Unlimited fleet patch engine)",
+          "Kinetic Enterprise (Fleet-wide patch orchestrator)",
           "Inquest Enterprise",
           "Praxis Enterprise",
           "PureOS Enterprise",
           "Axiom Enterprise LMS API",
           "Cosign SLSA Level 3 signed manifests",
-          "Dedicated priority support engineer"
+          "24/7 AI Support Agent & automated self-hosted test suites"
         ],
         cta: "Unlock MultiPass Enterprise",
         isPopular: false
@@ -634,56 +639,127 @@ function SubscriptionContent() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 {isMultiPass ? (
                   <Sparkles size={20} color="#EC4899" />
+                ) : isKinetic ? (
+                  <Cpu size={20} color="#06B6D4" />
                 ) : (
                   <Zap size={20} color="#38BDF8" />
                 )}
                 <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
                   {isMultiPass 
                     ? "MultiPass Suite Aggregate Contribution Slider" 
+                    : isKinetic
+                    ? "Kinetic Managed Fleet Host Calculator"
                     : `${productMeta[selectedProduct].name} Pricing Threshold Slider`}
                 </h3>
                 <span style={{
                   fontSize: "0.68rem",
-                  background: isMultiPass ? "rgba(236, 72, 153, 0.2)" : "rgba(56, 189, 248, 0.15)",
-                  color: isMultiPass ? "#F472B6" : "#38BDF8",
-                  border: isMultiPass ? "1px solid rgba(236, 72, 153, 0.4)" : "1px solid rgba(56, 189, 248, 0.3)",
+                  background: isMultiPass ? "rgba(236, 72, 153, 0.2)" : isKinetic ? "rgba(6, 182, 212, 0.2)" : "rgba(56, 189, 248, 0.15)",
+                  color: isMultiPass ? "#F472B6" : isKinetic ? "#22D3EE" : "#38BDF8",
+                  border: isMultiPass ? "1px solid rgba(236, 72, 153, 0.4)" : isKinetic ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid rgba(56, 189, 248, 0.3)",
                   padding: "2px 8px",
                   borderRadius: "999px",
                   fontWeight: 700,
                   textTransform: "uppercase"
                 }}>
-                  {isMultiPass ? "Aggregate Suite Mode" : "Product-Relative Mode"}
+                  {isMultiPass ? "Aggregate Suite Mode" : isKinetic ? "Per-Host Licensing Mode" : "Product-Relative Mode"}
                 </span>
               </div>
               <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "6px 0 0 0", lineHeight: 1.45 }}>
                 {isMultiPass
                   ? "Aggregate suite pricing: Slide to set your bundled suite budget. MultiPass Pro ($196/mo) unlocks all Pro products; MultiPass Enterprise ($595/mo) unlocks the complete organization fleet stack."
+                  : isKinetic
+                  ? "Strictly per-host pricing: 1 host is free forever. Pro is $4/host/mo ($3 billed annually). Enterprise is $12/host/mo ($10 billed annually). Slide to select your fleet host count."
                   : `Product-relative pricing: Slide to set your budget specifically for ${productMeta[selectedProduct].name}. Tier thresholds unlock as the amount reaches the defined pricing for this product.`}
               </p>
             </div>
 
-            {/* Current Amount Callout */}
+            {/* Current Amount / Host Callout */}
             <div style={{
               display: "flex",
               alignItems: "center",
               gap: "8px",
               background: "rgba(0, 0, 0, 0.5)",
-              border: `1px solid ${isMultiPass ? "rgba(236, 72, 153, 0.4)" : "rgba(56, 189, 248, 0.4)"}`,
+              border: `1px solid ${isMultiPass ? "rgba(236, 72, 153, 0.4)" : isKinetic ? "rgba(6, 182, 212, 0.4)" : "rgba(56, 189, 248, 0.4)"}`,
               borderRadius: "10px",
               padding: "6px 14px"
             }}>
               <span style={{ fontSize: "0.82rem", color: "#94A3B8", fontWeight: 600 }}>
-                {isMultiPass ? "Suite Threshold:" : `${productMeta[selectedProduct].name}:`}
+                {isMultiPass ? "Suite Threshold:" : isKinetic ? "Fleet Capacity:" : `${productMeta[selectedProduct].name}:`}
               </span>
-              <span style={{ fontSize: "1.5rem", fontWeight: 900, color: isMultiPass ? "#F472B6" : "#38BDF8" }}>
-                ${sliderAmount}
+              <span style={{ fontSize: "1.5rem", fontWeight: 900, color: isMultiPass ? "#F472B6" : isKinetic ? "#22D3EE" : "#38BDF8" }}>
+                {isKinetic ? kineticHosts : `$${sliderAmount}`}
               </span>
-              <span style={{ fontSize: "0.8rem", color: "#64748B" }}>/mo</span>
+              <span style={{ fontSize: "0.8rem", color: "#64748B" }}>{isKinetic ? "hosts" : "/mo"}</span>
             </div>
           </div>
 
           {/* Range Slider Track */}
           {(() => {
+            if (isKinetic) {
+              const fillPercent = Math.min(100, Math.max(0, ((kineticHosts - 1) / 99) * 100));
+              const proRate = billingCycle === "annual" ? 3 : 4;
+              const entRate = billingCycle === "annual" ? 10 : 12;
+              const kineticTicks = [
+                { val: 1, label: "1 Host (Free)" },
+                { val: 5, label: `5 Hosts ($${5 * proRate}/mo)` },
+                { val: 10, label: `10 Hosts ($${10 * proRate}/mo)` },
+                { val: 25, label: `25 Hosts ($${25 * proRate}/mo)` },
+                { val: 50, label: `50 Hosts ($${50 * proRate}/mo)` },
+                { val: 100, label: `100 Hosts ($${100 * proRate}/mo)` }
+              ];
+
+              return (
+                <div style={{ position: "relative", marginBottom: "1.5rem", padding: "0.5rem 0" }}>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value={kineticHosts}
+                    onChange={(e) => setKineticHosts(parseInt(e.target.value, 10))}
+                    style={{
+                      width: "100%",
+                      height: "8px",
+                      borderRadius: "4px",
+                      background: `linear-gradient(to right, #06B6D4 0%, #3B82F6 ${fillPercent}%, rgba(255,255,255,0.1) ${fillPercent}%, rgba(255,255,255,0.1) 100%)`,
+                      outline: "none",
+                      cursor: "pointer",
+                      accentColor: "#06B6D4"
+                    }}
+                  />
+
+                  {/* Threshold Ticks */}
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "0.74rem", color: "#94A3B8", flexWrap: "wrap", gap: "6px" }}>
+                    {kineticTicks.map(t => (
+                      <button
+                        key={t.val}
+                        type="button"
+                        onClick={() => setKineticHosts(t.val)}
+                        style={{
+                          background: kineticHosts === t.val 
+                            ? "rgba(6, 182, 212, 0.2)"
+                            : "transparent",
+                          border: kineticHosts === t.val 
+                            ? "1px solid rgba(6, 182, 212, 0.5)"
+                            : "1px solid transparent",
+                          color: kineticHosts === t.val 
+                            ? "#22D3EE" 
+                            : "#64748B",
+                          borderRadius: "6px",
+                          padding: "3px 8px",
+                          cursor: "pointer",
+                          fontSize: "0.74rem",
+                          fontWeight: kineticHosts === t.val ? 700 : 500
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
             const sliderMax = isMultiPass ? 800 : 250;
             const fillPercent = Math.min(100, Math.max(0, (sliderAmount / sliderMax) * 100));
             const ticks = isMultiPass
@@ -757,8 +833,96 @@ function SubscriptionContent() {
             );
           })()}
 
-          {/* Entitlements Feedback: Aggregate Suite Matrix (MultiPass) vs Single Product Card (Individual) */}
-          {isMultiPass ? (
+          {/* Entitlements Feedback: MultiPass Suite Matrix vs Kinetic Host Matrix vs Single Product */}
+          {isKinetic ? (
+            <div style={{
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1px solid rgba(6, 182, 212, 0.3)",
+              borderRadius: "12px",
+              padding: "1rem"
+            }}>
+              {(() => {
+                const proRate = billingCycle === "annual" ? 3 : 4;
+                const entRate = billingCycle === "annual" ? 10 : 12;
+                const proTotal = kineticHosts * proRate;
+                const entTotal = kineticHosts * entRate;
+
+                return (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <KineticIcon size={18} glow={false} />
+                        <span style={{ fontSize: "0.92rem", fontWeight: 800, color: "#FFFFFF" }}>
+                          Kinetic Fleet Calculation ({kineticHosts} {kineticHosts === 1 ? "Host" : "Hosts"}):
+                        </span>
+                        <span style={{
+                          fontSize: "0.72rem",
+                          fontWeight: 800,
+                          color: "#22D3EE",
+                          background: "rgba(6, 182, 212, 0.15)",
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          border: "1px solid rgba(6, 182, 212, 0.4)",
+                          textTransform: "uppercase"
+                        }}>
+                          {kineticHosts === 1 ? "1 Host Free Forever" : `Pro: $${proTotal}/mo • Ent: $${entTotal}/mo`}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                        {kineticHosts === 1 ? (
+                          <span style={{ color: "#34D399", fontWeight: 700 }}>✓ 1 Workstation Host Free Forever</span>
+                        ) : (
+                          <span>Billed strictly per host • Zero grouped node buckets</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: "0.8rem", color: "#CBD5E1", marginBottom: "10px" }}>
+                      {kineticHosts === 1 
+                        ? "Community single-host tier includes Vantage CVE sync, manual hotfix recipes, and deterministic local rollbacks."
+                        : `Managing ${kineticHosts} hosts: Pro ($${proRate}/host/mo: $${proTotal}/mo) delivers autonomous zero-agent patch daemons & canaries. Enterprise ($${entRate}/host/mo: $${entTotal}/mo) adds multi-ring phased rollouts and SLSA Level 3 signed manifests.`}
+                    </div>
+
+                    {kineticHosts > 1 && (
+                      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "10px" }}>
+                        <button
+                          onClick={() => handlePlanSelect("pro", `Kinetic Pro (${kineticHosts} Hosts)`, proTotal)}
+                          style={{
+                            background: "rgba(6, 182, 212, 0.15)",
+                            border: "1px solid rgba(6, 182, 212, 0.4)",
+                            color: "#22D3EE",
+                            padding: "6px 14px",
+                            borderRadius: "8px",
+                            fontSize: "0.78rem",
+                            fontWeight: 700,
+                            cursor: "pointer"
+                          }}
+                        >
+                          Select Pro for {kineticHosts} Hosts (${proTotal}/mo) →
+                        </button>
+                        <button
+                          onClick={() => handlePlanSelect("enterprise", `Kinetic Enterprise (${kineticHosts} Hosts)`, entTotal)}
+                          style={{
+                            background: "rgba(192, 132, 252, 0.15)",
+                            border: "1px solid rgba(192, 132, 252, 0.4)",
+                            color: "#C084FC",
+                            padding: "6px 14px",
+                            borderRadius: "8px",
+                            fontSize: "0.78rem",
+                            fontWeight: 700,
+                            cursor: "pointer"
+                          }}
+                        >
+                          Select Enterprise for {kineticHosts} Hosts (${entTotal}/mo) →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          ) : isMultiPass ? (
             <div style={{
               background: "rgba(0, 0, 0, 0.35)",
               border: "1px solid rgba(236, 72, 153, 0.2)",
@@ -847,7 +1011,7 @@ function SubscriptionContent() {
 
                       <div style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
                         {isEnt ? (
-                          <span style={{ color: "#C084FC", fontWeight: 700 }}>✓ Organization Fleet &amp; SLA Unlocked</span>
+                          <span style={{ color: "#C084FC", fontWeight: 700 }}>✓ Organization Fleet &amp; Enterprise Stack Unlocked</span>
                         ) : isPro ? (
                           <span>Slide to <strong style={{ color: "#C084FC" }}>$149/mo</strong> to unlock Enterprise</span>
                         ) : isAxiom ? (
@@ -890,7 +1054,14 @@ function SubscriptionContent() {
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
             <button
               onClick={() => {
-                if (isMultiPass) {
+                if (isKinetic) {
+                  if (kineticHosts === 1) {
+                    handlePlanSelect("free", "Community (1 Host)", 0);
+                  } else {
+                    const proRate = billingCycle === "annual" ? 3 : 4;
+                    handlePlanSelect("pro", `Kinetic Pro (${kineticHosts} Hosts)`, kineticHosts * proRate);
+                  }
+                } else if (isMultiPass) {
                   if (sliderAmount === 0) {
                     handlePlanSelect("free", "Free Suite", 0);
                   } else if (sliderAmount >= 595) {
@@ -926,6 +1097,8 @@ function SubscriptionContent() {
                 borderRadius: "8px",
                 background: isMultiPass
                   ? "linear-gradient(135deg, #EC4899 0%, #A855F7 100%)"
+                  : isKinetic
+                  ? "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)"
                   : "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
                 color: isMultiPass ? "#FFFFFF" : "#041019",
                 fontWeight: 800,
@@ -937,7 +1110,11 @@ function SubscriptionContent() {
                   : "0 2px 12px rgba(6, 182, 212, 0.3)"
               }}
             >
-              {isMultiPass ? (
+              {isKinetic ? (
+                kineticHosts === 1
+                  ? "Activate Free Community Tier (1 Host Free) →"
+                  : `Activate Kinetic Pro (${kineticHosts} Hosts @ $${billingCycle === "annual" ? 3 : 4}/host: $${kineticHosts * (billingCycle === "annual" ? 3 : 4)}/mo) →`
+              ) : isMultiPass ? (
                 sliderAmount === 0 
                   ? "Activate Free Suite ($0/mo)" 
                   : sliderAmount >= 595
@@ -1077,34 +1254,57 @@ function SubscriptionContent() {
               </p>
 
               {/* Price */}
-              <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
-                  <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
-                  <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
-                    {price === 0 ? "forever" : "/mo"}
-                  </span>
-                  {price > 0 && billingCycle === "annual" && (
-                    <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "6px", fontWeight: 600 }}>
-                      billed annually
-                    </span>
-                  )}
-                </div>
-                <div style={{
-                  fontSize: "0.72rem",
-                  marginTop: "6px",
-                  padding: "4px 8px",
-                  borderRadius: "6px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontWeight: 700,
-                  background: sliderAmount >= price ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
-                  color: sliderAmount >= price ? "#34D399" : "#94A3B8",
-                  border: sliderAmount >= price ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255, 255, 255, 0.08)"
-                }}>
-                  {sliderAmount >= price ? "✓ ENABLED AT CURRENT THRESHOLD" : `REQUIRES THRESHOLD ≥ $${price}/MO`}
-                </div>
-              </div>
+              {(() => {
+                const finalPrice = isKinetic ? (plan.tier === "free" ? 0 : kineticHosts * price) : price;
+
+                return (
+                  <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+                      <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
+                      <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
+                        {price === 0 
+                          ? (isKinetic ? "forever (1 host free)" : "forever") 
+                          : (isKinetic ? "/host/mo" : "/mo")}
+                      </span>
+                      {price > 0 && billingCycle === "annual" && (
+                        <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "6px", fontWeight: 600 }}>
+                          billed annually
+                        </span>
+                      )}
+                    </div>
+
+                    {isKinetic && price > 0 && (
+                      <div style={{ fontSize: "0.82rem", color: "#38BDF8", fontWeight: 700, marginTop: "2px" }}>
+                        {kineticHosts} managed {kineticHosts === 1 ? "host" : "hosts"} total = ${finalPrice}/mo
+                      </div>
+                    )}
+
+                    <div style={{
+                      fontSize: "0.72rem",
+                      marginTop: "6px",
+                      padding: "4px 8px",
+                      borderRadius: "6px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      fontWeight: 700,
+                      background: isKinetic 
+                        ? (plan.tier === "free" ? "rgba(16, 185, 129, 0.15)" : "rgba(6, 182, 212, 0.15)")
+                        : sliderAmount >= price ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
+                      color: isKinetic
+                        ? (plan.tier === "free" ? "#34D399" : "#22D3EE")
+                        : sliderAmount >= price ? "#34D399" : "#94A3B8",
+                      border: isKinetic
+                        ? (plan.tier === "free" ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(6, 182, 212, 0.3)")
+                        : sliderAmount >= price ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255, 255, 255, 0.08)"
+                    }}>
+                      {isKinetic
+                        ? (plan.tier === "free" ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : `✓ CAPACITY: ${kineticHosts} HOSTS ($${finalPrice}/MO)`)
+                        : sliderAmount >= price ? "✓ ENABLED AT CURRENT THRESHOLD" : `REQUIRES THRESHOLD ≥ $${price}/MO`}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Features List */}
               <div style={{ marginBottom: "2rem", flex: 1 }}>
@@ -1122,28 +1322,41 @@ function SubscriptionContent() {
               </div>
 
               {/* Action Button */}
-              <button
-                disabled={isCurrent || isSwitchingFree}
-                onClick={() => handlePlanSelect(plan.tier, plan.name, price)}
-                className={isCurrent ? "" : "btn-primary"}
-                style={{
-                  width: "100%",
-                  padding: "0.85rem",
-                  fontSize: "0.92rem",
-                  fontWeight: 700,
-                  background: isCurrent 
-                    ? "rgba(255, 255, 255, 0.05)" 
-                    : plan.isPopular 
-                      ? productMeta[selectedProduct].bgGradient
-                      : undefined,
-                  border: isCurrent ? "1px solid rgba(255, 255, 255, 0.1)" : undefined,
-                  color: isCurrent ? "#64748B" : "#FFFFFF",
-                  cursor: isCurrent ? "default" : "pointer",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                {isCurrent ? "Current Plan" : (price === 0 ? "Select Free Tier" : `${plan.cta} →`)}
-              </button>
+              {(() => {
+                const finalPrice = isKinetic ? (plan.tier === "free" ? 0 : kineticHosts * price) : price;
+                const planLabel = isKinetic && plan.tier !== "free" ? `${plan.name} (${kineticHosts} Hosts)` : plan.name;
+
+                return (
+                  <button
+                    disabled={isCurrent || isSwitchingFree}
+                    onClick={() => handlePlanSelect(plan.tier, planLabel, finalPrice)}
+                    className={isCurrent ? "" : "btn-primary"}
+                    style={{
+                      width: "100%",
+                      padding: "0.85rem",
+                      fontSize: "0.92rem",
+                      fontWeight: 700,
+                      background: isCurrent 
+                        ? "rgba(255, 255, 255, 0.05)" 
+                        : plan.isPopular 
+                          ? productMeta[selectedProduct].bgGradient
+                          : undefined,
+                      border: isCurrent ? "1px solid rgba(255, 255, 255, 0.1)" : undefined,
+                      color: isCurrent ? "#64748B" : "#FFFFFF",
+                      cursor: isCurrent ? "default" : "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {isCurrent 
+                      ? "Current Plan" 
+                      : (price === 0 
+                        ? "Select Free Tier" 
+                        : isKinetic 
+                        ? `${plan.cta} (${kineticHosts} Hosts: $${finalPrice}/mo) →` 
+                        : `${plan.cta} →`)}
+                  </button>
+                );
+              })()}
             </div>
           );
         })}

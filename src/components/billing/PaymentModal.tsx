@@ -47,13 +47,14 @@ export default function PaymentModal() {
 
   const isMultiPass = paymentOptions.product === "multipass";
   const isAxiom = paymentOptions.product === "axiom";
-  const proThreshold = isMultiPass ? 196 : 49;
-  const enterpriseThreshold = isMultiPass ? 595 : 149;
+  const isKinetic = paymentOptions.product === "kinetic";
+  const proThreshold = isMultiPass ? 196 : isKinetic ? 4 : 49;
+  const enterpriseThreshold = isMultiPass ? 595 : isKinetic ? 12 : 149;
 
   const unlockedTier: "community" | "pro" | "enterprise" =
-    customPrice >= enterpriseThreshold
-      ? "enterprise"
-      : (!isAxiom && customPrice >= proThreshold)
+    paymentOptions.tier === "enterprise" || customPrice >= enterpriseThreshold
+      ? (paymentOptions.tier === "pro" && isKinetic ? "pro" : "enterprise")
+      : (!isAxiom && (paymentOptions.tier === "pro" || customPrice >= proThreshold))
       ? "pro"
       : "community";
 
@@ -253,7 +254,7 @@ export default function PaymentModal() {
                 {paymentOptions.planName}
               </h2>
               <p style={{ color: "#94A3B8", fontSize: "0.86rem", margin: 0 }}>
-                Instant activation with full feature access, API tokens, and priority support.
+                Instant activation with full feature access, API tokens, and automated sentinels.
               </p>
             </div>
 
@@ -275,6 +276,8 @@ export default function PaymentModal() {
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
                     {isMultiPass 
                       ? "Thresholds: MultiPass Pro at $196 · MultiPass Enterprise at $595"
+                      : isKinetic
+                      ? "Thresholds: 1 Host Free · Pro at $4/host/mo · Enterprise at $12/host/mo"
                       : isAxiom
                       ? "Thresholds: Community at $0 · Enterprise LMS API at $149"
                       : "Thresholds: Pro activates at $49 · Enterprise activates at $149"}
@@ -317,6 +320,12 @@ export default function PaymentModal() {
                   { label: "$350", value: 350, hint: "Team" },
                   { label: "$595", value: 595, hint: "MultiPass Enterprise" },
                   { label: "$800", value: 800, hint: "Fleet Sponsor" },
+                ] : isKinetic ? [
+                  { label: "$4", value: 4, hint: "1 Pro Host" },
+                  { label: "$20", value: 20, hint: "5 Pro Hosts" },
+                  { label: "$40", value: 40, hint: "10 Pro Hosts" },
+                  { label: "$100", value: 100, hint: "25 Pro Hosts" },
+                  { label: "$120", value: 120, hint: "10 Ent Hosts" },
                 ] : isAxiom ? [
                   { label: "$50", value: 50, hint: "Student Backer" },
                   { label: "$100", value: 100, hint: "Advocate" },
@@ -394,7 +403,7 @@ export default function PaymentModal() {
                   </div>
                   <div style={{ color: "#CBD5E1", fontSize: "0.75rem", marginTop: "2px" }}>
                     {unlockedTier === "enterprise"
-                      ? (isMultiPass ? "Full organization access across all Exultia products, airgap runners, and 24/7 priority incident response." : "Full access to private cloud runners, unlimited builds, airgap containers, and multi-seat entitlements.")
+                      ? (isMultiPass ? "Full organization access across all Exultia products, airgap runners, and automated self-hosted test suites." : "Full access to private cloud runners, unlimited builds, airgap containers, and multi-seat entitlements.")
                       : unlockedTier === "pro"
                       ? (isMultiPass ? `Full Pro-tier access across all 6 Exultia products. (Contribute $${Math.max(0, 595 - customPrice)} more to unlock MultiPass Enterprise!)` : `Full access to priority compiler engines, egress sandboxing, and automated SBOMs. (Contribute $${Math.max(0, enterpriseThreshold - customPrice)} more to unlock Enterprise!)`)
                       : `Generous supporter contribution. Pro entitlements unlock at $${proThreshold} (add $${Math.max(0, proThreshold - customPrice)} more to unlock).`}

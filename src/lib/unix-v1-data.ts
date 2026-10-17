@@ -205,6 +205,8 @@ export interface ExhaustivePdp11TestItem {
   tier1_remediation: string;
   rollback_command: string;
   verification_status: string;
+  pre_mode?: string;
+  post_mode?: string;
 }
 
 export const EXHAUSTIVE_PDP11_TEST_ITEMS: ExhaustivePdp11TestItem[] = [

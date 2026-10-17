@@ -32,14 +32,18 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
   }
 
   // SLA Deadline: 24h for CISA KEV/Critical, 72h for High, 14d for Medium
-  const pubDate = new Date(advisory.discoveredAt || new Date().toISOString());
+  const pubDate = new Date(advisory.publishedDate || (advisory as any).discoveredAt || new Date().toISOString());
   const slaHours = severity === 'CRITICAL' ? 24 : severity === 'HIGH' ? 72 : 336;
   const slaDate = new Date(pubDate.getTime() + slaHours * 3600 * 1000);
 
   // Affected packages
-  const packages = advisory.affectedPackages && advisory.affectedPackages.length > 0
-    ? advisory.affectedPackages
-    : [advisory.component || 'system-core'];
+  const rawPackages = (advisory as any).affectedPackages;
+  const targetProducts = advisory.affectedTargets?.map(t => t.product).filter(Boolean);
+  const packages = (rawPackages && rawPackages.length > 0)
+    ? rawPackages
+    : (targetProducts && targetProducts.length > 0)
+    ? targetProducts
+    : [(advisory as any).component || 'system-core'];
 
   // Identify category and generate tailored 3-tier remediations
   const domain = advisory.domainCategory || 'Operating Systems & Kernels';
@@ -126,7 +130,7 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
       changed_when: false`;
 
   // Synthetic deterministic cosign digest for SLSA Level 3
-  const hashSeed = `${primaryCve}:${advisory.uviId}:${advisory.discoveredAt}`;
+  const hashSeed = `${primaryCve}:${advisory.uviId}:${advisory.publishedDate || (advisory as any).discoveredAt || ''}`;
   let hashVal = 0;
   for (let i = 0; i < hashSeed.length; i++) {
     hashVal = (hashVal << 5) - hashVal + hashSeed.charCodeAt(i);
