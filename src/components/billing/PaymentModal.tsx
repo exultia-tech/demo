@@ -45,8 +45,17 @@ export default function PaymentModal() {
 
   if (!isPaymentModalOpen || !paymentOptions) return null;
 
+  const isMultiPass = paymentOptions.product === "multipass";
+  const isAxiom = paymentOptions.product === "axiom";
+  const proThreshold = isMultiPass ? 196 : 49;
+  const enterpriseThreshold = isMultiPass ? 595 : 149;
+
   const unlockedTier: "community" | "pro" | "enterprise" =
-    customPrice >= 149 ? "enterprise" : customPrice >= 49 ? "pro" : "community";
+    customPrice >= enterpriseThreshold
+      ? "enterprise"
+      : (!isAxiom && customPrice >= proThreshold)
+      ? "pro"
+      : "community";
 
   // Process checkout via PayPal order creation and capture
   const handlePayPalCheckout = async () => {
@@ -264,7 +273,11 @@ export default function PaymentModal() {
                     <span>⚡</span> Threshold-Based Tier Activation
                   </div>
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
-                    Thresholds: Pro activates at $49 · Enterprise activates at $149
+                    {isMultiPass 
+                      ? "Thresholds: MultiPass Pro at $196 · MultiPass Enterprise at $595"
+                      : isAxiom
+                      ? "Thresholds: Community at $0 · Enterprise LMS API at $149"
+                      : "Thresholds: Pro activates at $49 · Enterprise activates at $149"}
                   </div>
                 </div>
 
@@ -298,13 +311,24 @@ export default function PaymentModal() {
 
               {/* Quick Presets */}
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "0.85rem" }}>
-                {[
+                {(isMultiPass ? [
+                  { label: "$100", value: 100, hint: "Supporter" },
+                  { label: "$196", value: 196, hint: "MultiPass Pro" },
+                  { label: "$350", value: 350, hint: "Team" },
+                  { label: "$595", value: 595, hint: "MultiPass Enterprise" },
+                  { label: "$800", value: 800, hint: "Fleet Sponsor" },
+                ] : isAxiom ? [
+                  { label: "$50", value: 50, hint: "Student Backer" },
+                  { label: "$100", value: 100, hint: "Advocate" },
+                  { label: "$149", value: 149, hint: "Enterprise LMS" },
+                  { label: "$250", value: 250, hint: "Institution" },
+                ] : [
                   { label: "$25", value: 25, hint: "Supporter" },
                   { label: "$49", value: 49, hint: "Pro" },
                   { label: "$100", value: 100, hint: "Pro Backer" },
                   { label: "$149", value: 149, hint: "Enterprise" },
                   { label: "$250", value: 250, hint: "Sponsor" },
-                ].map((preset) => {
+                ]).map((preset) => {
                   const isSelected = customPrice === preset.value;
                   return (
                     <button
@@ -363,17 +387,17 @@ export default function PaymentModal() {
                 <div>
                   <div style={{ fontWeight: 800, color: unlockedTier === "enterprise" ? "#FDE047" : unlockedTier === "pro" ? "#38BDF8" : "#34D399" }}>
                     {unlockedTier === "enterprise"
-                      ? "Enterprise Entitlements Unlocked"
+                      ? (isMultiPass ? "MultiPass Enterprise Full Stack Unlocked" : "Enterprise Entitlements Unlocked")
                       : unlockedTier === "pro"
-                      ? "Pro Entitlements Unlocked"
+                      ? (isMultiPass ? "MultiPass Pro Suite Unlocked" : "Pro Entitlements Unlocked")
                       : "Community Supporter Tier"}
                   </div>
                   <div style={{ color: "#CBD5E1", fontSize: "0.75rem", marginTop: "2px" }}>
                     {unlockedTier === "enterprise"
-                      ? "Full access to private cloud runners, unlimited builds, airgap containers, and multi-seat entitlements."
+                      ? (isMultiPass ? "Full organization access across all Exultia products, airgap runners, and 24/7 priority incident response." : "Full access to private cloud runners, unlimited builds, airgap containers, and multi-seat entitlements.")
                       : unlockedTier === "pro"
-                      ? `Full access to priority compiler engines, egress sandboxing, and automated SBOMs. (Contribute $${Math.max(0, 149 - customPrice)} more to unlock Enterprise!)`
-                      : `Generous supporter contribution. Pro entitlements unlock at $49 (add $${Math.max(0, 49 - customPrice)} more to unlock).`}
+                      ? (isMultiPass ? `Full Pro-tier access across all 6 Exultia products. (Contribute $${Math.max(0, 595 - customPrice)} more to unlock MultiPass Enterprise!)` : `Full access to priority compiler engines, egress sandboxing, and automated SBOMs. (Contribute $${Math.max(0, enterpriseThreshold - customPrice)} more to unlock Enterprise!)`)
+                      : `Generous supporter contribution. Pro entitlements unlock at $${proThreshold} (add $${Math.max(0, proThreshold - customPrice)} more to unlock).`}
                   </div>
                 </div>
               </div>

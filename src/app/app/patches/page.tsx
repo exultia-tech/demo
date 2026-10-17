@@ -120,9 +120,31 @@ export default function PatchFeedConceptPage() {
           <span style={{ color: '#64748B' }}>/</span>
           <span style={{ color: '#22D3EE', fontSize: '0.88rem', fontWeight: 600 }}>Kinetic Patch Feed Concept</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(6, 182, 212, 0.12)', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '6px 14px', borderRadius: '9999px' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22D3EE', boxShadow: '0 0 10px #22D3EE' }} />
-          <span style={{ fontSize: '0.78rem', color: '#22D3EE', fontWeight: 600, letterSpacing: '0.04em' }}>ARCHITECTURE DESIGN LAB</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link
+            href="/account/subscription?product=kinetic"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(6, 182, 212, 0.15)',
+              border: '1px solid rgba(6, 182, 212, 0.4)',
+              padding: '6px 14px',
+              borderRadius: '9999px',
+              color: '#22D3EE',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Sparkles size={14} />
+            <span>Manage Plans &amp; Entitlements →</span>
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(6, 182, 212, 0.12)', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '6px 14px', borderRadius: '9999px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22D3EE', boxShadow: '0 0 10px #22D3EE' }} />
+            <span style={{ fontSize: '0.78rem', color: '#22D3EE', fontWeight: 600, letterSpacing: '0.04em' }}>ARCHITECTURE DESIGN LAB</span>
+          </div>
         </div>
       </div>
 
@@ -154,7 +176,7 @@ export default function PatchFeedConceptPage() {
             Enterprise security teams face a catastrophic 14–30 day Mean Time to Remediate (MTTR), while attackers weaponize exploits in under 48 hours. <strong>Exultia Kinetic</strong> transforms patch management from slow monthly maintenance into an automated, machine-executable stream of zero-downtime micro-mitigations.
           </p>
 
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Zap size={18} color="#22D3EE" />
               <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>&lt; 15 min</strong> Response Window</span>
@@ -171,6 +193,45 @@ export default function PatchFeedConceptPage() {
               <FileCheck2 size={18} color="#8B5CF6" />
               <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>SLSA L3</strong> Cryptographic Proof</span>
             </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Link
+              href="/account/subscription?product=kinetic"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+                color: '#000',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontWeight: 800,
+                fontSize: '0.88rem',
+                textDecoration: 'none',
+                boxShadow: '0 2px 12px rgba(6, 182, 212, 0.3)'
+              }}
+            >
+              <span>Explore Kinetic Plans &amp; Pricing →</span>
+            </Link>
+            <Link
+              href="/research"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#CBD5E1',
+                padding: '10px 18px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.88rem',
+                textDecoration: 'none'
+              }}
+            >
+              <span>Validation Testing Lab</span>
+            </Link>
           </div>
         </div>
       </div>

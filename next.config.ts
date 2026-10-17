@@ -17,6 +17,20 @@ const nextConfig: NextConfig = {
       { source: "/app/uvi/:path*", headers: antiFramingHeaders },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/products/kinetic/pricing",
+        destination: "/account/subscription?product=kinetic",
+        permanent: false,
+      },
+      {
+        source: "/products/kinetic",
+        destination: "/app/patches",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

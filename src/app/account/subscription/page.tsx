@@ -23,6 +23,7 @@ import {
 import { 
   PureIdeIcon, 
   VantageIcon, 
+  KineticIcon, 
   InquestIcon, 
   PraxisIcon, 
   PureOsIcon, 
@@ -30,7 +31,7 @@ import {
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "inquest" | "multipass";
+type ProductKey = "pureide" | "uvi" | "kinetic" | "praxis" | "pureos" | "axiom" | "inquest" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +47,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "inquest", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "kinetic", "praxis", "pureos", "axiom", "inquest", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -54,7 +55,20 @@ function SubscriptionContent() {
   );
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
-  const [sliderAmount, setSliderAmount] = useState<number>(49);
+  
+  // Dual-mode slider state: product-relative ($0-$250) vs aggregate multipass ($0-$800)
+  const [individualSliderAmount, setIndividualSliderAmount] = useState<number>(49);
+  const [multipassSliderAmount, setMultipassSliderAmount] = useState<number>(196);
+
+  const isMultiPass = selectedProduct === "multipass";
+  const sliderAmount = isMultiPass ? multipassSliderAmount : individualSliderAmount;
+  const setSliderAmount = (val: number) => {
+    if (isMultiPass) {
+      setMultipassSliderAmount(val);
+    } else {
+      setIndividualSliderAmount(val);
+    }
+  };
 
   useEffect(() => {
     const prod = searchParams.get("product") as ProductKey;
@@ -154,6 +168,58 @@ function SubscriptionContent() {
           "Organization Volume Entitlements",
           "Dedicated CISO advisory portal",
           "Unlimited unmetered API quotas"
+        ],
+        cta: "Upgrade to Enterprise",
+        isPopular: false
+      }
+    ],
+    kinetic: [
+      {
+        tier: "free",
+        name: "Community",
+        priceMonthly: 0,
+        priceAnnual: 0,
+        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation.",
+        features: [
+          "Single Workstation / Host Node",
+          "Standard Vantage CVE synchronization",
+          "Manual hotfix inspection & verification",
+          "Community rollback recipes",
+          "Local-first execution model"
+        ],
+        cta: "Current Free Tier",
+        isPopular: false
+      },
+      {
+        tier: "pro",
+        name: "Pro",
+        priceMonthly: 49,
+        priceAnnual: 39,
+        description: "Real-time streaming JSON/bash feed, zero-agent systemd daemon, and automated verification sentinel.",
+        features: [
+          "Everything in Community",
+          "Up to 25 Production Nodes / Servers",
+          "Autonomous patch streaming daemon",
+          "Deterministic sub-second rollback engine",
+          "Automated pre & post-flight sentinels",
+          "Live canary health monitoring"
+        ],
+        cta: "Upgrade to Pro",
+        isPopular: true
+      },
+      {
+        tier: "enterprise",
+        name: "Enterprise",
+        priceMonthly: 149,
+        priceAnnual: 119,
+        description: "Phased ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests.",
+        features: [
+          "Everything in Pro",
+          "Unlimited Node Fleet Licensing",
+          "Phased multi-ring deployment orchestrator",
+          "Cosign OIDC SLSA Level 3 signed manifests",
+          "Emergency fleet-wide rollback orchestrator",
+          "Dedicated 24/7 patch verification SLA"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -334,14 +400,15 @@ function SubscriptionContent() {
         name: "MultiPass Pro",
         priceMonthly: 196,
         priceAnnual: 156,
-        description: "Buy 4, get 1 free! Get individual Pro-level access to all five eligible Exultia products for the price of four.",
+        description: "Bundled multi-product access! Get individual Pro-level access across all eligible Exultia products.",
         features: [
           "PureIDE Pro",
           "Vantage Pro",
+          "Kinetic Pro (Autonomous 25-node stream)",
           "Inquest Pro",
           "Praxis Pro",
           "PureOS Pro",
-          "100% bundled 5-for-4 discount"
+          "100% bundled multi-product discount"
         ],
         cta: "Unlock MultiPass Pro",
         isPopular: true
@@ -351,15 +418,16 @@ function SubscriptionContent() {
         name: "MultiPass Enterprise",
         priceMonthly: 745,
         priceAnnual: 595,
-        description: "Buy 5, get 1 free! Organization-wide Enterprise-level access to all six Exultia products for the price of five.",
+        description: "Organization-wide Enterprise-level access to the complete Exultia stack with dedicated priority support.",
         features: [
           "PureIDE Enterprise",
           "Vantage Enterprise",
+          "Kinetic Enterprise (Unlimited fleet patch engine)",
           "Inquest Enterprise",
           "Praxis Enterprise",
           "PureOS Enterprise",
-          "Axiom Enterprise",
-          "100% bundled 6-for-5 discount",
+          "Axiom Enterprise LMS API",
+          "Cosign SLSA Level 3 signed manifests",
           "Dedicated priority support engineer"
         ],
         cta: "Unlock MultiPass Enterprise",
@@ -382,6 +450,13 @@ function SubscriptionContent() {
       icon: <VantageIcon size={18} glow={false} />,
       color: "#8B5CF6",
       bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
+    },
+    kinetic: {
+      name: "Kinetic",
+      subtitle: "Autonomous zero-downtime patch stream & deterministic rollback engine",
+      icon: <KineticIcon size={18} glow={false} />,
+      color: "#06B6D4",
+      bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
     },
     praxis: {
       name: "Praxis",
@@ -408,8 +483,8 @@ function SubscriptionContent() {
       name: "Inquest",
       subtitle: "Autonomous public records compliance & 9-exemption discovery vault",
       icon: <InquestIcon size={18} glow={false} />,
-      color: "#06B6D4",
-      bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
+      color: "#EC4899",
+      bgGradient: "linear-gradient(135deg, #EC4899, #DB2777)"
     },
     multipass: {
       name: "MultiPass",
@@ -544,24 +619,46 @@ function SubscriptionContent() {
         <div style={{
           marginTop: "1.75rem",
           background: "linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.95) 100%)",
-          border: "1px solid rgba(56, 189, 248, 0.3)",
+          border: `1px solid ${isMultiPass ? "rgba(236, 72, 153, 0.4)" : "rgba(56, 189, 248, 0.3)"}`,
           borderRadius: "18px",
           padding: "1.5rem 2rem",
           maxWidth: "960px",
           margin: "1.75rem auto 0 auto",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.1)"
+          boxShadow: isMultiPass 
+            ? "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(236, 72, 153, 0.15)"
+            : "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.1)"
         }}>
           {/* Header of Slider */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
-            <div style={{ textAlign: "left" }}>
+            <div style={{ textAlign: "left", maxWidth: "680px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Zap size={20} color="#38BDF8" />
+                {isMultiPass ? (
+                  <Sparkles size={20} color="#EC4899" />
+                ) : (
+                  <Zap size={20} color="#38BDF8" />
+                )}
                 <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                  Tier Threshold &amp; Entitlement Slider
+                  {isMultiPass 
+                    ? "MultiPass Suite Aggregate Contribution Slider" 
+                    : `${productMeta[selectedProduct].name} Pricing Threshold Slider`}
                 </h3>
+                <span style={{
+                  fontSize: "0.68rem",
+                  background: isMultiPass ? "rgba(236, 72, 153, 0.2)" : "rgba(56, 189, 248, 0.15)",
+                  color: isMultiPass ? "#F472B6" : "#38BDF8",
+                  border: isMultiPass ? "1px solid rgba(236, 72, 153, 0.4)" : "1px solid rgba(56, 189, 248, 0.3)",
+                  padding: "2px 8px",
+                  borderRadius: "999px",
+                  fontWeight: 700,
+                  textTransform: "uppercase"
+                }}>
+                  {isMultiPass ? "Aggregate Suite Mode" : "Product-Relative Mode"}
+                </span>
               </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "4px 0 0 0" }}>
-                Slide to set your contribution or target budget. As the dollar amount hits tier thresholds, corresponding products and features are automatically enabled.
+              <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "6px 0 0 0", lineHeight: 1.45 }}>
+                {isMultiPass
+                  ? "Aggregate suite pricing: Slide to set your bundled suite budget. MultiPass Pro ($196/mo) unlocks all Pro products; MultiPass Enterprise ($595/mo) unlocks the complete organization fleet stack."
+                  : `Product-relative pricing: Slide to set your budget specifically for ${productMeta[selectedProduct].name}. Tier thresholds unlock as the amount reaches the defined pricing for this product.`}
               </p>
             </div>
 
@@ -571,109 +668,254 @@ function SubscriptionContent() {
               alignItems: "center",
               gap: "8px",
               background: "rgba(0, 0, 0, 0.5)",
-              border: "1px solid rgba(56, 189, 248, 0.4)",
+              border: `1px solid ${isMultiPass ? "rgba(236, 72, 153, 0.4)" : "rgba(56, 189, 248, 0.4)"}`,
               borderRadius: "10px",
               padding: "6px 14px"
             }}>
-              <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 600 }}>Threshold:</span>
-              <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "#38BDF8" }}>${sliderAmount}</span>
+              <span style={{ fontSize: "0.82rem", color: "#94A3B8", fontWeight: 600 }}>
+                {isMultiPass ? "Suite Threshold:" : `${productMeta[selectedProduct].name}:`}
+              </span>
+              <span style={{ fontSize: "1.5rem", fontWeight: 900, color: isMultiPass ? "#F472B6" : "#38BDF8" }}>
+                ${sliderAmount}
+              </span>
               <span style={{ fontSize: "0.8rem", color: "#64748B" }}>/mo</span>
             </div>
           </div>
 
           {/* Range Slider Track */}
-          <div style={{ position: "relative", marginBottom: "1.5rem", padding: "0.5rem 0" }}>
-            <input
-              type="range"
-              min="0"
-              max="600"
-              step="1"
-              value={sliderAmount}
-              onChange={(e) => setSliderAmount(parseInt(e.target.value, 10))}
-              style={{
-                width: "100%",
-                height: "8px",
-                borderRadius: "4px",
-                background: `linear-gradient(to right, #38BDF8 0%, #818CF8 ${(sliderAmount / 600) * 100}%, rgba(255,255,255,0.1) ${(sliderAmount / 600) * 100}%, rgba(255,255,255,0.1) 100%)`,
-                outline: "none",
-                cursor: "pointer",
-                accentColor: "#38BDF8"
-              }}
-            />
+          {(() => {
+            const sliderMax = isMultiPass ? 800 : 250;
+            const fillPercent = Math.min(100, Math.max(0, (sliderAmount / sliderMax) * 100));
+            const ticks = isMultiPass
+              ? [
+                  { val: 0, label: "$0 Free Suite" },
+                  { val: 196, label: "$196 MultiPass Pro (All Pro Tiers)" },
+                  { val: 595, label: "$595 MultiPass Enterprise (Full Suite Stack)" }
+                ]
+              : selectedProduct === "axiom"
+              ? [
+                  { val: 0, label: "$0 Community" },
+                  { val: 149, label: "$149 Enterprise LMS" }
+                ]
+              : [
+                  { val: 0, label: "$0 Community" },
+                  { val: 49, label: "$49 Pro" },
+                  { val: 149, label: "$149 Enterprise" }
+                ];
 
-            {/* Threshold Ticks */}
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "0.74rem", color: "#94A3B8", flexWrap: "wrap", gap: "6px" }}>
-              {[
-                { val: 0, label: "$0 Community" },
-                { val: 49, label: "$49 Pro" },
-                { val: 149, label: "$149 Enterprise" },
-                { val: 196, label: "$196 MultiPass Pro" },
-                { val: 595, label: "$595 MultiPass Ent" }
-              ].map(t => (
-                <button
-                  key={t.val}
-                  type="button"
-                  onClick={() => setSliderAmount(t.val)}
+            return (
+              <div style={{ position: "relative", marginBottom: "1.5rem", padding: "0.5rem 0" }}>
+                <input
+                  type="range"
+                  min="0"
+                  max={sliderMax}
+                  step={isMultiPass ? 5 : 1}
+                  value={sliderAmount}
+                  onChange={(e) => setSliderAmount(parseInt(e.target.value, 10))}
                   style={{
-                    background: sliderAmount >= t.val ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                    border: sliderAmount >= t.val ? "1px solid rgba(56, 189, 248, 0.4)" : "1px solid transparent",
-                    color: sliderAmount >= t.val ? "#38BDF8" : "#64748B",
-                    borderRadius: "6px",
-                    padding: "3px 8px",
+                    width: "100%",
+                    height: "8px",
+                    borderRadius: "4px",
+                    background: isMultiPass
+                      ? `linear-gradient(to right, #EC4899 0%, #A855F7 ${fillPercent}%, rgba(255,255,255,0.1) ${fillPercent}%, rgba(255,255,255,0.1) 100%)`
+                      : `linear-gradient(to right, #38BDF8 0%, #818CF8 ${fillPercent}%, rgba(255,255,255,0.1) ${fillPercent}%, rgba(255,255,255,0.1) 100%)`,
+                    outline: "none",
                     cursor: "pointer",
-                    fontSize: "0.74rem",
-                    fontWeight: sliderAmount >= t.val ? 700 : 500
+                    accentColor: isMultiPass ? "#EC4899" : "#38BDF8"
                   }}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
+                />
 
-          {/* Live Unlocked Entitlements Matrix */}
-          <div style={{
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "12px",
-            padding: "1rem",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-            gap: "8px"
-          }}>
-            {[
-              { id: 'pureide', name: 'PureIDE', proMin: 49, entMin: 149 },
-              { id: 'uvi', name: 'Vantage', proMin: 49, entMin: 149 },
-              { id: 'inquest', name: 'Inquest', proMin: 49, entMin: 149 },
-              { id: 'praxis', name: 'Praxis', proMin: 49, entMin: 149 },
-              { id: 'pureos', name: 'PureOS', proMin: 49, entMin: 149 },
-              { id: 'axiom', name: 'Axiom', proMin: 149, entMin: 149 }
-            ].map(p => {
-              const isEnt = sliderAmount >= p.entMin;
-              const isPro = sliderAmount >= p.proMin;
-              const status = isEnt ? "Enterprise" : isPro ? "Pro" : "Community";
-              const color = isEnt ? "#C084FC" : isPro ? "#38BDF8" : "#34D399";
-              return (
-                <div key={p.id} style={{ background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px", padding: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "4px" }}>{p.name}</div>
-                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color, background: `${color}20`, padding: "2px 6px", borderRadius: "4px", border: `1px solid ${color}40`, textTransform: "uppercase" }}>
-                    {status}
-                  </span>
+                {/* Threshold Ticks */}
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "0.74rem", color: "#94A3B8", flexWrap: "wrap", gap: "6px" }}>
+                  {ticks.map(t => (
+                    <button
+                      key={t.val}
+                      type="button"
+                      onClick={() => setSliderAmount(t.val)}
+                      style={{
+                        background: sliderAmount >= t.val 
+                          ? (isMultiPass ? "rgba(236, 72, 153, 0.15)" : "rgba(56, 189, 248, 0.15)")
+                          : "transparent",
+                        border: sliderAmount >= t.val 
+                          ? (isMultiPass ? "1px solid rgba(236, 72, 153, 0.4)" : "1px solid rgba(56, 189, 248, 0.4)")
+                          : "1px solid transparent",
+                        color: sliderAmount >= t.val 
+                          ? (isMultiPass ? "#F472B6" : "#38BDF8") 
+                          : "#64748B",
+                        borderRadius: "6px",
+                        padding: "3px 8px",
+                        cursor: "pointer",
+                        fontSize: "0.74rem",
+                        fontWeight: sliderAmount >= t.val ? 700 : 500
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })()}
+
+          {/* Entitlements Feedback: Aggregate Suite Matrix (MultiPass) vs Single Product Card (Individual) */}
+          {isMultiPass ? (
+            <div style={{
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1px solid rgba(236, 72, 153, 0.2)",
+              borderRadius: "12px",
+              padding: "1rem"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#F472B6", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Sparkles size={14} /> MultiPass Aggregate Entitlements Matrix
+                </div>
+                <div style={{ fontSize: "0.74rem", color: sliderAmount >= 595 ? "#C084FC" : sliderAmount >= 196 ? "#38BDF8" : "#94A3B8", fontWeight: 600 }}>
+                  {sliderAmount >= 595 
+                    ? "Full Organization Enterprise Fleet Stack Unlocked (All Products)" 
+                    : sliderAmount >= 196 
+                    ? "MultiPass Pro Active Across All 6 Developer & Security Products" 
+                    : "Free Suite Tier Active (Slide to $196/mo to unlock MultiPass Pro)"}
+                </div>
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+                gap: "8px"
+              }}>
+                {[
+                  { id: 'pureide', name: 'PureIDE', proMin: 196, entMin: 595 },
+                  { id: 'uvi', name: 'Vantage', proMin: 196, entMin: 595 },
+                  { id: 'kinetic', name: 'Kinetic', proMin: 196, entMin: 595 },
+                  { id: 'inquest', name: 'Inquest', proMin: 196, entMin: 595 },
+                  { id: 'praxis', name: 'Praxis', proMin: 196, entMin: 595 },
+                  { id: 'pureos', name: 'PureOS', proMin: 196, entMin: 595 },
+                  { id: 'axiom', name: 'Axiom', proMin: 595, entMin: 595 }
+                ].map(p => {
+                  const isEnt = sliderAmount >= p.entMin;
+                  const isPro = sliderAmount >= p.proMin;
+                  const status = isEnt ? "Enterprise" : isPro ? "Pro" : "Community";
+                  const color = isEnt ? "#C084FC" : isPro ? "#38BDF8" : "#34D399";
+                  return (
+                    <div key={p.id} style={{ background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px", padding: "8px", textAlign: "center" }}>
+                      <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "4px" }}>{p.name}</div>
+                      <span style={{ fontSize: "0.68rem", fontWeight: 800, color, background: `${color}20`, padding: "2px 6px", borderRadius: "4px", border: `1px solid ${color}40`, textTransform: "uppercase" }}>
+                        {status}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* Dedicated Single Product Relative Entitlement Feedback */
+            <div style={{
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              padding: "1rem"
+            }}>
+              {(() => {
+                const isAxiom = selectedProduct === "axiom";
+                const isEnt = sliderAmount >= 149;
+                const isPro = !isAxiom && sliderAmount >= 49;
+                const tierName = isEnt ? "Enterprise" : isPro ? "Pro" : "Community";
+                const tierColor = isEnt ? "#C084FC" : isPro ? "#38BDF8" : "#34D399";
+                const activePlan = plans[selectedProduct].find(p => p.tier === (isEnt ? "enterprise" : isPro ? "pro" : "free")) || plans[selectedProduct][0];
+
+                return (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {productMeta[selectedProduct].icon}
+                        <span style={{ fontSize: "0.92rem", fontWeight: 800, color: "#FFFFFF" }}>
+                          {productMeta[selectedProduct].name} Entitlement Status:
+                        </span>
+                        <span style={{
+                          fontSize: "0.72rem",
+                          fontWeight: 800,
+                          color: tierColor,
+                          background: `${tierColor}20`,
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          border: `1px solid ${tierColor}40`,
+                          textTransform: "uppercase"
+                        }}>
+                          {tierName} TIER ({sliderAmount >= (isEnt ? 149 : isPro ? 49 : 0) ? "UNLOCKED" : "PENDING"})
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                        {isEnt ? (
+                          <span style={{ color: "#C084FC", fontWeight: 700 }}>✓ Organization Fleet &amp; SLA Unlocked</span>
+                        ) : isPro ? (
+                          <span>Slide to <strong style={{ color: "#C084FC" }}>$149/mo</strong> to unlock Enterprise</span>
+                        ) : isAxiom ? (
+                          <span>Slide to <strong style={{ color: "#C084FC" }}>$149/mo</strong> to unlock Enterprise LMS API</span>
+                        ) : (
+                          <span>Slide to <strong style={{ color: "#38BDF8" }}>$49/mo</strong> to unlock Pro</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: "0.8rem", color: "#CBD5E1", marginBottom: "10px" }}>
+                      {activePlan.description}
+                    </div>
+
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {activePlan.features.slice(0, 4).map((f, i) => (
+                        <span key={i} style={{
+                          fontSize: "0.72rem",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          color: "#E2E8F0",
+                          border: "1px solid rgba(255, 255, 255, 0.1)",
+                          padding: "2px 8px",
+                          borderRadius: "6px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}>
+                          <Check size={11} color={tierColor} />
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {/* Action Trigger Button */}
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
             <button
               onClick={() => {
-                if (sliderAmount === 0) {
-                  handlePlanSelect("free", "Community", 0);
-                } else if (sliderAmount >= 149) {
-                  handlePlanSelect("enterprise", "Enterprise Tier", sliderAmount);
+                if (isMultiPass) {
+                  if (sliderAmount === 0) {
+                    handlePlanSelect("free", "Free Suite", 0);
+                  } else if (sliderAmount >= 595) {
+                    handlePlanSelect("enterprise", "MultiPass Enterprise", sliderAmount);
+                  } else if (sliderAmount >= 196) {
+                    handlePlanSelect("pro", "MultiPass Pro", sliderAmount);
+                  } else {
+                    handlePlanSelect("pro", "MultiPass Supporter", sliderAmount);
+                  }
+                } else if (selectedProduct === "axiom") {
+                  if (sliderAmount >= 149) {
+                    handlePlanSelect("enterprise", "Axiom Enterprise LMS", sliderAmount);
+                  } else {
+                    handlePlanSelect("free", "Community", 0);
+                  }
                 } else {
-                  handlePlanSelect("pro", "Pro Tier", sliderAmount);
+                  if (sliderAmount === 0) {
+                    handlePlanSelect("free", "Community", 0);
+                  } else if (sliderAmount >= 149) {
+                    handlePlanSelect("enterprise", `${productMeta[selectedProduct].name} Enterprise`, sliderAmount);
+                  } else if (sliderAmount >= 49) {
+                    handlePlanSelect("pro", `${productMeta[selectedProduct].name} Pro`, sliderAmount);
+                  } else {
+                    handlePlanSelect("free", "Community", 0);
+                  }
                 }
               }}
               style={{
@@ -682,18 +924,32 @@ function SubscriptionContent() {
                 gap: "8px",
                 padding: "0.7rem 1.5rem",
                 borderRadius: "8px",
-                background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
-                color: "#041019",
+                background: isMultiPass
+                  ? "linear-gradient(135deg, #EC4899 0%, #A855F7 100%)"
+                  : "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
+                color: isMultiPass ? "#FFFFFF" : "#041019",
                 fontWeight: 800,
                 fontSize: "0.88rem",
                 border: "none",
                 cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(6, 182, 212, 0.3)"
+                boxShadow: isMultiPass 
+                  ? "0 2px 14px rgba(236, 72, 153, 0.4)" 
+                  : "0 2px 12px rgba(6, 182, 212, 0.3)"
               }}
             >
-              {sliderAmount === 0 
-                ? "Activate Community Tier ($0/mo)" 
-                : `Activate Plan at $${sliderAmount}/mo →`}
+              {isMultiPass ? (
+                sliderAmount === 0 
+                  ? "Activate Free Suite ($0/mo)" 
+                  : sliderAmount >= 595
+                  ? `Unlock MultiPass Enterprise at $${sliderAmount}/mo →`
+                  : sliderAmount >= 196
+                  ? `Unlock MultiPass Pro at $${sliderAmount}/mo →`
+                  : `Activate MultiPass Supporter at $${sliderAmount}/mo →`
+              ) : (
+                sliderAmount === 0 
+                  ? `Activate Free Community Tier ($0/mo)` 
+                  : `Activate ${productMeta[selectedProduct].name} at $${sliderAmount}/mo →`
+              )}
             </button>
           </div>
         </div>

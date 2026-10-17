@@ -69,8 +69,13 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
+  const isKineticContext = !isIsolated && (
+    pathname.startsWith("/app/patches") ||
+    pathname.startsWith("/products/kinetic")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
 
   // Active subscription helper
   const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
@@ -154,7 +159,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -818,6 +823,33 @@ export default function Navbar() {
                 className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
                 style={{ fontWeight: 600 }}>
                 Inquest Workspace
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION: KINETIC SUBMENU */}
+          {isKineticContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <KineticIcon size={16} glow={false} />
+                Kinetic
+              </span>
+
+              <Link 
+                href="/app/patches" 
+                className={`submenu-link ${pathname === "/app/patches" ? "active-cyan" : ""}`}>
+                Patch Stream &amp; Canary
+              </Link>
+              <Link 
+                href="/account/subscription?product=kinetic" 
+                className="submenu-link"
+                style={{ color: "#22D3EE", fontWeight: 700 }}>
+                Plans &amp; Pricing
+              </Link>
+              <Link 
+                href="/research" 
+                className="submenu-link">
+                Testing Rig
               </Link>
             </div>
           )}

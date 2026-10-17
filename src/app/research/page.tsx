@@ -1272,6 +1272,51 @@ dmr::2:1::/usr/dmr:
                 </div>
               ))}
             </div>
+
+            {/* Action Bar Linking to Kinetic Stream & Subscription */}
+            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: 'rgba(0, 0, 0, 0.25)', padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(6, 182, 212, 0.2)' }}>
+              <div style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                Deploying to live production clusters? Manage your node licenses and SLSA Level 3 signed manifests.
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Link
+                  href="/app/patches"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: '#22D3EE',
+                    background: 'rgba(6, 182, 212, 0.12)',
+                    border: '1px solid rgba(6, 182, 212, 0.3)',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Launch Live Stream Console →</span>
+                </Link>
+                <Link
+                  href="/account/subscription?product=kinetic"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: '#000',
+                    background: '#22D3EE',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <Sparkles size={13} />
+                  <span>View Kinetic Pricing &amp; Plans →</span>
+                </Link>
+              </div>
+            </div>
           </div>
         )}
 
