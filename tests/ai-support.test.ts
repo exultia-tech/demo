@@ -37,8 +37,8 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
     it('should explain the strictly per-host pricing model with 1 host free forever', () => {
       const res = AiSupportEngine.processQuery('How does Kinetic pricing work?');
       expect(res.topic).toBe('kinetic-pricing');
-      expect(res.reply).toMatch(/\$4\s*\/host\/mo/i);
-      expect(res.reply).toMatch(/\$12\s*\/host\/mo/i);
+      expect(res.reply).toMatch(/\$49\s*\/host\/mo/i);
+      expect(res.reply).toMatch(/\$149\s*\/host\/mo/i);
       expect(res.reply).toMatch(/1 Workstation \/ Host Node Free Forever/i);
       expect(res.reply).toMatch(/zero grouped node locks|no arbitrary/i);
     });
@@ -50,20 +50,20 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
 
     it('should dynamically calculate exact monthly costs for 10 hosts', () => {
       const res = AiSupportEngine.processQuery('Calculate price for 10 hosts on Kinetic');
-      expect(res.reply).toContain('$40/mo'); // 10 * 4
-      expect(res.reply).toContain('$120/mo'); // 10 * 12
+      expect(res.reply).toContain('$490/mo'); // 10 * 49
+      expect(res.reply).toContain('$1490/mo'); // 10 * 149
     });
 
     it('should dynamically calculate exact monthly costs for 50 hosts', () => {
       const res = AiSupportEngine.processQuery('How much would 50 servers cost on Kinetic?');
-      expect(res.reply).toContain('$200/mo'); // 50 * 4
-      expect(res.reply).toContain('$600/mo'); // 50 * 12
+      expect(res.reply).toContain('$2450/mo'); // 50 * 49
+      expect(res.reply).toContain('$7450/mo'); // 50 * 149
     });
 
     it('should dynamically calculate exact monthly costs for 100 hosts', () => {
       const res = AiSupportEngine.processQuery('What is the fee for 100 nodes on Kinetic?');
-      expect(res.reply).toContain('$400/mo'); // 100 * 4
-      expect(res.reply).toContain('$1200/mo'); // 100 * 12
+      expect(res.reply).toContain('$4900/mo'); // 100 * 49
+      expect(res.reply).toContain('$14900/mo'); // 100 * 149
     });
   });
 
@@ -147,7 +147,7 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.topic).toBe('kinetic-pricing');
-      expect(data.reply).toContain('$4 /host/mo');
+      expect(data.reply).toContain('$49 /host/mo');
       expect(Array.isArray(data.suggestions)).toBe(true);
     });
 

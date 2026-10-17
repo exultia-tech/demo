@@ -198,12 +198,12 @@ function SubscriptionContent() {
       {
         tier: "pro",
         name: "Pro",
-        priceMonthly: 4,
-        priceAnnual: 3,
-        description: "Autonomous patch streaming daemon, zero-agent systemd runner, and sub-second deterministic rollback engine. Billed per active host ($4/host/mo).",
+        priceMonthly: 49,
+        priceAnnual: 39,
+        description: "Autonomous patch streaming daemon, zero-agent systemd runner, and sub-second deterministic rollback engine. Billed per active host ($49/host/mo).",
         features: [
           "Everything in Community",
-          "$4/host/mo ($3/host/mo billed annually)",
+          "$49/host/mo ($39/host/mo billed annually)",
           "Autonomous patch streaming daemon",
           "Deterministic sub-second rollback engine",
           "Automated pre & post-flight sentinels",
@@ -215,12 +215,12 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 12,
-        priceAnnual: 10,
-        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($12/host/mo).",
+        priceMonthly: 149,
+        priceAnnual: 119,
+        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($149/host/mo).",
         features: [
           "Everything in Pro",
-          "$12/host/mo ($10/host/mo billed annually)",
+          "$149/host/mo ($119/host/mo billed annually)",
           "Phased multi-ring deployment orchestrator",
           "Cosign OIDC SLSA Level 3 signed manifests",
           "Emergency fleet-wide rollback orchestrator",
@@ -668,7 +668,7 @@ function SubscriptionContent() {
                 {isMultiPass
                   ? "Aggregate suite pricing: Slide to set your bundled suite budget. MultiPass Pro ($196/mo) unlocks all Pro products; MultiPass Enterprise ($595/mo) unlocks the complete organization fleet stack."
                   : isKinetic
-                  ? "Strictly per-host pricing: 1 host is free forever. Pro is $4/host/mo ($3 billed annually). Enterprise is $12/host/mo ($10 billed annually). Slide to select your fleet host count."
+                  ? "Strictly per-host pricing: 1 host is free forever. Pro is $49/host/mo ($39 billed annually). Enterprise is $149/host/mo ($119 billed annually). Slide to select your fleet host count."
                   : `Product-relative pricing: Slide to set your budget specifically for ${productMeta[selectedProduct].name}. Tier thresholds unlock as the amount reaches the defined pricing for this product.`}
               </p>
             </div>
@@ -697,8 +697,8 @@ function SubscriptionContent() {
           {(() => {
             if (isKinetic) {
               const fillPercent = Math.min(100, Math.max(0, ((kineticHosts - 1) / 99) * 100));
-              const proRate = billingCycle === "annual" ? 3 : 4;
-              const entRate = billingCycle === "annual" ? 10 : 12;
+              const proRate = billingCycle === "annual" ? 39 : 49;
+              const entRate = billingCycle === "annual" ? 119 : 149;
               const kineticTicks = [
                 { val: 1, label: "1 Host (Free)" },
                 { val: 5, label: `5 Hosts ($${5 * proRate}/mo)` },
@@ -842,8 +842,8 @@ function SubscriptionContent() {
               padding: "1rem"
             }}>
               {(() => {
-                const proRate = billingCycle === "annual" ? 3 : 4;
-                const entRate = billingCycle === "annual" ? 10 : 12;
+                const proRate = billingCycle === "annual" ? 39 : 49;
+                const entRate = billingCycle === "annual" ? 119 : 149;
                 const proTotal = kineticHosts * proRate;
                 const entTotal = kineticHosts * entRate;
 
@@ -1058,7 +1058,7 @@ function SubscriptionContent() {
                   if (kineticHosts === 1) {
                     handlePlanSelect("free", "Community (1 Host)", 0);
                   } else {
-                    const proRate = billingCycle === "annual" ? 3 : 4;
+                    const proRate = billingCycle === "annual" ? 39 : 49;
                     handlePlanSelect("pro", `Kinetic Pro (${kineticHosts} Hosts)`, kineticHosts * proRate);
                   }
                 } else if (isMultiPass) {
@@ -1113,7 +1113,7 @@ function SubscriptionContent() {
               {isKinetic ? (
                 kineticHosts === 1
                   ? "Activate Free Community Tier (1 Host Free) →"
-                  : `Activate Kinetic Pro (${kineticHosts} Hosts @ $${billingCycle === "annual" ? 3 : 4}/host: $${kineticHosts * (billingCycle === "annual" ? 3 : 4)}/mo) →`
+                  : `Activate Kinetic Pro (${kineticHosts} Hosts @ $${billingCycle === "annual" ? 39 : 49}/host: $${kineticHosts * (billingCycle === "annual" ? 39 : 49)}/mo) →`
               ) : isMultiPass ? (
                 sliderAmount === 0 
                   ? "Activate Free Suite ($0/mo)" 

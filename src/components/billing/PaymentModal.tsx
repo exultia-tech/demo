@@ -48,8 +48,8 @@ export default function PaymentModal() {
   const isMultiPass = paymentOptions.product === "multipass";
   const isAxiom = paymentOptions.product === "axiom";
   const isKinetic = paymentOptions.product === "kinetic";
-  const proThreshold = isMultiPass ? 196 : isKinetic ? 4 : 49;
-  const enterpriseThreshold = isMultiPass ? 595 : isKinetic ? 12 : 149;
+  const proThreshold = isMultiPass ? 196 : 49;
+  const enterpriseThreshold = isMultiPass ? 595 : 149;
 
   const unlockedTier: "community" | "pro" | "enterprise" =
     paymentOptions.tier === "enterprise" || customPrice >= enterpriseThreshold
@@ -277,7 +277,7 @@ export default function PaymentModal() {
                     {isMultiPass 
                       ? "Thresholds: MultiPass Pro at $196 · MultiPass Enterprise at $595"
                       : isKinetic
-                      ? "Thresholds: 1 Host Free · Pro at $4/host/mo · Enterprise at $12/host/mo"
+                      ? "Thresholds: 1 Host Free · Pro at $49/host/mo · Enterprise at $149/host/mo"
                       : isAxiom
                       ? "Thresholds: Community at $0 · Enterprise LMS API at $149"
                       : "Thresholds: Pro activates at $49 · Enterprise activates at $149"}
@@ -321,11 +321,11 @@ export default function PaymentModal() {
                   { label: "$595", value: 595, hint: "MultiPass Enterprise" },
                   { label: "$800", value: 800, hint: "Fleet Sponsor" },
                 ] : isKinetic ? [
-                  { label: "$4", value: 4, hint: "1 Pro Host" },
-                  { label: "$20", value: 20, hint: "5 Pro Hosts" },
-                  { label: "$40", value: 40, hint: "10 Pro Hosts" },
-                  { label: "$100", value: 100, hint: "25 Pro Hosts" },
-                  { label: "$120", value: 120, hint: "10 Ent Hosts" },
+                  { label: "$49", value: 49, hint: "1 Pro Host" },
+                  { label: "$98", value: 98, hint: "2 Pro Hosts" },
+                  { label: "$149", value: 149, hint: "1 Ent Host" },
+                  { label: "$245", value: 245, hint: "5 Pro Hosts" },
+                  { label: "$490", value: 490, hint: "10 Pro Hosts" },
                 ] : isAxiom ? [
                   { label: "$50", value: 50, hint: "Student Backer" },
                   { label: "$100", value: 100, hint: "Advocate" },

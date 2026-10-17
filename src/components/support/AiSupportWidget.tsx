@@ -46,7 +46,7 @@ export default function AiSupportWidget() {
 
 Welcome! I am Exultia's **24/7 autonomous support agent**. Because Exultia is operated as an independent **solo-engineer security lab**, I handle routine technical questions, installation commands, host count calculations, and configuration troubleshooting instantly.
 
-- **Kinetic Pricing:** 1 host free forever, Pro is $4/host/mo, Enterprise is $12/host/mo.
+- **Kinetic Pricing:** 1 host free forever, Pro is $49/host/mo, Enterprise is $149/host/mo.
 - **Zero Human SLAs:** All tools are self-service, deterministic, and self-hosted.
 - **Rollbacks:** Sub-second atomic recovery via \`sudo kinetic rollback\`.
 

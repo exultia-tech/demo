@@ -82,13 +82,13 @@ If you encounter reproducible bugs, you can file an issue on our GitHub reposito
       let calculationText = '';
       if (hosts && hosts > 0) {
         if (hosts === 1) {
-          calculationText = `\n\n#### 🧮 Fleet Estimate for 1 Host:\n- **Community Tier:** **$0/mo** (Free forever for 1 workstation host!)\n- **Pro Tier:** **$4/mo** ($3/mo billed annually)\n- **Enterprise Tier:** **$12/mo** ($10/mo billed annually)`;
+          calculationText = `\n\n#### 🧮 Fleet Estimate for 1 Host:\n- **Community Tier:** **$0/mo** (Free forever for 1 workstation host!)\n- **Pro Tier:** **$49/mo** ($39/mo billed annually)\n- **Enterprise Tier:** **$149/mo** ($119/mo billed annually)`;
         } else {
-          const proMonthly = hosts * 4;
-          const proAnnual = hosts * 3;
-          const entMonthly = hosts * 12;
-          const entAnnual = hosts * 10;
-          calculationText = `\n\n#### 🧮 Fleet Estimate for ${hosts} Hosts:\n- **Kinetic Pro:** **$${proMonthly}/mo** (or $${proAnnual}/mo billed annually at $3/host)\n- **Kinetic Enterprise:** **$${entMonthly}/mo** (or $${entAnnual}/mo billed annually at $10/host)\n*Note: Zero grouped bucket minimums—you pay strictly for your exact host count.*`;
+          const proMonthly = hosts * 49;
+          const proAnnual = hosts * 39;
+          const entMonthly = hosts * 149;
+          const entAnnual = hosts * 119;
+          calculationText = `\n\n#### 🧮 Fleet Estimate for ${hosts} Hosts:\n- **Kinetic Pro:** **$${proMonthly}/mo** (or $${proAnnual}/mo billed annually at $39/host)\n- **Kinetic Enterprise:** **$${entMonthly}/mo** (or $${entAnnual}/mo billed annually at $119/host)\n*Note: Zero grouped bucket minimums—you pay strictly for your exact host count.*`;
         }
       }
 
@@ -102,8 +102,8 @@ Kinetic uses **transparent, linear per-host licensing** with **zero grouped node
 | Tier | Monthly Rate | Annual Rate | Included Scope |
 | :--- | :--- | :--- | :--- |
 | **Community** | **$0** | **$0** | **1 Workstation / Host Node Free Forever** with Vantage CVE sync & manual hotfix verification |
-| **Pro** | **$4 /host/mo** | **$3 /host/mo** | Autonomous systemd patch daemon, live canary monitoring & sub-second deterministic rollbacks |
-| **Enterprise** | **$12 /host/mo** | **$10 /host/mo** | Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), SLSA Level 3 signed manifests & fleet rollback orchestrator |${calculationText}
+| **Pro** | **$49 /host/mo** | **$39 /host/mo** | Autonomous systemd patch daemon, live canary monitoring & sub-second deterministic rollbacks |
+| **Enterprise** | **$149 /host/mo** | **$119 /host/mo** | Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), SLSA Level 3 signed manifests & fleet rollback orchestrator |${calculationText}
 
 #### Why Per-Host?
 As a solo-engineered project, we believe in fair, predictable software licensing. You scale up or down based on your active production fleet size.
@@ -328,7 +328,7 @@ Exultia provides security engineering tools designed for solo operators, securit
 
 1. **[PureIDE](/products/pure-ide):** Zero-telemetry developer workstation compiler with kernel sandboxing and real-time egress firewall.
 2. **[Vantage (UVI)](/app/uvi):** Universal vulnerability feed synchronizing 110+ global registries (CISA KEV, NVD, GitHub Security Lab, historical UNIX CVEs).
-3. **[Kinetic](/account/subscription?product=kinetic):** Autonomous zero-downtime hotfix stream and sub-second deterministic rollback engine ($4/host/mo Pro, 1 host free forever).
+3. **[Kinetic](/account/subscription?product=kinetic):** Autonomous zero-downtime hotfix stream and sub-second deterministic rollback engine ($49/host/mo Pro, 1 host free forever).
 4. **[Praxis](/app/praxis):** Surgical CVE remediation compiler translating raw advisories into hardened bash scripts and Ansible playbooks.
 5. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
 6. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
@@ -352,7 +352,7 @@ Exultia provides security engineering tools designed for solo operators, securit
 Hello! I am Exultia's autonomous technical support agent. Because Exultia is run as a focused **solo-operator engineering project**, I am here 24/7 to provide instant answers without putting our solo maintainer on the hook for routine inquiries.
 
 Here is what I can help you with immediately:
-- **Kinetic Per-Host Licensing:** 1 host free forever, Pro is $4/host/mo, Enterprise is $12/host/mo. (Ask me to calculate your fleet size!)
+- **Kinetic Per-Host Licensing:** 1 host free forever, Pro is $49/host/mo, Enterprise is $149/host/mo. (Ask me to calculate your fleet size!)
 - **Kinetic Daemon Installation:** Step-by-step \`curl\` bootstrap, systemd configuration, and distro support.
 - **Deterministic Rollbacks:** \`sudo kinetic rollback --cve=...\` instructions and atomic snapshot mechanics.
 - **No Human SLAs Policy:** Transparent details on our automated self-hosted software model.
