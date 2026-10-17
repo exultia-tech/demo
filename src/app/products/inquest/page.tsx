@@ -222,8 +222,8 @@ export default function InquestProductLandingPage() {
                   Free Forever
                 </span>
               </div>
-              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $0 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ forever</span>
+              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#34D399", marginBottom: "0.75rem" }}>
+                Included Free Tier
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
                 Full access to all 50 state sunshine laws, letter drafting, and private local storage.
@@ -272,8 +272,8 @@ export default function InquestProductLandingPage() {
                   1 User License
                 </span>
               </div>
-              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $49 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo ($39 billed annually)</span>
+              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#67E8F9", marginBottom: "0.75rem" }}>
+                Professional Tier
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
                 Multi-agency sweeps, automated follow-up scheduling, and inbound reply parsing for single investigators.
@@ -301,7 +301,7 @@ export default function InquestProductLandingPage() {
                 fontWeight: 800,
                 textDecoration: "none"
               }}>
-              Subscribe Pro ($49/mo) →
+              Explore Pro Plan →
             </Link>
           </div>
 
@@ -322,8 +322,8 @@ export default function InquestProductLandingPage() {
                   5 Licenses (Volume Entitlement)
                 </span>
               </div>
-              <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                $149 <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 500 }}>/ mo ($119 billed annually)</span>
+              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#C084FC", marginBottom: "0.75rem" }}>
+                Enterprise Tier
               </div>
               <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: "1.5", marginBottom: "1.25rem" }}>
                 Shared team docket, duplicate request warnings, and exportable evidence packages.
@@ -350,7 +350,7 @@ export default function InquestProductLandingPage() {
                 fontWeight: 700,
                 textDecoration: "none"
               }}>
-              Subscribe Newsroom ($149/mo) →
+              Explore Enterprise Plan →
             </Link>
           </div>
         </div>

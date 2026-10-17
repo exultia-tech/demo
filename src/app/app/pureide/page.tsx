@@ -3460,7 +3460,7 @@ build_hardened_ide:
               <button 
                 onClick={() => setTier("ENTERPRISE")}
                 style={{ background: 'var(--accent-primary)', color: 'white', border: 'none', padding: '0.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                Unlock Enterprise ($39/mo) →
+                Unlock Enterprise Tier →
               </button>
             </div>
           )}
@@ -4118,7 +4118,7 @@ build_hardened_ide:
                 {tier === "COMMUNITY" || tier === "TEAM" ? (
                   <div style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px dashed var(--border-color)', textAlign: 'center' }}>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.6rem' }}>
-                      Programmatic build ordering via REST API and automated webhooks are reserved for Enterprise ($39/mo).
+                      Programmatic build ordering via REST API and automated webhooks are reserved for Enterprise Tier.
                     </p>
                     <button 
                       onClick={() => setTier("ENTERPRISE")}
@@ -4273,7 +4273,7 @@ build_hardened_ide:
                 {
                   id: "COMMUNITY" as SubscriptionTier,
                   name: "Community Edition",
-                  price: "Free ($0)",
+                  price: "Included (Free)",
                   badge: "Open Source",
                   badgeColor: "#34D399",
                   features: ["0 Open CVEs Baseline Enforcement", "Public OpenVSX Registry Access", "Single Local Seat License"]
@@ -4281,7 +4281,7 @@ build_hardened_ide:
                 {
                   id: "TEAM" as SubscriptionTier,
                   name: "Team / Pro Edition",
-                  price: "$49 / mo ($39 billed annually)",
+                  price: "Professional Tier",
                   badge: "1 User Seat",
                   badgeColor: "#60A5FA",
                   features: ["Single Developer License (1 User / 1 Seat)", "Stack Blueprints Catalog Access", "Multi-Role Composite Stacks"]
@@ -4289,7 +4289,7 @@ build_hardened_ide:
                 {
                   id: "ENTERPRISE" as SubscriptionTier,
                   name: "Enterprise Edition",
-                  price: "$149 / mo ($119 billed annually)",
+                  price: "Enterprise Tier",
                   badge: "Volume Entitlement",
                   badgeColor: "#A78BFA",
                   features: ["Volume Team License (250+ Organization Seats)", "Custom Brand Whitelabeling Studio", "Private JFrog / Artifactory Proxy"]

@@ -379,7 +379,7 @@ export default function AxiomDashboard() {
             textDecoration: "none"
           }}
         >
-          Subscribe ($0 Free / $149 Enterprise) →
+          Explore Community & Enterprise Plans →
         </Link>
       </div>
 
@@ -810,7 +810,7 @@ export default function AxiomDashboard() {
                 href="/account/subscription?product=axiom"
                 style={{ width: "100%", padding: "1rem", background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}
               >
-                Current Free Tier ($0)
+                Community Edition (Included)
               </Link>
             </div>
 
@@ -818,7 +818,7 @@ export default function AxiomDashboard() {
             <div style={{ background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "16px", padding: "2.5rem", position: "relative", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "absolute", top: "-12px", right: "2rem", background: "#F43F5E", color: "white", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 800 }}>ENTERPRISE</div>
               <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>LMS API Integration</h3>
-              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$149<span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>/mo</span></div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FDA4AF", marginBottom: "1.5rem" }}>Enterprise Tier</div>
               <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Dedicated question bank API, SCORM exports, and enterprise seat management.</p>
               <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem", flex: 1 }}>
                 <li>✓ <strong>Everything in Free</strong></li>
@@ -831,7 +831,7 @@ export default function AxiomDashboard() {
                 href="/account/subscription?product=axiom"
                 style={{ width: "100%", padding: "1rem", background: "#F43F5E", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box", boxShadow: "0 0 20px rgba(244, 63, 94, 0.4)" }}
               >
-                Subscribe to Enterprise ($149/mo) →
+                Explore Enterprise Tier →
               </Link>
             </div>
 

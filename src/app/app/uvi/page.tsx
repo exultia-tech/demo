@@ -322,7 +322,7 @@ export default function ThreatFeedPage() {
             color: "#93C5FD",
             fontWeight: 700
           }}>
-            Free $0 · Pro $49/mo · Enterprise $149/mo
+            Community · Pro · Enterprise Tiers
           </span>
         </div>
         <Link

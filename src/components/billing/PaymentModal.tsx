@@ -248,7 +248,7 @@ export default function PaymentModal() {
               </p>
             </div>
 
-            {/* Pay What You Want Contribution Box */}
+            {/* Threshold-Based Tier Activation Box */}
             <div
               style={{
                 background: "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%)",
@@ -261,10 +261,10 @@ export default function PaymentModal() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <div>
                   <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>💝</span> Pay What You Want
+                    <span>⚡</span> Threshold-Based Tier Activation
                   </div>
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
-                    Pro unlocks at $49 · Enterprise unlocks at $149
+                    Thresholds: Pro activates at $49 · Enterprise activates at $149
                   </div>
                 </div>
 

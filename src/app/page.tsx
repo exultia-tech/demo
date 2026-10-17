@@ -228,7 +228,7 @@ export default function HomePage() {
               </Link>
               <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
                 <Link href="/account/subscription?product=axiom" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing ($0, $149) →
+                  Explore Plans & Tiers →
                 </Link>
               </div>
             </div>

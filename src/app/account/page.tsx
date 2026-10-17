@@ -1177,7 +1177,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("pureide") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
+                      {getSubTier("pureide") === "pro" ? "Active (Pro)" : "Pro Tier"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("pureide", getSubTier("pureide") === "enterprise" ? "free" : "enterprise")}
@@ -1193,7 +1193,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("pureide") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("pureide") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>
@@ -1238,7 +1238,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#C084FC" />
                     <span>
-                      {getSubTier("uvi") === "enterprise" ? "Streaming Webhooks & Raw Dumps ($149)" : (getSubTier("uvi") === "pro" ? "Realtime API & KEV Feeds (1 User $49)" : "Web UI Feed Access (Free $0)")}
+                      {getSubTier("uvi") === "enterprise" ? "Streaming Webhooks & Raw Dumps (Enterprise)" : (getSubTier("uvi") === "pro" ? "Realtime API & KEV Feeds (Pro)" : "Web UI Feed Access (Community)")}
                     </span>
                   </div>
 
@@ -1257,7 +1257,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("uvi") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
+                      {getSubTier("uvi") === "pro" ? "Active (Pro)" : "Pro Tier"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("uvi", getSubTier("uvi") === "enterprise" ? "free" : "enterprise")}
@@ -1273,7 +1273,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("uvi") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("uvi") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>
@@ -1318,7 +1318,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#67E8F9" />
                     <span>
-                      {getSubTier("inquest") === "legal" ? "Statutory Briefs & Cases (1 User $49)" : (getSubTier("inquest") === "enterprise" ? "Enterprise Multi-Firm Docket (Volume $149)" : "Standard Draft Filing (Free $0)")}
+                      {getSubTier("inquest") === "legal" ? "Statutory Briefs & Cases (Legal Pro)" : (getSubTier("inquest") === "enterprise" ? "Enterprise Multi-Firm Docket (Enterprise)" : "Standard Draft Filing (Community)")}
                     </span>
                   </div>
 
@@ -1337,7 +1337,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("inquest") === "legal" ? "Active (Legal $49)" : "Legal Pro ($49)"}
+                      {getSubTier("inquest") === "legal" ? "Active (Legal Pro)" : "Legal Pro Tier"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("inquest", getSubTier("inquest") === "enterprise" ? "free" : "enterprise")}
@@ -1353,7 +1353,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("inquest") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("inquest") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>
@@ -1398,7 +1398,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#F43F5E" />
                     <span>
-                      {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API (Volume Entitlement $149)" : "Web Exam Simulator (Free $0)"}
+                      {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API (Enterprise)" : "Web Exam Simulator (Community)"}
                     </span>
                   </div>
 
@@ -1433,7 +1433,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("axiom") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("axiom") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>
@@ -1478,7 +1478,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#F59E0B" />
                     <span>
-                      {getSubTier("praxis") === "enterprise" ? "Fleet Airgap Auto-Patch (Volume $149)" : (getSubTier("praxis") === "pro" ? "Automated Shell Fix Scripts (1 User $49)" : "Public Fix Index (Free $0)")}
+                      {getSubTier("praxis") === "enterprise" ? "Fleet Airgap Auto-Patch (Enterprise)" : (getSubTier("praxis") === "pro" ? "Automated Shell Fix Scripts (Pro)" : "Public Fix Index (Community)")}
                     </span>
                   </div>
 
@@ -1497,7 +1497,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("praxis") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
+                      {getSubTier("praxis") === "pro" ? "Active (Pro)" : "Pro Tier"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("praxis", getSubTier("praxis") === "enterprise" ? "free" : "enterprise")}
@@ -1513,7 +1513,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("praxis") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("praxis") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>
@@ -1558,7 +1558,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#10B981" />
                     <span>
-                      {getSubTier("pureos") === "enterprise" ? "Custom Hardened Fleet Images (Volume $149)" : (getSubTier("pureos") === "pro" ? "Authenticated OCI Pulls (1 User $49)" : "Base Container Pulls (Free $0)")}
+                      {getSubTier("pureos") === "enterprise" ? "Custom Hardened Fleet Images (Enterprise)" : (getSubTier("pureos") === "pro" ? "Authenticated OCI Pulls (Pro)" : "Base Container Pulls (Community)")}
                     </span>
                   </div>
 
@@ -1577,7 +1577,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("pureos") === "pro" ? "Active (Pro $49)" : "Pro ($49)"}
+                      {getSubTier("pureos") === "pro" ? "Active (Pro)" : "Pro Tier"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "enterprise" ? "free" : "enterprise")}
@@ -1593,7 +1593,7 @@ function AccountPageContent() {
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("pureos") === "enterprise" ? "Active (Ent $149)" : "Enterprise ($149)"}
+                      {getSubTier("pureos") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
                     </button>
                   </div>
                 </div>

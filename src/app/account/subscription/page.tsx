@@ -54,6 +54,7 @@ function SubscriptionContent() {
   );
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
+  const [sliderAmount, setSliderAmount] = useState<number>(49);
 
   useEffect(() => {
     const prod = searchParams.get("product") as ProductKey;
@@ -539,54 +540,162 @@ function SubscriptionContent() {
           })}
         </div>
 
-        {/* Pay What You Want Notice */}
+        {/* INTERACTIVE TIER THRESHOLD SLIDER */}
         <div style={{
-          marginTop: "1.5rem",
-          background: "linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(245, 158, 11, 0.12) 100%)",
-          border: "1px solid rgba(139, 92, 246, 0.35)",
-          borderRadius: "14px",
-          padding: "1rem 1.5rem",
-          maxWidth: "920px",
-          margin: "1.5rem auto 0 auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1.25rem",
-          flexWrap: "wrap",
+          marginTop: "1.75rem",
+          background: "linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.95) 100%)",
+          border: "1px solid rgba(56, 189, 248, 0.3)",
+          borderRadius: "18px",
+          padding: "1.5rem 2rem",
+          maxWidth: "960px",
+          margin: "1.75rem auto 0 auto",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.1)"
         }}>
-          <div style={{ textAlign: "left" }}>
-            <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>💝</span> Pay What You Want Pricing Architecture
+          {/* Header of Slider */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
+            <div style={{ textAlign: "left" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Zap size={20} color="#38BDF8" />
+                <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                  Tier Threshold &amp; Entitlement Slider
+                </h3>
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "4px 0 0 0" }}>
+                Slide to set your contribution or target budget. As the dollar amount hits tier thresholds, corresponding products and features are automatically enabled.
+              </p>
             </div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "3px" }}>
-              <strong style={{ color: "#38BDF8" }}>Pro unlocks at $49</strong> · <strong style={{ color: "#FDE047" }}>Enterprise unlocks at $149</strong>. Generous supporters can contribute any custom amount at checkout!
+
+            {/* Current Amount Callout */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "rgba(0, 0, 0, 0.5)",
+              border: "1px solid rgba(56, 189, 248, 0.4)",
+              borderRadius: "10px",
+              padding: "6px 14px"
+            }}>
+              <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 600 }}>Threshold:</span>
+              <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "#38BDF8" }}>${sliderAmount}</span>
+              <span style={{ fontSize: "0.8rem", color: "#64748B" }}>/mo</span>
             </div>
           </div>
-          <button
-            onClick={() => {
-              openPaymentModal({
-                product: selectedProduct,
-                tier: "pro",
-                price: 49,
-                billingCycle,
-                planName: `${selectedProduct.toUpperCase()} - Pay What You Want`,
-              });
-            }}
-            style={{
-              padding: "0.6rem 1.25rem",
-              background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
-              color: "#041019",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: 800,
-              fontSize: "0.84rem",
-              cursor: "pointer",
-              boxShadow: "0 2px 10px rgba(6, 182, 212, 0.3)",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Custom Contribution ($) →
-          </button>
+
+          {/* Range Slider Track */}
+          <div style={{ position: "relative", marginBottom: "1.5rem", padding: "0.5rem 0" }}>
+            <input
+              type="range"
+              min="0"
+              max="600"
+              step="1"
+              value={sliderAmount}
+              onChange={(e) => setSliderAmount(parseInt(e.target.value, 10))}
+              style={{
+                width: "100%",
+                height: "8px",
+                borderRadius: "4px",
+                background: `linear-gradient(to right, #38BDF8 0%, #818CF8 ${(sliderAmount / 600) * 100}%, rgba(255,255,255,0.1) ${(sliderAmount / 600) * 100}%, rgba(255,255,255,0.1) 100%)`,
+                outline: "none",
+                cursor: "pointer",
+                accentColor: "#38BDF8"
+              }}
+            />
+
+            {/* Threshold Ticks */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "0.74rem", color: "#94A3B8", flexWrap: "wrap", gap: "6px" }}>
+              {[
+                { val: 0, label: "$0 Community" },
+                { val: 49, label: "$49 Pro" },
+                { val: 149, label: "$149 Enterprise" },
+                { val: 196, label: "$196 MultiPass Pro" },
+                { val: 595, label: "$595 MultiPass Ent" }
+              ].map(t => (
+                <button
+                  key={t.val}
+                  type="button"
+                  onClick={() => setSliderAmount(t.val)}
+                  style={{
+                    background: sliderAmount >= t.val ? "rgba(56, 189, 248, 0.15)" : "transparent",
+                    border: sliderAmount >= t.val ? "1px solid rgba(56, 189, 248, 0.4)" : "1px solid transparent",
+                    color: sliderAmount >= t.val ? "#38BDF8" : "#64748B",
+                    borderRadius: "6px",
+                    padding: "3px 8px",
+                    cursor: "pointer",
+                    fontSize: "0.74rem",
+                    fontWeight: sliderAmount >= t.val ? 700 : 500
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Live Unlocked Entitlements Matrix */}
+          <div style={{
+            background: "rgba(0, 0, 0, 0.35)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px",
+            padding: "1rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+            gap: "8px"
+          }}>
+            {[
+              { id: 'pureide', name: 'PureIDE', proMin: 49, entMin: 149 },
+              { id: 'uvi', name: 'Vantage', proMin: 49, entMin: 149 },
+              { id: 'inquest', name: 'Inquest', proMin: 49, entMin: 149 },
+              { id: 'praxis', name: 'Praxis', proMin: 49, entMin: 149 },
+              { id: 'pureos', name: 'PureOS', proMin: 49, entMin: 149 },
+              { id: 'axiom', name: 'Axiom', proMin: 149, entMin: 149 }
+            ].map(p => {
+              const isEnt = sliderAmount >= p.entMin;
+              const isPro = sliderAmount >= p.proMin;
+              const status = isEnt ? "Enterprise" : isPro ? "Pro" : "Community";
+              const color = isEnt ? "#C084FC" : isPro ? "#38BDF8" : "#34D399";
+              return (
+                <div key={p.id} style={{ background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px", padding: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "4px" }}>{p.name}</div>
+                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color, background: `${color}20`, padding: "2px 6px", borderRadius: "4px", border: `1px solid ${color}40`, textTransform: "uppercase" }}>
+                    {status}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Action Trigger Button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <button
+              onClick={() => {
+                if (sliderAmount === 0) {
+                  handlePlanSelect("free", "Community", 0);
+                } else if (sliderAmount >= 149) {
+                  handlePlanSelect("enterprise", "Enterprise Tier", sliderAmount);
+                } else {
+                  handlePlanSelect("pro", "Pro Tier", sliderAmount);
+                }
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "0.7rem 1.5rem",
+                borderRadius: "8px",
+                background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
+                color: "#041019",
+                fontWeight: 800,
+                fontSize: "0.88rem",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 12px rgba(6, 182, 212, 0.3)"
+              }}
+            >
+              {sliderAmount === 0 
+                ? "Activate Community Tier ($0/mo)" 
+                : `Activate Plan at $${sliderAmount}/mo →`}
+            </button>
+          </div>
         </div>
 
         {/* Current Product Descriptor Banner */}
@@ -724,11 +833,21 @@ function SubscriptionContent() {
                     </span>
                   )}
                 </div>
-                {price > 0 && (
-                  <div style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600 }}>
-                    ✨ Pay What You Want (Unlocks at ${price}+)
-                  </div>
-                )}
+                <div style={{
+                  fontSize: "0.72rem",
+                  marginTop: "6px",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontWeight: 700,
+                  background: sliderAmount >= price ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
+                  color: sliderAmount >= price ? "#34D399" : "#94A3B8",
+                  border: sliderAmount >= price ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255, 255, 255, 0.08)"
+                }}>
+                  {sliderAmount >= price ? "✓ ENABLED AT CURRENT THRESHOLD" : `REQUIRES THRESHOLD ≥ $${price}/MO`}
+                </div>
               </div>
 
               {/* Features List */}

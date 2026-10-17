@@ -785,7 +785,7 @@ export default function Navbar() {
                 href="/account/subscription?product=axiom" 
                 className="submenu-link"
                 style={{ color: "#FDA4AF", fontWeight: 700 }}>
-                Plans & Pricing ($0, $149)
+                Plans & Pricing
               </Link>
             </div>
           )}

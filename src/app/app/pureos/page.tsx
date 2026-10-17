@@ -207,7 +207,7 @@ export default function PureOSConfigurator() {
                 transition: "all 0.2s ease"
               }}
             >
-              {t} {t === 'Free' ? '($0)' : t === 'Pro' ? '($49)' : '($149)'}
+              {t}
             </button>
             ))}
             <Link

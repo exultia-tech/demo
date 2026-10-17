@@ -31,8 +31,28 @@ import {
   ChevronRight,
   Database,
   Lock,
-  Globe
+  Globe,
+  Filter,
+  Package,
+  Wrench,
+  Ban,
+  Activity,
+  Send,
+  Eye,
+  CheckCircle,
+  XCircle,
+  HelpCircle,
+  Share2
 } from 'lucide-react';
+import { 
+  PureIdeIcon, 
+  VantageIcon, 
+  KineticIcon, 
+  InquestIcon, 
+  PraxisIcon, 
+  PureOsIcon, 
+  AxiomIcon 
+} from '@/components/BrandIcons';
 import { 
   UNIX_EVOLUTION_MILESTONES, 
   UNIX_V1_LIVE_SIMULATION_SESSION, 
@@ -51,7 +71,6 @@ function generateAsciiBanner(text: string): string {
   const clean = text.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 10);
   if (!clean) return 'BANNER: NO TEXT';
   
-  // 5x5 font table
   const FONT: Record<string, string[]> = {
     'A': [' ### ', '#   #', '#####', '#   #', '#   #'],
     'B': ['#### ', '#   #', '#### ', '#   #', '#### '],
@@ -102,65 +121,35 @@ function generateAsciiBanner(text: string): string {
   return lines.join('\n');
 }
 
-// System V / HP-UX Calendar generator
-function generateCalOutput(month: number, year: number): string {
+// System V Calendar Generator for HP-UX cal command
+function generateUnixCalendar(month: number, year: number): string {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const header = `    ${months[month - 1]} ${year}`;
-  const daysHeader = ' S  M Tu  W Th  F  S';
+  const mName = months[month - 1] || 'January';
+  const header = `   ${mName} ${year}\nS  M Tu  W Th  F  S\n`;
   
   const firstDay = new Date(year, month - 1, 1).getDay();
-  const totalDays = new Date(year, month, 0).getDate();
+  const daysInMonth = new Date(year, month, 0).getDate();
   
-  let grid = '';
-  let cur = 0;
-  for (let i = 0; i < firstDay; i++) {
-    grid += '   ';
-    cur++;
-  }
+  let out = header;
+  let line = '   '.repeat(firstDay);
   
-  for (let d = 1; d <= totalDays; d++) {
-    grid += d < 10 ? ` ${d} ` : `${d} `;
-    cur++;
-    if (cur % 7 === 0) {
-      grid += '\n';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const s = d < 10 ? ` ${d} ` : `${d} `;
+    line += s;
+    if ((firstDay + d) % 7 === 0 || d === daysInMonth) {
+      out += line + '\n';
+      line = '';
     }
   }
-  return `${header}\n${daysHeader}\n${grid.trimEnd()}`;
+  return out;
 }
 
-type SimulatorTarget = 'pdp11' | 'solaris' | 'aix' | 'hpux' | 'v4kernel';
+type ResearchTab = 'pureide' | 'vantage' | 'kinetic' | 'inquest' | 'praxis' | 'pureos' | 'axiom' | 'historic';
+type OperatingSystem = 'pdp11' | 'solaris' | 'aix' | 'hpux' | 'v4kernel';
 
-export default function SystemsResearchPage() {
-  const [activeTab, setActiveTab] = useState<'simulator' | 'pdp11Grid' | 'evolution' | 'commercial' | 'publications'>('simulator');
+export default function ResearchLabPage() {
+  const [activeTab, setActiveTab] = useState<ResearchTab>('pureide');
   const [copiedText, setCopiedText] = useState<string | null>(null);
-
-  // Multi-OS Simulator State
-  const [simTarget, setSimTarget] = useState<SimulatorTarget>('pdp11');
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
-  const [commandInput, setCommandInput] = useState<string>('');
-  const [simCrtTheme, setSimCrtTheme] = useState<'phosphor-green' | 'amber' | 'cyan'>('phosphor-green');
-  const terminalEndRef = useRef<HTMLDivElement>(null);
-
-  // PDP-11 Live 68-Vector Matrix Filters
-  const [pdp11CategoryFilter, setPdp11CategoryFilter] = useState<string>('all');
-  const [pdp11Search, setPdp11Search] = useState<string>('');
-
-  // Evolution Matrix State
-  const [selectedMilestone, setSelectedMilestone] = useState<UnixMilestone>(UNIX_EVOLUTION_MILESTONES[1]);
-
-  // Commercial Unix State
-  const [selectedCommercialPlatform, setSelectedCommercialPlatform] = useState<CommercialUnixPlatform>(COMMERCIAL_UNIX_PLATFORMS[0]);
-  const [selectedBinaryIndex, setSelectedBinaryIndex] = useState<number>(0);
-
-  // Initialize terminal on mount or target change
-  useEffect(() => {
-    resetTerminalForTarget(simTarget);
-  }, [simTarget]);
-
-  // Auto-scroll terminal
-  useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [terminalLogs]);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -168,1128 +157,1648 @@ export default function SystemsResearchPage() {
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  const resetTerminalForTarget = (target: SimulatorTarget) => {
-    if (target === 'pdp11') {
-      setSimCrtTheme('phosphor-green');
-      setTerminalLogs([
-        'DEC PDP-11/20 SIMH V4.1-0 TELETYPE SUBSYSTEM INITIALIZED.',
-        'Target System: 1972 First Edition UNIX (Ken Thompson & Dennis Ritchie)',
-        'Attached Devices: rf0.dsk (512 KB Fixed-Head Disk), rk0.dsk (2.5 MB Cartridge)',
-        'Type "help" for available commands, or click quick-run chips below.',
-        'login: root',
-        '# '
+  // ─────────────────────────────────────────────────────────────
+  // 1. PUREIDE SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [pureIdeRepo, setPureIdeRepo] = useState<'auth-vault' | 'telemetry-agent' | 'kernel-driver'>('telemetry-agent');
+  const [pureIdeEgressBlock, setPureIdeEgressBlock] = useState(true);
+  const [pureIdeBuilding, setPureIdeBuilding] = useState(false);
+  const [pureIdeProgress, setPureIdeProgress] = useState(0);
+  const [pureIdeLogs, setPureIdeLogs] = useState<string[]>([]);
+  const [pureIdeDone, setPureIdeDone] = useState(false);
+  const [pureIdeBlockedLeak, setPureIdeBlockedLeak] = useState(false);
+
+  const runPureIdeBuild = () => {
+    setPureIdeBuilding(true);
+    setPureIdeDone(false);
+    setPureIdeProgress(5);
+    setPureIdeBlockedLeak(false);
+    setPureIdeLogs([
+      `[INIT] PureIDE Sandboxed Compiler v3.8.4 initialized`,
+      `[TARGET] Repository: ${pureIdeRepo}`,
+      `[SANDBOX] Mounting hermetic namespace chroot /tmp/pureide-build-root...`,
+      `[SECURITY] Egress Network Isolation Policy: ${pureIdeEgressBlock ? 'STRICT_BLOCK_ALL' : 'OPEN_TELEMETRY'}`
+    ]);
+
+    setTimeout(() => {
+      setPureIdeProgress(30);
+      setPureIdeLogs(prev => [
+        ...prev,
+        `[AUDIT] Ingesting 24 bundled dependencies from verified OpenVSX cache...`,
+        `[HASH] Calculating in-toto input tree hashes: SHA256: 4f8b2... valid`
       ]);
-    } else if (target === 'solaris') {
-      setSimCrtTheme('cyan');
-      setTerminalLogs([
-        'SunOS 5.11 / illumos UTS 64-bit Enterprise Workstation Console.',
-        'Kernel Architecture: x86_64 SVR4 with BSM C2 Auditing & Zones Enabled.',
-        'Compiled Userland: /home/exultia/solaris_banner (17,488 bytes, GCC 13.3 + Intel UTS Machtypes)',
-        'Type "help", "banner <text>", "whodo", or "audit" to evaluate mitigations.',
-        'solaris# '
+    }, 600);
+
+    setTimeout(() => {
+      setPureIdeProgress(65);
+      if (pureIdeRepo === 'telemetry-agent' && pureIdeEgressBlock) {
+        setPureIdeBlockedLeak(true);
+        setPureIdeLogs(prev => [
+          ...prev,
+          `[SUPPLY CHAIN TRIGGER] Dependency "analytics-tracker@1.4.2" executed postinstall lifecycle hook.`,
+          `[FIREWALL ALERT] Attempted outbound socket connection: tcp://198.51.100.42:4444 (untrusted beacon).`,
+          `[EGRESS NEUTRALIZED] Connection forcibly dropped with SIGKILL. Exfiltration prevented.`
+        ]);
+      } else {
+        setPureIdeLogs(prev => [
+          ...prev,
+          `[COMPILER] Invoking native hermetic compiler with -trimpath and zero-timestamp flags...`,
+          `[OPTIMIZER] Binary stripped of developer username, path metadata, and hardware IDs.`
+        ]);
+      }
+    }, 1300);
+
+    setTimeout(() => {
+      setPureIdeProgress(100);
+      setPureIdeBuilding(false);
+      setPureIdeDone(true);
+      setPureIdeLogs(prev => [
+        ...prev,
+        `[ARTIFACT] Hermetic executable generated: build/bin/${pureIdeRepo}.bin`,
+        `[DIGEST] Deterministic Digest: sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`,
+        `[PROVENANCE] SLSA Level 3 In-Toto attestation generated and cryptographically signed via Cosign OIDC.`
       ]);
-    } else if (target === 'aix') {
-      setSimCrtTheme('amber');
-      setTerminalLogs([
-        'IBM AIX 4.1.3 Base Operating System (BOS) RS/6000 Maintenance Enclave.',
-        'Architecture: IBM PowerPC / Trusted Computing Base (TCB) Enforced.',
-        'Compiled Userland: /home/exultia/aix_echo (17,816 bytes, GCC 11.4 + -D_AIX -D_ALL_SOURCE)',
-        'Type "help", "echo <args>", "tcb", or "audit" to test security vectors.',
-        'aix413# '
+    }, 2000);
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 2. VANTAGE SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [vantageSearch, setVantageSearch] = useState('CVE-2024-6387');
+  const [vantageViewMode, setVantageViewMode] = useState<'dossier' | 'json'>('dossier');
+
+  const VANTAGE_SAMPLE_FEED = [
+    {
+      cve: 'CVE-2024-6387',
+      title: 'RegreSSHion: OpenSSH Remote Unauthenticated Code Execution',
+      severity: 'CRITICAL',
+      cvss: 8.1,
+      vector: 'CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H',
+      kev: true,
+      epss: '94.6%',
+      affected: ['Ubuntu 24.04 LTS (glibc-based)', 'Rocky Linux 9', 'Debian 12 Bookworm'],
+      description: 'A signal handler race condition in OpenSSH sshd (server) allows remote unauthenticated attackers to execute arbitrary code with root privileges on 32-bit and 64-bit systems via ASLR memory brute-forcing.',
+      hotfix: 'echo "LoginGraceTime 0" | sudo tee /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf && sudo sshd -t && sudo systemctl reload sshd',
+      rollback: 'sudo rm -f /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf && sudo sshd -t && sudo systemctl reload sshd'
+    },
+    {
+      cve: 'CVE-2024-47176',
+      title: 'CUPS cups-browsed Daemon UDP Remote Code Execution Chain',
+      severity: 'CRITICAL',
+      cvss: 9.0,
+      vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+      kev: true,
+      epss: '89.1%',
+      affected: ['Ubuntu 22.04 / 24.04', 'Fedora 40', 'RHEL 8 / 9', 'Alpine Linux'],
+      description: 'cups-browsed binds to UDP INADDR_ANY:631 and blindly trusts IPP packets from any WAN source, initiating attacker-controlled IPP queries that inject arbitrary PostScript directives into foomatic-rip filters.',
+      hotfix: 'sudo iptables -I INPUT -p udp --dport 631 -j DROP && sudo systemctl disable --now cups-browsed 2>/dev/null || true',
+      rollback: 'sudo iptables -D INPUT -p udp --dport 631 -j DROP 2>/dev/null || true ; sudo systemctl enable --now cups-browsed'
+    },
+    {
+      cve: 'CVE-2024-1086',
+      title: 'Linux Kernel nf_tables Netfilter Use-After-Free Local Privilege Escalation',
+      severity: 'HIGH',
+      cvss: 7.8,
+      vector: 'CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',
+      kev: true,
+      epss: '98.2%',
+      affected: ['Linux Kernel 5.14 - 6.6', 'Ubuntu 23.10', 'Debian 11/12'],
+      description: 'Use-after-free flaw in netfilter nf_tables module permits unprivileged user namespaces to corrupt kernel page tables and execute arbitrary shell code as root.',
+      hotfix: 'sudo sysctl -w user.max_user_namespaces=0 && echo "user.max_user_namespaces=0" | sudo tee /etc/sysctl.d/99-kinetic-cve-2024-1086.conf',
+      rollback: 'sudo rm -f /etc/sysctl.d/99-kinetic-cve-2024-1086.conf && sudo sysctl -w user.max_user_namespaces=15000 && sudo sysctl --system'
+    },
+    {
+      cve: 'CVE-2024-3094',
+      title: 'XZ Utils / liblzma Malicious Multi-Stage Supply Chain Backdoor',
+      severity: 'CRITICAL',
+      cvss: 10.0,
+      vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H',
+      kev: true,
+      epss: '99.9%',
+      affected: ['Fedora Rawhide', 'Debian Sid (unstable)', 'openSUSE Tumbleweed', 'Alpine Edge'],
+      description: 'Malicious upstream commits inject an obfuscated test file payload into release tarballs that intercepts RSA decryption routines in sshd via IFUNC hooks in systemd-linked liblzma.',
+      hotfix: 'sudo dnf downgrade -y xz-libs-5.4.6 || sudo apt-get install --allow-downgrades -y liblzma5=5.4.5-0.1',
+      rollback: 'echo "Rollback prohibited: target package contains known state-sponsored backdoor."'
+    }
+  ];
+
+  const activeVantageItem = VANTAGE_SAMPLE_FEED.find(item => 
+    item.cve.toLowerCase().includes(vantageSearch.toLowerCase()) || 
+    item.title.toLowerCase().includes(vantageSearch.toLowerCase())
+  ) || VANTAGE_SAMPLE_FEED[0];
+
+  // ─────────────────────────────────────────────────────────────
+  // 3. KINETIC SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [kineticState, setKineticState] = useState<'vulnerable' | 'applying' | 'mitigated' | 'reverting' | 'reverted'>('vulnerable');
+  const [kineticLogs, setKineticLogs] = useState<string[]>([
+    '[INIT] Fleet Status: 640 nodes vulnerable to CVE-2024-6387 (RegreSSHion)',
+    '[WAITING] Ready to apply Tier 1 Zero-Downtime Hot-Mitigation...'
+  ]);
+
+  const applyKineticHotfix = () => {
+    setKineticState('applying');
+    setKineticLogs([
+      `[${new Date().toISOString()}] [DEPLOY] Initiating Tier 1 Hot-Mitigation across Ring 0 canary hosts...`,
+      `[CONFIG] Injecting /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf (LoginGraceTime 0)...`,
+      `[VALIDATE] Executing pre-flight syntax check: /usr/sbin/sshd -t... OK.`
+    ]);
+
+    setTimeout(() => {
+      setKineticState('mitigated');
+      setKineticLogs(prev => [
+        ...prev,
+        `[SIGNAL] Executing graceful daemon reload: systemctl reload sshd (elapsed: 14ms)`,
+        `[HEALTH] Telemetry Sentinel confirms active SSH connections: 1,420 intact (0 dropped).`,
+        `[STATUS] VULNERABILITY MITIGATED. Root race condition window permanently closed.`
       ]);
-    } else if (target === 'hpux') {
-      setSimCrtTheme('phosphor-green');
-      setTerminalLogs([
-        'HP-UX 9.10 9000/700 Workstation PA-RISC Interactive Shell.',
-        'Compiled Binaries: hpux_cat (18.9KB), hpux_echo (17.5KB), hpux_banner (18.9KB), hpux_cal (18.2KB)',
-        'Compiler: GCC 11.4 with -D_HPUX_SOURCE flags.',
-        'Type "help", "cat <file>", "banner <text>", "cal [year]", or "audit".',
-        'hpux910# '
+    }, 1200);
+  };
+
+  const rollbackKineticHotfix = () => {
+    setKineticState('reverting');
+    setKineticLogs([
+      `[${new Date().toISOString()}] [REVERT] Emergency operator reversal requested.`,
+      `[CLEANUP] Removing drop-in config /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf...`,
+      `[VALIDATE] Syntax verification: /usr/sbin/sshd -t... OK.`
+    ]);
+
+    setTimeout(() => {
+      setKineticState('reverted');
+      setKineticLogs(prev => [
+        ...prev,
+        `[SIGNAL] Gracefully reloading sshd daemon to baseline state: systemctl reload sshd (elapsed: 11ms)`,
+        `[STATE] Baseline restored (LoginGraceTime 120). Zero reboots required. 100% reversible.`
       ]);
-    } else if (target === 'v4kernel') {
-      setSimCrtTheme('amber');
-      setTerminalLogs([
-        '1973 Fourth Edition Research UNIX - Dennis Ritchie C Kernel Rewritten.',
-        'Source: /home/exultia/research-v4/usr/sys/user.h & sys4.c',
-        'Vulnerability Lab: 8-bit char u_uid integer overflow (CWE-197) and suser() logic.',
-        'Type "help", "show user.h", "show suser", or "test overflow".',
-        'v4-kernel# '
-      ]);
+    }, 1000);
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 4. INQUEST SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [inquestDoc, setInquestDoc] = useState<'water-contract' | 'police-ia' | 'grant-audit'>('water-contract');
+  const [inquestRedacted, setInquestRedacted] = useState(false);
+  const [inquestProcessing, setInquestProcessing] = useState(false);
+
+  const INQUEST_DOCS = {
+    'water-contract': {
+      title: 'Municipal Acoustic Water Grid Sensor Installation Agreement (Contract #2026-0827-048)',
+      agency: 'City of Austin Water Utility & FluidTech Telemetry LLC',
+      unredacted: `CONTRACT EXECUTION DOCUMENT:
+The City hereby authorizes payment of $14,200,000 to FluidTech Telemetry LLC.
+Lead Technical Officer: Marcus Vance (SSN: 948-22-1049, Personal Phone: 512-555-0199).
+Proprietary Acoustic Calibration Frequency: 42.8 kHz with private Fourier transform algorithm patent application #US-2026-0914-A1.
+Subcontractor banking routing: Wire routing #111000025, Account #8849201948, Wells Fargo Austin Downtown.`,
+      redacted: `CONTRACT EXECUTION DOCUMENT:
+The City hereby authorizes payment of $14,200,000 to FluidTech Telemetry LLC.
+Lead Technical Officer: Marcus Vance ([REDACTED: 5 U.S.C. § 552(b)(6) - Personal Privacy], [REDACTED: 5 U.S.C. § 552(b)(6) - Personal Telephone Number]).
+Proprietary Acoustic Calibration: [REDACTED: 5 U.S.C. § 552(b)(4) - Commercial Trade Secrets & Proprietary Algorithm Patent].
+Subcontractor banking routing: [REDACTED: 5 U.S.C. § 552(b)(4) - Financial Account Information].`,
+      exemptions: ['Exemption 4 (Trade Secrets)', 'Exemption 6 (Personal Privacy)']
+    },
+    'police-ia': {
+      title: 'Internal Affairs Incident Investigation Dossier #IA-2026-019',
+      agency: 'Metropolitan Police Department Office of Professional Responsibility',
+      unredacted: `COMPLAINT INVESTIGATION SUMMARY:
+Incident Date: June 14, 2026. Complainant Jane Doe (Home Address: 742 Evergreen Terrace, Springfield, SSN: 112-44-9021).
+Undercover Narcotics Detective John Miller (Badge #4812, Active Undercover Identity: "Razor", cell: 202-555-0144) was present during vehicle intervention.
+Body-Worn Camera Segment #04-18 indicates no policy violations observed.`,
+      redacted: `COMPLAINT INVESTIGATION SUMMARY:
+Incident Date: June 14, 2026. Complainant [REDACTED: 5 U.S.C. § 552(b)(6) - Personal Privacy] ([REDACTED: Home Address], [REDACTED: SSN]).
+Undercover Narcotics Detective [REDACTED: 5 U.S.C. § 552(b)(7)(C) - Law Enforcement Undercover Officer Identity] ([REDACTED: Badge/Cell]) was present during vehicle intervention.
+Body-Worn Camera Segment #04-18 indicates no policy violations observed.`,
+      exemptions: ['Exemption 6 (Personal Privacy)', 'Exemption 7(C) (Law Enforcement Identity Protection)']
+    },
+    'grant-audit': {
+      title: 'NSF Sub-Award Quantum Cryptography Research Audit',
+      agency: 'National Science Foundation Division of Computing & Communication Foundations',
+      unredacted: `GRANT ALLOCATION AUDIT:
+Awardee Institution: Quantum Cryptographic Labs Inc. (DUNS: 948102948).
+Lead PI: Dr. Elena Rostova (DOB: 04/12/1981, Passport: US-P-908129481).
+Classified post-quantum lattice encryption benchmark formula: Matrix dimension N=1024 with q=12289 secret seed key 0xFA48B1C90819.`,
+      redacted: `GRANT ALLOCATION AUDIT:
+Awardee Institution: Quantum Cryptographic Labs Inc. (DUNS: 948102948).
+Lead PI: Dr. Elena Rostova ([REDACTED: 5 U.S.C. § 552(b)(6) - Date of Birth], [REDACTED: Passport Identifier]).
+Classified post-quantum lattice encryption benchmark formula: [REDACTED: 5 U.S.C. § 552(b)(1) - National Security & Defense Cryptographic Algorithms].`,
+      exemptions: ['Exemption 1 (National Defense)', 'Exemption 6 (Personal Privacy)']
     }
   };
 
-  const executeCommand = (cmd: string) => {
-    const trimmed = cmd.trim();
-    if (!trimmed) return;
-
-    const parts = trimmed.split(' ');
-    const op = parts[0].toLowerCase();
-    const args = parts.slice(1);
-
-    const prompt = simTarget === 'pdp11' ? '# ' : simTarget === 'solaris' ? 'solaris# ' : simTarget === 'aix' ? 'aix413# ' : simTarget === 'hpux' ? 'hpux910# ' : 'v4-kernel# ';
-    const output: string[] = [`${prompt}${trimmed}`];
-
-    // COMMON COMMANDS
-    if (op === 'clear' || op === 'cls') {
-      resetTerminalForTarget(simTarget);
-      setCommandInput('');
-      return;
-    }
-
-    if (op === 'help') {
-      output.push('Available Commands:');
-      if (simTarget === 'pdp11') {
-        output.push('  boot                 - Re-execute full Open SIMH PDP-11 bootstrap');
-        output.push('  ls -l [/dev|/bin]    - List 1972 filesystem directories');
-        output.push('  cat /etc/passwd      - Print 1972 plaintext password file');
-        output.push('  chmod 600 <file>     - Execute Tier 1 Kinetic lockdown');
-        output.push('  rollback             - Deterministic reversal to 1972 baseline');
-        output.push('  audit                - Run Telemetry Sentinel vulnerability scanner');
-        output.push('  su root              - Simulate superuser escalation');
-      } else if (simTarget === 'solaris') {
-        output.push('  banner <word>        - Run compiled /home/exultia/solaris_banner');
-        output.push('  whodo                - Audit CVE-1999-0091 in whodo utmpx parser');
-        output.push('  in.ftpd              - Audit CVE-2001-0249 in glob() stack frame');
-        output.push('  priv_set             - Display Solaris Least Privilege assignments');
-        output.push('  remediate            - Apply kinetic clamp to setuid binaries');
-        output.push('  rollback             - Revert setuid bits to baseline');
-      } else if (simTarget === 'aix') {
-        output.push('  echo <args>          - Run compiled /home/exultia/aix_echo');
-        output.push('  tcb                  - Inspect Trusted Computing Base integrity');
-        output.push('  audit bellmail       - Audit CVE-1999-0091 setuid buffer overflow');
-        output.push('  audit lquerylv       - Audit CVE-1999-0110 LVM argument overflow');
-        output.push('  audit swcons         - Audit CVE-2000-0255 console file overwrite');
-        output.push('  remediate            - Clamp setuid bits (chmod 750/700)');
-        output.push('  rollback             - Revert AIX setuid bits');
-      } else if (simTarget === 'hpux') {
-        output.push('  cat [-v|-t] <file>   - Run compiled /home/exultia/hpux_cat');
-        output.push('  echo <args>          - Run compiled /home/exultia/hpux_echo');
-        output.push('  banner <word>        - Run compiled /home/exultia/hpux_banner');
-        output.push('  cal [month] [year]   - Run compiled /home/exultia/hpux_cal');
-        output.push('  audit lpsched        - Audit CVE-1999-0128 line printer overflow');
-        output.push('  audit swinstall      - Audit CVE-1999-0160 Software Distributor ACL');
-        output.push('  audit remshd         - Audit CVE-1999-0205 .rhosts trust bypass');
-        output.push('  remediate            - Execute kinetic lockdown');
-        output.push('  rollback             - Revert HP-UX parameters');
-      } else if (simTarget === 'v4kernel') {
-        output.push('  show user.h          - Print Dennis Ritchie struct user definition');
-        output.push('  show suser           - Print Fourth Edition suser() privilege code');
-        output.push('  test overflow        - Simulate UID 256 overflow to UID 0 (CWE-197)');
-      }
-      output.push('  clear                - Clear terminal viewport');
-      setTerminalLogs(prev => [...prev, ...output]);
-      setCommandInput('');
-      return;
-    }
-
-    // TARGET SPECIFIC DISPATCH
-    if (simTarget === 'pdp11') {
-      if (op === 'boot') {
-        output.push(UNIX_V1_LIVE_SIMULATION_SESSION.trim());
-      } else if (op === 'cat' && args[0] === '/etc/passwd') {
-        output.push('root::0:/:', 'eroot::0:/:/bin/ed', 'sys::1:/usr/sys:', 'bin::3:/bin:', 'ken::6:/usr/ken:', 'dmr::7:/usr/dmr:', '# [VULN] Plaintext passwords and blank root password detected (CWE-256)');
-      } else if (op === 'ls' && (args[0] === '/dev' || args[1] === '/dev')) {
-        output.push('total    0', ' 22 s-rwrw  1 sys       0 Jan  1 00:00:00 lpr', '  3 s-rwrw  1 sys       0 Jan  1 00:00:00 mem', '  4 s-rwrw  1 sys       0 Jan  1 00:00:00 rf0', '  5 s-rwrw  1 sys       0 Jan  1 00:00:00 rk0', '# [CRITICAL] Raw disks rf0 and rk0 are mode 0666 (world-writable)!');
-      } else if (op === 'chmod' && args[0] === '600') {
-        output.push('>>> [EXULTIA KINETIC] Applied Tier 1 Hot-Mitigation.', 'Permissions updated: /etc/passwd (mode s-----), /dev/rf0 (mode s-----).', 'Direct raw block write attack vector NEUTRALIZED in 2.1ms.');
-      } else if (op === 'rollback') {
-        output.push('>>> [EXULTIA KINETIC] Deterministic Rollback Executed.', 'Permissions restored: chmod 644 /etc/passwd && chmod 666 /dev/rf0 /dev/rk0.', '1972 baseline verified. 0 system halt.');
-      } else if (op === 'audit') {
-        output.push('[SENTINEL AUDIT] Scanning 60 binaries in /bin and 8 syscalls...', 'CWE-256 Plaintext Credentials: FOUND (/etc/passwd)', 'CWE-732 World-Writable Disk: FOUND (/dev/rf0 mode 666)', 'CWE-120 Unbounded Buffer: FOUND (su.s, login.s)', 'Kinetic Hotfix Recipe Available: chmod 600 /etc/passwd /dev/rf0 /dev/rk0');
-      } else {
-        output.push(`Command simulated: ${trimmed} [exit code 0]`);
-      }
-    } else if (simTarget === 'solaris') {
-      if (op === 'banner') {
-        const text = args.join(' ') || 'SOLARIS';
-        output.push(`Executing /home/exultia/solaris_banner (17,488 bytes, GCC 13.3):`);
-        output.push(generateAsciiBanner(text));
-      } else if (op === 'whodo') {
-        output.push('Auditing /usr/bin/whodo (cmd/whodo):', 'Vulnerability: CVE-1999-0091 (CWE-120) Unbounded stack buffer in utmpx processing.', 'Exploit Vector: Crafted utmpx hostname triggers return-address overwrite.', 'Kinetic Mitigation: chmod 755 /usr/bin/whodo; clamp setuid bit.');
-      } else if (op === 'in.ftpd') {
-        output.push('Auditing in.ftpd (cmd-inet/usr.sbin/in.ftpd):', 'Vulnerability: CVE-2001-0249 glob() stack buffer corruption.', 'Kinetic Mitigation: Restrict globbing recursion limit in /etc/ftpd.conf.');
-      } else if (op === 'priv_set') {
-        output.push('Solaris Enterprise Least Privilege Table:', '  zone.enter: Basic', '  file_read: Basic', '  proc_setid: Clamped by Kinetic Sentinel rule');
-      } else if (op === 'remediate') {
-        output.push('>>> [EXULTIA KINETIC] Applied Solaris Tier 1 Hotfix: chmod 755 /usr/bin/whodo && svcadm refresh svc:/network/ftp.');
-      } else if (op === 'rollback') {
-        output.push('>>> [EXULTIA KINETIC] Deterministic Rollback: chmod 4755 /usr/bin/whodo.');
-      } else {
-        output.push(`solaris: ${op}: executed successfully.`);
-      }
-    } else if (simTarget === 'aix') {
-      if (op === 'echo') {
-        output.push(`Executing /home/exultia/aix_echo (17,816 bytes, GCC 11.4):`);
-        output.push(args.join(' ') || 'AIX 4.1.3 Base Operating System Verified');
-      } else if (op === 'tcb') {
-        output.push('AIX Trusted Computing Base (TCB) Audit Status:', '  /usr/sbin/lquerylv: SETUID ROOT [WARNING: CVE-1999-0110]', '  /usr/bin/swcons: SETUID ROOT [WARNING: CVE-2000-0255]', '  /usr/bin/mail/bellmail: SETUID ROOT [WARNING: CVE-1999-0091]');
-      } else if (op === 'audit') {
-        output.push('Auditing IBM AIX 4.1.3 Base OS (6,723 C Source Files):', '  Total strcpy() calls: 6,397', '  Total sprintf() calls: 8,724', '  Total gets() calls: 869 (Extreme stack vulnerability density)', '  Safe strlcpy/snprintf calls: 0 (Pre-modern ANSI C)');
-      } else if (op === 'remediate') {
-        output.push('>>> [EXULTIA KINETIC] Applied AIX Tier 1 Hotfix: chmod 750 /usr/sbin/lquerylv && chmod 700 /usr/bin/swcons.');
-      } else if (op === 'rollback') {
-        output.push('>>> [EXULTIA KINETIC] AIX Rollback Executed: chmod 4755 /usr/sbin/lquerylv /usr/bin/swcons.');
-      } else {
-        output.push(`aix: ${op}: operation completed.`);
-      }
-    } else if (simTarget === 'hpux') {
-      if (op === 'banner') {
-        const text = args.join(' ') || 'HPUX 9.10';
-        output.push(`Executing /home/exultia/hpux_banner (18,944 bytes, GCC 11.4):`);
-        output.push(generateAsciiBanner(text));
-      } else if (op === 'cal') {
-        const m = args.length > 1 ? parseInt(args[0]) || 10 : 10;
-        const y = args.length > 1 ? parseInt(args[1]) || 1972 : parseInt(args[0]) || 1972;
-        output.push(`Executing /home/exultia/hpux_cal (18,232 bytes, GCC 11.4):`);
-        output.push(generateCalOutput(m, y));
-      } else if (op === 'cat') {
-        output.push(`Executing /home/exultia/hpux_cat (18,968 bytes, GCC 11.4):`);
-        if (args.includes('-v') || args.includes('-e') || args.includes('-t')) {
-          output.push('Hewlett-Packard HP-UX 9.10 Workstation Console^M$');
-          output.push('PA-RISC 1.1 CPU running at 99 MHz^M$');
-        } else {
-          output.push('Hewlett-Packard HP-UX 9.10 Workstation Console', 'PA-RISC 1.1 CPU running at 99 MHz');
-        }
-      } else if (op === 'echo') {
-        output.push(`Executing /home/exultia/hpux_echo (17,592 bytes): ${args.join(' ')}`);
-      } else if (op === 'audit') {
-        output.push('Auditing HP-UX 9.10 Source Tree (3,614 C Source Files):', '  strcpy calls: 4,415 | sprintf calls: 3,985 | gets calls: 142', '  CVE-1999-0128 (lpsched line printer buffer overflow)', '  CVE-1999-0160 (swinstall arbitrary root scripts via /var/adm/sw)', '  CVE-1999-0205 (remshd .rhosts DNS spoofing bypass)');
-      } else if (op === 'remediate') {
-        output.push('>>> [EXULTIA KINETIC] Applied HP-UX Tier 1 Hotfix: chmod 755 /usr/lib/lpsched && chmod 700 /usr/sbin/swinstall.');
-      } else if (op === 'rollback') {
-        output.push('>>> [EXULTIA KINETIC] HP-UX Rollback Executed: chmod 4755 /usr/lib/lpsched.');
-      } else {
-        output.push(`hpux: ${op}: command completed.`);
-      }
-    } else if (simTarget === 'v4kernel') {
-      if (op === 'show' && args[0] === 'user.h') {
-        output.push('// Fourth Edition (1973) usr/sys/user.h (Dennis Ritchie)');
-        output.push('struct user {');
-        output.push('    char    u_uid;      /* 8-bit user ID! Maximum 256 users */');
-        output.push('    char    u_gid;      /* Group ID */');
-        output.push('    int     *u_ar0;     /* address of registers */');
-        output.push('};');
-      } else if (op === 'show' && args[0] === 'suser') {
-        output.push('// Fourth Edition (1973) usr/sys/sys4.c:');
-        output.push('suser() {');
-        output.push('    if(u.u_uid == 0) return(1);');
-        output.push('    u.u_error = EPERM;');
-        output.push('    return(0);');
-        output.push('}');
-      } else if (op === 'test' && args[0] === 'overflow') {
-        output.push('Simulating UID assignment: uid = 256');
-        output.push('char u_uid = (char)256;  // Truncates to 0!');
-        output.push('Evaluating suser(): u.u_uid == 0 is TRUE!');
-        output.push('[CRITICAL EXPLOIT CONFIRMED] User with UID 256 granted SUPERUSER root authority (CWE-197)!');
-        output.push('Kinetic Fix: Clamp administrative UID assignments to <= 127 in PAM/account policies.');
-      } else {
-        output.push(`v4-kernel: inspect struct user.h or suser().`);
-      }
-    }
-
-    setTerminalLogs(prev => [...prev, ...output]);
-    setCommandInput('');
+  const runInquestRedaction = () => {
+    setInquestProcessing(true);
+    setTimeout(() => {
+      setInquestProcessing(false);
+      setInquestRedacted(true);
+    }, 700);
   };
 
-  const crtThemeStyle = {
-    'phosphor-green': { text: '#4ADE80', bg: '#030712', border: '#22C55E' },
-    'amber': { text: '#FDE047', bg: '#080501', border: '#F59E0B' },
-    'cyan': { text: '#38BDF8', bg: '#020617', border: '#06B6D4' }
-  }[simCrtTheme];
+  // ─────────────────────────────────────────────────────────────
+  // 5. PRAXIS SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [praxisLang, setPraxisLang] = useState<'typescript' | 'python' | 'go' | 'rust'>('typescript');
+  const [praxisSchema, setPraxisSchema] = useState<'k8s' | 'fintech' | 'scada'>('k8s');
 
-  const uniqueCategories = ['all', ...Array.from(new Set(EXHAUSTIVE_PDP11_TEST_ITEMS.map(i => i.category)))];
-  const filteredPdp11Tests = EXHAUSTIVE_PDP11_TEST_ITEMS.filter(item => {
-    const matchesCat = pdp11CategoryFilter === 'all' || item.category === pdp11CategoryFilter;
-    const matchesSearch = !pdp11Search ||
-      item.binary_or_syscall.toLowerCase().includes(pdp11Search.toLowerCase()) ||
-      item.vulnerability_description.toLowerCase().includes(pdp11Search.toLowerCase()) ||
-      item.tier1_remediation.toLowerCase().includes(pdp11Search.toLowerCase()) ||
-      item.cwe.toLowerCase().includes(pdp11Search.toLowerCase());
-    return matchesCat && matchesSearch;
+  const PRAXIS_CODE_SAMPLES: Record<string, Record<string, string>> = {
+    'k8s': {
+      typescript: `// Praxis Synthesized Zero-Trust Client: Kubernetes Pod Lifecycle
+import { createHmac } from "crypto";
+
+export class PraxisK8sClient {
+  constructor(private readonly baseUrl: string, private readonly mTLSKey: string) {}
+
+  async isolateNode(nodeId: string, reason: string): Promise<{ success: boolean; quarantinedPods: number }> {
+    const timestamp = Date.now().toString();
+    const signature = createHmac("sha256", this.mTLSKey)
+      .update(\`POST:/v1/nodes/\${nodeId}/quarantine:\${timestamp}\`)
+      .digest("hex");
+
+    const res = await fetch(\`\${this.baseUrl}/v1/nodes/\${nodeId}/quarantine\`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Exultia-Timestamp": timestamp,
+        "X-Exultia-Signature": signature
+      },
+      body: JSON.stringify({ reason, timestamp })
+    });
+    return res.json();
+  }
+}`,
+      python: `# Praxis Synthesized Zero-Trust Client: Kubernetes Pod Lifecycle
+import hmac, hashlib, time, httpx
+
+class PraxisK8sClient:
+    def __init__(self, base_url: str, client_cert: tuple[str, str], secret_key: bytes):
+        self.base_url = base_url
+        self.secret_key = secret_key
+        self.client = httpx.Client(cert=client_cert, timeout=5.0)
+
+    def isolate_node(self, node_id: str, reason: str) -> dict:
+        ts = str(int(time.time()))
+        payload = f"POST:/v1/nodes/{node_id}/quarantine:{ts}".encode()
+        sig = hmac.new(self.secret_key, payload, hashlib.sha256).hexdigest()
+        
+        headers = {"X-Exultia-Timestamp": ts, "X-Exultia-Signature": sig}
+        resp = self.client.post(f"{self.base_url}/v1/nodes/{node_id}/quarantine", headers=headers, json={"reason": reason})
+        resp.raise_for_status()
+        return resp.json()`,
+      go: `// Praxis Synthesized Zero-Trust Client: Kubernetes Pod Lifecycle
+package client
+
+import (
+	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"crypto/tls"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+)
+
+type K8sClient struct {
+	BaseURL    string
+	SecretKey  []byte
+	HTTPClient *http.Client
+}
+
+func (c *K8sClient) IsolateNode(nodeID, reason string) error {
+	ts := fmt.Sprintf("%d", time.Now().Unix())
+	mac := hmac.New(sha256.New, c.SecretKey)
+	mac.Write([]byte("POST:/v1/nodes/" + nodeID + "/quarantine:" + ts))
+	sig := hex.EncodeToString(mac.Sum(nil))
+
+	reqBody, _ := json.Marshal(map[string]string{"reason": reason})
+	req, _ := http.NewRequest("POST", c.BaseURL+"/v1/nodes/"+nodeID+"/quarantine", bytes.NewBuffer(reqBody))
+	req.Header.Set("X-Exultia-Timestamp", ts)
+	req.Header.Set("X-Exultia-Signature", sig)
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("isolation failed: %v", err)
+	}
+	return nil
+}`,
+      rust: `// Praxis Synthesized Zero-Trust Client: Kubernetes Pod Lifecycle
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
+use reqwest::Client;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+pub struct PraxisK8sClient {
+    base_url: String,
+    secret_key: Vec<u8>,
+    http: Client,
+}
+
+impl PraxisK8sClient {
+    pub async fn isolate_node(&self, node_id: &str, reason: &str) -> Result<(), reqwest::Error> {
+        let ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs().to_string();
+        let mut mac = Hmac::<Sha256>::new_from_slice(&self.secret_key).unwrap();
+        mac.update(format!("POST:/v1/nodes/{}/quarantine:{}", node_id, ts).as_bytes());
+        let sig = hex::encode(mac.finalize().into_bytes());
+
+        self.http.post(format!("{}/v1/nodes/{}/quarantine", self.base_url, node_id))
+            .header("X-Exultia-Timestamp", ts)
+            .header("X-Exultia-Signature", sig)
+            .json(&serde_json::json!({ "reason": reason }))
+            .send().await?.error_for_status()?;
+        Ok(())
+    }
+}`
+    }
+  };
+
+  const activePraxisCode = (PRAXIS_CODE_SAMPLES['k8s'] && PRAXIS_CODE_SAMPLES['k8s'][praxisLang]) || '// Praxis Code';
+
+  // ─────────────────────────────────────────────────────────────
+  // 6. PUREOS SIMULATOR STATE
+  // ─────────────────────────────────────────────────────────────
+  const [pureOsImage, setPureOsImage] = useState<'ubuntu' | 'node' | 'python'>('ubuntu');
+
+  const PUREOS_COMPARISONS = {
+    ubuntu: {
+      upstream: { name: 'ubuntu:24.04', size: '78 MB', binaries: 384, cves: 34, cisScore: '64.2%' },
+      pureos: { name: 'pureos/ubuntu-hardened:24.04', size: '22 MB', binaries: 42, cves: 0, cisScore: '99.4%' },
+      removed: [
+        { bin: '/usr/bin/gcc', reason: 'Prevent runtime C compiler exploit payload compilation' },
+        { bin: '/usr/bin/curl', reason: 'Eliminate reverse shell exfiltration download vectors' },
+        { bin: '/bin/su', reason: 'Eradicate local root privilege escalation binaries' },
+        { bin: '/etc/sudoers', reason: 'Zero-sudoer immutable runtime architecture' },
+        { bin: '/usr/bin/passwd', reason: 'Prevent rogue user account credential injection' }
+      ]
+    },
+    node: {
+      upstream: { name: 'node:20-alpine', size: '138 MB', binaries: 298, cves: 21, cisScore: '68.5%' },
+      pureos: { name: 'pureos/node-zero-trust:20-alpine', size: '39 MB', binaries: 31, cves: 0, cisScore: '98.8%' },
+      removed: [
+        { bin: '/usr/bin/npm', reason: 'Excise package manager from production production layer' },
+        { bin: '/bin/sh', reason: 'Enforce distroless scratch shell execution avoidance' },
+        { bin: '/sbin/apk', reason: 'Immutable alpine package index prevents untrusted installs' }
+      ]
+    },
+    python: {
+      upstream: { name: 'python:3.12-slim', size: '154 MB', binaries: 340, cves: 28, cisScore: '71.0%' },
+      pureos: { name: 'pureos/python-cis:3.12', size: '44 MB', binaries: 36, cves: 0, cisScore: '99.2%' },
+      removed: [
+        { bin: '/usr/local/bin/pip', reason: 'Pip excised to prevent runtime rogue wheel injection' },
+        { bin: '/usr/bin/wget', reason: 'Eliminate remote code payload fetch utilities' },
+        { bin: '/usr/bin/perl', reason: 'Remove auxiliary script engines exploited in memory injections' }
+      ]
+    }
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 7. AXIOM API PLAYGROUND STATE
+  // ─────────────────────────────────────────────────────────────
+  const [axiomEndpoint, setAxiomEndpoint] = useState<'domains' | 'session' | 'submit' | 'transcript'>('domains');
+  const [axiomCalling, setAxiomCalling] = useState(false);
+  const [axiomResponse, setAxiomResponse] = useState<any>({
+    status: 200,
+    latency: '18ms',
+    data: {
+      domains: [
+        { id: 'sec_plus_sy0701', name: 'CompTIA Security+ SY0-701', questionsCount: 450, passScore: 750 },
+        { id: 'cissp_cat8', name: 'ISC2 CISSP (8 Common Body of Knowledge Domains)', questionsCount: 920, passScore: 700 },
+        { id: 'ceh_v12', name: 'EC-Council Certified Ethical Hacker v12', questionsCount: 600, passScore: 70 }
+      ],
+      engineVersion: 'Axiom-LMS-2.4.0',
+      activeProctors: 14
+    }
   });
 
+  const runAxiomApiCall = (endpoint: 'domains' | 'session' | 'submit' | 'transcript') => {
+    setAxiomCalling(true);
+    setAxiomEndpoint(endpoint);
+
+    setTimeout(() => {
+      setAxiomCalling(false);
+      if (endpoint === 'domains') {
+        setAxiomResponse({
+          status: 200,
+          latency: '19ms',
+          data: {
+            domains: [
+              { id: 'sec_plus_sy0701', name: 'CompTIA Security+ SY0-701', questionsCount: 450, passScore: 750 },
+              { id: 'cissp_cat8', name: 'ISC2 CISSP (8 Common Body of Knowledge Domains)', questionsCount: 920, passScore: 700 },
+              { id: 'ceh_v12', name: 'EC-Council Certified Ethical Hacker v12', questionsCount: 600, passScore: 70 }
+            ],
+            engineVersion: 'Axiom-LMS-2.4.0',
+            activeProctors: 14
+          }
+        });
+      } else if (endpoint === 'session') {
+        setAxiomResponse({
+          status: 201,
+          latency: '34ms',
+          data: {
+            sessionId: 'sess_99a8b1c4e',
+            candidateId: 'cand_48102',
+            examCode: 'SY0-701',
+            proctorStatus: 'VERIFIED_WEBCAM_LOCKED',
+            durationMinutes: 90,
+            antiCheatToken: 'act_09f8c12a48b914',
+            expiresAt: new Date(Date.now() + 5400000).toISOString()
+          }
+        });
+      } else if (endpoint === 'submit') {
+        setAxiomResponse({
+          status: 200,
+          latency: '42ms',
+          data: {
+            submissionId: 'sub_7749102',
+            candidateId: 'cand_48102',
+            domainBreakdown: {
+              'Threats, Attacks, & Vulnerabilities': '92%',
+              'Architecture & Design': '88%',
+              'Implementation & Cryptography': '95%',
+              'Operations & Incident Response': '90%'
+            },
+            calculatedScore: 824,
+            minimumPassingScore: 750,
+            outcome: 'PASSED_CERTIFICATION_AWARDED',
+            credentialVerificationUrl: 'https://exultia.tech/verify/AXIOM-2026-9481'
+          }
+        });
+      } else {
+        setAxiomResponse({
+          status: 200,
+          latency: '22ms',
+          data: {
+            candidateId: 'cand_48102',
+            fullName: 'Alex Vance',
+            issuedCredential: 'CompTIA Security+ Equivalent (Axiom Standard)',
+            credentialHash: 'sha256:49182ab91c4801e9981240a18293c8a91823',
+            digitalSignature: 'SIG_ED25519:9f8b1c48a91048...',
+            cryptographicAttestationVerified: true
+          }
+        });
+      }
+    }, 400);
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 8. HISTORIC CLASSIC UNIX LAB STATE
+  // ─────────────────────────────────────────────────────────────
+  const [selectedOS, setSelectedOS] = useState<OperatingSystem>('pdp11');
+  const [terminalTheme, setTerminalTheme] = useState<'phosphor-green' | 'amber' | 'cyan'>('phosphor-green');
+  const [terminalHistory, setTerminalHistory] = useState<Array<{ text: string; type: 'cmd' | 'output' | 'error' | 'system' }>>([
+    { text: 'DEC PDP-11/20 SIMH V4.1-0 BOOT SEQUENCE INITIALIZED', type: 'system' },
+    { text: 'Core Memory: 24KB Core 0.8 MHz • Fixed-Head Disk: RF11 (images/rf0.dsk) • Cartridge: RK05 (images/rk0.dsk)', type: 'system' },
+    { text: 'Unix 1st Edition (November 1972, Ken Thompson & Dennis Ritchie)', type: 'system' },
+    { text: 'login: root', type: 'cmd' },
+    { text: '# (UID 0 root shell active without password check - authentic 1972 behavior)', type: 'output' },
+    { text: 'Type "help" or select a quick-action command button below to execute authentic commands.', type: 'system' }
+  ]);
+  const [terminalInput, setTerminalInput] = useState('');
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  const [pdp11CategoryFilter, setPdp11CategoryFilter] = useState('all');
+  const [pdp11Search, setPdp11Search] = useState('');
+  const [selectedMilestone, setSelectedMilestone] = useState<UnixMilestone>(UNIX_EVOLUTION_MILESTONES[1]);
+  const [selectedCommercialPlatform, setSelectedCommercialPlatform] = useState<CommercialUnixPlatform>(COMMERCIAL_UNIX_PLATFORMS[0]);
+  const [selectedBinaryIndex, setSelectedBinaryIndex] = useState(0);
+
+  const OS_METADATA = {
+    pdp11: {
+      name: 'Unix 1st Edition (1972)',
+      prompt: '# ',
+      hardware: 'DEC PDP-11/20 (16-bit 0.8MHz, 24KB Core, RF11 & RK05 Disks)',
+      repo: 'https://github.com/jserv/unix-v1',
+      author: 'Ken Thompson & Dennis Ritchie (Bell Labs)'
+    },
+    solaris: {
+      name: 'Sun Solaris / Illumos-Gate',
+      prompt: 'solaris# ',
+      hardware: 'SPARC / x86_64 Sun Enterprise Server (Live Native Build)',
+      repo: 'https://github.com/illumos/illumos-gate',
+      author: 'Sun Microsystems / Illumos Foundation'
+    },
+    aix: {
+      name: 'IBM AIX 4.1.3 (POWER)',
+      prompt: 'aix413# ',
+      hardware: 'IBM RS/6000 POWER Architecture (GCC Standalone Builds)',
+      repo: 'https://github.com/Arquivotheca/AIX-4.1.3',
+      author: 'IBM Corporation (1994)'
+    },
+    hpux: {
+      name: 'HP-UX 9.10 (PA-RISC)',
+      prompt: 'hpux910# ',
+      hardware: 'Hewlett-Packard PA-RISC 9000/700 Workstation',
+      repo: 'https://github.com/calmsacibis995/hpux-910-src',
+      author: 'Hewlett-Packard (1993)'
+    },
+    v4kernel: {
+      name: '1973 Research V4 (Dennis Ritchie C Rewrite)',
+      prompt: 'v4-kernel# ',
+      hardware: 'DEC PDP-11/45 Memory Management (Dennis Ritchie C Kernel)',
+      repo: 'https://github.com/dspinellis/unix-history-repo',
+      author: 'Dennis Ritchie (1973)'
+    }
+  };
+
+  const handleCommandExecution = (commandStr: string) => {
+    const cmd = commandStr.trim();
+    if (!cmd) return;
+
+    const newHistory = [...terminalHistory, { text: `${OS_METADATA[selectedOS].prompt}${cmd}`, type: 'cmd' as const }];
+    const lower = cmd.toLowerCase();
+
+    if (lower === 'clear') {
+      setTerminalHistory([]);
+      return;
+    }
+
+    if (lower === 'help') {
+      newHistory.push({
+        text: `AVAILABLE SIMULATOR COMMANDS FOR ${OS_METADATA[selectedOS].name.toUpperCase()}:
+  help          - Display this help message
+  clear         - Clear terminal display
+  uname -a      - Print kernel and architecture details
+  cat /etc/passwd - Inspect password storage
+  ls -la /dev   - List device files and permissions
+  whoami        - Display current user identity
+  banner [text] - Render authentic 5x5 ASCII banner
+  cal [month] [year] - Display System V calendar
+  kinetic-fix   - Execute Exultia Kinetic zero-downtime hot-mitigation
+  kinetic-revert - Execute deterministic instant rollback`,
+        type: 'output'
+      });
+    } else if (lower.startsWith('banner')) {
+      const text = cmd.slice(6).trim() || 'EXULTIA';
+      newHistory.push({ text: generateAsciiBanner(text), type: 'output' });
+    } else if (lower.startsWith('cal')) {
+      newHistory.push({ text: generateUnixCalendar(11, 1972), type: 'output' });
+    } else if (lower === 'uname -a') {
+      if (selectedOS === 'pdp11') {
+        newHistory.push({ text: 'Unix First Edition 1972 pdp11 PDP-11/20 rf0-rk0 Ken_Dennis', type: 'output' });
+      } else if (selectedOS === 'solaris') {
+        newHistory.push({ text: 'SunOS solaris-host 5.11 illumos-gate-2026 i86pc i386 illumos', type: 'output' });
+      } else if (selectedOS === 'aix') {
+        newHistory.push({ text: 'AIX aix-rs6000 1 4 000123454C00 IBM,9076-SP2', type: 'output' });
+      } else if (selectedOS === 'hpux') {
+        newHistory.push({ text: 'HP-UX hpux-host B.09.10 A 9000/715 2004245601 two-user license', type: 'output' });
+      } else {
+        newHistory.push({ text: 'Unix V4 1973 Research pdp11/45 C_Kernel Dennis_Ritchie', type: 'output' });
+      }
+    } else if (lower === 'cat /etc/passwd') {
+      if (selectedOS === 'pdp11') {
+        newHistory.push({
+          text: `root::0:1::/:
+ken::1:1::/usr/ken:
+dmr::2:1::/usr/dmr:
+(VULNERABILITY: World-readable 0666, plaintext blank passwords, UID 0 unauthenticated root access)`,
+          type: 'error'
+        });
+      } else {
+        newHistory.push({ text: 'root:x:0:0:Super-User:/:/sbin/sh\ndaemon:x:1:1::/:/bin/false\nbin:x:2:2::/usr/bin:/bin/false', type: 'output' });
+      }
+    } else if (lower === 'whoami') {
+      newHistory.push({ text: 'root (UID 0)', type: 'output' });
+    } else if (lower === 'kinetic-fix') {
+      newHistory.push({
+        text: `[EXULTIA KINETIC PDP-11 HOTFIX ENGINE]
+[1/3] Tier 1 Hot-Mitigation injected: chmod 600 /etc/passwd /dev/rf0 /dev/rk0
+[2/3] Verification Sentinel: Probe confirm raw block write handles revoked.
+[3/3] Status: 100% SECURE. Zero system halts.`,
+        type: 'system'
+      });
+    } else if (lower === 'kinetic-revert') {
+      newHistory.push({
+        text: `[EXULTIA KINETIC DETERMINISTIC ROLLBACK]
+[1/2] Reversing drop-in permissions: chmod 644 /etc/passwd && chmod 666 /dev/rf0
+[2/2] Baseline 1972 Unix V1 environment restored without core dump.`,
+        type: 'system'
+      });
+    } else {
+      newHistory.push({
+        text: `Command executed on ${selectedOS}: ${cmd}\nExit code: 0 OK`,
+        type: 'output'
+      });
+    }
+
+    setTerminalHistory(newHistory);
+    setTerminalInput('');
+  };
+
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [terminalHistory]);
+
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '2rem 1.5rem', color: '#F8FAFC' }}>
+    <div style={{ minHeight: '100vh', background: '#020617', color: '#F8FAFC', paddingBottom: '5rem' }}>
       
-      {/* ── TOP BREADCRUMB & RESEARCH BADGE ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#94A3B8' }}>
-          <Link href="/" style={{ color: '#94A3B8', textDecoration: 'none' }}>Home</Link>
-          <ChevronRight size={14} />
-          <span style={{ color: '#38BDF8', fontWeight: 600 }}>Systems Research Lab</span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4px 12px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.04em' }}>
-            ACADEMIC &amp; FORENSIC SECURITY DIVISION
-          </span>
-          <Link 
-            href="/app/patches" 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px', 
-              background: 'rgba(6, 182, 212, 0.1)', 
-              color: '#22D3EE', 
-              border: '1px solid rgba(6, 182, 212, 0.25)', 
-              padding: '4px 12px', 
-              borderRadius: '999px', 
-              fontSize: '0.75rem', 
-              fontWeight: 600, 
-              textDecoration: 'none' 
-            }}
-          >
-            <span>Switch to Commercial Product (Kinetic)</span>
-            <ArrowRight size={12} />
-          </Link>
-        </div>
-      </div>
-
-      {/* ── HERO BANNER ── */}
-      <div className="glass-card" style={{ 
-        position: 'relative', 
-        overflow: 'hidden', 
-        padding: '2.5rem', 
-        marginBottom: '2rem',
-        border: '1px solid rgba(56, 189, 248, 0.25)',
-        background: 'linear-gradient(135deg, rgba(8, 20, 35, 0.9) 0%, rgba(12, 16, 26, 0.98) 100%)'
+      {/* ── TOP HERO HEADER ── */}
+      <div style={{
+        background: 'radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.15) 0%, rgba(2, 6, 23, 0) 70%)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        padding: '3.5rem 1.5rem 2.5rem 1.5rem',
+        textAlign: 'center'
       }}>
-        <div style={{ maxWidth: '900px', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-            <Cpu size={40} color="#38BDF8" />
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #FFFFFF 0%, #38BDF8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Exultia Systems Research
-            </h1>
-            <span style={{ background: 'rgba(234, 179, 8, 0.2)', color: '#FDE047', border: '1px solid rgba(234, 179, 8, 0.4)', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-              1969–2026 ARCHAEOLOGY
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4px 14px', borderRadius: '999px', marginBottom: '1.25rem' }}>
+            <Sparkles size={14} color="#38BDF8" />
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#38BDF8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              Exultia Systems Research &amp; Live Validation Lab
             </span>
           </div>
 
-          <p style={{ fontSize: '1.15rem', color: '#CBD5E1', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-            We stress-test modern autonomous cyber-remediation against <strong>50+ years of computing architectures</strong>. From booting Dennis Ritchie &amp; Ken Thompson&apos;s 1972 DEC PDP-11 First Edition kernel on open hardware simulators to compiling authentic userland code across 1990s commercial giants (Sun Solaris, IBM AIX, HP-UX), our research proves that kinetic zero-downtime hot-mitigation transcends era and toolchain locks.
+          <h1 style={{ fontSize: '2.8rem', fontWeight: 900, letterSpacing: '-0.03em', margin: '0 0 1rem 0', color: '#FFFFFF' }}>
+            Interactive Security Testing &amp; Product Validation
+          </h1>
+
+          <p style={{ color: '#94A3B8', fontSize: '1.1rem', maxWidth: '820px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
+            Experience first-hand how every product in the Exultia ecosystem performs during real-world security testing. Demo compilers, threat feeds, 3-tier remediation, redaction engines, and classic OS emulators <strong>without installing anything or running code locally</strong>.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-            <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #38BDF8' }}>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#38BDF8' }}>11 Eras</div>
-              <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>From PDP-7 (1969) to Modern SVR4</div>
+          {/* Quick Metrics Bar */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '12px',
+            maxWidth: '1000px',
+            margin: '0 auto',
+            textAlign: 'left'
+          }}>
+            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '12px 16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Interactive Simulators</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#38BDF8' }}>7 Live Modules</div>
             </div>
-            <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #10B981' }}>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10B981' }}>7 Binaries</div>
-              <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>Compiled &amp; Verified on Modern Linux</div>
+            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '12px 16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Live Ingest Audits</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#A78BFA' }}>10,895 CVEs</div>
             </div>
-            <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #EAB308' }}>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FDE047' }}>68 / 68 Passed</div>
-              <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>Live PDP-11 SIMH Vectors Rolled Back</div>
+            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '12px 16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Rollback Verification</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#34D399' }}>100% Deterministic</div>
             </div>
-            <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #C084FC' }}>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#C084FC' }}>75,263 Files</div>
-              <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>1.6 GB Commercial Unix Source Audited</div>
+            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '12px 16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Compiled Historic OSs</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#EAB308' }}>5 Platforms</div>
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* ── RESEARCH NAVIGATION TABS ── */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '2rem', flexWrap: 'wrap', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '8px' }}>
-        {[
-          { id: 'simulator', label: '1. Multi-OS Live Simulator', icon: Terminal, color: '#38BDF8' },
-          { id: 'pdp11Grid', label: '2. PDP-11 Exhaustive Suite (68)', icon: ShieldCheck, color: '#10B981' },
-          { id: 'evolution', label: '3. Classic Lineage Matrix (1969-79)', icon: Clock, color: '#EAB308' },
-          { id: 'commercial', label: '4. Commercial Titans (Solaris/AIX/HPUX)', icon: Server, color: '#C084FC' },
-          { id: 'publications', label: '5. Publications & Whitepapers', icon: BookOpen, color: '#EC4899' },
-        ].map(t => {
-          const Icon = t.icon;
-          const isActive = activeTab === t.id;
-          return (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id as any)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 18px',
-                borderRadius: '8px',
-                border: isActive ? `1px solid ${t.color}` : '1px solid transparent',
-                background: isActive ? 'rgba(255, 255, 255, 0.06)' : 'transparent',
-                color: isActive ? t.color : '#94A3B8',
-                fontWeight: 700,
-                fontSize: '0.86rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Icon size={16} color={isActive ? t.color : '#64748B'} />
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+        
+        {/* ── TOP-LEVEL RESEARCH MODULE SELECTOR ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+          gap: '8px',
+          background: 'rgba(15, 23, 42, 0.8)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '16px',
+          padding: '8px',
+          marginBottom: '2.5rem'
+        }}>
+          {[
+            { id: 'pureide', name: 'PureIDE', desc: 'Hermetic Compiler', icon: <PureIdeIcon size={20} glow={false} />, color: '#3B82F6' },
+            { id: 'vantage', name: 'Vantage', desc: 'Threat Ingest', icon: <VantageIcon size={20} glow={false} />, color: '#8B5CF6' },
+            { id: 'kinetic', name: 'Kinetic', desc: '3-Tier Hotfix', icon: <KineticIcon size={20} glow={false} />, color: '#06B6D4' },
+            { id: 'inquest', name: 'Inquest', desc: 'FOIA Redaction', icon: <InquestIcon size={20} glow={false} />, color: '#EC4899' },
+            { id: 'praxis', name: 'Praxis', desc: 'SDK Synthesizer', icon: <PraxisIcon size={20} glow={false} />, color: '#F59E0B' },
+            { id: 'pureos', name: 'PureOS', desc: 'Attack Surface', icon: <PureOsIcon size={20} glow={false} />, color: '#10B981' },
+            { id: 'axiom', name: 'Axiom', desc: 'LMS REST API', icon: <AxiomIcon size={20} glow={false} />, color: '#F43F5E' },
+            { id: 'historic', name: 'Unix Lab', desc: '1972 & Commercial', icon: <Terminal size={20} color="#EAB308" />, color: '#EAB308' }
+          ].map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as ResearchTab)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '12px 8px',
+                  background: isActive ? `${tab.color}25` : 'transparent',
+                  border: isActive ? `1px solid ${tab.color}` : '1px solid transparent',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? `0 0 15px ${tab.color}33` : 'none'
+                }}
+              >
+                {tab.icon}
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: isActive ? '#FFFFFF' : '#CBD5E1' }}>
+                  {tab.name}
+                </span>
+                <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>
+                  {tab.desc}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-      {/* ── TAB 1: MULTI-OS INTERACTIVE SIMULATOR CONSOLE ── */}
-      {activeTab === 'simulator' && (
-        <div>
-          {/* SIMULATOR TARGET SWITCHER */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.85rem', color: '#94A3B8', fontWeight: 600 }}>Active Simulation Target:</span>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {[
-                  { id: 'pdp11', label: 'DEC PDP-11 Unix V1 (1972)', era: '1972', color: '#22C55E' },
-                  { id: 'solaris', label: 'Solaris / Illumos Gate', era: 'SVR4', color: '#38BDF8' },
-                  { id: 'aix', label: 'IBM AIX 4.1.3 (BOS)', era: 'RS/6000', color: '#F59E0B' },
-                  { id: 'hpux', label: 'HP-UX 9.10 (4 Binaries)', era: 'PA-RISC', color: '#A855F7' },
-                  { id: 'v4kernel', label: 'Dennis Ritchie V4 Kernel (1973)', era: '1973 C', color: '#EC4899' },
-                ].map(target => (
-                  <button
-                    key={target.id}
-                    onClick={() => setSimTarget(target.id as SimulatorTarget)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: '8px',
-                      border: simTarget === target.id ? `1px solid ${target.color}` : '1px solid rgba(255, 255, 255, 0.1)',
-                      background: simTarget === target.id ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.6)',
-                      color: simTarget === target.id ? target.color : '#94A3B8',
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <span>{target.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* CRT THEME SELECTOR */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.75rem', color: '#64748B' }}>CRT Phosphor:</span>
-              {(['phosphor-green', 'amber', 'cyan'] as const).map(theme => (
-                <button
-                  key={theme}
-                  onClick={() => setSimCrtTheme(theme)}
-                  style={{
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    background: theme === 'phosphor-green' ? '#22C55E' : theme === 'amber' ? '#F59E0B' : '#38BDF8',
-                    border: simCrtTheme === theme ? '2px solid #FFFFFF' : '1px solid transparent',
-                    cursor: 'pointer'
-                  }}
-                  title={theme}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* SIMULATOR CRT TERMINAL */}
-          <div style={{ 
-            background: crtThemeStyle.bg, 
-            borderRadius: '12px', 
-            border: `1px solid ${crtThemeStyle.border}`, 
-            boxShadow: `0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 0, 0, 0.5)`,
-            overflow: 'hidden',
-            marginBottom: '1.5rem'
-          }}>
-            {/* TERMINAL BAR */}
-            <div style={{ background: '#0B0F19', padding: '10px 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 1: PUREIDE HERMETIC COMPILER & WORKSTATION ATTRIBUTOR
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'pureide' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#EF4444' }} />
-                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#F59E0B' }} />
-                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }} />
+                <PureIdeIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#38BDF8' }}>
+                    PureIDE Hermetic Workstation Compiler &amp; Egress Sandbox
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Validating zero-telemetry compilation, supply-chain lifecycle hook interception, and in-toto SLSA L3 provenance.
+                  </span>
                 </div>
-                <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', fontWeight: 700, color: crtThemeStyle.text }}>
-                  EXULTIA CLASSIC UNIX RUNNER: [{simTarget.toUpperCase()}]
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4px 10px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: 700 }}>
+                  SLSA Level 3
+                </span>
+                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#34D399', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '4px 10px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: 700 }}>
+                  Zero-Egress
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.75rem', color: '#94A3B8' }}>
-                <span>Simulated Host: <strong>x86_64 Bare-Metal Node</strong></span>
-                <span>Port: <strong>5555 (ASR-33 Teletype)</strong></span>
-              </div>
             </div>
 
-            {/* CRT VIEWPORT */}
-            <div style={{ 
-              padding: '1.5rem', 
-              maxHeight: '440px', 
-              overflowY: 'auto', 
-              fontFamily: 'Consolas, Monaco, "Courier New", monospace', 
-              fontSize: '0.85rem', 
-              color: crtThemeStyle.text, 
-              lineHeight: 1.6,
-              background: 'radial-gradient(ellipse at center, rgba(10, 25, 40, 0.15) 0%, rgba(0, 0, 0, 0.8) 100%)'
-            }}>
-              {terminalLogs.map((log, i) => (
-                <div key={i} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            {/* Controls */}
+            <div style={{ background: 'rgba(0, 0, 0, 0.4)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Target Workspace Repository:</label>
+                  <select
+                    value={pureIdeRepo}
+                    onChange={(e) => setPureIdeRepo(e.target.value as any)}
+                    style={{ background: '#0F172A', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '6px 12px', borderRadius: '6px', fontSize: '0.82rem', outline: 'none' }}
+                  >
+                    <option value="telemetry-agent">telemetry-agent (Malicious postinstall beacon)</option>
+                    <option value="auth-vault">auth-vault (Zero-trust Go token microservice)</option>
+                    <option value="kernel-driver">kernel-driver (Rust eBPF network probe)</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px' }}>
+                  <input
+                    type="checkbox"
+                    id="egress-toggle"
+                    checked={pureIdeEgressBlock}
+                    onChange={(e) => setPureIdeEgressBlock(e.target.checked)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label htmlFor="egress-toggle" style={{ fontSize: '0.82rem', color: '#CBD5E1', cursor: 'pointer' }}>
+                    Enforce PureIDE Egress Firewall (Zero-Trust)
+                  </label>
+                </div>
+              </div>
+
+              <button
+                onClick={runPureIdeBuild}
+                disabled={pureIdeBuilding}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'linear-gradient(135deg, #0284C7, #2563EB)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: pureIdeBuilding ? 'not-allowed' : 'pointer',
+                  opacity: pureIdeBuilding ? 0.6 : 1,
+                  boxShadow: '0 2px 10px rgba(2, 132, 199, 0.3)'
+                }}
+              >
+                <Play size={16} />
+                {pureIdeBuilding ? 'Compiling in Sandbox...' : 'Run Hermetic Sandboxed Build'}
+              </button>
+            </div>
+
+            {/* Live Progress Bar */}
+            {pureIdeBuilding && (
+              <div style={{ marginBottom: '1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', height: '6px', overflow: 'hidden' }}>
+                <div style={{ width: `${pureIdeProgress}%`, height: '100%', background: '#38BDF8', transition: 'width 0.3s ease' }} />
+              </div>
+            )}
+
+            {/* Live Build Terminal Log */}
+            <div style={{ background: '#020617', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '1.25rem', fontFamily: 'monospace', fontSize: '0.8rem', minHeight: '180px', maxHeight: '280px', overflowY: 'auto' }}>
+              {pureIdeLogs.map((log, idx) => (
+                <div key={idx} style={{ color: log.includes('ALERT') || log.includes('NEUTRALIZED') ? '#F87171' : log.includes('PROVENANCE') || log.includes('DIGEST') ? '#34D399' : '#94A3B8', marginBottom: '4px' }}>
                   {log}
                 </div>
               ))}
-              <div ref={terminalEndRef} />
             </div>
 
-            {/* COMMAND INPUT ROW */}
-            <div style={{ background: '#070C16', padding: '12px 16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ color: crtThemeStyle.text, fontFamily: 'monospace', fontWeight: 700 }}>
-                {simTarget === 'pdp11' ? '# ' : simTarget === 'solaris' ? 'solaris# ' : simTarget === 'aix' ? 'aix413# ' : simTarget === 'hpux' ? 'hpux910# ' : 'v4-kernel# '}
-              </span>
-              <input
-                type="text"
-                value={commandInput}
-                onChange={(e) => setCommandInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    executeCommand(commandInput);
-                  }
-                }}
-                placeholder="Type command (e.g. help, boot, audit, banner 'UNIX', cal, chmod 600, rollback)..."
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: '#FFFFFF',
-                  fontFamily: 'monospace',
-                  fontSize: '0.85rem'
-                }}
-              />
-              <button
-                onClick={() => executeCommand(commandInput)}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: crtThemeStyle.text,
-                  padding: '6px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                Send
-              </button>
-            </div>
-          </div>
-
-          {/* QUICK-RUN PRESETS CHIPS */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#94A3B8' }}>
-              <Sparkles size={16} color="#FDE047" />
-              <strong>Quick Actions:</strong>
-            </div>
-
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              {simTarget === 'pdp11' && (
-                <>
-                  <button onClick={() => executeCommand('boot')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22C55E', color: '#4ADE80', fontSize: '0.75rem', cursor: 'pointer' }}>1. Boot SIMH 4.1</button>
-                  <button onClick={() => executeCommand('cat /etc/passwd')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', cursor: 'pointer' }}>2. Cat /etc/passwd</button>
-                  <button onClick={() => executeCommand('ls -l /dev')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', color: '#FDE047', fontSize: '0.75rem', cursor: 'pointer' }}>3. Inspect /dev/rf0</button>
-                  <button onClick={() => executeCommand('chmod 600 /etc/passwd /dev/rf0')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(14, 165, 233, 0.15)', border: '1px solid #0EA5E9', color: '#38BDF8', fontSize: '0.75rem', cursor: 'pointer' }}>4. Apply Kinetic Fix</button>
-                  <button onClick={() => executeCommand('rollback')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(236, 72, 153, 0.15)', border: '1px solid #EC4899', color: '#F472B6', fontSize: '0.75rem', cursor: 'pointer' }}>5. Zero-Downtime Rollback</button>
-                </>
-              )}
-
-              {simTarget === 'solaris' && (
-                <>
-                  <button onClick={() => executeCommand('banner "SOLARIS"')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.15)', border: '1px solid #38BDF8', color: '#38BDF8', fontSize: '0.75rem', cursor: 'pointer' }}>Run solaris_banner</button>
-                  <button onClick={() => executeCommand('whodo')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', cursor: 'pointer' }}>Audit whodo Buffer Overflow</button>
-                  <button onClick={() => executeCommand('in.ftpd')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', color: '#FDE047', fontSize: '0.75rem', cursor: 'pointer' }}>Audit in.ftpd glob</button>
-                  <button onClick={() => executeCommand('remediate')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22C55E', color: '#4ADE80', fontSize: '0.75rem', cursor: 'pointer' }}>Apply Kinetic Clamp</button>
-                </>
-              )}
-
-              {simTarget === 'aix' && (
-                <>
-                  <button onClick={() => executeCommand('echo "IBM AIX 4.1.3 COMPILED AND VERIFIED"')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', color: '#FDE047', fontSize: '0.75rem', cursor: 'pointer' }}>Run aix_echo</button>
-                  <button onClick={() => executeCommand('tcb')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(168, 85, 247, 0.15)', border: '1px solid #A855F7', color: '#C084FC', fontSize: '0.75rem', cursor: 'pointer' }}>Audit TCB Setuid</button>
-                  <button onClick={() => executeCommand('audit')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', cursor: 'pointer' }}>Scan 869 gets() calls</button>
-                  <button onClick={() => executeCommand('remediate')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22C55E', color: '#4ADE80', fontSize: '0.75rem', cursor: 'pointer' }}>Lockdown TCB (chmod 750)</button>
-                </>
-              )}
-
-              {simTarget === 'hpux' && (
-                <>
-                  <button onClick={() => executeCommand('banner "HP-UX"')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(168, 85, 247, 0.15)', border: '1px solid #A855F7', color: '#C084FC', fontSize: '0.75rem', cursor: 'pointer' }}>Run hpux_banner</button>
-                  <button onClick={() => executeCommand('cal 10 1972')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.15)', border: '1px solid #38BDF8', color: '#38BDF8', fontSize: '0.75rem', cursor: 'pointer' }}>Run hpux_cal 1972</button>
-                  <button onClick={() => executeCommand('cat -v /etc/issue')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22C55E', color: '#4ADE80', fontSize: '0.75rem', cursor: 'pointer' }}>Run hpux_cat -v</button>
-                  <button onClick={() => executeCommand('audit lpsched')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', cursor: 'pointer' }}>Audit lpsched Buffer</button>
-                </>
-              )}
-
-              {simTarget === 'v4kernel' && (
-                <>
-                  <button onClick={() => executeCommand('show user.h')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', color: '#FDE047', fontSize: '0.75rem', cursor: 'pointer' }}>Inspect user.h (char u_uid)</button>
-                  <button onClick={() => executeCommand('show suser')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.15)', border: '1px solid #38BDF8', color: '#38BDF8', fontSize: '0.75rem', cursor: 'pointer' }}>Inspect suser() logic</button>
-                  <button onClick={() => executeCommand('test overflow')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', cursor: 'pointer' }}>Simulate UID 256 Overflow</button>
-                </>
-              )}
-
-              <button onClick={() => executeCommand('clear')} style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#94A3B8', fontSize: '0.75rem', cursor: 'pointer' }}>Clear</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB 2: PDP-11 EXHAUSTIVE LIVE SUITE (68 VECTORS) ── */}
-      {activeTab === 'pdp11Grid' && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ShieldCheck size={22} color="#10B981" />
-                <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
-                  PDP-11 Live 68-Vector Verification Matrix (Open SIMH 4.1)
-                </h2>
+            {/* Validation Callout Card */}
+            {pureIdeDone && (
+              <div style={{ marginTop: '1.25rem', background: pureIdeBlockedLeak ? 'rgba(239, 68, 68, 0.08)' : 'rgba(34, 197, 94, 0.08)', border: pureIdeBlockedLeak ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '10px', padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <ShieldCheck size={18} color={pureIdeBlockedLeak ? '#EF4444' : '#22C55E'} />
+                  <strong style={{ color: pureIdeBlockedLeak ? '#FCA5A5' : '#86EFAC', fontSize: '0.9rem' }}>
+                    {pureIdeBlockedLeak ? 'Validation Passed: Malicious Egress Attempt Intercepted & Blocked' : 'Validation Passed: Pure Hermetic Reproducible Build Verified'}
+                  </strong>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#CBD5E1', lineHeight: 1.5 }}>
+                  The PureIDE compiler sandbox successfully prevented untrusted telemetry exfiltration without interrupting the artifact assembly. Output hashes are 100% reproducible across isolated build nodes.
+                </p>
               </div>
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', margin: '4px 0 0 0' }}>
-                All 60 PDP-11 /bin utility binaries and 8 core DEC PDP-11 syscalls executed on live hardware emulation with rf0 (512KB) and rk0 (2.5MB) disks.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', color: '#34D399', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
-                68/68 PASSED (100%)
-              </span>
-              <span style={{ background: 'rgba(236, 72, 153, 0.15)', border: '1px solid #EC4899', color: '#F472B6', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
-                100% DETERMINISTIC ROLLBACK
-              </span>
-              <span style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid #38BDF8', color: '#38BDF8', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
-                0 KERNEL PANICS
-              </span>
-            </div>
+            )}
           </div>
+        )}
 
-          {/* SEARCH & CATEGORY FILTER BAR */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 2: VANTAGE THREAT INTELLIGENCE & CVE QUERY EXPLORER
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'vantage' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(139, 92, 246, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <VantageIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#C084FC' }}>
+                    Vantage Threat Intelligence &amp; CVE Feed Explorer
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Real-time query engine auditing 10,895 enriched advisories with CISA KEV status, EPSS ratings, and machine-executable hotfixes.
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => setVantageViewMode('dossier')}
+                  style={{
+                    background: vantageViewMode === 'dossier' ? '#8B5CF6' : 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Visual Dossier
+                </button>
+                <button
+                  onClick={() => setVantageViewMode('json')}
+                  style={{
+                    background: vantageViewMode === 'json' ? '#8B5CF6' : 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Raw REST API (JSON)
+                </button>
+              </div>
+            </div>
+
+            {/* Search and Quick Preset Pills */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative', flex: '1 1 240px' }}>
                 <Search size={16} color="#64748B" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="text"
-                  placeholder="Search binary (e.g. chmod, cp, login, sh, su, sys break)..."
-                  value={pdp11Search}
-                  onChange={(e) => setPdp11Search(e.target.value)}
+                  value={vantageSearch}
+                  onChange={(e) => setVantageSearch(e.target.value)}
+                  placeholder="Search CVE, keyword, or advisory..."
                   style={{
                     width: '100%',
-                    padding: '8px 12px 8px 34px',
-                    background: '#040711',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '6px',
-                    color: '#F8FAFC',
+                    padding: '7px 10px 7px 32px',
+                    color: '#FFFFFF',
                     fontSize: '0.82rem',
                     outline: 'none'
                   }}
                 />
               </div>
-              {pdp11Search && (
-                <button
-                  onClick={() => setPdp11Search('')}
-                  style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#94A3B8', padding: '0 12px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
-                >
-                  Clear Search
-                </button>
-              )}
-            </div>
 
-            {/* CATEGORIES SCROLL */}
-            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
-              {uniqueCategories.map(cat => (
+              {VANTAGE_SAMPLE_FEED.map(item => (
                 <button
-                  key={cat}
-                  onClick={() => setPdp11CategoryFilter(cat)}
+                  key={item.cve}
+                  onClick={() => setVantageSearch(item.cve)}
                   style={{
-                    padding: '4px 10px',
+                    background: activeVantageItem.cve === item.cve ? 'rgba(139, 92, 246, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                    border: activeVantageItem.cve === item.cve ? '1px solid #8B5CF6' : '1px solid rgba(255, 255, 255, 0.1)',
+                    color: activeVantageItem.cve === item.cve ? '#C084FC' : '#CBD5E1',
+                    padding: '6px 12px',
                     borderRadius: '6px',
-                    border: pdp11CategoryFilter === cat ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.08)',
-                    background: pdp11CategoryFilter === cat ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-                    color: pdp11CategoryFilter === cat ? '#34D399' : '#94A3B8',
-                    fontSize: '0.74rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap'
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
                   }}
                 >
-                  {cat === 'all' ? `All Categories (${EXHAUSTIVE_PDP11_TEST_ITEMS.length})` : cat}
+                  {item.cve}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* TABLE OF EXHAUSTIVE TEST RESULTS */}
-          <div style={{ background: '#040711', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
-            <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-                <thead style={{ position: 'sticky', top: 0, background: '#0B0F19', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', zIndex: 10 }}>
-                  <tr style={{ color: '#94A3B8' }}>
-                    <th style={{ padding: '10px 12px', width: '40px' }}>#</th>
-                    <th style={{ padding: '10px 12px' }}>Binary / Syscall</th>
-                    <th style={{ padding: '10px 12px' }}>Category</th>
-                    <th style={{ padding: '10px 12px' }}>CWE</th>
-                    <th style={{ padding: '10px 12px' }}>1972 Root Vulnerability</th>
-                    <th style={{ padding: '10px 12px' }}>Tier 1 Hot-Mitigation</th>
-                    <th style={{ padding: '10px 12px' }}>Deterministic Rollback</th>
-                    <th style={{ padding: '10px 12px' }}>Verification</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPdp11Tests.map(item => (
-                    <tr key={item.index} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', transition: 'background 0.15s ease' }}>
-                      <td style={{ padding: '10px 12px', color: '#64748B', fontFamily: 'monospace' }}>{item.index}</td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <span style={{ fontFamily: 'monospace', fontWeight: 700, color: item.binary_or_syscall.startsWith('sys') ? '#38BDF8' : '#FDE047' }}>
-                          {item.binary_or_syscall.startsWith('sys') ? item.binary_or_syscall : `/bin/${item.binary_or_syscall}`}
-                        </span>
-                      </td>
-                      <td style={{ padding: '10px 12px', color: '#94A3B8', fontSize: '0.75rem' }}>{item.category}</td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#FCA5A5', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', fontFamily: 'monospace' }}>
-                          {item.cwe}
-                        </span>
-                      </td>
-                      <td style={{ padding: '10px 12px', color: '#CBD5E1', maxWidth: '240px', lineHeight: 1.4 }}>
-                        {item.vulnerability_description}
-                      </td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <code style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '3px 6px', borderRadius: '4px', fontSize: '0.72rem', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
-                            {item.tier1_remediation}
-                          </code>
-                          <button
-                            onClick={() => copyToClipboard(item.tier1_remediation, `rem-${item.index}`)}
-                            style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', padding: '2px' }}
-                            title="Copy Remediation Command"
-                          >
-                            {copiedText === `rem-${item.index}` ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
-                          </button>
-                        </div>
-                      </td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <code style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#F472B6', padding: '3px 6px', borderRadius: '4px', fontSize: '0.72rem', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
-                            {item.rollback_command}
-                          </code>
-                          <button
-                            onClick={() => copyToClipboard(item.rollback_command, `rb-${item.index}`)}
-                            style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', padding: '2px' }}
-                            title="Copy Rollback Command"
-                          >
-                            {copiedText === `rb-${item.index}` ? <Check size={12} color="#EC4899" /> : <Copy size={12} />}
-                          </button>
-                        </div>
-                      </td>
-                      <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.25)', padding: '2px 8px', borderRadius: '999px', fontSize: '0.7rem', fontWeight: 700 }}>
-                          <CheckCircle2 size={12} />
-                          VERIFIED
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB 3: CLASSIC LINEAGE MATRIX (1969 - 1979) ── */}
-      {activeTab === 'evolution' && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Clock size={22} color="#EAB308" />
-                <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
-                  Classic Unix Security Evolution Matrix (1969–1979)
-                </h2>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', margin: '4px 0 0 0' }}>
-                Continuous chronological audits of Bell Labs milestones extracted from <code style={{ color: '#38BDF8' }}>dspinellis/unix-history-repo</code>.
-              </p>
-            </div>
-          </div>
-
-          {/* MILESTONE TILES */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '1.5rem' }}>
-            {UNIX_EVOLUTION_MILESTONES.map((m) => (
-              <button
-                key={m.release}
-                onClick={() => setSelectedMilestone(m)}
-                style={{
-                  padding: '0.85rem 0.5rem',
-                  borderRadius: '8px',
-                  border: selectedMilestone.release === m.release ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: selectedMilestone.release === m.release ? 'rgba(56, 189, 248, 0.15)' : 'rgba(15, 23, 42, 0.6)',
-                  color: selectedMilestone.release === m.release ? '#38BDF8' : '#94A3B8',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{m.year}</div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: selectedMilestone.release === m.release ? '#F8FAFC' : '#CBD5E1' }}>
-                  {m.release.replace('Research-', '')}
+            {/* Dossier or JSON View */}
+            {vantageViewMode === 'dossier' ? (
+              <div style={{ background: '#020617', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px', padding: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#C084FC' }}>
+                      {activeVantageItem.cve}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', background: 'rgba(239, 68, 68, 0.2)', color: '#F87171', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                      {activeVantageItem.severity} (CVSS {activeVantageItem.cvss})
+                    </span>
+                    {activeVantageItem.kev && (
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#FDE047', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        CISA KEV EXPLOITED
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                    EPSS Exploitation Probability: <strong style={{ color: '#38BDF8' }}>{activeVantageItem.epss}</strong>
+                  </span>
                 </div>
-              </button>
-            ))}
-          </div>
 
-          {/* ACTIVE MILESTONE CARD */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '12px', padding: '1.75rem', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '10px' }}>
-              <div>
-                <span style={{ fontSize: '0.78rem', color: '#38BDF8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  {selectedMilestone.era} ({selectedMilestone.year})
-                </span>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#F8FAFC', margin: '4px 0 0 0' }}>
-                  {selectedMilestone.release} &bull; {selectedMilestone.authModel}
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', margin: '0 0 10px 0' }}>
+                  {activeVantageItem.title}
                 </h3>
+
+                <p style={{ fontSize: '0.84rem', color: '#CBD5E1', lineHeight: 1.5, margin: '0 0 14px 0' }}>
+                  {activeVantageItem.description}
+                </p>
+
+                <div style={{ background: '#0B0F19', padding: '10px', borderRadius: '6px', fontSize: '0.75rem', color: '#94A3B8', marginBottom: '14px' }}>
+                  <strong>Affected Linux Distributions:</strong> {activeVantageItem.affected.join(' • ')}
+                </div>
+
+                {/* Hotfix and Rollback commands */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
+                  <div style={{ background: 'rgba(6, 182, 212, 0.08)', border: '1px solid rgba(6, 182, 212, 0.3)', borderRadius: '8px', padding: '10px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#22D3EE', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>TIER 1 ZERO-DOWNTIME HOTFIX</span>
+                      <button
+                        onClick={() => copyToClipboard(activeVantageItem.hotfix, 'vt-fix')}
+                        style={{ background: 'transparent', border: 'none', color: '#22D3EE', cursor: 'pointer', fontSize: '0.7rem' }}
+                      >
+                        {copiedText === 'vt-fix' ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                    <code style={{ fontSize: '0.75rem', color: '#67E8F9', display: 'block', wordBreak: 'break-all' }}>
+                      {activeVantageItem.hotfix}
+                    </code>
+                  </div>
+
+                  <div style={{ background: 'rgba(236, 72, 153, 0.08)', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: '8px', padding: '10px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#F472B6', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>DETERMINISTIC ROLLBACK</span>
+                      <button
+                        onClick={() => copyToClipboard(activeVantageItem.rollback, 'vt-rb')}
+                        style={{ background: 'transparent', border: 'none', color: '#F472B6', cursor: 'pointer', fontSize: '0.7rem' }}
+                      >
+                        {copiedText === 'vt-rb' ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                    <code style={{ fontSize: '0.75rem', color: '#F472B6', display: 'block', wordBreak: 'break-all' }}>
+                      {activeVantageItem.rollback}
+                    </code>
+                  </div>
+                </div>
               </div>
+            ) : (
+              <pre style={{ background: '#020617', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px', padding: '1.25rem', color: '#A78BFA', fontSize: '0.78rem', overflowX: 'auto', maxHeight: '350px' }}>
+                {JSON.stringify(activeVantageItem, null, 2)}
+              </pre>
+            )}
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 3: KINETIC AUTONOMOUS 3-TIER REMEDIATION RIG
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'kinetic' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <KineticIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#22D3EE' }}>
+                    Kinetic Autonomous Remediation &amp; Canary Rollback Testing Rig
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Simulating zero-reboot hot-mitigation on active OpenSSH server clusters with deterministic rollback.
+                  </span>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: '8px' }}>
-                <span style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#FCA5A5', fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                  {selectedMilestone.cwe}
+                <span style={{ background: 'rgba(6, 182, 212, 0.15)', color: '#22D3EE', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '4px 10px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: 700 }}>
+                  Zero-Reboot
                 </span>
-                <span style={{ background: 'rgba(255, 255, 255, 0.08)', color: '#CBD5E1', fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px', fontFamily: 'monospace' }}>
-                  {selectedMilestone.kernelLang}
+                <span style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#F472B6', border: '1px solid rgba(236, 72, 153, 0.3)', padding: '4px 10px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: 700 }}>
+                  100% Reversible
                 </span>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginTop: '1rem' }}>
-              {/* CODE SNIPPET */}
-              <div>
-                <div style={{ fontSize: '0.78rem', color: '#94A3B8', fontWeight: 700, marginBottom: '6px' }}>
-                  Authentic Historical Source Code &amp; Weakness:
-                </div>
-                <div style={{ background: '#050811', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.06)', fontFamily: 'Consolas, Monaco, monospace', fontSize: '0.78rem', color: '#FDE047', maxHeight: '200px', overflowY: 'auto' }}>
-                  <pre style={{ margin: 0 }}>{selectedMilestone.keyWeaknessSnippet}</pre>
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '6px', fontFamily: 'monospace' }}>
-                  Source: {selectedMilestone.sourceRepo}
-                </div>
+            {/* Status Ribbon & Controls */}
+            <div style={{ background: 'rgba(0, 0, 0, 0.4)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.85rem', color: '#94A3B8' }}>Current Host State:</span>
+                <span style={{
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  background: kineticState === 'vulnerable' ? 'rgba(239, 68, 68, 0.2)' : kineticState === 'mitigated' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(236, 72, 153, 0.2)',
+                  color: kineticState === 'vulnerable' ? '#F87171' : kineticState === 'mitigated' ? '#34D399' : '#F472B6',
+                  border: `1px solid ${kineticState === 'vulnerable' ? '#EF4444' : kineticState === 'mitigated' ? '#22C55E' : '#EC4899'}`
+                }}>
+                  {kineticState.toUpperCase()}
+                </span>
               </div>
 
-              {/* KINETIC MITIGATION */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', padding: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <Zap size={14} color="#10B981" />
-                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#34D399', textTransform: 'uppercase' }}>
-                      Exultia Kinetic Remediation Plan
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.82rem', color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>
-                    {selectedMilestone.kineticRemediation}
-                  </p>
-                </div>
-
-                <div style={{ background: 'rgba(236, 72, 153, 0.1)', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: '8px', padding: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <RotateCcw size={14} color="#EC4899" />
-                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#F472B6', textTransform: 'uppercase' }}>
-                      Deterministic Rollback Runbook
-                    </span>
-                  </div>
-                  <div style={{ background: '#050811', padding: '0.5rem 0.75rem', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#F472B6', marginTop: '6px' }}>
-                    {selectedMilestone.rollbackPlan}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB 4: COMMERCIAL TITANS (SOLARIS, AIX, HP-UX) ── */}
-      {activeTab === 'commercial' && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Server size={22} color="#C084FC" />
-                <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
-                  Commercial Unix Titans Forensic Lab: Solaris, AIX, &amp; HP-UX
-                </h2>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', margin: '4px 0 0 0' }}>
-                Deep source analysis of 1.6 GB across 75,263 files, 6 compiled userland utilities, and documented toolchain boundaries.
-              </p>
-            </div>
-          </div>
-
-          {/* COMMERCIAL PLATFORM SELECTOR TABS */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px', marginBottom: '1.5rem' }}>
-            {COMMERCIAL_UNIX_PLATFORMS.map(p => {
-              const isSelected = selectedCommercialPlatform.id === p.id;
-              return (
+              <div style={{ display: 'flex', gap: '10px' }}>
                 <button
-                  key={p.id}
-                  onClick={() => {
-                    setSelectedCommercialPlatform(p);
-                    setSelectedBinaryIndex(0);
-                  }}
+                  onClick={applyKineticHotfix}
+                  disabled={kineticState === 'mitigated' || kineticState === 'applying'}
                   style={{
-                    padding: '1.2rem',
-                    borderRadius: '12px',
-                    border: isSelected ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.08)',
-                    background: isSelected ? 'rgba(56, 189, 248, 0.15)' : 'rgba(15, 23, 42, 0.6)',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '6px'
+                    background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+                    color: '#000',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: kineticState === 'mitigated' ? 'not-allowed' : 'pointer',
+                    opacity: kineticState === 'mitigated' ? 0.5 : 1
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 700, color: isSelected ? '#38BDF8' : '#F8FAFC' }}>
-                      {p.name}
-                    </span>
-                    <Server size={18} color={isSelected ? '#38BDF8' : '#64748B'} />
-                  </div>
-                  <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>{p.vendor} &bull; {p.era}</span>
-                  <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
-                    <span style={{ background: 'rgba(255, 255, 255, 0.06)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: '#CBD5E1' }}>
-                      {p.sizeOnDisk}
-                    </span>
-                    <span style={{ background: 'rgba(255, 255, 255, 0.06)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: '#CBD5E1' }}>
-                      {p.totalFiles.toLocaleString()} files
-                    </span>
-                    <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 600 }}>
-                      {p.compiledBinaries.length} Binaries Built
-                    </span>
-                  </div>
+                  ▶ Deploy Tier 1 Hot-Mitigation
                 </button>
-              );
-            })}
-          </div>
+                <button
+                  onClick={rollbackKineticHotfix}
+                  disabled={kineticState === 'vulnerable' || kineticState === 'reverting'}
+                  style={{
+                    background: 'rgba(236, 72, 153, 0.15)',
+                    color: '#F472B6',
+                    border: '1px solid rgba(236, 72, 153, 0.4)',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: kineticState === 'vulnerable' ? 'not-allowed' : 'pointer',
+                    opacity: kineticState === 'vulnerable' ? 0.5 : 1
+                  }}
+                >
+                  ↺ Trigger Deterministic Rollback
+                </button>
+              </div>
+            </div>
 
-          {/* ACTIVE PLATFORM DEEP DIVE */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem' }}>
-              <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
-                  {selectedCommercialPlatform.name}
-                </h3>
-                <div style={{ fontSize: '0.8rem', color: '#94A3B8', marginTop: '4px' }}>
-                  Target Architecture: <strong style={{ color: '#E2E8F0' }}>{selectedCommercialPlatform.architecture}</strong> &bull; Vendor: <strong style={{ color: '#E2E8F0' }}>{selectedCommercialPlatform.vendor}</strong>
+            {/* Execution Trace */}
+            <div style={{ background: '#020617', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '1.25rem', fontFamily: 'monospace', fontSize: '0.8rem', minHeight: '180px' }}>
+              {kineticLogs.map((log, idx) => (
+                <div key={idx} style={{ color: log.includes('MITIGATED') ? '#34D399' : log.includes('REVERT') || log.includes('restored') ? '#F472B6' : '#94A3B8', marginBottom: '4px' }}>
+                  {log}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 4: INQUEST FOIA LEGAL REDACTION PIPELINE
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'inquest' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(236, 72, 153, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <InquestIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#F472B6' }}>
+                    Inquest Automated Public Records &amp; FOIA Redaction Pipeline
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Automated entity identification, statutory exemption tagging (FOIA 1-9), and court-admissible chain-of-custody seals.
+                  </span>
                 </div>
               </div>
 
-              <a
-                href={selectedCommercialPlatform.repoUrl}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={runInquestRedaction}
+                disabled={inquestProcessing}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#38BDF8',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  textDecoration: 'none'
+                  background: 'linear-gradient(135deg, #EC4899, #8B5CF6)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer'
                 }}
               >
-                <span>View Source Repository</span>
-                <ExternalLink size={14} />
-              </a>
+                {inquestProcessing ? 'Processing Redactions...' : 'Run Automated Legal Discovery & Redaction'}
+              </button>
             </div>
 
-            {/* AUDIT METRICS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: '#F87171', fontWeight: 700 }}>strcpy() Calls</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#EF4444' }}>
-                  {selectedCommercialPlatform.securityAuditMetrics.strcpyCalls.toLocaleString()}
-                </div>
-              </div>
-              <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: '#FBBF24', fontWeight: 700 }}>sprintf() Calls</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#F59E0B' }}>
-                  {selectedCommercialPlatform.securityAuditMetrics.sprintfCalls.toLocaleString()}
-                </div>
-              </div>
-              <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: '#FCA5A5', fontWeight: 700 }}>gets() Unbounded</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: selectedCommercialPlatform.securityAuditMetrics.getsCalls > 0 ? '#EF4444' : '#10B981' }}>
-                  {selectedCommercialPlatform.securityAuditMetrics.getsCalls.toLocaleString()}
-                </div>
-              </div>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: '#34D399', fontWeight: 700 }}>strlcpy() Safe</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#10B981' }}>
-                  {selectedCommercialPlatform.securityAuditMetrics.strlcpyCalls.toLocaleString()}
-                </div>
-              </div>
-              <div style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: '#38BDF8', fontWeight: 700 }}>snprintf() Safe</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38BDF8' }}>
-                  {selectedCommercialPlatform.securityAuditMetrics.snprintfCalls.toLocaleString()}
-                </div>
-              </div>
+            {/* Document Selector */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem' }}>
+              {[
+                { id: 'water-contract', label: 'Austin Water Contract ($14.2M)' },
+                { id: 'police-ia', label: 'Police Internal Affairs Report' },
+                { id: 'grant-audit', label: 'NSF Quantum Cryptography Audit' }
+              ].map(doc => (
+                <button
+                  key={doc.id}
+                  onClick={() => {
+                    setInquestDoc(doc.id as any);
+                    setInquestRedacted(false);
+                  }}
+                  style={{
+                    background: inquestDoc === doc.id ? 'rgba(236, 72, 153, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                    border: inquestDoc === doc.id ? '1px solid #EC4899' : '1px solid rgba(255, 255, 255, 0.1)',
+                    color: inquestDoc === doc.id ? '#F472B6' : '#CBD5E1',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {doc.label}
+                </button>
+              ))}
             </div>
 
-            <div style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '12px 16px', borderRadius: '8px', borderLeft: '3px solid #38BDF8', fontSize: '0.82rem', color: '#CBD5E1', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-              <strong>Security Posture Assessment:</strong> {selectedCommercialPlatform.securityAuditMetrics.auditAssessment}
-            </div>
-
-            {/* COMPILED BINARY PREVIEW */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22D3EE' }}>Compiled Userland Binaries:</span>
-                {selectedCommercialPlatform.compiledBinaries.length > 1 && (
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    {selectedCommercialPlatform.compiledBinaries.map((b, i) => (
-                      <button
-                        key={b.name}
-                        onClick={() => setSelectedBinaryIndex(i)}
-                        style={{
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          border: selectedBinaryIndex === i ? '1px solid #22D3EE' : '1px solid rgba(255, 255, 255, 0.1)',
-                          background: selectedBinaryIndex === i ? 'rgba(34, 211, 238, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                          color: selectedBinaryIndex === i ? '#22D3EE' : '#94A3B8',
-                          fontSize: '0.72rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {b.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
+            {/* Side-by-Side Comparator */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+              <div style={{ background: '#020617', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '10px', padding: '1.25rem' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <AlertTriangle size={15} /> ORIGINAL UNREDACTED RECORD (EXPOSES PII &amp; TRADE SECRETS)
+                </div>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', color: '#FCA5A5', fontSize: '0.76rem', lineHeight: 1.5, fontFamily: 'monospace' }}>
+                  {INQUEST_DOCS[inquestDoc].unredacted}
+                </pre>
               </div>
 
-              {selectedCommercialPlatform.compiledBinaries[selectedBinaryIndex] && (() => {
-                const b = selectedCommercialPlatform.compiledBinaries[selectedBinaryIndex];
-                return (
-                  <div style={{ background: '#020617', borderRadius: '8px', border: '1px solid rgba(34, 211, 238, 0.25)', overflow: 'hidden' }}>
-                    <div style={{ background: '#0B0F19', padding: '6px 12px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                      <span style={{ color: '#38BDF8', fontFamily: 'monospace' }}>{b.binaryPath} ({b.sizeBytes} bytes)</span>
-                      <span style={{ color: '#A78BFA' }}>{b.compilerUsed}</span>
-                    </div>
-                    <pre style={{ margin: 0, padding: '10px 14px', background: '#030712', color: '#4ADE80', fontSize: '0.8rem', fontFamily: 'monospace', overflowX: 'auto' }}>
-                      {b.testOutput}
-                    </pre>
-                  </div>
-                );
-              })()}
+              <div style={{ background: '#020617', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: '10px', padding: '1.25rem' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#34D399', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ShieldCheck size={15} /> COMPLIANCE REDACTED OUTPUT (STATUTORY CITATIONS TAGGED)
+                </div>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', color: inquestRedacted ? '#86EFAC' : '#64748B', fontSize: '0.76rem', lineHeight: 1.5, fontFamily: 'monospace' }}>
+                  {inquestRedacted ? INQUEST_DOCS[inquestDoc].redacted : 'Click "Run Automated Legal Discovery & Redaction" above to process document...'}
+                </pre>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ── TAB 5: PUBLICATIONS & WHITEPAPERS ── */}
-      {activeTab === 'publications' && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-            <BookOpen size={24} color="#EC4899" />
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: '#EC4899' }}>
-              Publications &amp; Technical Forensic Artifacts
-            </h2>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* PAPER 1 */}
-            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 5: PRAXIS ZERO-TRUST SDK SYNTHESIZER
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'praxis' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <PraxisIcon size={32} />
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: '#38BDF8', fontWeight: 700, textTransform: 'uppercase' }}>RESEARCH REPORT 2026-01</span>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F8FAFC', margin: '4px 0 0 0' }}>
-                    Autonomous Kinetic Remediation Across 50 Years of Operating System Lineages
-                  </h3>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#FDE047' }}>
+                    Praxis Zero-Trust API Client SDK Synthesizer
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Synthesizing hardened, zero-telemetry API client SDKs with native mTLS, token rotation, and HMAC replay guards.
+                  </span>
                 </div>
-                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#4ADE80', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
-                  PEER-VERIFIED
+              </div>
+
+              {/* Language Pills */}
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {(['typescript', 'python', 'go', 'rust'] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setPraxisLang(lang)}
+                    style={{
+                      background: praxisLang === lang ? '#F59E0B' : 'rgba(255, 255, 255, 0.05)',
+                      color: praxisLang === lang ? '#000000' : '#CBD5E1',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Code Output Window */}
+            <div style={{ background: '#020617', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '10px', padding: '1.25rem', position: 'relative' }}>
+              <button
+                onClick={() => copyToClipboard(activePraxisCode, 'praxis-code')}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  color: '#FDE047',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                {copiedText === 'praxis-code' ? <Check size={13} /> : <Copy size={13} />}
+                {copiedText === 'praxis-code' ? 'Copied SDK' : 'Copy Code'}
+              </button>
+
+              <pre style={{ margin: 0, color: '#FDE047', fontSize: '0.78rem', lineHeight: 1.5, fontFamily: 'monospace', overflowX: 'auto', maxHeight: '380px' }}>
+                {activePraxisCode}
+              </pre>
+            </div>
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 6: PUREOS CONTAINER ATTACK-SURFACE ANALYZER
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'pureos' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <PureOsIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#34D399' }}>
+                    PureOS Pre-Hardened Container Attack-Surface Analyzer
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Comparative analysis demonstrating 88% binary reduction, zero critical CVEs, and 99.4% CIS Benchmark compliance.
+                  </span>
+                </div>
+              </div>
+
+              {/* Image selector */}
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {(['ubuntu', 'node', 'python'] as const).map(img => (
+                  <button
+                    key={img}
+                    onClick={() => setPureOsImage(img)}
+                    style={{
+                      background: pureOsImage === img ? '#10B981' : 'rgba(255, 255, 255, 0.05)',
+                      color: pureOsImage === img ? '#000000' : '#CBD5E1',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {img}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Metrics Comparative Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '1.5rem' }}>
+              <div style={{ background: '#020617', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1.25rem', borderRadius: '10px' }}>
+                <div style={{ fontSize: '0.72rem', color: '#F87171', fontWeight: 800 }}>UPSTREAM DEFAULT ({PUREOS_COMPARISONS[pureOsImage].upstream.name})</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF', marginTop: '6px' }}>{PUREOS_COMPARISONS[pureOsImage].upstream.cves} Known CVEs</div>
+                <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: '4px' }}>Binaries in $PATH: {PUREOS_COMPARISONS[pureOsImage].upstream.binaries} • CIS Score: {PUREOS_COMPARISONS[pureOsImage].upstream.cisScore}</div>
+              </div>
+
+              <div style={{ background: '#020617', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1.25rem', borderRadius: '10px' }}>
+                <div style={{ fontSize: '0.72rem', color: '#34D399', fontWeight: 800 }}>PUREOS HARDENED ({PUREOS_COMPARISONS[pureOsImage].pureos.name})</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#34D399', marginTop: '6px' }}>0 Critical/High CVEs</div>
+                <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: '4px' }}>Binaries in $PATH: {PUREOS_COMPARISONS[pureOsImage].pureos.binaries} (88% reduction) • CIS Score: {PUREOS_COMPARISONS[pureOsImage].pureos.cisScore}</div>
+              </div>
+            </div>
+
+            {/* Removed Vectors Table */}
+            <div style={{ background: 'rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '1rem', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '8px' }}>
+                Excised Attack Surface Utilities &amp; Rationale:
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {PUREOS_COMPARISONS[pureOsImage].removed.map(r => (
+                  <div key={r.bin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.4)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem' }}>
+                    <code style={{ color: '#F87171', fontWeight: 700 }}>{r.bin}</code>
+                    <span style={{ color: '#94A3B8' }}>{r.reason}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 7: AXIOM LMS & ASSESSMENT REST API PLAYGROUND
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'axiom' && (
+          <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <AxiomIcon size={32} />
+                <div>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#FDA4AF' }}>
+                    Axiom Cybersecurity Exam Simulator &amp; LMS API Playground
+                  </h2>
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>
+                    Direct testing interface for enterprise LMS integration, proctored session generation, and candidate grading endpoints.
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {[
+                  { id: 'domains', label: 'GET /domains' },
+                  { id: 'session', label: 'POST /sessions/start' },
+                  { id: 'submit', label: 'POST /assessments/submit' },
+                  { id: 'transcript', label: 'GET /transcript' }
+                ].map(ep => (
+                  <button
+                    key={ep.id}
+                    onClick={() => runAxiomApiCall(ep.id as any)}
+                    style={{
+                      background: axiomEndpoint === ep.id ? '#F43F5E' : 'rgba(255, 255, 255, 0.05)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {ep.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* API Console Display */}
+            <div style={{ background: '#020617', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: '12px', padding: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ background: '#22C55E', color: '#000', fontSize: '0.7rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' }}>
+                    HTTP {axiomResponse.status} OK
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#94A3B8', fontFamily: 'monospace' }}>
+                    Latency: {axiomResponse.latency}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.72rem', color: '#64748B', fontFamily: 'monospace' }}>
+                  Bearer sec_live_axiom_99a8b12...
                 </span>
               </div>
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1rem' }}>
-                A forensic study evaluating zero-downtime micro-mitigations on DEC PDP-11 Unix V1 (1972), research Unix milestones (1969–1979), and commercial workstation operating systems (Sun Solaris, IBM AIX 4.1.3, HP-UX 9.10). Demonstrates that declarative configuration clamping and runtime privilege isolation completely eliminate weaponized attack windows without requiring legacy toolchain recompilation.
-              </p>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+
+              <pre style={{ margin: 0, color: '#FDA4AF', fontSize: '0.78rem', lineHeight: 1.5, fontFamily: 'monospace', overflowX: 'auto', maxHeight: '300px' }}>
+                {JSON.stringify(axiomResponse.data, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 8: HISTORIC CLASSIC UNIX ARCHAEOLOGY LAB
+        ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'historic' && (
+          <div>
+            {/* TERMINAL HEADER & PLATFORM SWITCHER */}
+            <div style={{ background: '#0B0F19', borderRadius: '16px 16px 0 0', border: '1px solid rgba(234, 179, 8, 0.3)', borderBottom: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Terminal size={26} color="#EAB308" />
+                <div>
+                  <h2 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: '#FDE047' }}>
+                    Multi-OS Classic Unix Archaeology Lab (1969–1994)
+                  </h2>
+                  <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
+                    Active Environment: <strong style={{ color: '#FFFFFF' }}>{OS_METADATA[selectedOS].name}</strong> ({OS_METADATA[selectedOS].hardware})
+                  </span>
+                </div>
+              </div>
+
+              {/* OS Selector Tabs */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {[
+                  { id: 'pdp11', label: '1972 Unix V1 (PDP-11)' },
+                  { id: 'solaris', label: 'Solaris (Illumos)' },
+                  { id: 'aix', label: 'IBM AIX 4.1.3' },
+                  { id: 'hpux', label: 'HP-UX 9.10' },
+                  { id: 'v4kernel', label: '1973 V4 (C Kernel)' }
+                ].map(os => (
+                  <button
+                    key={os.id}
+                    onClick={() => {
+                      setSelectedOS(os.id as OperatingSystem);
+                      setTerminalHistory(prev => [
+                        ...prev,
+                        { text: `\n*** SWITCHED EMULATION TARGET: ${OS_METADATA[os.id as OperatingSystem].name.toUpperCase()} ***`, type: 'system' }
+                      ]);
+                    }}
+                    style={{
+                      background: selectedOS === os.id ? '#EAB308' : 'rgba(255, 255, 255, 0.05)',
+                      color: selectedOS === os.id ? '#000000' : '#CBD5E1',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {os.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* CRT Phosphor Theme Switcher */}
+            <div style={{ background: '#050811', padding: '8px 1.5rem', borderLeft: '1px solid rgba(234, 179, 8, 0.3)', borderRight: '1px solid rgba(234, 179, 8, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.74rem' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span style={{ color: '#64748B' }}>CRT Phosphor:</span>
+                {[
+                  { id: 'phosphor-green', label: 'Green (P1)' },
+                  { id: 'amber', label: 'Amber (P3)' },
+                  { id: 'cyan', label: 'Cyan (Modern)' }
+                ].map(th => (
+                  <button
+                    key={th.id}
+                    onClick={() => setTerminalTheme(th.id as any)}
+                    style={{
+                      background: terminalTheme === th.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                      color: terminalTheme === th.id ? '#FFFFFF' : '#64748B',
+                      border: 'none',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.7rem'
+                    }}
+                  >
+                    {th.label}
+                  </button>
+                ))}
+              </div>
+
+              <span style={{ color: '#64748B' }}>
+                Source: <a href={OS_METADATA[selectedOS].repo} target="_blank" rel="noreferrer" style={{ color: '#38BDF8', textDecoration: 'none' }}>{OS_METADATA[selectedOS].repo}</a>
+              </span>
+            </div>
+
+            {/* Terminal Screen */}
+            <div style={{
+              background: '#010309',
+              border: '1px solid rgba(234, 179, 8, 0.3)',
+              borderRadius: '0 0 16px 16px',
+              padding: '1.25rem',
+              fontFamily: 'monospace',
+              fontSize: '0.82rem',
+              minHeight: '340px',
+              maxHeight: '420px',
+              overflowY: 'auto',
+              color: terminalTheme === 'phosphor-green' ? '#22C55E' : terminalTheme === 'amber' ? '#F59E0B' : '#22D3EE'
+            }}>
+              {terminalHistory.map((item, idx) => (
+                <div key={idx} style={{ marginBottom: '4px', whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>
+                  {item.text}
+                </div>
+              ))}
+              <div ref={terminalEndRef} />
+
+              {/* Command Input Prompt */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCommandExecution(terminalInput);
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px' }}
+              >
+                <span style={{ fontWeight: 800 }}>{OS_METADATA[selectedOS].prompt}</span>
+                <input
+                  type="text"
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  placeholder="Type a command (or click a quick action below)..."
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: 'inherit',
+                    fontFamily: 'monospace',
+                    fontSize: '0.82rem',
+                    flex: 1
+                  }}
+                />
+              </form>
+            </div>
+
+            {/* Quick Action Buttons */}
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '1rem' }}>
+              {[
+                { label: 'uname -a', cmd: 'uname -a' },
+                { label: 'cat /etc/passwd', cmd: 'cat /etc/passwd' },
+                { label: 'banner EXULTIA', cmd: 'banner EXULTIA' },
+                { label: 'cal 1972', cmd: 'cal 1972' },
+                { label: 'kinetic-fix (3-Tier Hotfix)', cmd: 'kinetic-fix' },
+                { label: 'kinetic-revert (Rollback)', cmd: 'kinetic-revert' },
+                { label: 'clear', cmd: 'clear' }
+              ].map(action => (
+                <button
+                  key={action.cmd}
+                  onClick={() => handleCommandExecution(action.cmd)}
+                  style={{
+                    background: 'rgba(234, 179, 8, 0.1)',
+                    border: '1px solid rgba(234, 179, 8, 0.3)',
+                    color: '#FDE047',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                    fontWeight: 700
+                  }}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Downloadable Reports & Whitepapers */}
+            <div style={{ marginTop: '2.5rem', background: 'rgba(15, 23, 42, 0.7)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>
+                  Historic Systems Security Research Whitepaper &amp; Results
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8' }}>
+                  Download the complete forensic analysis of the 1972 Unix V1 PDP-11 kernel, 68-test suite results, and commercial Unix compilation audits.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
                 <a
                   href="/historical_unix_security_report.md"
-                  download
+                  download="historical_unix_security_report.md"
                   style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    background: 'rgba(56, 189, 248, 0.15)',
-                    border: '1px solid #38BDF8',
-                    color: '#38BDF8',
                     padding: '8px 14px',
-                    borderRadius: '8px',
+                    background: 'rgba(56, 189, 248, 0.15)',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                    color: '#38BDF8',
+                    borderRadius: '6px',
                     fontSize: '0.78rem',
                     fontWeight: 700,
                     textDecoration: 'none'
                   }}
                 >
-                  <Download size={14} />
-                  <span>Download Full Report (.md)</span>
+                  <Download size={14} /> Download Whitepaper (.md)
                 </a>
                 <a
                   href="/exhaustive_pdp11_results.json"
-                  download
+                  download="exhaustive_pdp11_results.json"
                   style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#CBD5E1',
                     padding: '8px 14px',
-                    borderRadius: '8px',
+                    background: 'rgba(234, 179, 8, 0.15)',
+                    border: '1px solid rgba(234, 179, 8, 0.35)',
+                    color: '#FDE047',
+                    borderRadius: '6px',
                     fontSize: '0.78rem',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     textDecoration: 'none'
                   }}
                 >
-                  <FileText size={14} />
-                  <span>Raw PDP-11 JSON Test Results (34KB)</span>
+                  <Download size={14} /> 68-Test Dataset (.json)
                 </a>
               </div>
             </div>
 
-            {/* PAPER 2 */}
-            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: '#EC4899', fontWeight: 700, textTransform: 'uppercase' }}>OPERATIONS RUNBOOK</span>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F8FAFC', margin: '4px 0 0 0' }}>
-                    Enterprise Deterministic Disaster Recovery &amp; Rollback Manual
-                  </h3>
-                </div>
-                <span style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#F472B6', border: '1px solid rgba(236, 72, 153, 0.3)', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
-                  OPERATIONAL SPEC
-                </span>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1rem' }}>
-                Operational guidelines for SRE and SecOps teams managing automated remediation feeds. Covers self-healing traps, canary pacing, and instant rollback procedures.
-              </p>
-              <Link
-                href="/app/patches"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  color: '#22D3EE',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  textDecoration: 'none'
-                }}
-              >
-                <span>Read Rollback Wiki in Kinetic App</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
           </div>
-        </div>
-      )}
+        )}
 
+      </div>
     </div>
   );
 }
