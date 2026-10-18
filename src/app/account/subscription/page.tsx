@@ -1033,12 +1033,6 @@ function SubscriptionContent() {
                 const entityTerm = isKinetic ? (userCount === 1 ? "Host" : "Hosts") : (userCount === 1 ? "User" : "Users");
                 const planLabel = isFree ? plan.name : `${plan.name} (${userCount} ${entityTerm})`;
 
-                const isMultiPassPlan = isMultiPass && !isFree;
-                const singleProductRate = plan.tier === "pro" 
-                  ? (billingCycle === "annual" ? 39 : 49) 
-                  : (billingCycle === "annual" ? 119 : 149);
-                const bundleSavings = isMultiPassPlan ? singleProductRate * userCount : 0;
-
                 return (
                   <button
                     disabled={isCurrent || isSwitchingFree}
@@ -1064,8 +1058,6 @@ function SubscriptionContent() {
                       ? "Current Plan" 
                       : (isFree 
                         ? "Select Free Tier" 
-                        : isMultiPassPlan
-                        ? `${plan.cta} ($${totalPrice}/mo • Save $${bundleSavings}/mo) →`
                         : userCount > 1 
                         ? `${plan.cta} (${userCount} ${entityTerm}: $${totalPrice}/mo) →` 
                         : `${plan.cta} ($${totalPrice}/mo) →`)}
