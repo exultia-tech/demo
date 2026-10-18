@@ -74,8 +74,17 @@ export function formatNaturalPost(cve) {
   if (pkgClean.toLowerCase() === 'cups-browsed' || pkgClean.toLowerCase() === 'cups') friendlyPkg = 'CUPS';
   if (pkgClean.toLowerCase() === 'runc') friendlyPkg = 'runc';
 
-  // 1. WHAT: What is it, who is affected
-  const what = `Critical flaw in ${friendlyPkg} (${cve.cveId})${cve.cisaKev ? ', confirmed active in the wild' : ''}.`;
+  // 1. WHAT: Specific vulnerability & affected software
+  let what = `Critical vulnerability in ${friendlyPkg} (${cve.cveId}).`;
+  if (cve.cveId === 'CVE-2024-6387') {
+    what = `Remote root race condition in OpenSSH (${cve.cveId}).`;
+  } else if (cve.cveId === 'CVE-2024-3094') {
+    what = `Supply chain backdoor in XZ Utils (${cve.cveId}).`;
+  } else if (cve.cveId === 'CVE-2024-47176') {
+    what = `Remote code execution flaw in CUPS (${cve.cveId}).`;
+  } else if (cve.cveId === 'CVE-2024-21626') {
+    what = `Container escape flaw in runc (${cve.cveId}).`;
+  }
 
   // 2. HOW: How it works / why it matters
   let how = '';
@@ -209,7 +218,6 @@ async function postToDevTo(cve) {
 
 **Vulnerability:** ${cve.title}  
 **CVSS Severity:** ${cve.cvss} (${cve.severity})  
-**CISA KEV Exploit Status:** ${cve.cisaKev ? 'Active in the wild' : 'Monitoring'}  
 
 ---
 
@@ -277,21 +285,20 @@ async function main() {
   const posted = loadPostedState();
   const feed = await fetchFeed();
 
-  // Strict Filter: Genuine CVEs only, CISA KEV active, CVSS >= 9.0
+  // Filter: Genuine CVE vulnerabilities for awareness (CVSS >= 8.5)
   const candidates = feed.filter(item => 
     item.cveId &&
     item.cveId.toUpperCase().startsWith('CVE-') &&
-    item.cisaKev === true &&
-    item.cvss >= 9.0 &&
+    (item.cvss >= 8.5 || item.cisaKev === true) &&
     !posted.includes(item.cveId)
   ).slice(0, maxLimit);
 
   if (candidates.length === 0) {
-    console.log('[Bot] No new high-priority CISA KEV CVEs to broadcast.');
+    console.log('[Bot] No unposted high-severity CVEs found.');
     return;
   }
 
-  console.log(`[Bot] Selected ${candidates.length} vetted CISA KEV CVE for broadcast.`);
+  console.log(`[Bot] Selected ${candidates.length} CVE vulnerability for awareness broadcast.`);
 
   for (const cve of candidates) {
     console.log(`\n>>> Processing ${cve.cveId}: ${cve.title}`);
