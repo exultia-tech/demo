@@ -34,12 +34,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* HUD TELEMETRY BADGE */}
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "1.25rem" }}>
-          <span className="doom-badge" style={{ fontSize: "0.78rem", padding: "4px 14px", letterSpacing: "0.1em" }}>
-            [ EXULTIA TECHNOLOGIES // DEFENSE-IN-DEPTH MATRIX // ARMED ]
-          </span>
-        </div>
+
 
         <h1 className="hero-title" style={{ fontSize: "3.8rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.1, textTransform: "uppercase" }}>
           SECURITY YOU CAN AUDIT. <br/>
