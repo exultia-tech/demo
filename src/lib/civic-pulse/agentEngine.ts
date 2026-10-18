@@ -216,13 +216,7 @@ export function createCivicDeskTicket(
   reason: string,
   customPortalUrl?: string
 ): CivicDeskTicket {
-  const specialists = [
-    "Sarah Jenkins (Municipal Governance Lead)",
-    "Marcus Reed (Local Government Data Specialist)",
-    "Elena Rostova (Civic Records Research Desk)"
-  ];
-  const assigned = specialists[Math.floor(Math.random() * specialists.length)];
-  const ticketId = `CD-${city.slice(0, 3).toUpperCase()}-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const ticketId = `REQ-${city.slice(0, 3).toUpperCase()}-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   return {
     ticketId,
@@ -232,9 +226,9 @@ export function createCivicDeskTicket(
     query,
     requesterEmail,
     customPortalUrl,
-    status: 'dispatched_to_researcher',
-    estimatedHours: 24,
+    status: 'resolved',
+    estimatedHours: 0,
     reasonForEscalation: reason,
-    humanSpecialistAssigned: assigned
+    humanSpecialistAssigned: 'Inquest Autonomous Records Engine'
   };
 }

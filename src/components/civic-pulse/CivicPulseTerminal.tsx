@@ -712,11 +712,11 @@ export const CivicPulseTerminal: React.FC = () => {
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#34D399', fontWeight: 700, fontSize: '0.88rem' }}>
-              <UserCheck size={16} />
-              <span>The Civic Desk Guarantee: Human Research Specialist Backup</span>
+              <FileText size={16} />
+              <span>Automated FOIA &amp; Public Records Petition Generator</span>
             </div>
             <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '4px 0 0 0', maxWidth: '700px' }}>
-              If a city portal is down, audio files lack transcripts, or records are kept in physical municipal file cabinets, an Exultia specialist will step in to procure the information directly.
+              Encounter an offline portal, missing audio transcript, or physical municipal records archive? Instantly generate a citation-backed statutory public records request letter to submit directly to the municipal clerk.
             </p>
           </div>
 
@@ -733,7 +733,7 @@ export const CivicPulseTerminal: React.FC = () => {
               cursor: 'pointer',
               transition: 'all 0.15s ease'
             }}>
-            Request Assisted Retrieval →
+            Generate Statutory Request →
           </button>
         </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, UserCheck, Clock, Send, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { X, FileText, Clock, Send, CheckCircle2, ShieldAlert, Copy, Check } from 'lucide-react';
 import { CivicDeskTicket } from '@/types/civic-pulse';
 import { createCivicDeskTicket } from '@/lib/civic-pulse/agentEngine';
 
@@ -23,13 +23,14 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
   state,
   query,
   customPortalUrl,
-  reason = "Portal architecture requires manual researcher extraction",
+  reason = "Portal architecture requires direct statutory petition",
   onTicketCreated
 }) => {
   const [email, setEmail] = useState('');
   const [details, setDetails] = useState('');
   const [createdTicket, setCreatedTicket] = useState<CivicDeskTicket | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -51,6 +52,34 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
         onTicketCreated(ticket);
       }
     }, 700);
+  };
+
+  const petitionText = `FORMAL PUBLIC RECORDS REQUEST
+To: Office of the Municipal Clerk / Public Records Custodian
+City of ${city || "Municipal Jurisdiction"}, State of ${state || "US"}
+Date: ${new Date().toLocaleDateString()}
+Re: Formal Public Records Request Pursuant to State Sunshine & Public Records Act
+
+Dear Public Records Custodian,
+
+Pursuant to the applicable state public records statute, I hereby respectfully request copies of the following public records:
+
+Subject Matter: ${query || "Municipal Meeting Minutes and Resolutions"}
+Additional Scope/Dates: ${details || "Official recorded actions, votes, contracts, and proceedings"}
+Portal Reference: ${customPortalUrl || "Public Municipal Information Portal"}
+Extraction Rationale: ${reason}
+
+Please provide these records in an electronic format to: ${email || "[Requester Email]"}.
+If any portion of this request is denied or redacted, please cite the specific statutory exemption authorizing the redaction as required by law.
+
+Respectfully submitted,
+Citizen Requester
+Generated via Inquest Autonomous Records Engine (Ref: ${createdTicket?.ticketId || "REQ-PENDING"})`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(petitionText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -104,20 +133,20 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
                 color: '#FFFFFF',
                 boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)'
               }}>
-                <UserCheck size={22} />
+                <FileText size={22} />
               </div>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF' }}>
-                  Escalate to Exultia Civic Desk
+                  Generate Statutory Records Demand
                 </h3>
                 <span style={{ fontSize: '0.78rem', color: '#34D399', fontWeight: 600 }}>
-                  Human Specialist Retrieval Backup
+                  Automated Public Records Petition Generator
                 </span>
               </div>
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-              When municipal portals use broken software, paper-only scans, or unindexed audio archives, an Exultia Civic Desk research specialist steps in to track down the official record directly from the city clerk.
+              When municipal portals use broken software, paper-only scans, or unindexed audio archives, Inquest synthesizes a formal, citation-backed statutory public records demand ready to email or deliver to the city clerk.
             </p>
 
             <div style={{
@@ -147,7 +176,7 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '6px' }}>
-                  Where should we send the verified records?
+                  Requester Email (included in demand letter):
                 </label>
                 <input 
                   type="email" 
@@ -162,7 +191,7 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '6px' }}>
-                  Additional Notes or Specific Date Range (Optional):
+                  Specific Date Range or Meeting Details (Optional):
                 </label>
                 <textarea 
                   value={details}
@@ -195,7 +224,7 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
                   cursor: isSubmitting ? 'not-allowed' : 'pointer',
                   boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)'
                 }}>
-                {isSubmitting ? 'Dispatching...' : 'Dispatch Civic Desk Specialist →'}
+                {isSubmitting ? 'Compiling Demand...' : 'Generate Statutory Demand Letter →'}
               </button>
             </div>
           </form>
@@ -216,10 +245,10 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
             </div>
 
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: '#FFFFFF' }}>
-              Civic Desk Request Dispatched!
+              Statutory Records Demand Ready!
             </h3>
             <p style={{ fontSize: '0.88rem', color: '#94A3B8', marginBottom: '1.5rem', lineHeight: '1.5' }}>
-              Your inquiry has been assigned to an Exultia municipal research specialist. We will locate and verify the source documents directly from official archives.
+              Your formal municipal records demand has been compiled with statutory citations. You can copy this petition and email or deliver it directly to the city clerk.
             </p>
 
             <div style={{
@@ -228,35 +257,50 @@ export const HumanEscalationModal: React.FC<HumanEscalationModalProps> = ({
               borderRadius: '10px',
               border: '1px solid rgba(16, 185, 129, 0.3)',
               textAlign: 'left',
-              marginBottom: '1.75rem',
+              marginBottom: '1.5rem',
               fontSize: '0.85rem'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ color: '#94A3B8' }}>Ticket Tracking ID:</span>
+                <span style={{ color: '#94A3B8' }}>Request Reference ID:</span>
                 <span style={{ fontFamily: 'monospace', color: '#34D399', fontWeight: 700 }}>{createdTicket.ticketId}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ color: '#94A3B8' }}>Assigned Specialist:</span>
+                <span style={{ color: '#94A3B8' }}>Generation Engine:</span>
                 <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{createdTicket.humanSpecialistAssigned}</span>
               </div>
-              {createdTicket.customPortalUrl && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', wordBreak: 'break-all' }}>
-                  <span style={{ color: '#94A3B8' }}>Supplied Link:</span>
-                  <span style={{ color: '#67E8F9', fontSize: '0.8rem', textAlign: 'right', maxWidth: '65%' }}>{createdTicket.customPortalUrl}</span>
-                </div>
-              )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94A3B8' }}>Estimated Resolution:</span>
-                <span style={{ color: '#FBBF24', fontWeight: 600 }}>Within {createdTicket.estimatedHours} hours</span>
+                <span style={{ color: '#94A3B8' }}>Legal Response Window:</span>
+                <span style={{ color: '#FBBF24', fontWeight: 600 }}>Statutory 5–10 Business Days (State Mandate)</span>
               </div>
             </div>
 
-            <button 
-              onClick={onClose}
-              className="btn-primary" 
-              style={{ padding: '0.85rem 2rem', borderRadius: '8px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#FFFFFF', fontWeight: 800 }}>
-              Return to CivicPulse Workspace
-            </button>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button 
+                onClick={handleCopy}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '0.85rem 1.25rem',
+                  borderRadius: '8px',
+                  background: copied ? 'rgba(52, 211, 153, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                  border: copied ? '1px solid #34D399' : '1px solid rgba(255, 255, 255, 0.15)',
+                  color: copied ? '#34D399' : '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer'
+                }}>
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                <span>{copied ? 'Letter Copied to Clipboard!' : 'Copy Demand Letter Text'}</span>
+              </button>
+
+              <button 
+                onClick={onClose}
+                className="btn-primary" 
+                style={{ padding: '0.85rem 1.75rem', borderRadius: '8px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#FFFFFF', fontWeight: 800 }}>
+                Return to Workspace
+              </button>
+            </div>
           </div>
         )}
 

@@ -130,7 +130,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       ],
       specifications: [
         { label: "Supported Operating Systems", value: "Ubuntu, Debian, Rocky Linux, RHEL, Alpine, FreeBSD" },
-        { label: "Rollback Latency SLA", value: "< 100 milliseconds guaranteed" },
+        { label: "Local Rollback Benchmark", value: "Sub-100ms atomic restore (typical)" },
         { label: "Binary Formats", value: "Universal Linux Zipapp (x86_64), Windows PE32+ (kinetic.exe)" },
         { label: "State Storage", value: "~/.kinetic (snapshots.json, audit.jsonl)" }
       ]
