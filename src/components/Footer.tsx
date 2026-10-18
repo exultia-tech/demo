@@ -158,7 +158,6 @@ export default function Footer() {
           <h4>PureIDE</h4>
           <ul>
             <li><Link href="/products/pure-ide">Product Overview & Features</Link></li>
-            <li><Link href="/products/pure-ide#architecture">Security Architecture</Link></li>
             <li><Link href="/app/pureide">Builder Console</Link></li>
             <li><Link href="/products/pure-ide/pricing">Plans & Pricing</Link></li>
           </ul>
@@ -169,8 +168,8 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#A78BFA", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Cyber Intelligence</div>
           <h4>Vantage</h4>
           <ul>
-            <li><Link href="/app/uvi">Threat Feed Registry</Link></li>
             <li><Link href="/app/uvi/stats">Global Statistics</Link></li>
+            <li><Link href="/app/uvi">Threat Feed Registry</Link></li>
             <li><a href="/api/threat-feed" target="_blank" rel="noreferrer">Vantage REST API (JSON)</a></li>
             <li><Link href="/products/pure-ide#sandbox">Air-Gapped Sandboxing</Link></li>
           </ul>
@@ -181,10 +180,9 @@ export default function Footer() {
           <div style={{ fontSize: "0.72rem", color: "#06B6D4", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.3rem" }}>Statutory Compliance</div>
           <h4>Inquest</h4>
           <ul>
-            <li><Link href="/products/inquest">Product Overview</Link></li>
-            <li><Link href="/products/inquest/features">Features & Tools</Link></li>
-            <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
+            <li><Link href="/products/inquest">Product Overview & Features</Link></li>
             <li><Link href="/app/inquest">Inquest Workspace</Link></li>
+            <li><Link href="/products/inquest/pricing">Plans & Pricing</Link></li>
           </ul>
         </div>
 
@@ -220,7 +218,7 @@ export default function Footer() {
         </div>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
-          <Link href="/app/uvi" style={{ color: "#94A3B8", textDecoration: "none" }}>Vantage</Link>
+          <Link href="/app/uvi/stats" style={{ color: "#94A3B8", textDecoration: "none" }}>Vantage</Link>
           <Link href="/app/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>
         </div>
       </div>

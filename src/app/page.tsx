@@ -113,7 +113,7 @@ export default function HomePage() {
 
             <div>
               <Link 
-                href="/app/uvi" 
+                href="/app/uvi/stats" 
                 className="btn-primary" 
                 style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}>
                 Explore Threat Intelligence →

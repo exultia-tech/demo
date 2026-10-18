@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -24,6 +24,25 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "inquest">("pureide");
+
+  // Axiom active tab state synchronized with URL search param
+  const [axiomTab, setAxiomTab] = useState<string>("syllabus");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      const tab = search.get("tab");
+      if (tab) setAxiomTab(tab);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleTab = (e: any) => {
+      if (e.detail) setAxiomTab(e.detail);
+    };
+    window.addEventListener("axiom-tab-change", handleTab);
+    return () => window.removeEventListener("axiom-tab-change", handleTab);
+  }, []);
 
   // Determine isolation mode (Standalone / Isolated Threat Feed)
   const isIsolated = isIsolatedThreatFeed(
@@ -126,18 +145,18 @@ export default function Navbar() {
           /* ISOLATED / STANDALONE Vantage NAVIGATION (No references to other unreleased products) */
           <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
             <Link 
-              href={threatFeedHome}
-              className={`nav-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active" : ""}`}
-              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "#C084FC" : undefined }}
-            >
-              Feed Registry
-            </Link>
-            <Link 
               href={threatFeedStats}
               className={`nav-link ${pathname.includes("/stats") ? "active" : ""}`}
               style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname.includes("/stats") ? "#C084FC" : undefined }}
             >
               Global Statistics
+            </Link>
+            <Link 
+              href={threatFeedHome}
+              className={`nav-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active" : ""}`}
+              style={{ fontWeight: 600, fontSize: "0.9rem", color: pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "#C084FC" : undefined }}
+            >
+              Feed Registry
             </Link>
             <a 
               href="/api/threat-feed" 
@@ -227,7 +246,7 @@ export default function Navbar() {
 
                     {/* PRODUCT 2: Vantage */}
                     <Link 
-                      href="/app/uvi" 
+                      href="/app/uvi/stats" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -668,11 +687,6 @@ export default function Navbar() {
                 className={`submenu-link ${pathname === "/products/pure-ide" || pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
                 Overview & Features
               </Link>
-              <a 
-                href="/products/pure-ide#architecture" 
-                className="submenu-link">
-                Architecture
-              </a>
               <Link 
                 href="/account/subscription?product=pureide" 
                 className="submenu-link"
@@ -697,14 +711,14 @@ export default function Navbar() {
               </span>
 
               <Link 
-                href={threatFeedHome} 
-                className={`submenu-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active-purple" : ""}`}>
-                Feed Registry
-              </Link>
-              <Link 
                 href={threatFeedStats} 
                 className={`submenu-link ${pathname.includes("/stats") ? "active-purple" : ""}`}>
                 Global Statistics
+              </Link>
+              <Link 
+                href={threatFeedHome} 
+                className={`submenu-link ${pathname === "/app/uvi" || pathname === "/app/uvi/standalone" ? "active-purple" : ""}`}>
+                Feed Registry
               </Link>
               <Link 
                 href="/account/subscription?product=uvi" 
@@ -758,16 +772,16 @@ export default function Navbar() {
                 Overview
               </Link>
               <Link 
-                href="/account/subscription?product=pureos" 
-                className="submenu-link"
-                style={{ color: "#FBBF24", fontWeight: 700 }}>
-                Plans & Pricing
-              </Link>
-              <Link 
                 href="/app/pureos" 
                 className={`submenu-link ${pathname === "/app/pureos" ? "active-amber" : ""}`}
                 style={{ fontWeight: 600 }}>
                 Catalogue
+              </Link>
+              <Link 
+                href="/account/subscription?product=pureos" 
+                className="submenu-link"
+                style={{ color: "#FBBF24", fontWeight: 700 }}>
+                Plans & Pricing
               </Link>
             </div>
           )}
@@ -781,10 +795,34 @@ export default function Navbar() {
               </span>
 
               <Link 
-                href="/app/axiom" 
-                className={`submenu-link ${pathname === "/app/axiom" ? "active-rose" : ""}`}
+                href="/app/axiom?tab=syllabus" 
+                onClick={() => {
+                  setAxiomTab("syllabus");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "syllabus" }));
+                }}
+                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "syllabus" ? "active-rose" : ""}`}
                 style={{ fontWeight: 600 }}>
-                Simulator & Labs
+                Exam Prep
+              </Link>
+              <Link 
+                href="/app/axiom?tab=simulator" 
+                onClick={() => {
+                  setAxiomTab("simulator");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "simulator" }));
+                }}
+                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "simulator" ? "active-rose" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Exam Simulator
+              </Link>
+              <Link 
+                href="/app/axiom?tab=labs" 
+                onClick={() => {
+                  setAxiomTab("labs");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "labs" }));
+                }}
+                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "labs" ? "active-rose" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Hands-On Labs
               </Link>
               <Link 
                 href="/account/subscription?product=axiom" 
@@ -808,21 +846,16 @@ export default function Navbar() {
                 Overview
               </Link>
               <Link 
-                href="/products/inquest/features" 
-                className={`submenu-link ${pathname === "/products/inquest/features" ? "active-cyan" : ""}`}>
-                Features
+                href="/app/inquest" 
+                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Inquest Workspace
               </Link>
               <Link 
                 href="/account/subscription?product=inquest" 
                 className="submenu-link"
                 style={{ color: "#67E8F9", fontWeight: 700 }}>
                 Plans & Pricing
-              </Link>
-              <Link 
-                href="/app/inquest" 
-                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Inquest Workspace
               </Link>
             </div>
           )}

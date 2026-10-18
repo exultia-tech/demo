@@ -29,7 +29,28 @@ interface ReviewItem {
 }
 
 export default function AxiomDashboard() {
-  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs" | "pricing">("syllabus");
+  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs">("syllabus");
+
+  // Synchronize active view with URL search param and global nav submenu
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      const tab = search.get("tab") as "syllabus" | "simulator" | "labs";
+      if (tab && ["syllabus", "simulator", "labs"].includes(tab)) {
+        setActiveView(tab);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleTabChange = (e: any) => {
+      if (e.detail && ["syllabus", "simulator", "labs"].includes(e.detail)) {
+        setActiveView(e.detail);
+      }
+    };
+    window.addEventListener("axiom-tab-change", handleTabChange);
+    return () => window.removeEventListener("axiom-tab-change", handleTabChange);
+  }, []);
   
   // Syllabus State
   const [activeCertId, setActiveCertId] = useState<string>("comptia-secplus");
@@ -344,42 +365,31 @@ export default function AxiomDashboard() {
         </div>
       </header>
 
-      {/* Main App Nav */}
-      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1rem" }}>
-        {["syllabus", "simulator", "pricing"].map(view => (
-          <button 
-            key={view}
-            onClick={() => setActiveView(view as any)}
-            style={{ 
-              padding: "0.75rem 1.5rem", 
-              background: activeView === view ? "rgba(244, 63, 94, 0.15)" : "transparent", 
-              border: activeView === view ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid transparent",
-              color: activeView === view ? "#FFFFFF" : "#94A3B8",
-              borderRadius: "8px", cursor: "pointer", fontWeight: 600, fontSize: "1rem", textTransform: "capitalize",
-              transition: "all 0.2s ease"
-            }}>
-            {view === "syllabus" ? "Exam Prep" : view === "simulator" ? "Exam Simulator" : view === "pricing" ? "Pricing & API" : view}
-          </button>
-        ))}
-
+      {/* Category context indicator */}
+      <div style={{ marginBottom: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Current Workspace:</span>
+          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FDA4AF", background: "rgba(244, 63, 94, 0.15)", padding: "3px 10px", borderRadius: "999px", border: "1px solid rgba(244, 63, 94, 0.3)" }}>
+            {activeView === "syllabus" ? "📖 Exam Prep & Syllabus" : activeView === "simulator" ? "⚡ Interactive Exam Simulator" : "🛠️ Hands-On Terminal Labs"}
+          </span>
+        </div>
         <Link
           href="/account/subscription?product=axiom"
           style={{
-            marginLeft: "auto",
             display: "inline-flex",
             alignItems: "center",
             gap: "6px",
-            padding: "0.75rem 1.25rem",
-            background: "linear-gradient(135deg, rgba(244, 63, 94, 0.2) 0%, rgba(225, 29, 72, 0.2) 100%)",
-            border: "1px solid rgba(244, 63, 94, 0.4)",
+            padding: "0.5rem 1rem",
+            background: "linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(225, 29, 72, 0.15) 100%)",
+            border: "1px solid rgba(244, 63, 94, 0.35)",
             color: "#FDA4AF",
             borderRadius: "8px",
             fontWeight: 700,
-            fontSize: "0.9rem",
+            fontSize: "0.82rem",
             textDecoration: "none"
           }}
         >
-          Explore Community & Enterprise Plans →
+          View Plans & Pricing →
         </Link>
       </div>
 
@@ -780,61 +790,6 @@ export default function AxiomDashboard() {
                 <span style={{ color: "#64748B" }}>Select a lab to begin the simulation.</span>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* --- VIEW: PRICING --- */}
-      {activeView === "pricing" && (
-        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ color: "white", fontSize: "2rem", marginBottom: "1rem" }}>Axiom Pricing & LMS API</h2>
-          <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "3rem", lineHeight: 1.6 }}>
-            Our web-based exam simulator is free for individual students. For organizations, universities, and enterprise training programs, we offer a dedicated API to publish our certified content directly into your internal Learning Management Systems (LMS).
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", textAlign: "left" }}>
-            
-            {/* Free Tier */}
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "2.5rem", display: "flex", flexDirection: "column" }}>
-              <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>Student / Individual</h3>
-              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1.5rem" }}>$0 <span style={{ fontSize: "1rem", color: "#94A3B8", fontWeight: 400 }}>Free Forever</span></div>
-              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem", flex: 1 }}>
-                <li>✓ Full access to 15,000+ certification questions</li>
-                <li>✓ Interactive exam simulator with timers</li>
-                <li>✓ Instant explanations & feedback</li>
-                <li>✓ Checkpoints & progress tracking</li>
-                <li style={{ color: "#F43F5E" }}>✗ No API access</li>
-                <li style={{ color: "#F43F5E" }}>✗ No SCORM/LMS exports</li>
-              </ul>
-              <Link 
-                href="/account/subscription?product=axiom"
-                style={{ width: "100%", padding: "1rem", background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}
-              >
-                Community Edition (Included)
-              </Link>
-            </div>
-
-            {/* Enterprise Tier */}
-            <div style={{ background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.5)", borderRadius: "16px", padding: "2.5rem", position: "relative", display: "flex", flexDirection: "column" }}>
-              <div style={{ position: "absolute", top: "-12px", right: "2rem", background: "#F43F5E", color: "white", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 800 }}>ENTERPRISE</div>
-              <h3 style={{ color: "white", fontSize: "1.5rem", margin: "0 0 0.5rem 0" }}>LMS API Integration</h3>
-              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FDA4AF", marginBottom: "1.5rem" }}>Enterprise Tier</div>
-              <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Dedicated question bank API, SCORM exports, and enterprise seat management.</p>
-              <ul style={{ color: "#94A3B8", margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem", flex: 1 }}>
-                <li>✓ <strong>Everything in Free</strong></li>
-                <li>✓ <strong>Enterprise API Endpoint Access</strong></li>
-                <li>✓ Synchronize to internal LMS</li>
-                <li>✓ SCORM compatible JSON exports</li>
-                <li>✓ Private content publishing rights</li>
-              </ul>
-              <Link 
-                href="/account/subscription?product=axiom"
-                style={{ width: "100%", padding: "1rem", background: "#F43F5E", color: "white", borderRadius: "8px", fontWeight: 700, marginTop: "2rem", display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box", boxShadow: "0 0 20px rgba(244, 63, 94, 0.4)" }}
-              >
-                Explore Enterprise Tier →
-              </Link>
-            </div>
-
           </div>
         </div>
       )}
