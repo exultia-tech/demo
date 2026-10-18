@@ -816,14 +816,14 @@ export default function Navbar() {
                 Exam Simulator
               </Link>
               <Link 
-                href="/app/axiom?tab=labs" 
+                href="/app/axiom?tab=api" 
                 onClick={() => {
-                  setAxiomTab("labs");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "labs" }));
+                  setAxiomTab("api");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "api" }));
                 }}
-                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "labs" ? "active-rose" : ""}`}
+                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "api" ? "active-rose" : ""}`}
                 style={{ fontWeight: 600 }}>
-                Hands-On Labs
+                Enterprise API
               </Link>
               <Link 
                 href="/account/subscription?product=axiom" 

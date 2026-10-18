@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { AxiomIcon } from "@/components/BrandIcons";
-import { CERTIFICATIONS, LABS_DB, Certification } from "@/lib/axiom-data";
+import { CERTIFICATIONS, Certification } from "@/lib/axiom-data";
 
 const TOTAL_QUESTIONS = 15000;
 
@@ -29,14 +28,14 @@ interface ReviewItem {
 }
 
 export default function AxiomDashboard() {
-  const [activeView, setActiveView] = useState<"syllabus" | "simulator" | "labs">("syllabus");
+  const [activeView, setActiveView] = useState<"simulator" | "syllabus" | "api">("simulator");
 
   // Synchronize active view with URL search param and global nav submenu
   useEffect(() => {
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
-      const tab = search.get("tab") as "syllabus" | "simulator" | "labs";
-      if (tab && ["syllabus", "simulator", "labs"].includes(tab)) {
+      const tab = search.get("tab") as "simulator" | "syllabus" | "api";
+      if (tab && ["syllabus", "simulator", "api"].includes(tab)) {
         setActiveView(tab);
       }
     }
@@ -44,7 +43,7 @@ export default function AxiomDashboard() {
 
   useEffect(() => {
     const handleTabChange = (e: any) => {
-      if (e.detail && ["syllabus", "simulator", "labs"].includes(e.detail)) {
+      if (e.detail && ["syllabus", "simulator", "api"].includes(e.detail)) {
         setActiveView(e.detail);
       }
     };
@@ -86,11 +85,6 @@ export default function AxiomDashboard() {
 
   // Cert Filter
   const [simulatorCertFilter, setSimulatorCertFilter] = useState<string>('all');
-
-  // Labs State
-  const [activeLabId, setActiveLabId] = useState<string | null>(null);
-  const [terminalInput, setTerminalInput] = useState("");
-  const [terminalOutput, setTerminalOutput] = useState<string[]>([]);
 
   const certsList = Object.values(CERTIFICATIONS);
   const activeCert = CERTIFICATIONS[activeCertId];
@@ -243,111 +237,6 @@ export default function AxiomDashboard() {
     }
   };
 
-  // --- TERMINAL LAB LOGIC ---
-  const handleTerminalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!terminalInput.trim()) return;
-
-    const newOutput = [...terminalOutput, `root@axiom-lab:~# ${terminalInput}`];
-    const cmd = terminalInput.trim().toLowerCase();
-    
-    // NMAP LAB
-    if (cmd === "nmap 10.0.4.15") {
-      newOutput.push("Starting Nmap 7.93 ( https://nmap.org )");
-      newOutput.push("Nmap scan report for 10.0.4.15");
-      newOutput.push("Host is up (0.012s latency).");
-      newOutput.push("PORT    STATE SERVICE");
-      newOutput.push("22/tcp  open  ssh");
-      newOutput.push("80/tcp  open  http");
-      newOutput.push("443/tcp open  https");
-    } else if (cmd === "nmap -sv -p 80,443 10.0.4.15" || cmd === "nmap -sv -p 80,443 10.0.4.15".toLowerCase()) {
-      newOutput.push("Starting Nmap 7.93...");
-      newOutput.push("PORT    STATE SERVICE VERSION");
-      newOutput.push("80/tcp  open  http    nginx 1.18.0 (Ubuntu)");
-      newOutput.push("443/tcp open  ssl/http nginx 1.18.0 (Ubuntu)");
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Web server is nginx 1.18.0");
-    } 
-    // PRIVILEGE ESCALATION LAB
-    else if (cmd === "whoami") {
-      newOutput.push("user");
-    } else if (cmd === "sudo -l") {
-      newOutput.push("Matching Defaults entries for user on axiom-lab:");
-      newOutput.push("    env_reset, mail_badpass, secure_path=/usr/local/sbin\\:/usr/local/bin\\:/usr/sbin\\:/usr/bin\\:/sbin\\:/bin");
-      newOutput.push("User user may run the following commands on axiom-lab:");
-      newOutput.push("    (root) NOPASSWD: /usr/bin/vim");
-    } else if (cmd.startsWith("sudo vim -c") && cmd.includes("!/bin/sh")) {
-      newOutput.push("Spawning root shell...");
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Privilege Escalation Successful!");
-      newOutput.push("root@axiom-lab:~#");
-    }
-    // WEB EXPLOIT LAB
-    else if (cmd === "curl http://localhost:3000/api/users") {
-      newOutput.push('{"error":"Forbidden","message":"Access restricted to internal network (127.0.0.1)"}');
-    } else if (cmd === 'curl -h "x-forwarded-for: 127.0.0.1" http://localhost:3000/api/users' || cmd === "curl -h 'x-forwarded-for: 127.0.0.1' http://localhost:3000/api/users") {
-      newOutput.push('{"status":"success","data":[{"id":1,"role":"admin","token":"Axiom_Flag{cUrL_m4st3r_99}"}]}');
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Extracted admin token.");
-    }
-    // CRYPTO LAB
-    else if (cmd === "ls -la" || cmd === "ls -l") {
-      newOutput.push("total 12");
-      newOutput.push("-rw-r--r-- 1 user user  64 Oct 02 10:45 secret.enc");
-    } else if (cmd.includes("openssl enc -aes-256-cbc -d -in secret.enc") && cmd.includes("-out secret.txt") && cmd.includes("-k axiom")) {
-      newOutput.push("Decrypting payload...");
-      newOutput.push("secret.txt created successfully.");
-    } else if (cmd === "cat secret.txt") {
-      newOutput.push("Axiom_Flag{AES_CBC_D3CRYPT3D_YAY}");
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Cryptography lab solved.");
-    }
-    // LOG ANALYSIS LAB
-    else if (cmd === 'grep "failed password" /var/log/auth.log') {
-      newOutput.push("Oct  2 03:14:01 axiom sshd[4193]: Failed password for root from 192.168.1.104 port 43292 ssh2");
-      newOutput.push("Oct  2 03:14:03 axiom sshd[4197]: Failed password for root from 192.168.1.104 port 43294 ssh2");
-      newOutput.push("Oct  2 03:14:05 axiom sshd[4201]: Failed password for root from 192.168.1.104 port 43296 ssh2");
-    } else if (cmd === 'grep "failed password" /var/log/auth.log | wc -l') {
-      newOutput.push("3");
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Found attacker IP 192.168.1.104");
-    }
-    // CASP ARCHITECTURE LAB
-    else if (cmd === "iptables -l") {
-      newOutput.push("Chain INPUT (policy ACCEPT)");
-      newOutput.push("target     prot opt source               destination");
-      newOutput.push("");
-      newOutput.push("Chain FORWARD (policy ACCEPT)");
-      newOutput.push("target     prot opt source               destination");
-      newOutput.push("");
-      newOutput.push("Chain OUTPUT (policy ACCEPT)");
-      newOutput.push("target     prot opt source               destination");
-    } else if (cmd === "iptables -a input -p tcp -j drop") {
-      newOutput.push(""); // no output for iptables add
-    } else if (cmd === "iptables -i input 1 -p tcp --dport 443 -j accept") {
-      newOutput.push(""); // no output for iptables insert
-    } else if (cmd === "iptables -s") {
-      newOutput.push("-P INPUT ACCEPT");
-      newOutput.push("-P FORWARD ACCEPT");
-      newOutput.push("-P OUTPUT ACCEPT");
-      newOutput.push("-A INPUT -p tcp -m tcp --dport 443 -j ACCEPT");
-      newOutput.push("-A INPUT -p tcp -j DROP");
-      newOutput.push("");
-      newOutput.push("[+] LAB OBJECTIVE COMPLETE: Zero-trust micro-segmentation established.");
-    }
-    // UTILS
-    else if (cmd === "clear") {
-      setTerminalOutput([]);
-      setTerminalInput("");
-      return;
-    } else {
-      newOutput.push(`bash: ${cmd.split(" ")[0]}: command not found (or not implemented in mock)`);
-    }
-
-    setTerminalOutput(newOutput);
-    setTerminalInput("");
-  };
-
   return (
     <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "2rem" }}>
       {/* Header */}
@@ -365,13 +254,69 @@ export default function AxiomDashboard() {
         </div>
       </header>
 
-      {/* Category context indicator */}
+      {/* Category context indicator & View Switcher */}
       <div style={{ marginBottom: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Current Workspace:</span>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FDA4AF", background: "rgba(244, 63, 94, 0.15)", padding: "3px 10px", borderRadius: "999px", border: "1px solid rgba(244, 63, 94, 0.3)" }}>
-            {activeView === "syllabus" ? "📖 Exam Prep & Syllabus" : activeView === "simulator" ? "⚡ Interactive Exam Simulator" : "🛠️ Hands-On Terminal Labs"}
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={() => setActiveView("simulator")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "0.45rem 1rem",
+              borderRadius: "8px",
+              border: activeView === "simulator" ? "1px solid rgba(244, 63, 94, 0.6)" : "1px solid rgba(255, 255, 255, 0.1)",
+              background: activeView === "simulator" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.03)",
+              color: activeView === "simulator" ? "#FDA4AF" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease"
+            }}
+          >
+            ⚡ Exam Simulator (15,000+ Questions)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView("syllabus")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "0.45rem 1rem",
+              borderRadius: "8px",
+              border: activeView === "syllabus" ? "1px solid rgba(244, 63, 94, 0.6)" : "1px solid rgba(255, 255, 255, 0.1)",
+              background: activeView === "syllabus" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.03)",
+              color: activeView === "syllabus" ? "#FDA4AF" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease"
+            }}
+          >
+            📖 Exam Prep & Syllabus
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView("api")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "0.45rem 1rem",
+              borderRadius: "8px",
+              border: activeView === "api" ? "1px solid rgba(244, 63, 94, 0.6)" : "1px solid rgba(255, 255, 255, 0.1)",
+              background: activeView === "api" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.03)",
+              color: activeView === "api" ? "#FDA4AF" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease"
+            }}
+          >
+            🔌 Enterprise Assessment API
+          </button>
         </div>
         <Link
           href="/account/subscription?product=axiom"
@@ -722,74 +667,92 @@ export default function AxiomDashboard() {
         </div>
       )}
 
-      {/* --- VIEW: LABS --- */}
-      {activeView === "labs" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}>
-          <div>
-            <h3 style={{ color: "#FDA4AF", marginBottom: "1rem" }}>Available Labs</h3>
-            {LABS_DB.map(lab => (
-              <div 
-                key={lab.id} 
-                onClick={() => { setActiveLabId(lab.id); setTerminalOutput([]); setTerminalInput(""); }}
-                style={{ 
-                  background: activeLabId === lab.id ? "rgba(244, 63, 94, 0.15)" : "rgba(255,255,255,0.02)", 
-                  border: activeLabId === lab.id ? "1px solid #F43F5E" : "1px solid rgba(255,255,255,0.1)",
-                  padding: "1.5rem", borderRadius: "8px", cursor: "pointer", marginBottom: "1rem", transition: "all 0.2s"
-                }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#F43F5E", fontWeight: 700, padding: "0.2rem 0.5rem", background: "rgba(244, 63, 94, 0.1)", borderRadius: "4px" }}>{lab.type}</span>
-                  <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>{lab.difficulty}</span>
-                </div>
-                <h4 style={{ color: "#FFFFFF", fontSize: "1.1rem", margin: "0 0 0.5rem 0" }}>{lab.title}</h4>
-                <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0, lineHeight: 1.5 }}>{lab.objective}</p>
+      {/* --- VIEW: ENTERPRISE API --- */}
+      {activeView === "api" && (
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <div style={{ background: "rgba(25, 5, 10, 0.4)", border: "1px solid rgba(244, 63, 94, 0.25)", borderRadius: "12px", padding: "2.5rem", marginBottom: "2rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+              <div>
+                <span style={{ display: "inline-block", background: "rgba(244, 63, 94, 0.15)", color: "#FDA4AF", padding: "0.25rem 0.75rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+                  Institutional Grade
+                </span>
+                <h2 style={{ margin: 0, color: "#FFFFFF", fontSize: "2rem", letterSpacing: "-0.01em" }}>Enterprise Assessment & LMS REST API</h2>
               </div>
-            ))}
-          </div>
+              <span style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", padding: "0.4rem 0.8rem", borderRadius: "6px", fontWeight: 700, fontSize: "0.85rem", border: "1px solid rgba(16, 185, 129, 0.3)" }}>
+                API Status: Live (v1)
+              </span>
+            </div>
+            <p style={{ color: "#94A3B8", fontSize: "1.05rem", lineHeight: 1.6, margin: "0 0 2rem 0" }}>
+              Exultia Axiom provides high-throughput, cryptographically verified REST API endpoints for corporate LMS (Learning Management Systems), university portals, and automated workforce certification evaluations. Questions are dynamically served and verified server-side with zero bulk-leakage exposure.
+            </p>
 
-          <div>
-            {activeLabId ? (
-              <div style={{ background: "#0a0a0a", borderRadius: "8px", border: "1px solid rgba(244, 63, 94, 0.3)", overflow: "hidden" }}>
-                <div style={{ background: "rgba(20, 10, 15, 1)", padding: "1rem 1.5rem", borderBottom: "1px solid rgba(244, 63, 94, 0.2)", display: "flex", alignItems: "center", gap: "1rem" }}>
-                  <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#F43F5E" }}></span>
-                  <span style={{ color: "#FDA4AF", fontFamily: "monospace", fontWeight: 600 }}>axiom-lab-terminal</span>
-                </div>
-                <div style={{ padding: "1.5rem", color: "#A3A3A3", fontFamily: "monospace", minHeight: "400px" }}>
-                  <div style={{ color: "#F43F5E", marginBottom: "1.5rem" }}>
-                    Welcome to Axiom Labs.<br/>
-                    Currently running: {LABS_DB.find(l => l.id === activeLabId)?.title}
-                  </div>
-                  
-                  <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.05)", padding: "1rem", borderRadius: "4px" }}>
-                    <div style={{ color: "#E2E8F0", marginBottom: "0.5rem" }}>Instructions:</div>
-                    {LABS_DB.find(l => l.id === activeLabId)?.instructions.map((inst, i) => (
-                      <div key={i} style={{ color: "#94A3B8", marginBottom: "0.25rem" }}>{inst}</div>
-                    ))}
-                  </div>
-
-                  {terminalOutput.map((out, idx) => (
-                    <div key={idx} style={{ marginBottom: "0.25rem", color: out.includes("root@") ? "#34D399" : out.includes("COMPLETE") ? "#FBBF24" : "#A3A3A3" }}>
-                      {out}
-                    </div>
-                  ))}
-
-                  <form onSubmit={handleTerminalSubmit} style={{ display: "flex", marginTop: "1rem", alignItems: "center" }}>
-                    <span style={{ color: "#34D399", marginRight: "0.5rem" }}>root@axiom-lab:~#</span>
-                    <input 
-                      type="text" 
-                      value={terminalInput}
-                      onChange={e => setTerminalInput(e.target.value)}
-                      style={{ background: "transparent", border: "none", color: "#FFFFFF", fontFamily: "monospace", fontSize: "1rem", outline: "none", width: "100%" }}
-                      autoFocus
-                      autoComplete="off"
-                    />
-                  </form>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
+              <div style={{ background: "rgba(0, 0, 0, 0.3)", padding: "1.25rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ color: "#FDA4AF", fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.95rem" }}>🛡️ Progressive HMAC State</div>
+                <div style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                  Full exam answer keys and scoring models never leave the server in bulk. Each step is sealed with an HMAC-SHA256 signature with monotonic replay protection.
                 </div>
               </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", background: "rgba(25, 5, 10, 0.2)", borderRadius: "12px", border: "1px dashed rgba(255,255,255,0.1)" }}>
-                <span style={{ color: "#64748B" }}>Select a lab to begin the simulation.</span>
+              <div style={{ background: "rgba(0, 0, 0, 0.3)", padding: "1.25rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ color: "#FDA4AF", fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.95rem" }}>🤖 Anti-Scraping Sentinel</div>
+                <div style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                  Embedded zero-pixel instruction traps neutralize unauthorized LLM crawlers, while OCR disruption watermarks prevent automated screen scraping.
+                </div>
               </div>
-            )}
+              <div style={{ background: "rgba(0, 0, 0, 0.3)", padding: "1.25rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ color: "#FDA4AF", fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.95rem" }}>⚡ LMS Webhook Compatible</div>
+                <div style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                  Directly ingest graded student attempts and completion transcripts into Canvas, Blackboard, Moodle, or internal SOC training scorecards.
+                </div>
+              </div>
+            </div>
+
+            <h3 style={{ color: "#FFFFFF", fontSize: "1.3rem", marginBottom: "1rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.5rem" }}>
+              Endpoint Specifications
+            </h3>
+
+            <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                <span style={{ background: "#F43F5E", color: "#FFFFFF", padding: "0.2rem 0.6rem", borderRadius: "4px", fontSize: "0.8rem", fontWeight: 800 }}>POST</span>
+                <code style={{ color: "#FDA4AF", fontFamily: "var(--font-mono, monospace)", fontSize: "1rem" }}>/api/axiom/exam</code>
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: 0 }}>
+                Unified controller for starting exam sessions, submitting user answers, requesting instant validation, and receiving certified completion reports.
+              </p>
+            </div>
+
+            <div style={{ marginBottom: "2rem" }}>
+              <div style={{ color: "#E2E8F0", fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+                Step 1: Start Exam Session
+              </div>
+              <pre style={{ background: "#050204", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "8px", padding: "1.25rem", color: "#FDA4AF", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", overflowX: "auto" }}>
+{`curl -X POST https://exultia.ai/api/axiom/exam \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "action": "start",
+    "count": 90,
+    "cert": "comptia-secplus",
+    "durationMinutes": 90,
+    "instantValidation": false,
+    "checkpointInterval": 10
+  }'`}
+              </pre>
+            </div>
+
+            <div>
+              <div style={{ color: "#E2E8F0", fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+                Step 2: Submit Answer & Request Next Question
+              </div>
+              <pre style={{ background: "#050204", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "8px", padding: "1.25rem", color: "#FDA4AF", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", overflowX: "auto" }}>
+{`curl -X POST https://exultia.ai/api/axiom/exam \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "action": "answer",
+    "token": "<signed_session_token_from_step_1>",
+    "answer": 2
+  }'`}
+              </pre>
+            </div>
           </div>
         </div>
       )}
