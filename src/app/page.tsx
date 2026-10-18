@@ -32,7 +32,7 @@ export default function HomePage() {
             justifyContent: "center",
             flexShrink: 0,
           }}>
-            <ExultiaLogo size={165} glow={true} />
+            <ExultiaLogo size={165} glow={false} />
           </div>
 
           {/* THREE STACKED WORDS LEFT-ALIGNED TO THE LOGO */}

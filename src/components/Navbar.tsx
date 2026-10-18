@@ -112,7 +112,7 @@ export default function Navbar() {
             href={isIsolated ? threatFeedHome : "/"} 
             style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "1rem" }}
           >
-            <ExultiaLogo size={48} glow={true} />
+            <ExultiaLogo size={48} glow={false} />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                 <span style={{ 

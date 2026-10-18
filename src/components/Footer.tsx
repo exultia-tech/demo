@@ -30,7 +30,7 @@ export default function Footer() {
           {/* BRAND & MISSION - ISOLATED Vantage FOCUS */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
-              <ExultiaLogo size={46} glow={true} />
+              <ExultiaLogo size={46} glow={false} />
               <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                   <span style={{ 
@@ -156,7 +156,7 @@ export default function Footer() {
         {/* BRAND & MISSION */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
-            <ExultiaLogo size={46} glow={true} />
+            <ExultiaLogo size={46} glow={false} />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
               <span style={{ 
                 fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 

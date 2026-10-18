@@ -22,7 +22,7 @@ interface ExultiaLogoProps extends IconProps {
   palette?: "cyan" | "orange" | "green" | "magenta" | "auto";
 }
 
-export function ExultiaLogo({ size = 48, className = "", glow = true, palette = "auto" }: ExultiaLogoProps) {
+export function ExultiaLogo({ size = 48, className = "", glow = false, palette = "auto" }: ExultiaLogoProps) {
   const [activePalette, setActivePalette] = React.useState<string>("cyan");
 
   React.useEffect(() => {
@@ -95,7 +95,7 @@ export function ExultiaBrandLockup({
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-      <ExultiaLogo size={size} glow={true} />
+      <ExultiaLogo size={size} glow={false} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
           <span
