@@ -83,7 +83,7 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
  * Emblem + Chiseled Uppercase 'EXULTIA' + High-tracking 'TECHNOLOGIES'
  */
 export function ExultiaBrandLockup({
-  size = 48,
+  size = 62,
   isIsolated = false,
   isolatedTag = "Vantage",
   showTagline = true,
