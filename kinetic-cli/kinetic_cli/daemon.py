@@ -18,7 +18,7 @@ class KineticDaemon:
 
     def __init__(self,
                  engine: KineticEngine,
-                 feed_url: str = "http://localhost:3000/api/patches/feed",
+                 feed_url: str = "https://exultia.tech/api/patches/feed",
                  token: Optional[str] = None,
                  interval: int = 3600,
                  ring: int = 0):

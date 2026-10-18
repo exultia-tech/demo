@@ -38,7 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Command: apply
     apply_parser = subparsers.add_parser("apply", help="Apply hot-mitigations from patch feed or specific CVE")
     apply_parser.add_argument("--cve", help="Specific CVE ID to mitigate (e.g. CVE-2024-3094)")
-    apply_parser.add_argument("--feed-url", default="http://localhost:3000/api/patches/feed", help="Patch feed URL")
+    apply_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
     apply_parser.add_argument("--token", help="Exultia Kinetic authorization token")
     apply_parser.add_argument("--os", help="Target operating system distribution filter")
     apply_parser.add_argument("--dry-run", action="store_true", help="Simulate mitigation without modifying files")
@@ -46,7 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Command: upgrade (Standard OS Distribution Package Updates via Argent / Distro Feeds)
     upgrade_parser = subparsers.add_parser("upgrade", help="Deploy standard OS package updates and vendor errata bundles from Argent")
     upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or USN-6856-1)")
-    upgrade_parser.add_argument("--feed-url", default="http://localhost:3000/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
+    upgrade_parser.add_argument("--feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
     upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, suse)")
     upgrade_parser.add_argument("--dry-run", action="store_true", help="Simulate upgrade without executing package manager")
 
@@ -58,7 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Command: daemon
     daemon_parser = subparsers.add_parser("daemon", help="Run autonomous patch daemon with canary health probes")
     daemon_parser.add_argument("--interval", type=int, default=3600, help="Sync interval in seconds (default: 3600)")
-    daemon_parser.add_argument("--feed-url", default="http://localhost:3000/api/patches/feed", help="Patch feed URL")
+    daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
     daemon_parser.add_argument("--token", help="Exultia Kinetic authorization token")
     daemon_parser.add_argument("--ring", type=int, choices=[0, 1, 2], default=0, help="Staged rollout ring (0=Canary, 1=Cautious, 2=Broad)")
 
@@ -70,7 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Command: verify
     verify_parser = subparsers.add_parser("verify", help="Verify SLSA Level 3 cryptographic provenance")
     verify_parser.add_argument("--cve", help="CVE ID to verify (default: verifies all available feed items)")
-    verify_parser.add_argument("--feed-url", default="http://localhost:3000/api/patches/feed", help="Patch feed URL")
+    verify_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
 
     # Command: test
     subparsers.add_parser("test", help="Run self-contained end-to-end simulation and rollback verification")

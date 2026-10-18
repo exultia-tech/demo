@@ -171,7 +171,7 @@ class KineticEngine:
         except Exception as e:
             sys.stderr.write(f"[Kinetic] Warning: Failed to persist state file: {e}\n")
 
-    def fetch_feed(self, feed_url: str = "http://localhost:3000/api/patches/feed",
+    def fetch_feed(self, feed_url: str = "https://exultia.tech/api/patches/feed",
                    token: Optional[str] = None,
                    os_distro: Optional[str] = None) -> List[KineticPatch]:
         """
@@ -471,7 +471,7 @@ class KineticEngine:
         self,
         bundle_id: Optional[str] = None,
         os_filter: Optional[str] = None,
-        feed_url: str = "http://localhost:3000/api/argent/feed?format=kinetic",
+        feed_url: str = "https://exultia.tech/api/argent/feed?format=kinetic",
         dry_run: bool = False
     ) -> bool:
         """
