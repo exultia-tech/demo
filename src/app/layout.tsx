@@ -11,8 +11,8 @@ import OperatorPreviewBanner from "@/components/OperatorPreviewBanner";
 import AiSupportWidget from "@/components/support/AiSupportWidget";
 
 export const metadata: Metadata = {
-  title: "Exultia Technologies | Radical Workstation Security, Threat Intelligence & Open Records",
-  description: "Exultia Technologies builds battle-hardened tooling for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  title: "Exultia Technologies | Practical & Transparent Security Tools",
+  description: "Exultia Technologies builds practical and transparent security tools: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function RootLayout({

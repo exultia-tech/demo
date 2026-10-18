@@ -5,8 +5,8 @@ import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIco
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
-  title: "Exultia Technologies | Radical Workstation Security, Threat Intelligence & Open Records",
-  description: "Exultia Technologies builds battle-hardened tooling for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  title: "Exultia Technologies | Practical & Transparent Security Tools",
+  description: "Exultia Technologies builds practical and transparent security tools: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function HomePage() {
@@ -33,21 +33,31 @@ export default function HomePage() {
           </div>
         </div>
 
+        <div style={{
+          fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
+          fontSize: "0.85rem",
+          letterSpacing: "0.22em",
+          color: "var(--accent-primary)",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          marginBottom: "1rem",
+        }}>
+          Security You Can Audit // Data You Can Trust
+        </div>
 
-
-        <h1 className="hero-title" style={{ fontSize: "3.8rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.1, textTransform: "uppercase" }}>
-          SECURITY YOU CAN AUDIT. <br/>
+        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
+          PRACTICAL &amp; TRANSPARENT <br/>
           <span style={{ 
             color: "var(--accent-primary)", 
             textShadow: "0 0 25px var(--accent-glow)",
             fontFamily: "var(--font-display)"
           }}>
-            DATA YOU CAN TRUST.
+            SECURITY TOOLS
           </span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.15rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
-          Exultia Technologies builds battle-hardened security tooling for software engineers, threat analysts, and transparency researchers—from hermetic developer workstation containment to real-time global CVE consensus and automated statutory open-records tracking.
+        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
+          Practical and transparent security tools for software engineering teams, threat researchers, and public accountability—from hermetic developer workstations to real-time CVE feeds and automated open records.
         </p>
 
         {/* HERO CTA ACTIONS */}
@@ -70,8 +80,8 @@ export default function HomePage() {
           <h2 style={{ fontSize: "2.1rem", fontWeight: 900, color: "#FFFFFF", marginTop: "4px", letterSpacing: "0.05em" }}>
             Core Platforms
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "760px", margin: "0.4rem 0 0 0" }}>
-            Deterministic developer security, autonomous threat analysis, and automated public transparency.
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "760px", margin: "0.4rem 0 0 0" }}>
+            Practical and transparent security tools built for engineering security, threat research, and public accountability.
           </p>
         </div>
 
