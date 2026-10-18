@@ -33,7 +33,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
+        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: 0, letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
           PRACTICAL. TRANSPARENT. <br/>
           <span style={{ 
             color: "var(--accent-primary)", 
@@ -43,10 +43,6 @@ export default function HomePage() {
             SECURE.
           </span>
         </h1>
-
-        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
-          Practical and transparent security tools for software engineering teams, threat researchers, and public accountability—from hermetic developer workstations to real-time CVE feeds and automated open records.
-        </p>
       </section>
 
       {/* CORE PRODUCT PLATFORMS */}
