@@ -19,7 +19,7 @@ export default function HomePage() {
       {/* RADICAL DOOM-ESQUE HERO */}
       <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3rem", textAlign: "center", position: "relative" }}>
         {/* PROMINENT CYBERNETIC DEMON HELM LOGO EMBLEM */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.75rem" }}>
           <div style={{
             position: "relative",
             display: "inline-flex",
@@ -31,18 +31,6 @@ export default function HomePage() {
           }}>
             <ExultiaLogo size={110} glow={true} />
           </div>
-        </div>
-
-        <div style={{
-          fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
-          fontSize: "0.85rem",
-          letterSpacing: "0.22em",
-          color: "var(--accent-primary)",
-          textTransform: "uppercase",
-          fontWeight: 700,
-          marginBottom: "1rem",
-        }}>
-          Security You Can Audit // Data You Can Trust
         </div>
 
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
@@ -57,7 +45,7 @@ export default function HomePage() {
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
-          Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.
+          Practical and transparent security tools for software engineering teams, threat researchers, and public accountability—from hermetic developer workstations to real-time CVE feeds and automated open records.
         </p>
       </section>
 
@@ -70,8 +58,8 @@ export default function HomePage() {
           <h2 style={{ fontSize: "2.1rem", fontWeight: 900, color: "#FFFFFF", marginTop: "4px", letterSpacing: "0.05em" }}>
             Core Platforms
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "760px", margin: "0.4rem 0 0 0" }}>
-            Practical and transparent security tools built for engineering security, threat research, and public accountability.
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "800px", margin: "0.4rem 0 0 0", lineHeight: "1.6" }}>
+            Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.
           </p>
         </div>
 
