@@ -171,7 +171,7 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation. Free forever for 1 host.",
+        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation.",
         features: [
           "1 Active Workstation / Host Node Free Forever",
           "Standard Vantage CVE synchronization",
@@ -966,12 +966,6 @@ function SubscriptionContent() {
                     {!isFree && userCount > 1 && !isMultiPassPlan && (
                       <div style={{ fontSize: "0.82rem", color: accentColor, fontWeight: 700, marginTop: "2px" }}>
                         ${unitPrice} / {isKinetic ? "host" : "user"} / mo × {userCount} {entityTerm} = ${totalPrice}/mo
-                      </div>
-                    )}
-
-                    {isFree && (
-                      <div style={{ fontSize: "0.8rem", color: "#34D399", fontWeight: 600, marginTop: "2px" }}>
-                        {isKinetic ? "1 workstation host included free forever" : "1 developer seat included free forever"}
                       </div>
                     )}
 
