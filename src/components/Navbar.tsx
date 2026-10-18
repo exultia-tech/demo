@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon } from "@/components/BrandIcons";
+import DoomPaletteSelector from "@/components/DoomPaletteSelector";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -112,30 +113,47 @@ export default function Navbar() {
             href={isIsolated ? threatFeedHome : "/"} 
             style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.85rem" }}
           >
-            <ExultiaLogo size={36} />
-            <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-              <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
-                Exultia
-              </span>
-              <span style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 700, textTransform: "lowercase", letterSpacing: "0.04em" }}>
-                .tech
-              </span>
-              {isIsolated && (
-                <span style={{
-                  marginLeft: "4px",
-                  fontSize: "0.65rem",
-                  background: "rgba(139, 92, 246, 0.2)",
-                  color: "#C084FC",
-                  border: "1px solid rgba(139, 92, 246, 0.4)",
-                  padding: "1px 6px",
-                  borderRadius: "4px",
-                  fontWeight: 700,
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase"
+            <ExultiaLogo size={38} glow={true} />
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                <span style={{ 
+                  fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
+                  fontSize: "1.28rem", 
+                  fontWeight: 900, 
+                  color: "#FFFFFF", 
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  textShadow: "0 0 12px var(--accent-glow)"
                 }}>
-                  Vantage
+                  EXULTIA
                 </span>
-              )}
+                {isIsolated && (
+                  <span style={{
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.62rem",
+                    background: "rgba(0, 229, 255, 0.15)",
+                    color: "var(--accent-primary)",
+                    border: "1px solid var(--accent-primary)",
+                    padding: "1px 6px",
+                    borderRadius: "2px",
+                    fontWeight: 800,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase"
+                  }}>
+                    Vantage
+                  </span>
+                )}
+              </div>
+              <span style={{ 
+                fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
+                fontSize: "0.62rem", 
+                fontWeight: 700, 
+                color: "var(--accent-primary)", 
+                letterSpacing: "0.32em", 
+                textTransform: "uppercase" 
+              }}>
+                TECHNOLOGIES
+              </span>
             </div>
           </Link>
         </div>
@@ -448,6 +466,9 @@ export default function Navbar() {
 
         {/* RIGHT COLUMN: AUTHENTICATION & USER STATUS */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.75rem" }}>
+          {/* HUD PALETTE SELECTOR (Option A, B, C, D) */}
+          <DoomPaletteSelector compact={true} />
+
           {loading ? (
             <div style={{ width: "80px", height: "32px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }} />
           ) : user ? (

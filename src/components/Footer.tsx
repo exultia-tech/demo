@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ExultiaLogo } from "@/components/BrandIcons";
+import DoomPaletteSelector from "@/components/DoomPaletteSelector";
 import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Footer() {
@@ -30,23 +31,43 @@ export default function Footer() {
           {/* BRAND & MISSION - ISOLATED Vantage FOCUS */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-              <ExultiaLogo size={34} />
-              <div style={{ display: "flex", alignItems: "baseline", gap: "5px" }}>
-                <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF" }}>Exultia</span>
-                <span style={{ fontSize: "0.7rem", color: "#60A5FA", fontWeight: 700, textTransform: "lowercase" }}>.tech</span>
-                <span style={{
-                  marginLeft: "4px",
-                  fontSize: "0.65rem",
-                  background: "rgba(139, 92, 246, 0.2)",
-                  color: "#C084FC",
-                  border: "1px solid rgba(139, 92, 246, 0.35)",
-                  padding: "1px 6px",
-                  borderRadius: "4px",
-                  fontWeight: 700,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase"
+              <ExultiaLogo size={36} glow={true} />
+              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                  <span style={{ 
+                    fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
+                    fontSize: "1.2rem", 
+                    fontWeight: 900, 
+                    color: "#FFFFFF", 
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase" 
+                  }}>
+                    EXULTIA
+                  </span>
+                  <span style={{
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.62rem",
+                    background: "rgba(0, 229, 255, 0.15)",
+                    color: "var(--accent-primary)",
+                    border: "1px solid var(--accent-primary)",
+                    padding: "1px 6px",
+                    borderRadius: "2px",
+                    fontWeight: 800,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase"
+                  }}>
+                    Vantage
+                  </span>
+                </div>
+                <span style={{ 
+                  fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
+                  fontSize: "0.6rem", 
+                  fontWeight: 700, 
+                  color: "var(--accent-primary)", 
+                  letterSpacing: "0.32em", 
+                  textTransform: "uppercase" 
                 }}>
-                  Vantage
+                  TECHNOLOGIES
                 </span>
               </div>
             </div>
@@ -56,9 +77,9 @@ export default function Footer() {
             </p>
 
             <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-              <span className="github-badge">✓ 110+ Live Feeds</span>
-              <span className="github-badge">✓ Real-Time Consensus</span>
-              <span className="github-badge">✓ Open Threat Data</span>
+              <span className="doom-badge">✓ 110+ Live Feeds</span>
+              <span className="doom-badge">✓ Real-Time Consensus</span>
+              <span className="doom-badge">✓ Open Threat Data</span>
             </div>
           </div>
 
@@ -134,21 +155,39 @@ export default function Footer() {
         {/* BRAND & MISSION */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-            <ExultiaLogo size={34} />
-            <div style={{ display: "flex", alignItems: "baseline", gap: "5px" }}>
-              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF" }}>Exultia</span>
-              <span style={{ fontSize: "0.7rem", color: "#60A5FA", fontWeight: 700, textTransform: "lowercase" }}>.tech</span>
+            <ExultiaLogo size={36} glow={true} />
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+              <span style={{ 
+                fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
+                fontSize: "1.2rem", 
+                fontWeight: 900, 
+                color: "#FFFFFF", 
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" 
+              }}>
+                EXULTIA
+              </span>
+              <span style={{ 
+                fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
+                fontSize: "0.6rem", 
+                fontWeight: 700, 
+                color: "var(--accent-primary)", 
+                letterSpacing: "0.32em", 
+                textTransform: "uppercase" 
+              }}>
+                TECHNOLOGIES
+              </span>
             </div>
           </div>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", maxWidth: "300px" }}>
-            Practical tools for developer workstation security, global threat intelligence, and public records transparency.
+            Battle-tested engineering tools for developer workstation security, global threat intelligence, and public records transparency.
           </p>
 
           <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-            <span className="github-badge">✓ Open & Auditable</span>
-            <span className="github-badge">✓ Privacy-First</span>
-            <span className="github-badge">✓ Multi-Platform</span>
+            <span className="doom-badge">✓ Open & Auditable</span>
+            <span className="doom-badge">✓ Privacy-First</span>
+            <span className="doom-badge">✓ Multi-Platform</span>
           </div>
         </div>
 
@@ -213,10 +252,14 @@ export default function Footer() {
         fontSize: "0.8rem",
         color: "#64748B"
       }}>
-        <div>
-          © {new Date().getFullYear()} Exultia (exultia.tech). All rights reserved. CC-BY-4.0 Open Intelligence.
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span>© {new Date().getFullYear()} EXULTIA TECHNOLOGIES (exultia.tech). All rights reserved.</span>
+          <span style={{ color: "var(--accent-primary)", fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem" }}>
+            [ SPEC // ISO-9001-SEC ]
+          </span>
         </div>
-        <div style={{ display: "flex", gap: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+          <DoomPaletteSelector compact={true} showLabels={true} />
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
           <Link href="/app/uvi/stats" style={{ color: "#94A3B8", textDecoration: "none" }}>Vantage</Link>
           <Link href="/app/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>

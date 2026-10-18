@@ -11,97 +11,136 @@ interface IconProps {
  * An isometric multi-faceted crystalline shield & prism symbolizing
  * developer security, threat intelligence, and public transparency.
  */
-export function ExultiaLogo({ size = 36, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(59, 130, 246, 0.45))" : "none";
+/**
+ * Exultia Flagship Company Logo
+ * Radical DOOM-esque cybernetic horned demon helm emblem featuring
+ * glowing visor eyes, mechanical brow conduits, and wireframe perspective gateway.
+ */
+interface ExultiaLogoProps extends IconProps {
+  palette?: "cyan" | "orange" | "green" | "magenta" | "auto";
+}
+
+export function ExultiaLogo({ size = 36, className = "", glow = true, palette = "auto" }: ExultiaLogoProps) {
+  const [activePalette, setActivePalette] = React.useState<string>("cyan");
+
+  React.useEffect(() => {
+    if (palette !== "auto") {
+      setActivePalette(palette);
+      return;
+    }
+    const update = () => {
+      if (typeof document !== "undefined") {
+        const p = document.documentElement.getAttribute("data-doom-palette") || "cyan";
+        setActivePalette(p);
+      }
+    };
+    update();
+    if (typeof window !== "undefined") {
+      window.addEventListener("exultia-doom-palette-change", update);
+      return () => window.removeEventListener("exultia-doom-palette-change", update);
+    }
+  }, [palette]);
+
+  const emblemSrc = `/branding/emblem_${palette !== "auto" ? palette : activePalette}.png`;
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <div
       className={className}
-      style={{ filter: glowFilter, transition: "transform 0.2s ease, filter 0.2s ease" }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: size,
+        height: size,
+        position: "relative",
+        userSelect: "none",
+      }}
     >
-      <defs>
-        {/* Gradients */}
-        <linearGradient id="exultia-grad-primary" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#3B82F6" />
-          <stop offset="45%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#06B6D4" />
-        </linearGradient>
-
-        <linearGradient id="exultia-grad-facet-top" x1="24" y1="4" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#60A5FA" />
-          <stop offset="100%" stopColor="#3B82F6" />
-        </linearGradient>
-
-        <linearGradient id="exultia-grad-facet-left" x1="4" y1="14" x2="24" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#6366F1" />
-        </linearGradient>
-
-        <linearGradient id="exultia-grad-facet-right" x1="24" y1="24" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#06B6D4" />
-          <stop offset="100%" stopColor="#0284C7" />
-        </linearGradient>
-
-        <linearGradient id="exultia-grad-core" x1="16" y1="16" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="50%" stopColor="#93C5FD" />
-          <stop offset="100%" stopColor="#A78BFA" />
-        </linearGradient>
-      </defs>
-
-      {/* Outer Glow Halo / Base Shape */}
-      <polygon
-        points="24,3 44,14 44,34 24,45 4,34 4,14"
-        fill="rgba(10, 15, 30, 0.6)"
-        stroke="url(#exultia-grad-primary)"
-        strokeWidth="2"
-        strokeLinejoin="round"
+      <img
+        src={emblemSrc}
+        alt="Exultia Technologies Cybernetic Demon Helm"
+        width={size}
+        height={size}
+        style={{
+          width: `${size}px`,
+          height: `${size}px`,
+          objectFit: "contain",
+          filter: glow ? "drop-shadow(0 0 10px var(--accent-glow))" : "none",
+          transition: "filter 0.2s ease, transform 0.2s ease",
+        }}
       />
+    </div>
+  );
+}
 
-      {/* Top Facet (Azure Peak) */}
-      <polygon
-        points="24,5 42,15 24,24 6,15"
-        fill="url(#exultia-grad-facet-top)"
-        fillOpacity="0.85"
-      />
-
-      {/* Bottom-Left Facet (Cyber Violet) */}
-      <polygon
-        points="6,15 24,24 24,43 6,33"
-        fill="url(#exultia-grad-facet-left)"
-        fillOpacity="0.9"
-      />
-
-      {/* Bottom-Right Facet (Deep Cyan) */}
-      <polygon
-        points="24,24 42,15 42,33 24,43"
-        fill="url(#exultia-grad-facet-right)"
-        fillOpacity="0.95"
-      />
-
-      {/* Central Quantum Aperture / Core Node */}
-      <polygon
-        points="24,14 32,19 32,29 24,34 16,29 16,19"
-        fill="rgba(10, 15, 30, 0.9)"
-        stroke="url(#exultia-grad-core)"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
-
-      {/* Core Node Inner Spark */}
-      <circle cx="24" cy="24" r="3.5" fill="url(#exultia-grad-core)" />
-      <circle cx="24" cy="24" r="1.5" fill="#FFFFFF" />
-
-      {/* Isometric Interlocking Lines */}
-      <line x1="24" y1="5" x2="24" y2="14" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="6" y1="33" x2="16" y2="29" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="42" y1="33" x2="32" y2="29" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
+/**
+ * Exultia Full Brand Lockup
+ * Emblem + Chiseled Uppercase 'EXULTIA' + High-tracking 'TECHNOLOGIES'
+ */
+export function ExultiaBrandLockup({
+  size = 38,
+  isIsolated = false,
+  isolatedTag = "Vantage",
+  showTagline = true,
+}: {
+  size?: number;
+  isIsolated?: boolean;
+  isolatedTag?: string;
+  showTagline?: boolean;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+      <ExultiaLogo size={size} glow={true} />
+      <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
+              fontSize: "1.3rem",
+              fontWeight: 900,
+              color: "#FFFFFF",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              textShadow: "0 0 12px var(--accent-glow)",
+            }}
+          >
+            EXULTIA
+          </span>
+          {isIsolated && (
+            <span
+              style={{
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "0.62rem",
+                background: "rgba(0, 229, 255, 0.15)",
+                color: "var(--accent-primary)",
+                border: "1px solid var(--accent-primary)",
+                padding: "1px 6px",
+                borderRadius: "2px",
+                fontWeight: 800,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {isolatedTag}
+            </span>
+          )}
+        </div>
+        {showTagline && (
+          <span
+            style={{
+              fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
+              fontSize: "0.62rem",
+              fontWeight: 700,
+              color: "var(--accent-primary)",
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+            }}
+          >
+            TECHNOLOGIES
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 

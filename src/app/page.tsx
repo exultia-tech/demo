@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIcon, ExultiaLogo } from "@/components/BrandIcons";
+import BrandIdentityShowcase from "@/components/brand/BrandIdentityShowcase";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
-  title: "Exultia | Workstation Security, Threat Intelligence & Open Records",
-  description: "Exultia builds tools for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  title: "Exultia Technologies | Radical Workstation Security, Threat Intelligence & Open Records",
+  description: "Exultia Technologies builds battle-hardened tooling for engineering teams and researchers: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function HomePage() {
@@ -16,29 +17,52 @@ export default function HomePage() {
 
   return (
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
-      {/* COMPACT SPLASH HERO */}
-      <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3rem" }}>
-        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "-0.035em", lineHeight: 1.12 }}>
-          Security You Can Audit. <br/>
-          <span className="gradient-text">Data You Can Trust.</span>
+      {/* RADICAL DOOM-ESQUE HERO */}
+      <section className="hero-section" style={{ paddingTop: "4rem", paddingBottom: "3rem", textAlign: "center", position: "relative" }}>
+        {/* HUD TELEMETRY BADGE */}
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "1.25rem" }}>
+          <span className="doom-badge" style={{ fontSize: "0.75rem", padding: "4px 12px" }}>
+            [ EXULTIA TECHNOLOGIES // DEFENSE-IN-DEPTH MATRIX // ARMED ]
+          </span>
+        </div>
+
+        <h1 className="hero-title" style={{ fontSize: "3.8rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.1, textTransform: "uppercase" }}>
+          SECURITY YOU CAN AUDIT. <br/>
+          <span style={{ 
+            color: "var(--accent-primary)", 
+            textShadow: "0 0 25px var(--accent-glow)",
+            fontFamily: "var(--font-display)"
+          }}>
+            DATA YOU CAN TRUST.
+          </span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: "760px", marginBottom: "0", fontSize: "1.2rem", lineHeight: "1.65", color: "#94A3B8" }}>
-          Exultia builds transparent tools for software teams, security engineers, and researchers—from locked-down developer environments to real-time threat intelligence and automated public records tracking.
+        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.15rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
+          Exultia Technologies builds battle-hardened security tooling for software engineers, threat analysts, and transparency researchers—from hermetic developer workstation containment to real-time global CVE consensus and automated statutory open-records tracking.
         </p>
+
+        {/* HERO CTA ACTIONS */}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+          <a href="#core-platforms" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "0.95rem" }}>
+            EXPLORE PLATFORMS →
+          </a>
+          <Link href="/app/uvi/stats" className="btn-secondary" style={{ padding: "0.85rem 1.8rem", fontSize: "0.92rem" }}>
+            LAUNCH VANTAGE INTEL
+          </Link>
+        </div>
       </section>
 
       {/* CORE PRODUCT PLATFORMS */}
-      <section style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem" }}>
+      <section id="core-platforms" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem" }}>
         <div style={{ marginBottom: "2.5rem" }}>
-          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#60A5FA", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Our Products
+          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            // ARMED WORKSTATION SUITE
           </div>
-          <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginTop: "4px" }}>
+          <h2 style={{ fontSize: "2.1rem", fontWeight: 900, color: "#FFFFFF", marginTop: "4px", letterSpacing: "0.05em" }}>
             Core Platforms
           </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "760px", margin: "0.4rem 0 0 0" }}>
-            Built for engineering security, threat research, and public transparency.
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "760px", margin: "0.4rem 0 0 0" }}>
+            Deterministic developer security, autonomous threat analysis, and automated public transparency.
           </p>
         </div>
 
@@ -276,6 +300,9 @@ export default function HomePage() {
           </div>
 
         </div>
+
+        {/* RADICAL DOOM BRAND IDENTITY SPECIFICATION SHOWCASE */}
+        <BrandIdentityShowcase />
       </section>
     </div>
   );
