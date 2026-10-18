@@ -1,11 +1,15 @@
 /**
- * Exultia Argent - Public OS Distribution Patch & Errata Feed Aggregator
+ * Exultia Argent - Public OS Distribution Regular Patch & Errata Feed Aggregator
  * 
- * Aggregates machine-readable public vendor patch streams across Linux, BSD, and UNIX:
- *   - Security Advisories (RHSA, RLSA, ALSA, USN, DSA, GLSA, FreeBSD-SA, etc.)
+ * Sibling and specialized complement to the Vantage threat feed.
+ * Whereas Vantage focuses on weakness enumerations (CVEs, CWEs, KEVs, zero-days),
+ * Argent aggregates ONLY regular vendor operating system updates, non-security
+ * stability errata, and maintenance streams:
+ * 
  *   - Bug Fix Advisories (RHBA, RLBA, ALBA, Bodhi Bugfix, FreeBSD-EN, Debian Updates, openSUSE-RU)
- *   - Enhancement & Feature Advisories (RHEA, RLEA, ALEA, HWE, Kernel Backports)
- *   - General Point Releases, Maintenance Updates, and Toolchain Upgrades
+ *   - Enhancement & Feature Advisories (RHEA, RLEA, ALEA, HWE, Kernel Backports, GPU/NIC Drivers)
+ *   - General Point Releases, Maintenance Updates, and Toolchain Upgrades (GCC, glibc, systemd, ZFS)
+ *   - Zero Weakness Enumeration Noise: Pure Vendor Package Lifecycle Updates
  */
 
 export type ArgentOsCategory = 
@@ -62,7 +66,6 @@ export type ArgentOsFamily =
   | 'linux-azure';
 
 export type ArgentAdvisoryType = 
-  | 'SECURITY'       // CVE fixes, vulnerability errata (RHSA, RLSA, ALSA, USN, DSA, GLSA, FreeBSD-SA)
   | 'BUGFIX'         // Non-security stability, crash, memory leak, logic fixes (RHBA, RLBA, ALBA, Bodhi bugfix, FreeBSD-EN)
   | 'ENHANCEMENT'    // Hardware enablement, driver updates, performance optimizations, feature backports (RHEA, RLEA, ALEA)
   | 'MAINTENANCE'    // Distro point release updates, base runtime sync, compiler & toolchain updates
@@ -117,8 +120,8 @@ export interface ArgentPackageUpdate {
 }
 
 export interface ArgentPatchBundle {
-  id: string; // e.g. "ARG-USN-6856-1"
-  bundleId: string; // Upstream vendor ID, e.g. "USN-6856-1", "RLBA-2024:3910", "RHBA-2024:4120"
+  id: string; // e.g. "ARG-RLBA-2024-3910"
+  bundleId: string; // Upstream vendor ID, e.g. "RLBA-2024:3910", "RHBA-2024:4120", "UBUNTU-UPD-2024-0412"
   advisoryType: ArgentAdvisoryType;
   os: ArgentOsCategory;
   osFamily: ArgentOsFamily;
@@ -132,7 +135,7 @@ export interface ArgentPatchBundle {
   actionDirective: ArgentActionDirective;
   issuedAt: string;
   updatedAt: string;
-  cveList: string[]; // Fixed CVEs (empty for pure bugfixes / enhancements)
+  cveList: string[]; // Always empty for pure regular vendor updates
   packages: ArgentPackageUpdate[];
   commands: {
     nativeUpgrade: string;
@@ -176,1270 +179,669 @@ export interface ArgentPublicFeedSource {
   coverage: string;
   refreshRate: string;
   homepageUrl: string;
-  feedTypesCovered: ('Security' | 'Bugfix' | 'Enhancement' | 'Maintenance' | 'General')[];
+  feedTypesCovered: ('Bugfix' | 'Enhancement' | 'Maintenance' | 'General')[];
 }
 
 /**
- * Public Distro Patch Feeds Catalog (Aggregating Security, Bugfix, Enhancement, and General OS Updates)
+ * Public Distro Regular Patch Feeds Catalog (Aggregating Bugfix, Enhancement, Maintenance, and General OS Updates)
  */
 export const ARGENT_PUBLIC_FEED_SOURCES: ArgentPublicFeedSource[] = [
   // 1. Canonical Ubuntu
   {
-    id: "feed-ubuntu-usn",
+    id: "feed-ubuntu-updates",
     os: "ubuntu",
-    name: "Canonical Ubuntu Updates & Security Notices (USN / OVAL)",
+    name: "Canonical Ubuntu Updates & Hardware Enablement Stream (noble-updates)",
     category: "Debian & Ubuntu Ecosystem",
     icon: "🟠",
-    provider: "Canonical Security & Release Engineering",
-    officialFeedUrl: "https://security.ubuntu.com/oval/com.ubuntu.noble.usn.oval.xml.bz2",
-    format: "OSV",
-    recordsIngested: 94200,
+    provider: "Canonical Release Engineering & Kernel Team",
+    officialFeedUrl: "https://changelogs.ubuntu.com/changelogs/",
+    format: "JSON",
+    recordsIngested: 88500,
     updateFrequency: "Continuous publication upon package build",
-    documentationUrl: "https://ubuntu.com/security/notices",
-    homepageUrl: "https://ubuntu.com/security/notices",
-    description: "Official Canonical security advisories and general stable point updates for Ubuntu LTS releases (Main, Universe, Restricted).",
-    scope: "Ubuntu 24.04 LTS, 22.04 LTS, 20.04 LTS Updates & Security",
-    access: "Public OSV API, OVAL XML & apt repository metadata",
-    coverage: "Security CVE errata, stability bugfixes, hardware enablement (HWE)",
+    documentationUrl: "https://wiki.ubuntu.com/StableReleaseUpdates",
+    homepageUrl: "https://ubuntu.com/",
+    description: "Official Canonical stable release updates (SRU) and hardware enablement (HWE) backports across Ubuntu LTS releases (Main & Universe).",
+    scope: "Ubuntu 24.04 LTS (Noble), 22.04 LTS (Jammy) Regular Updates",
+    access: "Public APT changelogs & repository metadata",
+    coverage: "System stability bugfixes, hardware enablement, driver updates, kernel point releases",
     refreshRate: "Realtime (Event-Driven)",
     status: "Realtime",
-    supportedReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)", "Ubuntu 20.04 LTS (Focal)"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    supportedReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "General"]
   },
 
   // 2. Debian GNU/Linux
   {
-    id: "feed-debian-tracker",
+    id: "feed-debian-updates",
     os: "debian",
-    name: "Debian Security Tracker & Proposed Updates (DSA / BTS)",
+    name: "Debian Proposed Updates & Bug Tracking Stream (BTS / debian-updates)",
     category: "Debian & Ubuntu Ecosystem",
     icon: "🔴",
-    provider: "Debian Security & Release Team",
-    officialFeedUrl: "https://security-tracker.debian.org/tracker/data/json",
+    provider: "Debian Release Team & Maintainers",
+    officialFeedUrl: "https://bugs.debian.org/release-critical/",
     format: "JSON",
-    recordsIngested: 128000,
+    recordsIngested: 115000,
     updateFrequency: "Live continuous sync (every 15 minutes)",
-    documentationUrl: "https://security-tracker.debian.org/",
-    homepageUrl: "https://www.debian.org/security/",
-    description: "Authoritative Debian Security Tracker database tracking CVEs, point-release bugfixes, and proposed updates across stable and oldstable.",
-    scope: "Debian 12 Bookworm, Debian 11 Bullseye, Debian 13 Trixie",
-    access: "Public JSON Feed, BTS Webhooks & Debian Release Announcements",
-    coverage: "DSA security advisories, point release updates, upstream regression fixes",
+    documentationUrl: "https://www.debian.org/releases/stable/",
+    homepageUrl: "https://www.debian.org/",
+    description: "Debian stable point release update stream tracking bug fixes, timezone data updates, and hardware reliability patches.",
+    scope: "Debian 12 Bookworm, Debian 11 Bullseye Regular Updates",
+    access: "Public BTS REST API & Release Announcements",
+    coverage: "Point release bugfixes, upstream driver updates, ZFS and glibc stability errata",
     refreshRate: "Hourly (every 15 min)",
     status: "Realtime",
-    supportedReleases: ["Debian 12 (Bookworm)", "Debian 11 (Bullseye)", "Debian 13 (Trixie)"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    supportedReleases: ["Debian 12 (Bookworm)", "Debian 11 (Bullseye)"],
+    feedTypesCovered: ["Bugfix", "Maintenance", "General"]
   },
 
   // 3. Rocky Linux
   {
     id: "feed-rocky-errata",
     os: "rocky",
-    name: "Rocky Linux Errata (RLSA Security, RLBA Bugfix, RLEA Enhancement)",
+    name: "Rocky Linux Bug Fix & Enhancement Errata (RLBA & RLEA)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🟢",
     provider: "Rocky Enterprise Software Foundation (RESF)",
     officialFeedUrl: "https://errata.rockylinux.org/",
     format: "UPDATEINFO",
-    recordsIngested: 78500,
+    recordsIngested: 74200,
     updateFrequency: "Continuous mirror synchronization upon build",
     documentationUrl: "https://errata.rockylinux.org/",
     homepageUrl: "https://errata.rockylinux.org/",
-    description: "Rocky Linux complete errata stream: RLSA (Security), RLBA (Bug Fixes), and RLEA (Enhancements) published via DNF updateinfo.xml.",
-    scope: "Rocky Linux 8 & 9 BaseOS, AppStream, CRB",
+    description: "Rocky Linux non-security errata stream publishing RLBA (Bug Advisories) and RLEA (Enhancement Advisories) via DNF updateinfo.xml.",
+    scope: "Rocky Linux 9 & 8 BaseOS, AppStream, CRB",
     access: "Public updateinfo.xml & RESF REST API",
-    coverage: "1:1 RHEL security, stability bugfixes, device drivers, RPM checksums",
+    coverage: "Kernel NVMe bugfixes, enterprise storage reliability, CPU hardware enablement",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Rocky Linux 9 (Blue Onyx)", "Rocky Linux 8 (Green Obsidian)"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 4. Red Hat Enterprise Linux
   {
-    id: "feed-redhat-csaf",
+    id: "feed-redhat-errata",
     os: "rhel",
-    name: "Red Hat Security & Errata Stream (RHSA, RHBA, RHEA / CSAF 2.0)",
+    name: "Red Hat Bug & Enhancement Advisories Stream (RHBA & RHEA)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🎩",
-    provider: "Red Hat Product Security & Release Engineering",
+    provider: "Red Hat Product Engineering & Kernel Team",
     officialFeedUrl: "https://access.redhat.com/hydra/rest/securitydata/cvrf.json",
     format: "CSAF",
-    recordsIngested: 162000,
+    recordsIngested: 148000,
     updateFrequency: "Hourly automated feed updates",
-    documentationUrl: "https://access.redhat.com/security/data",
-    homepageUrl: "https://access.redhat.com/security/data",
-    description: "OASIS CSAF 2.0 and CVRF feeds covering Red Hat Security Advisories (RHSA), Bug Advisories (RHBA), and Enhancement Advisories (RHEA).",
-    scope: "RHEL 9, RHEL 8 Core, EUS, Satellite, OpenShift Node Runtimes",
-    access: "Public CSAF 2.0 JSON & VEX Endpoints",
-    coverage: "RHSA CVE fixes, RHBA system stability bugfixes, RHEA hardware enablement",
+    documentationUrl: "https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/",
+    homepageUrl: "https://access.redhat.com/errata",
+    description: "Authoritative Red Hat Bug Advisories (RHBA) and Enhancement Advisories (RHEA) covering glibc, systemd, and kernel optimizations.",
+    scope: "RHEL 9.4, 9.3, 8.10 Core & AppStream",
+    access: "Public CSAF 2.0 JSON & Errata Feeds",
+    coverage: "glibc AVX-512 optimizations, kernel I/O stalls, eBPF toolchain enhancements",
     refreshRate: "Hourly",
     status: "Realtime",
     supportedReleases: ["RHEL 9.4", "RHEL 9.3", "RHEL 8.10"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 5. AlmaLinux
   {
     id: "feed-almalinux-errata",
     os: "almalinux",
-    name: "AlmaLinux Errata Stream (ALSA Security, ALBA Bugfix, ALEA Enhancement)",
+    name: "AlmaLinux Bugfix & Enhancement Errata (ALBA & ALEA)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🔵",
     provider: "AlmaLinux OS Foundation",
     officialFeedUrl: "https://errata.almalinux.org/api/v1/errata",
     format: "CSAF",
-    recordsIngested: 71200,
+    recordsIngested: 68400,
     updateFrequency: "Continuous sync with build system",
     documentationUrl: "https://errata.almalinux.org/",
     homepageUrl: "https://almalinux.org/",
-    description: "Authoritative AlmaLinux advisory feed publishing ALSA (Security), ALBA (Bugfix), and ALEA (Enhancement) in CSAF 2.0, OVAL, and JSON.",
-    scope: "AlmaLinux 9 & 8 BaseOS, AppStream, CRB",
-    access: "Public REST API & OVAL XML",
-    coverage: "Security fixes, driver stability, kernel errata, full binary parity",
+    description: "AlmaLinux non-security updates publishing ALBA (Bugfix) and ALEA (Enhancement) in CSAF 2.0, DNF updateinfo, and JSON.",
+    scope: "AlmaLinux 9 & 8 BaseOS, AppStream",
+    access: "Public REST API & updateinfo.xml",
+    coverage: "NetworkManager DHCPv6 bugfixes, DNF parallel downloads, driver stability",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["AlmaLinux 9.4 (Seafoam Ocelot)", "AlmaLinux 8.10"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 6. Oracle Linux
   {
     id: "feed-oracle-errata",
     os: "oracle-linux",
-    name: "Oracle Linux Errata (ELSA Security, ELBA Bugfix, ELEA Enhancement)",
+    name: "Oracle Linux Bug Fix & Enhancement Stream (ELBA & ELEA / UEK)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🔴",
-    provider: "Oracle Linux Product Security",
+    provider: "Oracle Linux Product Engineering",
     officialFeedUrl: "https://linux.oracle.com/security/oval/",
     format: "OVAL",
-    recordsIngested: 79400,
+    recordsIngested: 73500,
     updateFrequency: "Daily sync with Unbreakable Linux Network (ULN)",
-    documentationUrl: "https://linux.oracle.com/security/",
+    documentationUrl: "https://docs.oracle.com/en/operating-systems/oracle-linux/",
     homepageUrl: "https://www.oracle.com/linux/",
-    description: "Oracle Linux security and bugfix announcements for Red Hat Compatible Kernel (RHCK) and Unbreakable Enterprise Kernel (UEK).",
+    description: "Oracle Linux bug fixes (ELBA) and feature enhancements (ELEA) for Unbreakable Enterprise Kernel (UEK7) and RHCK.",
     scope: "Oracle Linux 9, 8, UEK Release 7",
-    access: "Public OVAL XML & ULN Updates",
-    coverage: "ELSA security advisories, ELBA kernel bugfixes, UEK performance patches",
+    access: "Public ULN Updates & DNF metadata",
+    coverage: "XFS transaction deadlocks, KVM virtio-gpu acceleration, kernel scheduler tuning",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["Oracle Linux 9", "Oracle Linux 8", "UEK7"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement"]
+    feedTypesCovered: ["Bugfix", "Enhancement"]
   },
 
   // 7. SUSE Linux Enterprise & openSUSE
   {
-    id: "feed-suse-oval",
+    id: "feed-suse-ru",
     os: "suse",
-    name: "SUSE Maintenance & Errata (SUSE-SU Security, SUSE-RU Recommended / Bugfix)",
+    name: "SUSE Recommended & Maintenance Updates (SUSE-RU / openSUSE)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🦎",
-    provider: "SUSE Security & Maintenance Team",
+    provider: "SUSE Maintenance & openSUSE Team",
     officialFeedUrl: "https://ftp.suse.com/pub/projects/security/oval/",
     format: "OVAL",
-    recordsIngested: 61000,
+    recordsIngested: 57400,
     updateFrequency: "Daily sync with maintenance updates",
-    documentationUrl: "https://www.suse.com/support/security/",
+    documentationUrl: "https://www.suse.com/support/update/",
     homepageUrl: "https://www.suse.com/support/update/",
-    description: "SUSE Linux Enterprise Server (SLES) and openSUSE maintenance patches: SUSE-SU (Security) and SUSE-RU (Recommended Bugfixes/Features).",
-    scope: "openSUSE Leap, Tumbleweed, SLES 15 Enterprise",
-    access: "Public OVAL XML, CVRF & Zypper metadata",
-    coverage: "Zypper security errata, kernel bugfixes, Btrfs reliability updates",
+    description: "SUSE Recommended Updates (SUSE-RU) providing non-security bug fixes for Btrfs, wicked networking, and YaST core modules.",
+    scope: "openSUSE Leap 15.6, Tumbleweed, SLES 15 Enterprise",
+    access: "Public OVAL XML & Zypper repodata",
+    coverage: "btrfs-progs quota balancing, wicked DHCP routing, systemd service units",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["SLES 15 SP6", "SLES 15 SP5", "openSUSE Leap 15.6"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 8. Alpine Linux
   {
-    id: "feed-alpine-secdb",
+    id: "feed-alpine-updates",
     os: "alpine",
-    name: "Alpine Linux Security Database & Package Updates (SecDB / APK)",
+    name: "Alpine Linux Main & Community Package Updates (APK Stream)",
     category: "Lightweight & Container OS",
     icon: "🏔️",
-    provider: "Alpine Linux Core Team",
-    officialFeedUrl: "https://secdb.alpinelinux.org/v3.20/main.json",
-    format: "JSON",
-    recordsIngested: 45200,
+    provider: "Alpine Linux Core Team & Package Maintainers",
+    officialFeedUrl: "https://git.alpinelinux.org/aports/",
+    format: "GIT_TREE",
+    recordsIngested: 41200,
     updateFrequency: "Continuous per-branch rebuilds",
-    documentationUrl: "https://secdb.alpinelinux.org/",
+    documentationUrl: "https://wiki.alpinelinux.org/",
     homepageUrl: "https://alpinelinux.org/",
-    description: "Alpine Linux package update database cataloging security fixes, musl libc resolver patches, and community package updates per release.",
-    scope: "Alpine v3.20, v3.19, v3.18 & Edge Main/Community",
-    access: "Public Git / JSON Streams",
-    coverage: "APK package upgrades, musl stability fixes, BusyBox updates",
+    description: "Alpine Linux rolling package updates fixing musl libc resolver bugs, BusyBox shell utilities, and container runtime components.",
+    scope: "Alpine v3.20, v3.19 Main & Community",
+    access: "Public Git Tree & APKINDEX mirrors",
+    coverage: "musl libc DNS search paths, BusyBox regex fixes, container base libraries",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Alpine v3.20", "Alpine v3.19", "Alpine Edge"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance", "General"]
   },
 
   // 9. Arch Linux
   {
-    id: "feed-arch-tracker",
+    id: "feed-arch-packages",
     os: "arch",
-    name: "Arch Linux Security Tracker & Core/Extra Package Stream",
+    name: "Arch Linux Core & Extra Package Releases (Rolling Stream)",
     category: "Independent & Rolling Distros",
     icon: "🏹",
-    provider: "Arch Linux Security Team & Maintainers",
-    officialFeedUrl: "https://security.archlinux.org/issues.json",
+    provider: "Arch Linux Packaging Team",
+    officialFeedUrl: "https://archlinux.org/packages/search/json/",
     format: "JSON",
-    recordsIngested: 37800,
+    recordsIngested: 35100,
     updateFrequency: "Live continuous rolling release stream",
-    documentationUrl: "https://security.archlinux.org/",
+    documentationUrl: "https://wiki.archlinux.org/",
     homepageUrl: "https://archlinux.org/",
-    description: "Real-time rolling release updates tracking upstream patches, kernel version upgrades, and security fixes across Core, Extra, and Multilib.",
+    description: "Real-time rolling release stream tracking upstream kernel point releases, Mesa Vulkan performance updates, and toolchain upgrades.",
     scope: "Arch Linux Core, Extra, Multilib Rolling",
     access: "Public REST API JSON & pacman repo databases",
-    coverage: "Rolling package upgrades, kernel stable point releases, desktop updates",
+    coverage: "Linux 6.10 hardware enablement, Mesa AMD RDNA3 drivers, desktop pipewire updates",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Arch Linux Rolling"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance", "General"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "General"]
   },
 
   // 10. Fedora Linux
   {
-    id: "feed-fedora-updates",
+    id: "feed-fedora-bodhi",
     os: "fedora",
-    name: "Fedora Bodhi Errata Stream (Security, Bugfix, Enhancement)",
+    name: "Fedora Bodhi Bugfix & Enhancement Stream",
     category: "Independent & Rolling Distros",
     icon: "🔵",
     provider: "Fedora Project & QA Team",
     officialFeedUrl: "https://bodhi.fedoraproject.org/updates/",
     format: "JSON",
-    recordsIngested: 86400,
+    recordsIngested: 82100,
     updateFrequency: "Continuous release updates with karma gates",
-    documentationUrl: "https://docs.fedoraproject.org/en-US/security-advisories/",
+    documentationUrl: "https://docs.fedoraproject.org/",
     homepageUrl: "https://bodhi.fedoraproject.org/",
-    description: "Fedora Bodhi updates system publishing signed RPM updates categorized into Security, Bugfix, Enhancement, and New Package releases.",
-    scope: "Fedora 40, Fedora 39, Rawhide",
+    description: "Fedora Bodhi updates system publishing signed RPM updates categorized into Bugfix, Enhancement, and New Package releases.",
+    scope: "Fedora 40, Fedora 39 Regular Updates",
     access: "Public Bodhi REST API",
-    coverage: "Signed RPM package updates, pipewire/wayland stability, kernel backports",
+    coverage: "PipeWire audio sync fixes, DNF5 acceleration, Wayland graphics updates",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Fedora 40", "Fedora 39"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 11. Amazon Linux
   {
     id: "feed-amazon-alas",
     os: "amazon-linux",
-    name: "Amazon Linux Security Center & General Updates (ALAS / AL2023)",
+    name: "Amazon Linux General Updates & Cloud Optimizations (ALAS-BA / AL2023)",
     category: "Cloud & Hyperscaler Linux",
     icon: "📦",
     provider: "Amazon Web Services (AWS)",
     officialFeedUrl: "https://alas.aws.amazon.com/AL2023/alas.rss",
     format: "UPDATEINFO",
-    recordsIngested: 54200,
+    recordsIngested: 49500,
     updateFrequency: "Continuous AWS cloud deployment updates",
-    documentationUrl: "https://alas.aws.amazon.com/",
+    documentationUrl: "https://docs.aws.amazon.com/linux/",
     homepageUrl: "https://aws.amazon.com/linux/amazon-linux-2023/",
-    description: "Amazon Linux 2023 and AL2 errata feeds providing security advisories, AWS Nitro hypervisor driver updates, and cloud-init performance patches.",
+    description: "Amazon Linux 2023 and AL2 non-security errata providing AWS Nitro hypervisor driver updates, cloud-init optimizations, and EFA drivers.",
     scope: "Amazon Linux 2023 & Amazon Linux 2 (EC2, ECS, EKS)",
-    access: "Public updateinfo.xml & RSS Feeds",
-    coverage: "Security fixes, AWS SDK updates, Nitro drivers, deterministic version locking",
+    access: "Public updateinfo.xml & DNF repositories",
+    coverage: "cloud-init IMDSv2 token caching, Elastic Fabric Adapter (EFA), kernel scheduling",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["Amazon Linux 2023", "Amazon Linux 2"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement"]
+    feedTypesCovered: ["Bugfix", "Enhancement"]
   },
 
   // 12. Upstream Linux Kernel
   {
     id: "feed-kernel-stable",
     os: "kernel",
-    name: "Upstream Linux Kernel Stable Tree (Greg K-H Point Releases & CVEs)",
+    name: "Upstream Linux Kernel Stable Point Releases (Greg K-H Tree)",
     category: "Upstream Linux Kernel",
     icon: "🐧",
     provider: "The Linux Kernel Organization & Greg Kroah-Hartman",
     officialFeedUrl: "https://www.kernel.org/feeds/kdist.xml",
     format: "GIT_TREE",
-    recordsIngested: 104500,
+    recordsIngested: 98200,
     updateFrequency: "Weekly stable point releases & urgent regression hotfixes",
     documentationUrl: "https://www.kernel.org/",
     homepageUrl: "https://www.kernel.org/",
-    description: "Upstream Linux kernel stable tree patch sets containing driver regression fixes, filesystem stability patches (Btrfs, XFS, Ext4), and CVE errata.",
+    description: "Upstream Linux kernel stable tree patch sets containing driver regression fixes, filesystem stability patches (Btrfs, XFS, Ext4), and memory fixes.",
     scope: "Upstream Linux LTS Branches (6.6 LTS, 6.1 LTS, 5.15 LTS)",
     access: "Public Git, git-format-patch & kdist.xml",
-    coverage: "Subsystem regression fixes, memory leak patches, hardware enablement",
+    coverage: "TCP BBR socket memory stalls, AMD P-State CPPC governors, Btrfs space balancing",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["Linux 6.6 LTS", "Linux 6.1 LTS", "Linux 5.15 LTS"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 13. Gentoo Linux
   {
-    id: "feed-gentoo-glsa",
+    id: "feed-gentoo-portage",
     os: "gentoo",
-    name: "Gentoo Linux Security Advisories & Portage Stable Tree (GLSA)",
+    name: "Gentoo Linux Portage Stable Tree & Toolchain Updates",
     category: "Independent & Rolling Distros",
     icon: "🟣",
-    provider: "Gentoo Security Team & Architecture Maintainers",
-    officialFeedUrl: "https://security.gentoo.org/glsa/glsa.rdf",
+    provider: "Gentoo Development & Architecture Teams",
+    officialFeedUrl: "https://api.gentoo.org/packages/",
     format: "JSON",
-    recordsIngested: 24300,
+    recordsIngested: 21800,
     updateFrequency: "Live rsync / git tree sync",
-    documentationUrl: "https://security.gentoo.org/glsa/",
+    documentationUrl: "https://wiki.gentoo.org/",
     homepageUrl: "https://www.gentoo.org/",
-    description: "Gentoo Portage package tree updates and GLSA advisories covering source-compiled package errata, toolchain flags, and security patches.",
+    description: "Gentoo Portage package tree stabilization updates covering GCC 14.1 toolchains, binutils LTO optimizations, and Portage resolver speedups.",
     scope: "Gentoo Portage Tree @world & core system",
-    access: "Public RDF/XML, Git & GLSA REST API",
-    coverage: "GLSA security advisories, compiler optimization bugfixes, kernel ebuilds",
+    access: "Public Git & Portage API",
+    coverage: "Compiler stabilization, Link-Time Optimization (LTO) fixes, ebuild bugfixes",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Gentoo Stable Rolling"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 14. FreeBSD
   {
-    id: "feed-freebsd-errata",
+    id: "feed-freebsd-en",
     os: "freebsd",
-    name: "FreeBSD Advisories & Errata Notices (FreeBSD-SA & FreeBSD-EN)",
+    name: "FreeBSD Errata Notices & Stability Stream (FreeBSD-EN)",
     category: "BSD & Unix Ecosystem",
     icon: "😈",
-    provider: "FreeBSD Security Officer & Release Engineering",
-    officialFeedUrl: "https://vuxml.freebsd.org/freebsd/vuln.xml.bz2",
+    provider: "FreeBSD Release Engineering & Core Team",
+    officialFeedUrl: "https://www.freebsd.org/security/advisories/",
     format: "XML",
-    recordsIngested: 49800,
-    updateFrequency: "Continuous security & quarterly stable point updates",
-    documentationUrl: "https://www.freebsd.org/security/advisories/",
+    recordsIngested: 45600,
+    updateFrequency: "Continuous stability & quarterly stable point updates",
+    documentationUrl: "https://www.freebsd.org/releases/",
     homepageUrl: "https://www.freebsd.org/",
-    description: "Official FreeBSD Security Advisories (FreeBSD-SA) and Errata Notices (FreeBSD-EN) for OpenZFS, network stack, and kernel driver stability.",
-    scope: "FreeBSD 14.1-RELEASE, 14.0-RELEASE, 13.3-RELEASE Base & Ports",
-    access: "Public VuXML bzip2 & freebsd-update stream",
-    coverage: "FreeBSD-SA security fixes, FreeBSD-EN kernel/ZFS bugfixes, pkg errata",
+    description: "Official FreeBSD Errata Notices (FreeBSD-EN) resolving OpenZFS pool deadlocks, 10GbE ixgbe network driver packet drops, and kernel stability.",
+    scope: "FreeBSD 14.1-RELEASE, 14.0-RELEASE, 13.3-RELEASE Base",
+    access: "Public freebsd-update stream & release errata",
+    coverage: "OpenZFS ARC memory reclaim, Intel ixgbe LRO packet drops, network stack tuning",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["FreeBSD 14.1-RELEASE", "FreeBSD 13.3-RELEASE"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 15. OpenBSD
   {
     id: "feed-openbsd-errata",
     os: "openbsd",
-    name: "OpenBSD Security & Reliability Errata (Syspatch / Patches)",
+    name: "OpenBSD Reliability & Driver Errata (Syspatch Stream)",
     category: "BSD & Unix Ecosystem",
     icon: "🐡",
-    provider: "OpenBSD Errata & Security Team",
+    provider: "OpenBSD Errata Team & Theo de Raadt",
     officialFeedUrl: "https://www.openbsd.org/errata75.html",
     format: "GIT_TREE",
-    recordsIngested: 16400,
+    recordsIngested: 14900,
     updateFrequency: "Continuous publication upon patch approval",
     documentationUrl: "https://www.openbsd.org/errata.html",
     homepageUrl: "https://www.openbsd.org/",
-    description: "Official OpenBSD binary syspatch stream fixing security flaws, pf packet filter bugs, and kernel stability errata.",
+    description: "Official OpenBSD binary syspatch stream fixing network bridge MTU fragmentation, pf state table locks, and AMD GPU memory mapping errata.",
     scope: "OpenBSD 7.5, 7.4 Base System & Kernel",
     access: "Public syspatch HTTP mirror & patch files",
-    coverage: "Syspatch binary updates, LibreSSL security, network bridge bugfixes",
+    coverage: "Network bridge MTU fragmentation, pf packet filter states, DRM graphics drivers",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["OpenBSD 7.5", "OpenBSD 7.4"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 16. NetBSD
   {
     id: "feed-netbsd-errata",
     os: "netbsd",
-    name: "NetBSD Security Advisories & pkgsrc Vulnerability Feed",
+    name: "NetBSD Errata Notices & pkgsrc Quarterly Stream (NetBSD-EN)",
     category: "BSD & Unix Ecosystem",
     icon: "🚩",
-    provider: "NetBSD Security Officer & pkgsrc Team",
-    officialFeedUrl: "https://ftp.netbsd.org/pub/NetBSD/security/advisories/",
+    provider: "NetBSD Release Engineering & pkgsrc Team",
+    officialFeedUrl: "https://ftp.netbsd.org/pub/NetBSD/",
     format: "JSON",
-    recordsIngested: 26100,
-    updateFrequency: "Weekly maintenance & security releases",
-    documentationUrl: "https://www.netbsd.org/support/security/",
+    recordsIngested: 23800,
+    updateFrequency: "Weekly maintenance & quarterly branch releases",
+    documentationUrl: "https://www.netbsd.org/releases/",
     homepageUrl: "https://www.netbsd.org/",
-    description: "NetBSD Security Advisories and pkgsrc cross-platform package errata for NVMM virtualization, kernel drivers, and core utilities.",
+    description: "NetBSD Errata Notices (NetBSD-EN) and pkgsrc quarterly branch updates for NVMM hypervisor memory mapping and hardware drivers.",
     scope: "NetBSD 10.0, 9.4 Base & pkgsrc quarterly",
     access: "Public FTP / HTTPS JSON streams",
-    coverage: "NetBSD-SA security advisories, NetBSD-EN driver fixes, pkgin updates",
+    coverage: "NVMM virtualization EPT invalidation, kernel driver fixes, pkgin updates",
     refreshRate: "Weekly",
     status: "Daily",
     supportedReleases: ["NetBSD 10.0", "NetBSD 9.4"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 17. Wolfi OS (Chainguard)
   {
-    id: "feed-wolfi-secdb",
+    id: "feed-wolfi-updates",
     os: "wolfi",
-    name: "Wolfi Container Linux Advisory Database & APK Updates",
+    name: "Wolfi Container Linux Package & Toolchain Stream",
     category: "Lightweight & Container OS",
     icon: "🐺",
-    provider: "Chainguard & Wolfi Community Maintainers",
-    officialFeedUrl: "https://packages.wolfi.dev/os/security.json",
-    format: "OSV",
-    recordsIngested: 36700,
-    updateFrequency: "Sub-hourly container image rebuilds",
-    documentationUrl: "https://github.com/wolfi-dev/advisories",
+    provider: "Chainguard & Wolfi Maintainers",
+    officialFeedUrl: "https://packages.wolfi.dev/os/",
+    format: "JSON",
+    recordsIngested: 33400,
+    updateFrequency: "Sub-hourly rolling rebuilds",
+    documentationUrl: "https://wolfi.dev/",
     homepageUrl: "https://wolfi.dev/",
-    description: "Distroless and container-native Linux distribution providing zero-CVE base images, glibc/musl toolchain updates, and SBOM metadata.",
+    description: "Wolfi distroless container operating system package updates providing glibc TLS alignment fixes, CA certificates root updates, and runtimes.",
     scope: "Wolfi OS Main & Community Container Packages",
-    access: "Public OSV Schema JSON & Wolfi APK mirrors",
-    coverage: "Container security fixes, distroless runtime patches, glibc updates",
+    access: "Public Wolfi APK mirrors & repodata",
+    coverage: "glibc dynamic loader TLS alignment, ca-certificates root store, container runtimes",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Wolfi Rolling Container OS"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance", "General"]
   },
 
   // 18. NixOS
   {
-    id: "feed-nixos-tracker",
+    id: "feed-nixos-channels",
     os: "nixos",
-    name: "NixOS Channel Releases & Security Tracker",
+    name: "NixOS Channel Releases & Package Updates (nixos-24.05)",
     category: "Independent & Rolling Distros",
     icon: "❄️",
-    provider: "NixOS Security & Release Team",
-    officialFeedUrl: "https://security.nixos.org/tracker.json",
+    provider: "NixOS Release & Hydra Engineering",
+    officialFeedUrl: "https://channels.nixos.org/nixos-24.05",
     format: "JSON",
-    recordsIngested: 41200,
+    recordsIngested: 38400,
     updateFrequency: "Continuous channel evaluation and binary cache builds",
-    documentationUrl: "https://security.nixos.org/",
+    documentationUrl: "https://nixos.org/manual/nixos/stable/",
     homepageUrl: "https://nixos.org/",
-    description: "NixOS declarative package management channel updates, security advisories, and atomic generation rollback metadata.",
-    scope: "NixOS 24.05, 23.11 Channels & Unstable",
-    access: "Public tracker JSON & hydra build webhooks",
-    coverage: "Deterministic package rebuilds, systemd-boot EFI fixes, kernel channels",
+    description: "NixOS declarative package management channel updates providing systemd-boot EFI bootloader fixes and Nix derivation speedups.",
+    scope: "NixOS 24.05, 23.11 Channels",
+    access: "Public channel JSON & hydra build cache",
+    coverage: "systemd-boot NVRAM fallback, Nix 2.22 evaluation speedup, kernel updates",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["NixOS 24.05 (Uakari)", "NixOS 23.11 (Tapir)"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 19. Void Linux
   {
     id: "feed-void-xbps",
     os: "void",
-    name: "Void Linux XBPS Updates & Security Stream",
+    name: "Void Linux XBPS Package Updates Stream",
     category: "Independent & Rolling Distros",
     icon: "⚪",
-    provider: "Void Linux Core Team",
-    officialFeedUrl: "https://voidlinux.org/news/",
+    provider: "Void Linux Packaging Team",
+    officialFeedUrl: "https://repo-default.voidlinux.org/",
     format: "GIT_TREE",
-    recordsIngested: 21900,
+    recordsIngested: 19800,
     updateFrequency: "Continuous rolling build updates",
-    documentationUrl: "https://voidlinux.org/news/",
+    documentationUrl: "https://docs.voidlinux.org/",
     homepageUrl: "https://voidlinux.org/",
-    description: "Independent rolling release distribution featuring the XBPS package manager, runit init system, and glibc/musl binary repositories.",
+    description: "Void Linux rolling package releases featuring XBPS package manager updates, dracut initramfs compatibility, and runit service scripts.",
     scope: "Void Linux x86_64, aarch64 (glibc & musl)",
     access: "Public Git Repository & XBPS Repodata",
-    coverage: "XBPS package updates, runit service scripts, dracut initramfs fixes",
+    coverage: "dracut initramfs kernel 6.10 compatibility, xbps transaction locks, core runit scripts",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Void Linux Rolling"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 20. VMware Photon OS
   {
-    id: "feed-photon-oval",
+    id: "feed-photon-updates",
     os: "photon",
-    name: "VMware Photon OS Errata (PHSA Security & PHBA Bugfix)",
+    name: "VMware Photon OS Bugfix Advisories (PHBA & tdnf Updates)",
     category: "Cloud & Hyperscaler Linux",
     icon: "⚡",
     provider: "Broadcom / VMware Open Source Program Office",
-    officialFeedUrl: "https://packages.vmware.com/photon/photon_oval/",
-    format: "OVAL",
-    recordsIngested: 33800,
+    officialFeedUrl: "https://packages.vmware.com/photon/",
+    format: "UPDATEINFO",
+    recordsIngested: 31200,
     updateFrequency: "Daily sync with VMware repository mirrors",
-    documentationUrl: "https://github.com/vmware/photon/wiki/Security-Updates",
+    documentationUrl: "https://github.com/vmware/photon/wiki",
     homepageUrl: "https://vmware.github.io/photon/",
-    description: "Cloud-optimized Linux host for container platforms in VMware vSphere, Tanzu, and cloud environments with tdnf package manager.",
+    description: "Photon OS bug fixes (PHBA) and enhancements (PHEA) optimizing containerd NRI plugins and VMware PVSCSI virtual disk queue depths.",
     scope: "Photon OS 5.0, 4.0 (x86_64, aarch64)",
-    access: "Public OVAL XML & DNF/tdnf updateinfo",
-    coverage: "PHSA security fixes, PHBA container runtime stability, kernel updates",
+    access: "Public tdnf updateinfo & package mirrors",
+    coverage: "containerd NRI hook stability, tdnf cache corruption fixes, PVSCSI queue depth",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["Photon OS 5.0", "Photon OS 4.0"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement"]
+    feedTypesCovered: ["Bugfix", "Enhancement"]
   },
 
   // 21. Flatcar Container Linux
   {
     id: "feed-flatcar-releases",
     os: "flatcar",
-    name: "Flatcar Container Linux Release & Security Stream",
+    name: "Flatcar Container Linux Stable Release Stream (A/B Updates)",
     category: "Lightweight & Container OS",
     icon: "🚗",
     provider: "Flatcar / Kinvolk / Microsoft",
     officialFeedUrl: "https://www.flatcar.org/releases/stable/update.json",
     format: "JSON",
-    recordsIngested: 18700,
-    updateFrequency: "Bi-weekly stable releases & urgent hotfixes",
-    documentationUrl: "https://www.flatcar.org/security/advisories/",
+    recordsIngested: 17200,
+    updateFrequency: "Bi-weekly stable releases & urgent maintenance hotfixes",
+    documentationUrl: "https://www.flatcar.org/docs/",
     homepageUrl: "https://www.flatcar.org/",
-    description: "Immutable container host OS using dual-partition A/B updates, systemd-networkd, and ignition provisioning for Kubernetes fleets.",
-    scope: "Flatcar Stable, Beta, Edge Channels",
+    description: "Flatcar immutable container host release stream delivering dual-partition atomic image updates and systemd-networkd interface fixes.",
+    scope: "Flatcar Stable Channel A/B Releases",
     access: "Public JSON Release Stream & Omaha Protocol",
-    coverage: "OS image delta updates, kernel patches, systemd reliability fixes",
+    coverage: "OS image delta updates, systemd-networkd interface renaming, Ignition 2.18",
     refreshRate: "Weekly",
     status: "Daily",
     supportedReleases: ["Flatcar Stable 3815.2.0", "Flatcar LTS"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 22. Talos Linux
   {
-    id: "feed-talos-advisories",
+    id: "feed-talos-releases",
     os: "talos",
-    name: "Talos Linux Immutable OS Updates & Sidero Advisories",
+    name: "Talos Linux Immutable OS Appliance Releases (Sidero Labs)",
     category: "Lightweight & Container OS",
     icon: "🛡️",
-    provider: "Sidero Labs Security Team",
-    officialFeedUrl: "https://github.com/siderolabs/talos/security/advisories",
-    format: "OSV",
-    recordsIngested: 11500,
-    updateFrequency: "Point release builds upon vulnerability fix",
-    documentationUrl: "https://talos.dev/",
+    provider: "Sidero Labs Release Team",
+    officialFeedUrl: "https://github.com/siderolabs/talos/releases",
+    format: "JSON",
+    recordsIngested: 10400,
+    updateFrequency: "Point release builds upon component upgrade",
+    documentationUrl: "https://talos.dev/latest/",
     homepageUrl: "https://talos.dev/",
-    description: "Modern Linux distribution designed for Kubernetes: completely immutable, ephemeral, and managed entirely via a secure gRPC API (talosctl).",
-    scope: "Talos Linux v1.7, v1.6 Appliances",
-    access: "Public OSV JSON & GitHub Security Advisories",
-    coverage: "Kernel CVE patches, containerd/CRI stability, etcd clustering fixes",
+    description: "Talos Linux immutable appliance maintenance updates providing etcd 3.5.14 snapshot reliability and kubelet CPU manager topology fixes.",
+    scope: "Talos Linux v1.7, v1.6 Kubernetes Appliances",
+    access: "Public GitHub Releases & talosctl installer tags",
+    coverage: "etcd snapshot compaction, kubelet CPU manager topology, Wireguard performance",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["Talos v1.7.5", "Talos v1.6.8"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 23. OpenWrt
   {
-    id: "feed-openwrt-advisories",
+    id: "feed-openwrt-updates",
     os: "openwrt",
-    name: "OpenWrt Stable Updates & Security Advisories (OpenWrt-SA)",
+    name: "OpenWrt Stable Updates & Driver Stream (OPKG)",
     category: "Embedded & Edge Linux",
     icon: "📶",
-    provider: "OpenWrt Project Security & Maintenance Team",
-    officialFeedUrl: "https://openwrt.org/advisories",
+    provider: "OpenWrt Project Release Team",
+    officialFeedUrl: "https://downloads.openwrt.org/",
     format: "JSON",
-    recordsIngested: 14800,
+    recordsIngested: 13900,
     updateFrequency: "Point release sync with git tags",
-    documentationUrl: "https://openwrt.org/advisories",
+    documentationUrl: "https://openwrt.org/docs/",
     homepageUrl: "https://openwrt.org/",
-    description: "Linux operating system targeting embedded network devices, residential routers, wireless gateways, and IoT edge hardware.",
+    description: "OpenWrt embedded network operating system maintenance updates resolving Qualcomm ath11k Wi-Fi crashes and dnsmasq query timeouts.",
     scope: "OpenWrt 23.05, 22.03 Stable Series",
-    access: "Public JSON Errata & OPKG repository feeds",
-    coverage: "Dropbear/OpenSSH fixes, ath11k Wi-Fi driver stability, dnsmasq updates",
+    access: "Public OPKG repository feeds & downloads",
+    coverage: "ath11k Wi-Fi mesh driver stability, dnsmasq cache eviction, Linux 5.15 kernel backports",
     refreshRate: "Weekly",
     status: "Daily",
     supportedReleases: ["OpenWrt 23.05.3", "OpenWrt 22.03.6"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Maintenance"]
   },
 
   // 24. openEuler
   {
-    id: "feed-openeuler-errata",
+    id: "feed-openeuler-maintenance",
     os: "openeuler",
-    name: "openEuler Safety Bulletins & Maintenance Advisories (CSAF)",
+    name: "openEuler Maintenance & Performance Advisories",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "🌐",
     provider: "openEuler Community & OpenAtom Foundation",
     officialFeedUrl: "https://www.openeuler.org/en/security/safety-bulletin/",
     format: "CSAF",
-    recordsIngested: 51400,
-    updateFrequency: "Continuous publication of security and bugfix bulletins",
-    documentationUrl: "https://www.openeuler.org/en/security/",
+    recordsIngested: 48900,
+    updateFrequency: "Continuous publication of maintenance bulletins",
+    documentationUrl: "https://docs.openeuler.org/",
     homepageUrl: "https://www.openeuler.org/",
-    description: "Open-source Linux distribution optimized for digital infrastructure, enterprise servers, cloud-native deployments, and edge computing.",
+    description: "openEuler enterprise infrastructure maintenance stream delivering multi-socket Kunpeng 920 CPU scheduling and iSula container optimizations.",
     scope: "openEuler 24.03 LTS, 22.03 LTS SP3",
     access: "Public CSAF 2.0 JSON & DNF repository streams",
-    coverage: "Security CVE patches, kernel bugfixes, AArch64 performance tuning",
+    coverage: "AArch64 NUMA memory affinity, systemd cgroup v2 accounting, iSula container engine",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["openEuler 24.03 LTS", "openEuler 22.03 LTS"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   },
 
   // 25. CloudLinux
   {
     id: "feed-cloudlinux-errata",
     os: "cloudlinux",
-    name: "CloudLinux OS Errata & Bug Fix Advisories (CLSA & CLBA)",
+    name: "CloudLinux OS Bug Fix & Enhancement Advisories (CLBA & CLEA)",
     category: "Enterprise Linux (RHEL/Rocky/Alma)",
     icon: "☁️",
-    provider: "CloudLinux Inc. Security & Kernel Team",
+    provider: "CloudLinux Inc. Kernel Engineering",
     officialFeedUrl: "https://repo.cloudlinux.com/cloudlinux/",
     format: "UPDATEINFO",
-    recordsIngested: 62700,
+    recordsIngested: 58900,
     updateFrequency: "Daily sync with enterprise mirrors",
-    documentationUrl: "https://www.cloudlinux.com/security/",
+    documentationUrl: "https://docs.cloudlinux.com/",
     homepageUrl: "https://www.cloudlinux.com/",
-    description: "Enterprise operating system tailored for shared multi-tenant hosting providers, featuring CageFS, LVE resource limits, and hardened kernels.",
+    description: "CloudLinux OS non-security errata resolving CageFS skeleton remount locks, MySQL Governor IOPS limiters, and LVE cgroup thresholds.",
     scope: "CloudLinux 9, CloudLinux 8, CageFS",
     access: "Public updateinfo.xml & DNF repositories",
-    coverage: "CLSA security notices, CageFS isolation bugfixes, PHP security patches",
+    coverage: "CageFS skeleton remount deadlocks, MySQL Governor IO throttling, LVE memory alerts",
     refreshRate: "Daily",
     status: "Daily",
     supportedReleases: ["CloudLinux 9", "CloudLinux 8"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement"]
+    feedTypesCovered: ["Bugfix", "Enhancement"]
   },
 
   // 26. Kali Linux
   {
-    id: "feed-kali-updates",
+    id: "feed-kali-packages",
     os: "kali",
-    name: "Kali Linux Package Tracker & Errata Stream",
+    name: "Kali Linux Rolling Package Releases & Hardware Drivers",
     category: "Debian & Ubuntu Ecosystem",
     icon: "🐉",
     provider: "OffSec & Kali Linux Development Team",
-    officialFeedUrl: "https://pkg.kali.org/news/rss",
+    officialFeedUrl: "https://pkg.kali.org/",
     format: "JSON",
-    recordsIngested: 32600,
+    recordsIngested: 30100,
     updateFrequency: "Continuous rolling package sync with Debian testing",
     documentationUrl: "https://www.kali.org/docs/",
     homepageUrl: "https://www.kali.org/",
-    description: "Debian-derived rolling Linux distribution designed for digital forensics, penetration testing, and security engineering.",
+    description: "Kali Linux rolling maintenance updates delivering Xfce desktop performance patches and RTL8812AU Wi-Fi driver packet drop fixes.",
     scope: "Kali Linux Rolling (x86_64, aarch64)",
     access: "Public Package Tracker JSON & apt mirrors",
-    coverage: "Security tooling updates, kernel Wi-Fi injection driver fixes, glibc updates",
+    coverage: "Wi-Fi injection driver packet drops, desktop environment speedups, core toolchains",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Kali Linux 2024.3", "Kali Linux Rolling"],
-    feedTypesCovered: ["Security", "Bugfix", "Maintenance", "General"]
+    feedTypesCovered: ["Bugfix", "Maintenance", "General"]
   },
 
   // 27. Azure Linux / CBL-Mariner
   {
     id: "feed-azure-linux",
     os: "azure-linux",
-    name: "Azure Linux / CBL-Mariner Security & Errata Stream (MSRC)",
+    name: "Azure Linux / CBL-Mariner Host Updates & Hypervisor Drivers",
     category: "Cloud & Hyperscaler Linux",
     icon: "🔷",
-    provider: "Microsoft Security Response Center (MSRC) & Azure Linux Team",
+    provider: "Microsoft Azure Linux Team & Kernel Developers",
     officialFeedUrl: "https://github.com/microsoft/azurelinux",
     format: "CSAF",
-    recordsIngested: 38900,
+    recordsIngested: 36200,
     updateFrequency: "Continuous cloud image and package updates",
     documentationUrl: "https://learn.microsoft.com/en-us/azure/azure-linux/",
     homepageUrl: "https://github.com/microsoft/azurelinux",
-    description: "Microsoft internal Linux distribution powering Azure Kubernetes Service (AKS) container hosts, Hyper-V appliances, and edge services.",
-    scope: "Azure Linux 3.0, CBL-Mariner 2.0",
+    description: "Azure Linux non-security host updates resolving Cloud-Hypervisor direct kernel boot, VFIO SRIOV NIC resets, and MANA DPDK drivers.",
+    scope: "Azure Linux 3.0, CBL-Mariner 2.0 (AKS Hosts)",
     access: "Public CSAF JSON & tdnf RPM streams",
-    coverage: "MSRC security bulletins, Cloud-Hypervisor fixes, AKS host stability",
+    coverage: "Cloud-Hypervisor VM direct-kernel boot, VFIO device resets, Microsoft MANA DPDK",
     refreshRate: "Realtime",
     status: "Realtime",
     supportedReleases: ["Azure Linux 3.0", "CBL-Mariner 2.0"],
-    feedTypesCovered: ["Security", "Bugfix", "Enhancement", "Maintenance"]
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
   }
 ];
 
 /**
- * Curated, Verified Vendor Patch Bundles across All Major Distributions
- * Spanning Security Vulnerabilities, Bug Fixes, Hardware Enhancements, and Maintenance Point Updates.
+ * Curated, Verified Regular Vendor Patch Bundles across All 27 Distributions
+ * Exclusively focused on Bug Fixes, Hardware Enhancements, Maintenance Point Releases, and General Package Updates.
+ * Zero Weakness Enumeration / CVE Noise.
  */
 export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
-  // ===========================================================================
-  // 1. SECURITY ADVISORIES (RHSA, RLSA, USN, DSA, ALSA, etc.)
-  // ===========================================================================
-
-  // 1. Ubuntu Linux OpenSSH RegreSSHion Security Bundle
-  {
-    id: "ARG-USN-6856-1",
-    bundleId: "USN-6856-1",
-    advisoryType: "SECURITY",
-    os: "ubuntu",
-    osFamily: "linux-debian",
-    osDisplayName: "Ubuntu Linux",
-    targetReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
-    title: "OpenSSH Signal Handler Race Condition (RegreSSHion) Vulnerability Bundle",
-    synopsis: "Canonical security update fixing critical signal handler race condition in sshd unauthenticated pre-auth code path.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T06:30:00Z",
-    updatedAt: "2024-07-01T08:15:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "1:9.6p1-3ubuntu13", fixedVersion: "1:9.6p1-3ubuntu13.3", packageManager: "apt", sizeBytes: 462000 },
-      { name: "openssh-client", sourcePackage: "openssh", arch: "x86_64", currentVersion: "1:9.6p1-3ubuntu13", fixedVersion: "1:9.6p1-3ubuntu13.3", packageManager: "apt", sizeBytes: 1045000 },
-      { name: "openssh-sftp-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "1:9.6p1-3ubuntu13", fixedVersion: "1:9.6p1-3ubuntu13.3", packageManager: "apt", sizeBytes: 68000 }
-    ],
-    commands: {
-      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y openssh-server openssh-client openssh-sftp-server",
-      verification: "dpkg -l openssh-server | grep 1:9.6p1-3ubuntu13.3",
-      rollback: "apt-get install -y openssh-server=1:9.6p1-3ubuntu13 openssh-client=1:9.6p1-3ubuntu13",
-      kineticDeploy: "kinetic upgrade --bundle USN-6856-1 --os ubuntu"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://ubuntu.com/security/notices/USN-6856-1",
-    sourceFeed: {
-      sourceId: "feed-ubuntu-usn",
-      feedName: "Canonical Ubuntu Updates & Security Notices (USN / OVAL)",
-      feedType: "public-distro-feed",
-      format: "OSV",
-      syncStatus: "live",
-      sourceUrl: "https://security.ubuntu.com/oval/com.ubuntu.noble.usn.oval.xml.bz2"
-    }
-  },
-
-  // 2. Rocky Linux OpenSSH RegreSSHion Security Bundle
-  {
-    id: "ARG-RLSA-2024-4312",
-    bundleId: "RLSA-2024:4312",
-    advisoryType: "SECURITY",
-    os: "rocky",
-    osFamily: "linux-rhel",
-    osDisplayName: "Rocky Linux",
-    targetReleases: ["Rocky Linux 9.4 (Blue Onyx)", "Rocky Linux 8.10"],
-    title: "OpenSSH Remote Code Execution Signal Race Errata Bundle",
-    synopsis: "Official Rocky Enterprise Software Foundation security update fixing unauthenticated remote code execution in sshd.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T14:40:00Z",
-    updatedAt: "2024-07-01T15:20:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.1", packageManager: "dnf", sizeBytes: 467000 },
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.1", packageManager: "dnf", sizeBytes: 462000 },
-      { name: "openssh-clients", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.1", packageManager: "dnf", sizeBytes: 730000 }
-    ],
-    commands: {
-      nativeUpgrade: "dnf upgrade -y openssh openssh-server openssh-clients",
-      verification: "rpm -q --queryformat '%{VERSION}-%{RELEASE}\n' openssh-server",
-      rollback: "dnf history undo last -y",
-      kineticDeploy: "kinetic upgrade --bundle RLSA-2024:4312 --os rocky"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://errata.rockylinux.org/RLSA-2024:4312",
-    sourceFeed: {
-      sourceId: "feed-rocky-errata",
-      feedName: "Rocky Linux Errata (RLSA Security, RLBA Bugfix, RLEA Enhancement)",
-      feedType: "public-distro-feed",
-      format: "UPDATEINFO",
-      syncStatus: "live",
-      sourceUrl: "https://errata.rockylinux.org/"
-    }
-  },
-
-  // 3. Red Hat Enterprise Linux OpenSSL Security Advisory
-  {
-    id: "ARG-RHSA-2024-4211",
-    bundleId: "RHSA-2024:4211",
-    advisoryType: "SECURITY",
-    os: "rhel",
-    osFamily: "linux-rhel",
-    osDisplayName: "Red Hat Enterprise Linux",
-    targetReleases: ["RHEL 9.4", "RHEL 9.2 EUS", "RHEL 8.10"],
-    title: "OpenSSL Denial of Service & TLS Session Cache Poisoning Errata",
-    synopsis: "Red Hat Product Security update resolving memory leaks during TLS session ticket processing and unbounded session caching.",
-    vendorSeverity: "IMPORTANT",
-    severityScore: 7.5,
-    operationalDomain: "CORE",
-    actionDirective: "RELOAD_SERVICE",
-    issuedAt: "2024-06-25T11:00:00Z",
-    updatedAt: "2024-06-25T12:30:00Z",
-    cveList: ["CVE-2024-2511", "CVE-2024-4741"],
-    packages: [
-      { name: "openssl", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.7-27.el9", fixedVersion: "3.0.7-27.el9_4.2", packageManager: "dnf", sizeBytes: 1210000 },
-      { name: "openssl-libs", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.7-27.el9", fixedVersion: "3.0.7-27.el9_4.2", packageManager: "dnf", sizeBytes: 2240000 }
-    ],
-    commands: {
-      nativeUpgrade: "dnf upgrade -y openssl openssl-libs",
-      verification: "rpm -q --changelog openssl | grep -E 'CVE-2024-2511|CVE-2024-4741'",
-      rollback: "dnf history undo last -y",
-      kineticDeploy: "kinetic upgrade --bundle RHSA-2024:4211 --os rhel"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["nginx", "httpd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://access.redhat.com/errata/RHSA-2024:4211",
-    sourceFeed: {
-      sourceId: "feed-redhat-csaf",
-      feedName: "Red Hat Security & Errata Stream (RHSA, RHBA, RHEA / CSAF 2.0)",
-      feedType: "public-distro-feed",
-      format: "CSAF",
-      syncStatus: "live",
-      sourceUrl: "https://access.redhat.com/hydra/rest/securitydata/cvrf.json"
-    }
-  },
-
-  // 4. Debian GNU/Linux OpenSSL Security Bundle
-  {
-    id: "ARG-DSA-5712-1",
-    bundleId: "DSA-5712-1",
-    advisoryType: "SECURITY",
-    os: "debian",
-    osFamily: "linux-debian",
-    osDisplayName: "Debian GNU/Linux",
-    targetReleases: ["Debian 12 (Bookworm)"],
-    title: "OpenSSL Memory Corruption and Session Cache Poisoning Security Bundle",
-    synopsis: "Debian security advisory resolving TLS session ticket validation errors and cipher suite verification flaws.",
-    vendorSeverity: "IMPORTANT",
-    severityScore: 7.8,
-    operationalDomain: "CORE",
-    actionDirective: "RELOAD_SERVICE",
-    issuedAt: "2024-06-18T10:00:00Z",
-    updatedAt: "2024-06-18T10:00:00Z",
-    cveList: ["CVE-2024-2511", "CVE-2024-4741"],
-    packages: [
-      { name: "openssl", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.11-1~deb12u1", fixedVersion: "3.0.13-1~deb12u1", packageManager: "apt", sizeBytes: 1420000 },
-      { name: "libssl3", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.11-1~deb12u1", fixedVersion: "3.0.13-1~deb12u1", packageManager: "apt", sizeBytes: 2010000 }
-    ],
-    commands: {
-      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y openssl libssl3",
-      verification: "dpkg -l openssl | grep 3.0.13-1~deb12u1",
-      rollback: "apt-get install -y openssl=3.0.11-1~deb12u1 libssl3=3.0.11-1~deb12u1",
-      kineticDeploy: "kinetic upgrade --bundle DSA-5712-1 --os debian"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["apache2", "nginx"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://www.debian.org/security/2024/dsa-5712",
-    sourceFeed: {
-      sourceId: "feed-debian-tracker",
-      feedName: "Debian Security Tracker & Proposed Updates (DSA / BTS)",
-      feedType: "public-distro-feed",
-      format: "JSON",
-      syncStatus: "live",
-      sourceUrl: "https://security-tracker.debian.org/tracker/data/json"
-    }
-  },
-
-  // 5. AlmaLinux Security Advisory
-  {
-    id: "ARG-ALSA-2024-4312",
-    bundleId: "ALSA-2024:4312",
-    advisoryType: "SECURITY",
-    os: "almalinux",
-    osFamily: "linux-rhel",
-    osDisplayName: "AlmaLinux",
-    targetReleases: ["AlmaLinux 9.4 (Seafoam Ocelot)"],
-    title: "OpenSSH Remote Code Execution Signal Handler Patch Bundle",
-    synopsis: "AlmaLinux OS Foundation security advisory fixing unauthenticated remote code execution vulnerability in OpenSSH server daemon.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T15:00:00Z",
-    updatedAt: "2024-07-01T15:30:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.alma.1", packageManager: "dnf", sizeBytes: 467000 },
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.alma.1", packageManager: "dnf", sizeBytes: 462000 }
-    ],
-    commands: {
-      nativeUpgrade: "dnf upgrade -y openssh openssh-server",
-      verification: "rpm -q openssh-server | grep alma.1",
-      rollback: "dnf history undo last -y",
-      kineticDeploy: "kinetic upgrade --bundle ALSA-2024:4312 --os almalinux"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://errata.almalinux.org/9/ALSA-2024-4312.html",
-    sourceFeed: {
-      sourceId: "feed-almalinux-errata",
-      feedName: "AlmaLinux Errata Stream (ALSA Security, ALBA Bugfix, ALEA Enhancement)",
-      feedType: "public-distro-feed",
-      format: "CSAF",
-      syncStatus: "live",
-      sourceUrl: "https://errata.almalinux.org/api/v1/errata"
-    }
-  },
-
-  // 6. FreeBSD Security Advisory
-  {
-    id: "ARG-FreeBSD-SA-24-04",
-    bundleId: "FreeBSD-SA-24:04.openssh",
-    advisoryType: "SECURITY",
-    os: "freebsd",
-    osFamily: "bsd-freebsd",
-    osDisplayName: "FreeBSD",
-    targetReleases: ["FreeBSD 14.1-RELEASE", "FreeBSD 13.3-RELEASE"],
-    title: "OpenSSH Remote Code Execution in sshd (FreeBSD-SA-24:04)",
-    synopsis: "FreeBSD Security Officer advisory addressing signal race condition in sshd through freebsd-update binary patches.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T13:00:00Z",
-    updatedAt: "2024-07-01T13:00:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "base-openssh", sourcePackage: "src/crypto/openssh", arch: "x86_64", currentVersion: "9.7p1_p1", fixedVersion: "9.7p1_p2", packageManager: "pkg", sizeBytes: 1650000 }
-    ],
-    commands: {
-      nativeUpgrade: "freebsd-update fetch && freebsd-update install && service sshd restart",
-      verification: "freebsd-version -k -u",
-      rollback: "freebsd-update rollback && service sshd restart",
-      kineticDeploy: "kinetic upgrade --bundle FreeBSD-SA-24:04.openssh --os freebsd"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://www.freebsd.org/security/advisories/FreeBSD-SA-24:04.openssh.asc",
-    sourceFeed: {
-      sourceId: "feed-freebsd-errata",
-      feedName: "FreeBSD Advisories & Errata Notices (FreeBSD-SA & FreeBSD-EN)",
-      feedType: "public-distro-feed",
-      format: "XML",
-      syncStatus: "live",
-      sourceUrl: "https://vuxml.freebsd.org/freebsd/vuln.xml.bz2"
-    }
-  },
-
-  // 7. Alpine Linux Security Advisory
-  {
-    id: "ARG-ALPINE-SEC-2024-118",
-    bundleId: "ALPINE-SEC-2024-118",
-    advisoryType: "SECURITY",
-    os: "alpine",
-    osFamily: "linux-alpine",
-    osDisplayName: "Alpine Linux",
-    targetReleases: ["Alpine v3.20", "Alpine v3.19"],
-    title: "Alpine SecDB OpenSSH Remote Code Execution Vulnerability Advisory",
-    synopsis: "Alpine Linux SecDB update fixing race condition in sshd for lightweight musl container environments.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "CONTAINER",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T07:15:00Z",
-    updatedAt: "2024-07-01T07:15:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7_p1-r0", fixedVersion: "9.7_p1-r1", packageManager: "apk", sizeBytes: 890000 },
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7_p1-r0", fixedVersion: "9.7_p1-r1", packageManager: "apk", sizeBytes: 395000 }
-    ],
-    commands: {
-      nativeUpgrade: "apk update && apk add --upgrade openssh openssh-server",
-      verification: "apk info -v openssh | grep 9.7_p1-r1",
-      rollback: "apk add openssh=9.7_p1-r0 openssh-server=9.7_p1-r0",
-      kineticDeploy: "kinetic upgrade --bundle ALPINE-SEC-2024-118 --os alpine"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://secdb.alpinelinux.org/v3.20/main.json",
-    sourceFeed: {
-      sourceId: "feed-alpine-secdb",
-      feedName: "Alpine Linux Security Database & Package Updates (SecDB / APK)",
-      feedType: "public-distro-feed",
-      format: "JSON",
-      syncStatus: "live",
-      sourceUrl: "https://secdb.alpinelinux.org/v3.20/main.json"
-    }
-  },
-
-  // 8. SUSE Linux Enterprise Security Update
-  {
-    id: "ARG-SUSE-SU-2024-2311",
-    bundleId: "SUSE-SU-2024:2311-1",
-    advisoryType: "SECURITY",
-    os: "suse",
-    osFamily: "linux-suse",
-    osDisplayName: "SUSE Linux Enterprise",
-    targetReleases: ["SLES 15 SP6", "SLES 15 SP5"],
-    title: "OpenSSH Vulnerability Errata for SUSE Linux Enterprise",
-    synopsis: "SUSE security update eliminating unauthenticated remote code execution in sshd through maintenance channel RPM updates.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T12:00:00Z",
-    updatedAt: "2024-07-01T12:00:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.4p1-150300.3.36.1", fixedVersion: "8.4p1-150300.3.39.1", packageManager: "zypper", sizeBytes: 1120000 },
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.4p1-150300.3.36.1", fixedVersion: "8.4p1-150300.3.39.1", packageManager: "zypper", sizeBytes: 520000 }
-    ],
-    commands: {
-      nativeUpgrade: "zypper refresh && zypper update -y openssh openssh-server",
-      verification: "rpm -q openssh-server | grep 150300.3.39.1",
-      rollback: "zypper install --oldpackage -y openssh=8.4p1-150300.3.36.1",
-      kineticDeploy: "kinetic upgrade --bundle SUSE-SU-2024:2311-1 --os suse"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://www.suse.com/support/update/announcement/2024/suse-su-20242311-1/",
-    sourceFeed: {
-      sourceId: "feed-suse-oval",
-      feedName: "SUSE Maintenance & Errata (SUSE-SU Security, SUSE-RU Recommended / Bugfix)",
-      feedType: "public-distro-feed",
-      format: "OVAL",
-      syncStatus: "live",
-      sourceUrl: "https://ftp.suse.com/pub/projects/security/oval/"
-    }
-  },
-
-  // 9. Arch Linux Security Advisory
-  {
-    id: "ARG-ARCH-ASA-202407-1",
-    bundleId: "ASA-202407-1",
-    advisoryType: "SECURITY",
-    os: "arch",
-    osFamily: "linux-arch",
-    osDisplayName: "Arch Linux",
-    targetReleases: ["Arch Linux Rolling"],
-    title: "OpenSSH Signal Handler Race Condition Errata",
-    synopsis: "Arch Linux Security Team advisory and immediate core package update fixing CVE-2024-6387 in upstream OpenSSH 9.7p1.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T08:00:00Z",
-    updatedAt: "2024-07-01T08:00:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7p1-1", fixedVersion: "9.7p1-2", packageManager: "pacman", sizeBytes: 1540000 }
-    ],
-    commands: {
-      nativeUpgrade: "pacman -Sy --noconfirm openssh",
-      verification: "pacman -Q openssh | grep 9.7p1-2",
-      rollback: "pacman -U --noconfirm /var/cache/pacman/pkg/openssh-9.7p1-1-x86_64.pkg.tar.zst",
-      kineticDeploy: "kinetic upgrade --bundle ASA-202407-1 --os arch"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://security.archlinux.org/ASA-202407-1",
-    sourceFeed: {
-      sourceId: "feed-arch-tracker",
-      feedName: "Arch Linux Security Tracker & Core/Extra Package Stream",
-      feedType: "public-distro-feed",
-      format: "JSON",
-      syncStatus: "live",
-      sourceUrl: "https://security.archlinux.org/issues.json"
-    }
-  },
-
-  // 10. Amazon Linux Security Advisory
-  {
-    id: "ARG-ALAS-2024-219",
-    bundleId: "ALAS2023-2024-648",
-    advisoryType: "SECURITY",
-    os: "amazon-linux",
-    osFamily: "linux-amazon",
-    osDisplayName: "Amazon Linux 2023",
-    targetReleases: ["Amazon Linux 2023"],
-    title: "OpenSSH Security Advisory for Amazon Linux 2023 (ALAS2023-2024-648)",
-    synopsis: "AWS Security advisory fixing unauthenticated remote code execution in OpenSSH server on EC2 and container AMIs.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T16:00:00Z",
-    updatedAt: "2024-07-01T16:00:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh-server", sourcePackage: "openssh", arch: "x86_64", currentVersion: "8.7p1-8.amzn2023.0.7", fixedVersion: "8.7p1-8.amzn2023.0.8", packageManager: "dnf", sizeBytes: 462000 }
-    ],
-    commands: {
-      nativeUpgrade: "dnf upgrade -y openssh-server",
-      verification: "rpm -q openssh-server | grep amzn2023.0.8",
-      rollback: "dnf history undo last -y",
-      kineticDeploy: "kinetic upgrade --bundle ALAS2023-2024-648 --os amazon-linux"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://alas.aws.amazon.com/AL2023/ALAS-2024-648.html",
-    sourceFeed: {
-      sourceId: "feed-amazon-alas",
-      feedName: "Amazon Linux Security Center & General Updates (ALAS / AL2023)",
-      feedType: "public-distro-feed",
-      format: "UPDATEINFO",
-      syncStatus: "live",
-      sourceUrl: "https://alas.aws.amazon.com/AL2023/alas.rss"
-    }
-  },
-
-  // 11. Upstream Linux Kernel Stable CVE Errata
-  {
-    id: "ARG-KERNEL-CVE-2024-36971",
-    bundleId: "KERNEL-CVE-2024-36971",
-    advisoryType: "SECURITY",
-    os: "kernel",
-    osFamily: "linux-kernel",
-    osDisplayName: "Linux Kernel Stable",
-    targetReleases: ["Linux 6.6 LTS", "Linux 6.1 LTS"],
-    title: "Linux Kernel Networking Stack Use-After-Free in IP Route Handling",
-    synopsis: "Upstream kernel stable release resolving critical use-after-free vulnerability in the IPv4/IPv6 destination cache lookup path.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.1,
-    operationalDomain: "KERNEL",
-    actionDirective: "SCHEDULE_REBOOT",
-    issuedAt: "2024-06-18T18:00:00Z",
-    updatedAt: "2024-06-18T18:00:00Z",
-    cveList: ["CVE-2024-36971"],
-    packages: [
-      { name: "linux-image-generic", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.6.32", fixedVersion: "6.6.35", packageManager: "kmod", sizeBytes: 14200000 }
-    ],
-    commands: {
-      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-image-generic linux-headers-generic",
-      verification: "uname -r",
-      rollback: "grub-reboot 'Advanced options for Ubuntu>Ubuntu, with Linux 6.6.32' && reboot",
-      kineticDeploy: "kinetic hotpatch --kernel-cve CVE-2024-36971 --live"
-    },
-    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
-    upstreamNoticeUrl: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=929000a6e700",
-    sourceFeed: {
-      sourceId: "feed-kernel-stable",
-      feedName: "Upstream Linux Kernel Stable Tree (Greg K-H Point Releases & CVEs)",
-      feedType: "public-distro-feed",
-      format: "GIT_TREE",
-      syncStatus: "live",
-      sourceUrl: "https://www.kernel.org/feeds/kdist.xml"
-    }
-  },
-
-  // 12. Gentoo Linux Security Advisory
-  {
-    id: "ARG-GLSA-202407-01",
-    bundleId: "GLSA-202407-01",
-    advisoryType: "SECURITY",
-    os: "gentoo",
-    osFamily: "linux-gentoo",
-    osDisplayName: "Gentoo Linux",
-    targetReleases: ["Gentoo Stable Rolling"],
-    title: "OpenSSH Remote Code Execution (GLSA 202407-01)",
-    synopsis: "Gentoo Linux Security Advisory resolving remote code execution in net-misc/openssh ebuilds across x86_64 and arm64 profiles.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T09:30:00Z",
-    updatedAt: "2024-07-01T09:30:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "net-misc/openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7_p1", fixedVersion: "9.7_p1-r1", packageManager: "emerge", sizeBytes: 1450000 }
-    ],
-    commands: {
-      nativeUpgrade: "emerge --sync && emerge -1v =net-misc/openssh-9.7_p1-r1",
-      verification: "qlist -Iv net-misc/openssh",
-      rollback: "emerge -1v =net-misc/openssh-9.7_p1",
-      kineticDeploy: "kinetic upgrade --bundle GLSA-202407-01 --os gentoo"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://security.gentoo.org/glsa/202407-01",
-    sourceFeed: {
-      sourceId: "feed-gentoo-glsa",
-      feedName: "Gentoo Linux Security Advisories & Portage Stable Tree (GLSA)",
-      feedType: "public-distro-feed",
-      format: "JSON",
-      syncStatus: "live",
-      sourceUrl: "https://security.gentoo.org/glsa/glsa.rdf"
-    }
-  },
-
-  // 13. OpenBSD Security Errata
-  {
-    id: "ARG-OPENBSD-75-001",
-    bundleId: "OPENBSD-75-001",
-    advisoryType: "SECURITY",
-    os: "openbsd",
-    osFamily: "bsd-openbsd",
-    osDisplayName: "OpenBSD",
-    targetReleases: ["OpenBSD 7.5"],
-    title: "OpenBSD sshd Signal Handler Race Condition Reliability Errata",
-    synopsis: "Official OpenBSD errata patch correcting sigdie signal handler race condition in sshd daemon.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "CORE",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T05:00:00Z",
-    updatedAt: "2024-07-01T05:00:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "syspatch-001_sshd", sourcePackage: "src/usr.bin/ssh", arch: "x86_64", currentVersion: "7.5-base", fixedVersion: "7.5-patch001", packageManager: "syspatch", sizeBytes: 312000 }
-    ],
-    commands: {
-      nativeUpgrade: "syspatch && rcctl restart sshd",
-      verification: "syspatch -l | grep 001_sshd",
-      rollback: "syspatch -r 001_sshd && rcctl restart sshd",
-      kineticDeploy: "kinetic upgrade --bundle OPENBSD-75-001 --os openbsd"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://www.openbsd.org/errata75.html",
-    sourceFeed: {
-      sourceId: "feed-openbsd-errata",
-      feedName: "OpenBSD Security & Reliability Errata (Syspatch / Patches)",
-      feedType: "public-distro-feed",
-      format: "GIT_TREE",
-      syncStatus: "live",
-      sourceUrl: "https://www.openbsd.org/errata75.html"
-    }
-  },
-
-  // 14. Wolfi Container OS Advisory
-  {
-    id: "ARG-CGA-2024-OPENSSH",
-    bundleId: "CGA-2024-openssh-6387",
-    advisoryType: "SECURITY",
-    os: "wolfi",
-    osFamily: "linux-wolfi",
-    osDisplayName: "Wolfi Container OS",
-    targetReleases: ["Wolfi Rolling Container OS"],
-    title: "Wolfi SecDB OpenSSH Remote Code Execution Security Errata",
-    synopsis: "Chainguard / Wolfi advisory fixing CVE-2024-6387 across all base container images using native apk rolling rebuilds.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "CONTAINER",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T06:50:00Z",
-    updatedAt: "2024-07-01T06:50:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7_p1-r0", fixedVersion: "9.7_p1-r1", packageManager: "apk", sizeBytes: 940000 }
-    ],
-    commands: {
-      nativeUpgrade: "apk update && apk add --upgrade openssh",
-      verification: "apk info -v openssh | grep 9.7_p1-r1",
-      rollback: "apk add openssh=9.7_p1-r0",
-      kineticDeploy: "kinetic upgrade --bundle CGA-2024-openssh-6387 --os wolfi"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://github.com/wolfi-dev/advisories/blob/main/CGA-2024-openssh-6387.json",
-    sourceFeed: {
-      sourceId: "feed-wolfi-secdb",
-      feedName: "Wolfi Container Linux Advisory Database & APK Updates",
-      feedType: "public-distro-feed",
-      format: "OSV",
-      syncStatus: "live",
-      sourceUrl: "https://packages.wolfi.dev/os/security.json"
-    }
-  },
-
-  // 15. NixOS Security Tracker Advisory
-  {
-    id: "ARG-NIX-2024-0722",
-    bundleId: "NIX-2024-0722",
-    advisoryType: "SECURITY",
-    os: "nixos",
-    osFamily: "linux-nix",
-    osDisplayName: "NixOS",
-    targetReleases: ["NixOS 24.05 (Uakari)"],
-    title: "OpenSSH Remote Execution Patch for Nixpkgs 24.05 Channel",
-    synopsis: "NixOS security channel release pulling patched OpenSSH 9.7p1-r1 into the deterministic nixpkgs binary cache.",
-    vendorSeverity: "CRITICAL",
-    severityScore: 9.8,
-    operationalDomain: "NETWORK",
-    actionDirective: "ZERO_DOWNTIME_HOTFIX",
-    issuedAt: "2024-07-01T11:45:00Z",
-    updatedAt: "2024-07-01T11:45:00Z",
-    cveList: ["CVE-2024-6387"],
-    packages: [
-      { name: "openssh", sourcePackage: "openssh", arch: "x86_64", currentVersion: "9.7p1", fixedVersion: "9.7p1-patched", packageManager: "nix", sizeBytes: 1580000 }
-    ],
-    commands: {
-      nativeUpgrade: "nix-channel --update nixos-24.05 && nixos-rebuild switch",
-      verification: "ssh -V",
-      rollback: "nixos-rebuild switch --rollback",
-      kineticDeploy: "kinetic upgrade --bundle NIX-2024-0722 --os nixos"
-    },
-    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
-    upstreamNoticeUrl: "https://security.nixos.org/",
-    sourceFeed: {
-      sourceId: "feed-nixos-tracker",
-      feedName: "NixOS Channel Releases & Security Tracker",
-      feedType: "public-distro-feed",
-      format: "JSON",
-      syncStatus: "live",
-      sourceUrl: "https://security.nixos.org/tracker.json"
-    }
-  },
-
-  // ===========================================================================
-  // 2. VENDOR BUG FIX ADVISORIES (RHBA, RLBA, ALBA, FreeBSD-EN, Debian BTS)
-  // ===========================================================================
-
-  // 16. Rocky Linux / RHEL Kernel NVMe Multi-path Bug Fix Advisory (RLBA)
+  // 1. Rocky Linux / RHEL Kernel NVMe Multi-path Bug Fix Advisory (RLBA)
   {
     id: "ARG-RLBA-2024-3910",
     bundleId: "RLBA-2024:3910",
@@ -1472,7 +874,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://errata.rockylinux.org/RLBA-2024:3910",
     sourceFeed: {
       sourceId: "feed-rocky-errata",
-      feedName: "Rocky Linux Errata (RLSA Security, RLBA Bugfix, RLEA Enhancement)",
+      feedName: "Rocky Linux Bug Fix & Enhancement Errata (RLBA & RLEA)",
       feedType: "public-distro-feed",
       format: "UPDATEINFO",
       syncStatus: "live",
@@ -1480,7 +882,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 17. Red Hat Enterprise Linux glibc AVX-512 Performance & Bugfix Advisory (RHBA)
+  // 2. Red Hat Enterprise Linux glibc AVX-512 Performance & Bugfix Advisory (RHBA)
   {
     id: "ARG-RHBA-2024-4120",
     bundleId: "RHBA-2024:4120",
@@ -1511,8 +913,8 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://access.redhat.com/errata/RHBA-2024:4120",
     sourceFeed: {
-      sourceId: "feed-redhat-csaf",
-      feedName: "Red Hat Security & Errata Stream (RHSA, RHBA, RHEA / CSAF 2.0)",
+      sourceId: "feed-redhat-errata",
+      feedName: "Red Hat Bug & Enhancement Advisories Stream (RHBA & RHEA)",
       feedType: "public-distro-feed",
       format: "CSAF",
       syncStatus: "live",
@@ -1520,7 +922,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 18. Ubuntu Linux systemd Socket Activation & cgroup v2 Bugfix Bundle
+  // 3. Ubuntu Linux systemd Socket Activation & cgroup v2 Bugfix Bundle
   {
     id: "ARG-UBUNTU-UPD-2024-0412",
     bundleId: "UBUNTU-UPD-2024-0412",
@@ -1552,16 +954,95 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: ["systemd-udevd"], zeroDowntime: true },
     upstreamNoticeUrl: "https://launchpad.net/ubuntu/+source/systemd/255.4-1ubuntu8.4",
     sourceFeed: {
-      sourceId: "feed-ubuntu-usn",
-      feedName: "Canonical Ubuntu Updates & Security Notices (USN / OVAL)",
+      sourceId: "feed-ubuntu-updates",
+      feedName: "Canonical Ubuntu Updates & Hardware Enablement Stream (noble-updates)",
       feedType: "public-distro-feed",
-      format: "OSV",
+      format: "JSON",
       syncStatus: "live",
-      sourceUrl: "https://security.ubuntu.com/oval/com.ubuntu.noble.usn.oval.xml.bz2"
+      sourceUrl: "https://changelogs.ubuntu.com/changelogs/"
     }
   },
 
-  // 19. FreeBSD Errata Notice - OpenZFS Allocation Race Condition
+  // 4. Ubuntu Hardware Enablement (HWE) Intel Wi-Fi 7 & AMD GPU Microcode Enhancement
+  {
+    id: "ARG-UBUNTU-UPD-2024-0518",
+    bundleId: "UBUNTU-HWE-2024-0518",
+    advisoryType: "ENHANCEMENT",
+    os: "ubuntu",
+    osFamily: "linux-debian",
+    osDisplayName: "Ubuntu Linux",
+    targetReleases: ["Ubuntu 24.04 LTS (Noble)"],
+    title: "Linux Hardware Enablement (HWE) Intel Wi-Fi 7 BE200 & AMD RDNA3 Microcode Update",
+    synopsis: "Canonical hardware enablement stream delivering updated binary firmware blobs for Intel Wi-Fi 7 BE200 adapters and AMD Radeon 7000 series GPU power management.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.2,
+    operationalDomain: "DRIVER",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-25T14:30:00Z",
+    updatedAt: "2024-06-25T14:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-firmware", sourcePackage: "linux-firmware", arch: "all", currentVersion: "20240318.git3b128b0-0ubuntu2", fixedVersion: "20240318.git3b128b0-0ubuntu2.4", packageManager: "apt", sizeBytes: 495000000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-firmware",
+      verification: "dpkg -l linux-firmware | grep ubuntu2.4",
+      rollback: "apt-get install -y linux-firmware=20240318.git3b128b0-0ubuntu2",
+      kineticDeploy: "kinetic upgrade --bundle UBUNTU-HWE-2024-0518 --os ubuntu"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://launchpad.net/ubuntu/+source/linux-firmware",
+    sourceFeed: {
+      sourceId: "feed-ubuntu-updates",
+      feedName: "Canonical Ubuntu Updates & Hardware Enablement Stream (noble-updates)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://changelogs.ubuntu.com/changelogs/"
+    }
+  },
+
+  // 5. Debian GNU/Linux OpenZFS ARC Memory Reclaim Bugfix
+  {
+    id: "ARG-DEBIAN-BUG-2024-189",
+    bundleId: "DEBIAN-BUG-2024-189",
+    advisoryType: "BUGFIX",
+    os: "debian",
+    osFamily: "linux-debian",
+    osDisplayName: "Debian GNU/Linux",
+    targetReleases: ["Debian 12 (Bookworm)"],
+    title: "OpenZFS on Linux ARC Memory Reclaim and Zstandard Compression Deadlock Bugfix",
+    synopsis: "Debian proposed updates package fixing memory stall where the ZFS Adaptive Replacement Cache failed to shrink under sudden system memory pressure.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.3,
+    operationalDomain: "STORAGE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-18T16:00:00Z",
+    updatedAt: "2024-06-18T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "zfs-dkms", sourcePackage: "zfs-linux", arch: "all", currentVersion: "2.1.11-1", fixedVersion: "2.1.11-1+deb12u1", packageManager: "apt", sizeBytes: 2340000 },
+      { name: "zfsutils-linux", sourcePackage: "zfs-linux", arch: "x86_64", currentVersion: "2.1.11-1", fixedVersion: "2.1.11-1+deb12u1", packageManager: "apt", sizeBytes: 485000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y zfs-dkms zfsutils-linux",
+      verification: "dpkg -l zfsutils-linux | grep deb12u1",
+      rollback: "apt-get install -y zfsutils-linux=2.1.11-1 zfs-dkms=2.1.11-1",
+      kineticDeploy: "kinetic upgrade --bundle DEBIAN-BUG-2024-189 --os debian"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1049281",
+    sourceFeed: {
+      sourceId: "feed-debian-updates",
+      feedName: "Debian Proposed Updates & Bug Tracking Stream (BTS / debian-updates)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://bugs.debian.org/release-critical/"
+    }
+  },
+
+  // 6. FreeBSD Errata Notice - OpenZFS Allocation Race Condition (FreeBSD-EN)
   {
     id: "ARG-FreeBSD-EN-24-08",
     bundleId: "FreeBSD-EN-24:08.zfs",
@@ -1591,16 +1072,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
     upstreamNoticeUrl: "https://www.freebsd.org/security/advisories/FreeBSD-EN-24:08.zfs.asc",
     sourceFeed: {
-      sourceId: "feed-freebsd-errata",
-      feedName: "FreeBSD Advisories & Errata Notices (FreeBSD-SA & FreeBSD-EN)",
+      sourceId: "feed-freebsd-en",
+      feedName: "FreeBSD Errata Notices & Stability Stream (FreeBSD-EN)",
       feedType: "public-distro-feed",
       format: "XML",
       syncStatus: "live",
-      sourceUrl: "https://vuxml.freebsd.org/freebsd/vuln.xml.bz2"
+      sourceUrl: "https://www.freebsd.org/security/advisories/"
     }
   },
 
-  // 20. AlmaLinux Bugfix Advisory - NetworkManager DHCPv6 Lease Renewal (ALBA)
+  // 7. AlmaLinux Bugfix Advisory - NetworkManager DHCPv6 Lease Renewal (ALBA)
   {
     id: "ARG-ALBA-2024-2871",
     bundleId: "ALBA-2024:2871",
@@ -1632,7 +1113,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://errata.almalinux.org/9/ALBA-2024-2871.html",
     sourceFeed: {
       sourceId: "feed-almalinux-errata",
-      feedName: "AlmaLinux Errata Stream (ALSA Security, ALBA Bugfix, ALEA Enhancement)",
+      feedName: "AlmaLinux Bugfix & Enhancement Errata (ALBA & ALEA)",
       feedType: "public-distro-feed",
       format: "CSAF",
       syncStatus: "live",
@@ -1640,7 +1121,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 21. openSUSE Recommended Update - Btrfs Balancing & Quota Recalculation (SUSE-RU)
+  // 8. openSUSE Recommended Update - Btrfs Balancing & Quota Recalculation (SUSE-RU)
   {
     id: "ARG-SUSE-RU-2024-2184",
     bundleId: "SUSE-RU-2024:2184-1",
@@ -1670,8 +1151,8 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://www.suse.com/support/update/announcement/2024/suse-ru-20242184-1/",
     sourceFeed: {
-      sourceId: "feed-suse-oval",
-      feedName: "SUSE Maintenance & Errata (SUSE-SU Security, SUSE-RU Recommended / Bugfix)",
+      sourceId: "feed-suse-ru",
+      feedName: "SUSE Recommended & Maintenance Updates (SUSE-RU / openSUSE)",
       feedType: "public-distro-feed",
       format: "OVAL",
       syncStatus: "live",
@@ -1679,7 +1160,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 22. Fedora Bodhi Bugfix Advisory - PipeWire Low-Latency Audio
+  // 9. Fedora Bodhi Bugfix Advisory - PipeWire Low-Latency Audio
   {
     id: "ARG-FEDORA-BA-2024-1102",
     bundleId: "FEDORA-2024-d2e81102",
@@ -1711,8 +1192,8 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: ["pipewire"], zeroDowntime: true },
     upstreamNoticeUrl: "https://bodhi.fedoraproject.org/updates/FEDORA-2024-d2e81102",
     sourceFeed: {
-      sourceId: "feed-fedora-updates",
-      feedName: "Fedora Bodhi Errata Stream (Security, Bugfix, Enhancement)",
+      sourceId: "feed-fedora-bodhi",
+      feedName: "Fedora Bodhi Bugfix & Enhancement Stream",
       feedType: "public-distro-feed",
       format: "JSON",
       syncStatus: "live",
@@ -1720,7 +1201,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 23. Upstream Linux Kernel Stable Point Bugfix Bundle (6.6.41)
+  // 10. Upstream Linux Kernel Stable Point Bugfix Bundle (6.6.41)
   {
     id: "ARG-KERNEL-STABLE-6.6.41",
     bundleId: "KERNEL-STABLE-6.6.41",
@@ -1751,7 +1232,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-6.6.y",
     sourceFeed: {
       sourceId: "feed-kernel-stable",
-      feedName: "Upstream Linux Kernel Stable Tree (Greg K-H Point Releases & CVEs)",
+      feedName: "Upstream Linux Kernel Stable Point Releases (Greg K-H Tree)",
       feedType: "public-distro-feed",
       format: "GIT_TREE",
       syncStatus: "live",
@@ -1759,7 +1240,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 24. OpenBSD Network Bridge MTU Fragmentation Errata
+  // 11. OpenBSD Network Bridge MTU Fragmentation Errata
   {
     id: "ARG-OPENBSD-75-004",
     bundleId: "OPENBSD-75-004",
@@ -1790,7 +1271,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://www.openbsd.org/errata75.html",
     sourceFeed: {
       sourceId: "feed-openbsd-errata",
-      feedName: "OpenBSD Security & Reliability Errata (Syspatch / Patches)",
+      feedName: "OpenBSD Reliability & Driver Errata (Syspatch Stream)",
       feedType: "public-distro-feed",
       format: "GIT_TREE",
       syncStatus: "live",
@@ -1798,7 +1279,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 25. Amazon Linux 2023 cloud-init IMDSv2 Performance Enhancement (ALAS-BA)
+  // 12. Amazon Linux 2023 cloud-init IMDSv2 Performance Enhancement (ALAS-BA)
   {
     id: "ARG-ALAS-BA-2024-0231",
     bundleId: "ALAS-BA-2024-0231",
@@ -1829,7 +1310,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://alas.aws.amazon.com/AL2023/",
     sourceFeed: {
       sourceId: "feed-amazon-alas",
-      feedName: "Amazon Linux Security Center & General Updates (ALAS / AL2023)",
+      feedName: "Amazon Linux General Updates & Cloud Optimizations (ALAS-BA / AL2023)",
       feedType: "public-distro-feed",
       format: "UPDATEINFO",
       syncStatus: "live",
@@ -1837,7 +1318,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 26. Alpine Linux 3.20 musl libc DNS Search Path Resolver Bugfix
+  // 13. Alpine Linux 3.20 musl libc DNS Search Path Resolver Bugfix
   {
     id: "ARG-ALPINE-UPD-2024-0612",
     bundleId: "ALPINE-UPD-2024-0612",
@@ -1867,16 +1348,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://alpinelinux.org/posts/Alpine-3.20.1-released.html",
     sourceFeed: {
-      sourceId: "feed-alpine-secdb",
-      feedName: "Alpine Linux Security Database & Package Updates (SecDB / APK)",
+      sourceId: "feed-alpine-updates",
+      feedName: "Alpine Linux Main & Community Package Updates (APK Stream)",
       feedType: "public-distro-feed",
-      format: "JSON",
+      format: "GIT_TREE",
       syncStatus: "live",
-      sourceUrl: "https://secdb.alpinelinux.org/v3.20/main.json"
+      sourceUrl: "https://git.alpinelinux.org/aports/"
     }
   },
 
-  // 27. NixOS systemd-boot EFI Bootloader Reliability Update
+  // 14. NixOS systemd-boot EFI Bootloader Reliability Update
   {
     id: "ARG-NIX-UPD-2024-0544",
     bundleId: "NIX-UPD-2024-0544",
@@ -1906,16 +1387,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
     upstreamNoticeUrl: "https://nixos.org/",
     sourceFeed: {
-      sourceId: "feed-nixos-tracker",
-      feedName: "NixOS Channel Releases & Security Tracker",
+      sourceId: "feed-nixos-channels",
+      feedName: "NixOS Channel Releases & Package Updates (nixos-24.05)",
       feedType: "public-distro-feed",
       format: "JSON",
       syncStatus: "live",
-      sourceUrl: "https://security.nixos.org/tracker.json"
+      sourceUrl: "https://channels.nixos.org/nixos-24.05"
     }
   },
 
-  // 28. VMware Photon OS Containerd & NRI Hook Bugfix Advisory (PHBA)
+  // 15. VMware Photon OS Containerd & NRI Hook Bugfix Advisory (PHBA)
   {
     id: "ARG-PHOTON-BA-2024-0199",
     bundleId: "PHBA-2024-0199",
@@ -1946,16 +1427,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: ["containerd"], zeroDowntime: true },
     upstreamNoticeUrl: "https://packages.vmware.com/photon/photon_oval/",
     sourceFeed: {
-      sourceId: "feed-photon-oval",
-      feedName: "VMware Photon OS Errata (PHSA Security & PHBA Bugfix)",
+      sourceId: "feed-photon-updates",
+      feedName: "VMware Photon OS Bugfix Advisories (PHBA & tdnf Updates)",
       feedType: "public-distro-feed",
-      format: "OVAL",
+      format: "UPDATEINFO",
       syncStatus: "live",
-      sourceUrl: "https://packages.vmware.com/photon/photon_oval/"
+      sourceUrl: "https://packages.vmware.com/photon/"
     }
   },
 
-  // 29. Flatcar Container Linux Stable Point Update
+  // 16. Flatcar Container Linux Stable Point Update
   {
     id: "ARG-FLATCAR-UPD-2024-3815",
     bundleId: "FLATCAR-UPD-2024-3815",
@@ -1986,7 +1467,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://www.flatcar.org/releases#stable-3815.2.2",
     sourceFeed: {
       sourceId: "feed-flatcar-releases",
-      feedName: "Flatcar Container Linux Release & Security Stream",
+      feedName: "Flatcar Container Linux Stable Release Stream (A/B Updates)",
       feedType: "public-distro-feed",
       format: "JSON",
       syncStatus: "live",
@@ -1994,7 +1475,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 30. Talos Linux v1.7.5 Maintenance Release
+  // 17. Talos Linux v1.7.5 Maintenance Release
   {
     id: "ARG-TALOS-UPD-2024-019",
     bundleId: "TALOS-UPD-2024-019",
@@ -2024,16 +1505,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
     upstreamNoticeUrl: "https://github.com/siderolabs/talos/releases/tag/v1.7.5",
     sourceFeed: {
-      sourceId: "feed-talos-advisories",
-      feedName: "Talos Linux Immutable OS Updates & Sidero Advisories",
+      sourceId: "feed-talos-releases",
+      feedName: "Talos Linux Immutable OS Appliance Releases (Sidero Labs)",
       feedType: "public-distro-feed",
-      format: "OSV",
+      format: "JSON",
       syncStatus: "live",
-      sourceUrl: "https://github.com/siderolabs/talos/security/advisories"
+      sourceUrl: "https://github.com/siderolabs/talos/releases"
     }
   },
 
-  // 31. OpenWrt Wireless ath11k Stability & Kernel Buffer Bugfix
+  // 18. OpenWrt Wireless ath11k Stability & Kernel Buffer Bugfix
   {
     id: "ARG-OPENWRT-UPD-2024-0312",
     bundleId: "OPENWRT-UPD-2024-0312",
@@ -2064,16 +1545,16 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: ["network"], zeroDowntime: true },
     upstreamNoticeUrl: "https://openwrt.org/releases/23.05/notes-23.05.3",
     sourceFeed: {
-      sourceId: "feed-openwrt-advisories",
-      feedName: "OpenWrt Stable Updates & Security Advisories (OpenWrt-SA)",
+      sourceId: "feed-openwrt-updates",
+      feedName: "OpenWrt Stable Updates & Driver Stream (OPKG)",
       feedType: "public-distro-feed",
       format: "JSON",
       syncStatus: "live",
-      sourceUrl: "https://openwrt.org/advisories"
+      sourceUrl: "https://downloads.openwrt.org/"
     }
   },
 
-  // 32. Gentoo Toolchain Maintenance Update (GCC 14.1 & Binutils LTO)
+  // 19. Gentoo Toolchain Maintenance Update (GCC 14.1 & Binutils LTO)
   {
     id: "ARG-GENTOO-UPD-2024-0801",
     bundleId: "GENTOO-UPD-2024-0801",
@@ -2103,19 +1584,19 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://packages.gentoo.org/packages/sys-devel/gcc",
     sourceFeed: {
-      sourceId: "feed-gentoo-glsa",
-      feedName: "Gentoo Linux Security Advisories & Portage Stable Tree (GLSA)",
+      sourceId: "feed-gentoo-portage",
+      feedName: "Gentoo Linux Portage Stable Tree & Toolchain Updates",
       feedType: "public-distro-feed",
       format: "JSON",
       syncStatus: "live",
-      sourceUrl: "https://security.gentoo.org/glsa/glsa.rdf"
+      sourceUrl: "https://api.gentoo.org/packages/"
     }
   },
 
-  // 33. openEuler 24.03 LTS Linux Core Maintenance Advisory
+  // 20. openEuler 24.03 LTS Linux Core Maintenance Advisory
   {
-    id: "ARG-OPENEULER-SA-2024-1588",
-    bundleId: "openEuler-SA-2024-1588",
+    id: "ARG-OPENEULER-BA-2024-1588",
+    bundleId: "openEuler-BA-2024-1588",
     advisoryType: "MAINTENANCE",
     os: "openeuler",
     osFamily: "linux-openeuler",
@@ -2137,13 +1618,13 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       nativeUpgrade: "dnf upgrade -y systemd && systemctl daemon-reexec",
       verification: "rpm -q systemd | grep 254-3",
       rollback: "dnf history undo last -y",
-      kineticDeploy: "kinetic upgrade --bundle openEuler-SA-2024-1588 --os openeuler"
+      kineticDeploy: "kinetic upgrade --bundle openEuler-BA-2024-1588 --os openeuler"
     },
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://www.openeuler.org/en/security/safety-bulletin/detail.html?id=openEuler-SA-2024-1588",
     sourceFeed: {
-      sourceId: "feed-openeuler-errata",
-      feedName: "openEuler Safety Bulletins & Maintenance Advisories (CSAF)",
+      sourceId: "feed-openeuler-maintenance",
+      feedName: "openEuler Maintenance & Performance Advisories",
       feedType: "public-distro-feed",
       format: "CSAF",
       syncStatus: "live",
@@ -2151,7 +1632,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 34. Azure Linux / CBL-Mariner Cloud-Hypervisor Direct Boot Bugfix
+  // 21. Azure Linux / CBL-Mariner Cloud-Hypervisor Direct Boot Bugfix
   {
     id: "ARG-AZL-BA-2024-0419",
     bundleId: "AZL-BA-2024-0419",
@@ -2182,7 +1663,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://github.com/microsoft/azurelinux/releases",
     sourceFeed: {
       sourceId: "feed-azure-linux",
-      feedName: "Azure Linux / CBL-Mariner Security & Errata Stream (MSRC)",
+      feedName: "Azure Linux / CBL-Mariner Host Updates & Hypervisor Drivers",
       feedType: "public-distro-feed",
       format: "CSAF",
       syncStatus: "live",
@@ -2190,7 +1671,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     }
   },
 
-  // 35. CloudLinux CageFS & MySQL Governor Bugfix Advisory (CLBA)
+  // 22. CloudLinux CageFS & MySQL Governor Bugfix Advisory (CLBA)
   {
     id: "ARG-CLBA-2024-4312",
     bundleId: "CLBA-2024:4312",
@@ -2221,19 +1702,807 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     upstreamNoticeUrl: "https://repo.cloudlinux.com/cloudlinux/",
     sourceFeed: {
       sourceId: "feed-cloudlinux-errata",
-      feedName: "CloudLinux OS Errata & Bug Fix Advisories (CLSA & CLBA)",
+      feedName: "CloudLinux OS Bug Fix & Enhancement Advisories (CLBA & CLEA)",
       feedType: "public-distro-feed",
       format: "UPDATEINFO",
       syncStatus: "live",
       sourceUrl: "https://repo.cloudlinux.com/cloudlinux/"
     }
+  },
+
+  // 23. Arch Linux Mesa Vulkan Driver Performance Optimization
+  {
+    id: "ARG-ARCH-UPD-2024-0720",
+    bundleId: "ARCH-UPD-2024-0720",
+    advisoryType: "ENHANCEMENT",
+    os: "arch",
+    osFamily: "linux-arch",
+    osDisplayName: "Arch Linux",
+    targetReleases: ["Arch Linux Rolling"],
+    title: "Mesa 24.1 RADV Vulkan Ray Tracing & Compute Pipeline Performance Enhancement",
+    synopsis: "Arch Linux rolling release update delivering Mesa 24.1.4 with up to 25% compute throughput acceleration on AMD Radeon RDNA3 hardware.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.2,
+    operationalDomain: "DRIVER",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-07-20T16:00:00Z",
+    updatedAt: "2024-07-20T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "mesa", sourcePackage: "mesa", arch: "x86_64", currentVersion: "24.1.2-1", fixedVersion: "24.1.4-1", packageManager: "pacman", sizeBytes: 18400000 },
+      { name: "vulkan-radeon", sourcePackage: "mesa", arch: "x86_64", currentVersion: "24.1.2-1", fixedVersion: "24.1.4-1", packageManager: "pacman", sizeBytes: 4210000 }
+    ],
+    commands: {
+      nativeUpgrade: "pacman -Sy --noconfirm mesa vulkan-radeon",
+      verification: "pacman -Q mesa | grep 24.1.4-1",
+      rollback: "pacman -U --noconfirm /var/cache/pacman/pkg/mesa-24.1.2-1-x86_64.pkg.tar.zst",
+      kineticDeploy: "kinetic upgrade --bundle ARCH-UPD-2024-0720 --os arch"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://archlinux.org/packages/extra/x86_64/mesa/",
+    sourceFeed: {
+      sourceId: "feed-arch-packages",
+      feedName: "Arch Linux Core & Extra Package Releases (Rolling Stream)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://archlinux.org/packages/search/json/"
+    }
+  },
+
+  // 24. Kali Linux Xfce Desktop Performance & Toolchain Update
+  {
+    id: "ARG-KALI-UPD-2024-0820",
+    bundleId: "KALI-UPD-2024-0820",
+    advisoryType: "MAINTENANCE",
+    os: "kali",
+    osFamily: "linux-debian",
+    osDisplayName: "Kali Linux",
+    targetReleases: ["Kali Linux 2024.3"],
+    title: "Kali Linux 2024.3 Desktop Environment & Core Network Tooling Maintenance Release",
+    synopsis: "Official Kali Linux distribution point update optimizing Xfce window manager responsiveness and updating base network inspection toolchains.",
+    vendorSeverity: "LOW",
+    severityScore: 4.5,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-08-20T10:00:00Z",
+    updatedAt: "2024-08-20T10:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "kali-desktop-xfce", sourcePackage: "kali-meta", arch: "x86_64", currentVersion: "2024.2.1", fixedVersion: "2024.3.0", packageManager: "apt", sizeBytes: 154000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y kali-desktop-xfce",
+      verification: "dpkg -l kali-desktop-xfce | grep 2024.3",
+      rollback: "apt-get install -y kali-desktop-xfce=2024.2.1",
+      kineticDeploy: "kinetic upgrade --bundle KALI-UPD-2024-0820 --os kali"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.kali.org/blog/kali-linux-2024-3-release/",
+    sourceFeed: {
+      sourceId: "feed-kali-packages",
+      feedName: "Kali Linux Rolling Package Releases & Hardware Drivers",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://pkg.kali.org/"
+    }
+  },
+
+  // 25. Void Linux dracut initramfs Kernel 6.10 Compatibility Bugfix
+  {
+    id: "ARG-VOID-UPD-2024-0901",
+    bundleId: "VOID-UPD-2024-0901",
+    advisoryType: "BUGFIX",
+    os: "void",
+    osFamily: "linux-void",
+    osDisplayName: "Void Linux",
+    targetReleases: ["Void Linux Rolling"],
+    title: "dracut Initramfs Generator Kernel 6.10 Module Loading Compatibility Bugfix",
+    synopsis: "Void Linux XBPS update fixing dracut initramfs regeneration failure when building ramdisks for Linux 6.10 with zstd compressed kernel modules.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-08-28T12:00:00Z",
+    updatedAt: "2024-08-28T12:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "dracut", sourcePackage: "dracut", arch: "x86_64", currentVersion: "060-1", fixedVersion: "060-3", packageManager: "xbps", sizeBytes: 890000 }
+    ],
+    commands: {
+      nativeUpgrade: "xbps-install -Su dracut && dracut --regenerate-all --force",
+      verification: "xbps-query -s dracut",
+      rollback: "xbps-install -f /var/cache/xbps/dracut-060_1.x86_64.xbps",
+      kineticDeploy: "kinetic upgrade --bundle VOID-UPD-2024-0901 --os void"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://github.com/void-linux/void-packages/pull/51820",
+    sourceFeed: {
+      sourceId: "feed-void-xbps",
+      feedName: "Void Linux XBPS Package Updates Stream",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://repo-default.voidlinux.org/"
+    }
+  },
+
+  // 26. Wolfi Container OS glibc Dynamic Loader TLS Alignment Bugfix
+  {
+    id: "ARG-WOLFI-UPD-2024-0701",
+    bundleId: "WOLFI-UPD-2024-0701",
+    advisoryType: "BUGFIX",
+    os: "wolfi",
+    osFamily: "linux-wolfi",
+    osDisplayName: "Wolfi Container OS",
+    targetReleases: ["Wolfi Rolling Container OS"],
+    title: "glibc 2.39-r4 Dynamic Loader Thread-Local Storage (TLS) Alignment Bugfix",
+    synopsis: "Wolfi OS maintenance update fixing segfault in multi-threaded Go/CGO applications caused by unaligned TLS blocks in musl-to-glibc compatibility layers.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.2,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-07-01T09:15:00Z",
+    updatedAt: "2024-07-01T09:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "glibc", sourcePackage: "glibc", arch: "x86_64", currentVersion: "2.39-r3", fixedVersion: "2.39-r4", packageManager: "apk", sizeBytes: 2410000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update && apk add --upgrade glibc",
+      verification: "apk info -v glibc | grep 2.39-r4",
+      rollback: "apk add glibc=2.39-r3",
+      kineticDeploy: "kinetic upgrade --bundle WOLFI-UPD-2024-0701 --os wolfi"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://packages.wolfi.dev/os/",
+    sourceFeed: {
+      sourceId: "feed-wolfi-updates",
+      feedName: "Wolfi Container Linux Package & Toolchain Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://packages.wolfi.dev/os/"
+    }
+  },
+
+  // 27. NetBSD NVMM Hypervisor Memory Mapping Errata (NetBSD-EN)
+  {
+    id: "ARG-NETBSD-EN-2024-002",
+    bundleId: "NetBSD-EN-2024-002",
+    advisoryType: "BUGFIX",
+    os: "netbsd",
+    osFamily: "bsd-netbsd",
+    osDisplayName: "NetBSD",
+    targetReleases: ["NetBSD 10.0"],
+    title: "NetBSD NVMM Hypervisor Nested Page Table (EPT) Memory Mapping Errata",
+    synopsis: "NetBSD official errata notice resolving guest physical memory mapping deadlock when running QEMU hardware acceleration on AMD SVM processors.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.1,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-18T18:00:00Z",
+    updatedAt: "2024-06-18T18:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-netbsd", sourcePackage: "src/sys/dev/nvmm", arch: "x86_64", currentVersion: "10.0_base", fixedVersion: "10.0_patch2", packageManager: "pkgin", sizeBytes: 16500000 }
+    ],
+    commands: {
+      nativeUpgrade: "pkgin update && pkgin upgrade nvmm-kmod && shutdown -r now",
+      verification: "uname -v",
+      rollback: "reboot",
+      kineticDeploy: "kinetic upgrade --bundle NetBSD-EN-2024-002 --os netbsd"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://ftp.netbsd.org/pub/NetBSD/",
+    sourceFeed: {
+      sourceId: "feed-netbsd-errata",
+      feedName: "NetBSD Errata Notices & pkgsrc Quarterly Stream (NetBSD-EN)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://ftp.netbsd.org/pub/NetBSD/"
+    }
+  },
+  // 28. Ubuntu Linux Hardware Enablement (HWE) Wi-Fi 7 & Intel Meteor Lake NPU
+  {
+    id: "ARG-UBUNTU-HWE-2024-0518",
+    bundleId: "UBUNTU-HWE-2024-0518",
+    advisoryType: "ENHANCEMENT",
+    os: "ubuntu",
+    osFamily: "linux-debian",
+    osDisplayName: "Ubuntu Linux",
+    targetReleases: ["Ubuntu 24.04 LTS (Noble)"],
+    title: "Linux 6.8 HWE Wi-Fi 7 (802.11be) and Intel Meteor Lake NPU Enablement",
+    synopsis: "Official Ubuntu kernel hardware enablement stack update adding native Wi-Fi 7 320MHz channel support and Intel AI Boost NPU acceleration drivers.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.2,
+    operationalDomain: "DRIVER",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-07-02T11:00:00Z",
+    updatedAt: "2024-07-02T11:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-generic-hwe-24.04", sourcePackage: "linux-meta", arch: "x86_64", currentVersion: "6.8.0-31.31", fixedVersion: "6.8.0-38.38", packageManager: "apt", sizeBytes: 18000 },
+      { name: "linux-modules-extra-6.8.0-38-generic", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.8.0-31.31", fixedVersion: "6.8.0-38.38", packageManager: "apt", sizeBytes: 84200000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-generic-hwe-24.04 linux-modules-extra-6.8.0-38-generic",
+      verification: "uname -r | grep 6.8.0-38",
+      rollback: "apt-get install -y linux-image-6.8.0-31-generic",
+      kineticDeploy: "kinetic upgrade --bundle UBUNTU-HWE-2024-0518 --os ubuntu"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://wiki.ubuntu.com/Kernel/LTSEnablementStack",
+    sourceFeed: {
+      sourceId: "feed-ubuntu-updates",
+      feedName: "Ubuntu Main Updates & Hardware Enablement Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://packages.ubuntu.com/"
+    }
+  },
+
+  // 29. Debian 12 Bookworm Point Release 12.6 Base Package Sync
+  {
+    id: "ARG-DEBIAN-UPD-2024-0610",
+    bundleId: "DEBIAN-UPD-2024-0610",
+    advisoryType: "MAINTENANCE",
+    os: "debian",
+    osFamily: "linux-debian",
+    osDisplayName: "Debian GNU/Linux",
+    targetReleases: ["Debian 12.6 (Bookworm)"],
+    title: "Debian 12.6 Stable Point Release System Maintenance Bundle",
+    synopsis: "Official Debian stable maintenance point release updating base-files, tzdata, ca-certificates, and core system utilities.",
+    vendorSeverity: "LOW",
+    severityScore: 4.8,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T16:00:00Z",
+    updatedAt: "2024-06-29T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "base-files", sourcePackage: "base-files", arch: "x86_64", currentVersion: "13.0+deb12u5", fixedVersion: "13.0+deb12u6", packageManager: "apt", sizeBytes: 74000 },
+      { name: "tzdata", sourcePackage: "tzdata", arch: "all", currentVersion: "2024a-0+deb12u1", fixedVersion: "2024b-0+deb12u1", packageManager: "apt", sizeBytes: 310000 },
+      { name: "ca-certificates", sourcePackage: "ca-certificates", arch: "all", currentVersion: "20230311", fixedVersion: "20240203", packageManager: "apt", sizeBytes: 158000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y base-files tzdata ca-certificates",
+      verification: "cat /etc/debian_version | grep 12.6",
+      rollback: "apt-get install -y base-files=13.0+deb12u5",
+      kineticDeploy: "kinetic upgrade --bundle DEBIAN-UPD-2024-0610 --os debian"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.debian.org/News/2024/20240629",
+    sourceFeed: {
+      sourceId: "feed-debian-updates",
+      feedName: "Debian Stable Updates & Point Release Errata Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://bugs.debian.org/release-critical/"
+    }
+  },
+
+  // 30. Red Hat Enterprise Linux Intel QAT Acceleration & DPDK 23.11 (RHEA)
+  {
+    id: "ARG-RHEA-2024-4380",
+    bundleId: "RHEA-2024:4380",
+    advisoryType: "ENHANCEMENT",
+    os: "rhel",
+    osFamily: "linux-rhel",
+    osDisplayName: "Red Hat Enterprise Linux",
+    targetReleases: ["RHEL 9.4"],
+    title: "Intel QuickAssist Technology (QAT) Generation 4 Hardware Acceleration & DPDK 23.11 Enhancement",
+    synopsis: "Red Hat Enhancement Advisory delivering production acceleration drivers for Intel QAT gen4 hardware offloading gzip compression and TLS handshakes.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.8,
+    operationalDomain: "PERFORMANCE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-25T14:30:00Z",
+    updatedAt: "2024-06-25T14:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "qatlib", sourcePackage: "qatlib", arch: "x86_64", currentVersion: "23.11.0-2.el9", fixedVersion: "24.02.0-1.el9", packageManager: "dnf", sizeBytes: 420000 },
+      { name: "dpdk", sourcePackage: "dpdk", arch: "x86_64", currentVersion: "23.11-1.el9", fixedVersion: "23.11-3.el9", packageManager: "dnf", sizeBytes: 18900000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y qatlib dpdk",
+      verification: "rpm -q qatlib | grep 24.02",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle RHEA-2024:4380 --os rhel"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://access.redhat.com/errata/RHEA-2024:4380",
+    sourceFeed: {
+      sourceId: "feed-redhat-errata",
+      feedName: "Red Hat Bug & Enhancement Advisories Stream (RHBA & RHEA)",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://access.redhat.com/hydra/rest/securitydata/cvrf.json"
+    }
+  },
+
+  // 31. AlmaLinux Btrfs Subvolume Quota Tree Balance & Transaction Flush Fix (ALBA)
+  {
+    id: "ARG-ALBA-2024-3990",
+    bundleId: "ALBA-2024:3990",
+    advisoryType: "BUGFIX",
+    os: "almalinux",
+    osFamily: "linux-rhel",
+    osDisplayName: "AlmaLinux",
+    targetReleases: ["AlmaLinux 9.4", "AlmaLinux 8.10"],
+    title: "Btrfs Subvolume Quota Tree Balance Stall and Transaction Flush Bug Fix Advisory",
+    synopsis: "AlmaLinux Bug Advisory resolving kernel spinlock contention during btrfs quota tree rebalances under heavy concurrent snapshot write operations.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.1,
+    operationalDomain: "STORAGE",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-18T10:00:00Z",
+    updatedAt: "2024-06-18T10:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "btrfs-progs", sourcePackage: "btrfs-progs", arch: "x86_64", currentVersion: "6.6.3-1.el9", fixedVersion: "6.6.3-2.el9", packageManager: "dnf", sizeBytes: 1120000 },
+      { name: "kernel-tools", sourcePackage: "kernel", arch: "x86_64", currentVersion: "5.14.0-427.18.1.el9_4", fixedVersion: "5.14.0-427.22.1.el9_4", packageManager: "dnf", sizeBytes: 4100000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y btrfs-progs kernel-tools",
+      verification: "rpm -q btrfs-progs | grep 6.6.3-2",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle ALBA-2024:3990 --os almalinux"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://errata.almalinux.org/9/ALBA-2024-3990.html",
+    sourceFeed: {
+      sourceId: "feed-almalinux-errata",
+      feedName: "AlmaLinux Bug & Enhancement Errata Stream (ALBA & ALEA)",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://errata.almalinux.org/"
+    }
+  },
+
+  // 32. SUSE Linux Enterprise OCI Hook Engine Upgrade (openSUSE-RU)
+  {
+    id: "ARG-SUSE-RU-2024-2190",
+    bundleId: "SUSE-RU-2024:2190-1",
+    advisoryType: "ENHANCEMENT",
+    os: "suse",
+    osFamily: "linux-suse",
+    osDisplayName: "openSUSE / SLES",
+    targetReleases: ["SLES 15 SP5", "openSUSE Leap 15.6"],
+    title: "containerd OCI Runtime Hook Engine Upgrade & Systemd Cgroup Delegation",
+    synopsis: "SUSE recommended update backporting native OCI spec v1.1 lifecycle hooks and automated systemd cgroup v2 controller delegation to containerd.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.4,
+    operationalDomain: "CONTAINER",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-22T08:15:00Z",
+    updatedAt: "2024-06-22T08:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "containerd", sourcePackage: "containerd", arch: "x86_64", currentVersion: "1.7.11-150500.3.3.1", fixedVersion: "1.7.18-150500.3.6.1", packageManager: "zypper", sizeBytes: 28400000 },
+      { name: "runc", sourcePackage: "runc", arch: "x86_64", currentVersion: "1.1.10-150500.3.3.1", fixedVersion: "1.1.12-150500.3.6.1", packageManager: "zypper", sizeBytes: 9200000 }
+    ],
+    commands: {
+      nativeUpgrade: "zypper patch --category recommended -y && systemctl restart containerd",
+      verification: "containerd --version | grep 1.7.18",
+      rollback: "zypper install -y containerd=1.7.11-150500.3.3.1",
+      kineticDeploy: "kinetic upgrade --bundle SUSE-RU-2024:2190-1 --os suse"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["containerd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.suse.com/support/update/announcement/2024/suse-ru-20242190-1/",
+    sourceFeed: {
+      sourceId: "feed-suse-errata",
+      feedName: "SUSE Recommended Updates (openSUSE-RU & SLES Recommended)",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://ftp.suse.com/pub/projects/security/yaml/"
+    }
+  },
+
+  // 33. Arch Linux Coreutils 9.5 Multithreaded Sort & AVX-512 GNU Utilities
+  {
+    id: "ARG-ARCH-PKG-2024-0715",
+    bundleId: "ARCH-PKG-2024-0715",
+    advisoryType: "GENERAL",
+    os: "arch",
+    osFamily: "linux-arch",
+    osDisplayName: "Arch Linux",
+    targetReleases: ["Arch Linux Rolling"],
+    title: "Coreutils 9.5 Multi-threaded Sort Optimization & AVX-512 Vector Extensions",
+    synopsis: "Arch Linux core repository update bringing upstream GNU Coreutils 9.5 with OpenMP multithreaded sort optimizations and SIMD hash acceleration.",
+    vendorSeverity: "LOW",
+    severityScore: 4.9,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-07-01T12:00:00Z",
+    updatedAt: "2024-07-01T12:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "coreutils", sourcePackage: "coreutils", arch: "x86_64", currentVersion: "9.4-2", fixedVersion: "9.5-1", packageManager: "pacman", sizeBytes: 3100000 }
+    ],
+    commands: {
+      nativeUpgrade: "pacman -Sy --noconfirm coreutils",
+      verification: "sort --version | grep 9.5",
+      rollback: "pacman -U /var/cache/pacman/pkg/coreutils-9.4-2-x86_64.pkg.tar.zst",
+      kineticDeploy: "kinetic upgrade --bundle ARCH-PKG-2024-0715 --os arch"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://archlinux.org/packages/core/x86_64/coreutils/",
+    sourceFeed: {
+      sourceId: "feed-arch-core",
+      feedName: "Arch Linux Core & Extra Package Streams",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://archlinux.org/feeds/packages/"
+    }
+  },
+
+  // 34. Alpine Linux musl 1.2.5 Thread Local Storage (TLS) Alignment Optimization
+  {
+    id: "ARG-ALPINE-PKG-2024-0630",
+    bundleId: "ALPINE-PKG-2024-0630",
+    advisoryType: "ENHANCEMENT",
+    os: "alpine",
+    osFamily: "linux-alpine",
+    osDisplayName: "Alpine Linux",
+    targetReleases: ["Alpine v3.20", "Alpine Edge"],
+    title: "musl libc 1.2.5 Thread Local Storage (TLS) Memory Alignment Optimization",
+    synopsis: "Alpine Linux official package update upgrading musl to 1.2.5, optimizing thread local storage allocation and ARM64 cache line alignment.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.0,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-30T10:00:00Z",
+    updatedAt: "2024-06-30T10:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "musl", sourcePackage: "musl", arch: "x86_64", currentVersion: "1.2.5-r0", fixedVersion: "1.2.5-r1", packageManager: "apk", sizeBytes: 620000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update && apk add --upgrade musl",
+      verification: "apk info -v musl | grep 1.2.5-r1",
+      rollback: "apk add musl=1.2.5-r0",
+      kineticDeploy: "kinetic upgrade --bundle ALPINE-PKG-2024-0630 --os alpine"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://git.alpinelinux.org/aports/log/main/musl",
+    sourceFeed: {
+      sourceId: "feed-alpine-packages",
+      feedName: "Alpine Linux Package Repository & Git Streams",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://pkgs.alpinelinux.org/packages"
+    }
+  },
+
+  // 35. Fedora Bodhi NetworkManager 1.48 WireGuard Roaming & DHCPv6 Rapid Commit
+  {
+    id: "ARG-FEDORA-BODHI-2024-5820",
+    bundleId: "FEDORA-BODHI-2024-5820",
+    advisoryType: "BUGFIX",
+    os: "fedora",
+    osFamily: "linux-fedora",
+    osDisplayName: "Fedora Linux",
+    targetReleases: ["Fedora 40", "Fedora 39"],
+    title: "NetworkManager 1.48 WireGuard Endpoint Roaming and DHCPv6 Rapid Commit Fix",
+    synopsis: "Fedora Bodhi bug fix update addressing intermittent interface disconnects during Wi-Fi to cellular roaming with WireGuard and rapid DHCP lease renewals.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.3,
+    operationalDomain: "NETWORK",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-26T14:40:00Z",
+    updatedAt: "2024-06-26T14:40:00Z",
+    cveList: [],
+    packages: [
+      { name: "NetworkManager", sourcePackage: "NetworkManager", arch: "x86_64", currentVersion: "1.46.0-1.fc40", fixedVersion: "1.48.0-1.fc40", packageManager: "dnf", sizeBytes: 3850000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y NetworkManager && systemctl reload NetworkManager",
+      verification: "nmcli --version | grep 1.48",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle FEDORA-BODHI-2024-5820 --os fedora"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["NetworkManager"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://bodhi.fedoraproject.org/updates/FEDORA-2024-5820",
+    sourceFeed: {
+      sourceId: "feed-fedora-updates",
+      feedName: "Fedora Bodhi Updates & Bugfix Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://bodhi.fedoraproject.org/updates/"
+    }
+  },
+
+  // 36. Amazon Linux 2023 AWS Nitro Enclaves vSocket Performance Tuning
+  {
+    id: "ARG-ALAS-ENH-2024-0312",
+    bundleId: "ALAS-ENH-2024-0312",
+    advisoryType: "ENHANCEMENT",
+    os: "amazon-linux",
+    osFamily: "linux-amazon",
+    osDisplayName: "Amazon Linux 2023",
+    targetReleases: ["Amazon Linux 2023.5"],
+    title: "AWS Nitro Enclaves VirtIO vSocket Latency Reduction & HugePages Enablement",
+    synopsis: "Amazon Linux enhancement release optimizing kernel vSocket driver performance and 2MB HugePages allocation inside confidential Nitro Enclaves.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.6,
+    operationalDomain: "PERFORMANCE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-24T18:00:00Z",
+    updatedAt: "2024-06-24T18:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "aws-nitro-enclaves-cli", sourcePackage: "aws-nitro-enclaves-cli", arch: "x86_64", currentVersion: "1.3.1-1.amzn2023", fixedVersion: "1.3.4-1.amzn2023", packageManager: "dnf", sizeBytes: 5200000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y aws-nitro-enclaves-cli nitro-enclaves-allocator",
+      verification: "nitro-cli --version | grep 1.3.4",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle ALAS-ENH-2024-0312 --os amazon-linux"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://alas.aws.amazon.com/AL2023/ALAS-2024-0312.html",
+    sourceFeed: {
+      sourceId: "feed-amazon-errata",
+      feedName: "Amazon Linux Bug Advisories (ALAS-BA)",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://alas.aws.amazon.com/alas2023.rss"
+    }
+  },
+
+  // 37. Linux Kernel 6.9.8 Stable Point Release Maintenance Bundle
+  {
+    id: "ARG-KERNEL-STABLE-6.9.8",
+    bundleId: "KERNEL-STABLE-6.9.8",
+    advisoryType: "MAINTENANCE",
+    os: "kernel",
+    osFamily: "linux-kernel",
+    osDisplayName: "Linux Kernel Stable",
+    targetReleases: ["Linux 6.9.y"],
+    title: "Linux Kernel 6.9.8 Stable Maintenance Point Release",
+    synopsis: "Official kernel.org stable maintenance release delivering 118 backported bug fixes across Bcachefs, TCP BBRv3 congestion control, and AMD GPU drivers.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.3,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-07-05T12:00:00Z",
+    updatedAt: "2024-07-05T12:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.9.7", fixedVersion: "6.9.8", packageManager: "kmod", sizeBytes: 142000000 }
+    ],
+    commands: {
+      nativeUpgrade: "make -j$(nproc) && make modules_install && make install",
+      verification: "uname -r | grep 6.9.8",
+      rollback: "grubby --set-default /boot/vmlinuz-6.9.7",
+      kineticDeploy: "kinetic upgrade --bundle KERNEL-STABLE-6.9.8 --os kernel"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.9.8",
+    sourceFeed: {
+      sourceId: "feed-kernel-stable",
+      feedName: "The Linux Kernel Archives (kernel.org Stable Stream)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://www.kernel.org/feeds/kdist.xml"
+    }
+  },
+
+  // 38. FreeBSD 14.1 Errata Notice: VFS Namecache Lock Contention Reduction
+  {
+    id: "ARG-FREEBSD-EN-24-11",
+    bundleId: "FreeBSD-EN-24:11.vfs",
+    advisoryType: "BUGFIX",
+    os: "freebsd",
+    osFamily: "bsd-freebsd",
+    osDisplayName: "FreeBSD",
+    targetReleases: ["FreeBSD 14.1-RELEASE"],
+    title: "VFS Namecache Scalability and Multi-core Path Lookup Contention Errata",
+    synopsis: "FreeBSD Errata Notice optimizing the VFS namecache hashing algorithm to prevent reader lock contention across high core count Xeon and EPYC systems.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.7,
+    operationalDomain: "STORAGE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-27T16:00:00Z",
+    updatedAt: "2024-06-27T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "freebsd-update", sourcePackage: "src", arch: "x86_64", currentVersion: "14.1-RELEASE", fixedVersion: "14.1-RELEASE-p2", packageManager: "pkg", sizeBytes: 15400000 }
+    ],
+    commands: {
+      nativeUpgrade: "freebsd-update fetch && freebsd-update install",
+      verification: "freebsd-version -u | grep 14.1-RELEASE-p2",
+      rollback: "freebsd-update rollback",
+      kineticDeploy: "kinetic upgrade --bundle FreeBSD-EN-24:11.vfs --os freebsd"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.freebsd.org/security/advisories/FreeBSD-EN-24:11.vfs.asc",
+    sourceFeed: {
+      sourceId: "feed-freebsd-errata",
+      feedName: "FreeBSD Errata Notices (FreeBSD-EN)",
+      feedType: "public-distro-feed",
+      format: "XML",
+      syncStatus: "live",
+      sourceUrl: "https://www.freebsd.org/security/rss.xml"
+    }
+  },
+
+  // 39. Wolfi Chainguard Base Container OpenSSL 3.3 Engine Synchronizer
+  {
+    id: "ARG-WOLFI-PKG-2024-0718",
+    bundleId: "WOLFI-PKG-2024-0718",
+    advisoryType: "MAINTENANCE",
+    os: "wolfi",
+    osFamily: "linux-wolfi",
+    osDisplayName: "Wolfi (Chainguard)",
+    targetReleases: ["Wolfi OS Standard"],
+    title: "OpenSSL 3.3 Cryptographic Engine Synchronization & ASM Vector Optimization",
+    synopsis: "Wolfi base package update synchronizing OpenSSL 3.3 runtime binaries with optimized AVX-512 and ARM Neon cryptographic primitives for container workloads.",
+    vendorSeverity: "LOW",
+    severityScore: 5.2,
+    operationalDomain: "CONTAINER",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-07-03T09:30:00Z",
+    updatedAt: "2024-07-03T09:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "openssl", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.3.0-r1", fixedVersion: "3.3.1-r0", packageManager: "apk", sizeBytes: 2840000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update && apk add --upgrade openssl",
+      verification: "apk info -v openssl | grep 3.3.1",
+      rollback: "apk add openssl=3.3.0-r1",
+      kineticDeploy: "kinetic upgrade --bundle WOLFI-PKG-2024-0718 --os wolfi"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://github.com/wolfi-dev/os/blob/main/openssl.yaml",
+    sourceFeed: {
+      sourceId: "feed-wolfi-packages",
+      feedName: "Wolfi (Chainguard) OS Package Errata & Melange Git Stream",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://packages.wolfi.dev/os/"
+    }
+  },
+
+  // 40. Talos Linux Kubernetes v1.30.2 Kubelet Node Allocatable Accounting Fix
+  {
+    id: "ARG-TALOS-PKG-2024-0640",
+    bundleId: "TALOS-PKG-2024-0640",
+    advisoryType: "BUGFIX",
+    os: "talos",
+    osFamily: "linux-talos",
+    osDisplayName: "Talos Linux (Sidero)",
+    targetReleases: ["Talos v1.7.5"],
+    title: "Kubernetes v1.30.2 Kubelet Node Allocatable Accounting and Ephemeral Storage Fix",
+    synopsis: "Talos OS image update updating embedded Kubelet to v1.30.2, fixing ephemeral storage quota over-eviction on rootfs partitions.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.5,
+    operationalDomain: "CONTAINER",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-28T15:00:00Z",
+    updatedAt: "2024-06-28T15:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "kubelet", sourcePackage: "kubernetes", arch: "x86_64", currentVersion: "v1.30.1", fixedVersion: "v1.30.2", packageManager: "talosctl", sizeBytes: 19800000 }
+    ],
+    commands: {
+      nativeUpgrade: "talosctl upgrade --nodes <node-ip> --image ghcr.io/siderolabs/installer:v1.7.5",
+      verification: "talosctl version | grep v1.7.5",
+      rollback: "talosctl rollback",
+      kineticDeploy: "kinetic upgrade --bundle TALOS-PKG-2024-0640 --os talos"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://github.com/siderolabs/talos/releases/tag/v1.7.5",
+    sourceFeed: {
+      sourceId: "feed-talos-releases",
+      feedName: "Talos Linux Immutable OS Release & Component Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://api.github.com/repos/siderolabs/talos/releases"
+    }
+  },
+
+  // 41. NixOS 24.05 nixpkgs GCC 13.3 & Clang 18 Toolchain Optimization Backport
+  {
+    id: "ARG-NIXOS-PKG-2024-0701",
+    bundleId: "NIXOS-PKG-2024-0701",
+    advisoryType: "GENERAL",
+    os: "nixos",
+    osFamily: "linux-nix",
+    osDisplayName: "NixOS",
+    targetReleases: ["NixOS 24.05 (Uakari)"],
+    title: "GCC 13.3 & Clang 18 Compiler Toolchain Bug Fix and Profile-Guided Optimization Backport",
+    synopsis: "Official nixpkgs channel channel update backporting GCC 13.3 stability fixes for C++20 coroutines and LLVM Clang 18 SIMD auto-vectorization improvements.",
+    vendorSeverity: "LOW",
+    severityScore: 5.0,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-07-01T08:00:00Z",
+    updatedAt: "2024-07-01T08:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "gcc", sourcePackage: "gcc", arch: "x86_64", currentVersion: "13.2.0", fixedVersion: "13.3.0", packageManager: "nix", sizeBytes: 98000000 },
+      { name: "clang", sourcePackage: "llvm", arch: "x86_64", currentVersion: "18.1.5", fixedVersion: "18.1.8", packageManager: "nix", sizeBytes: 112000000 }
+    ],
+    commands: {
+      nativeUpgrade: "nix-channel --update && nixos-rebuild switch",
+      verification: "gcc --version | grep 13.3.0",
+      rollback: "nixos-rebuild switch --rollback",
+      kineticDeploy: "kinetic upgrade --bundle NIXOS-PKG-2024-0701 --os nixos"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://github.com/NixOS/nixpkgs/commits/nixos-24.05",
+    sourceFeed: {
+      sourceId: "feed-nixos-channels",
+      feedName: "NixOS Channel Updates & Hydra Build Stream",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://channels.nixos.org/"
+    }
+  },
+
+  // 42. Oracle Linux Unbreakable Enterprise Kernel (UEK7) NVMe-oF RDMA Tuning
+  {
+    id: "ARG-ORACLE-UEK-2024-2840",
+    bundleId: "ORACLE-UEK-2024-2840",
+    advisoryType: "ENHANCEMENT",
+    os: "oracle-linux",
+    osFamily: "linux-rhel",
+    osDisplayName: "Oracle Linux",
+    targetReleases: ["Oracle Linux 9 (UEK7)"],
+    title: "Unbreakable Enterprise Kernel (UEK7) NVMe over Fabrics RoCE v2 RDMA Tuning",
+    synopsis: "Oracle Linux kernel errata update optimizing NVMe-oF RoCE v2 queue pair depth and multi-rail bonding for Oracle Database Exadata Cloud workloads.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.9,
+    operationalDomain: "STORAGE",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T11:30:00Z",
+    updatedAt: "2024-06-29T11:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-uek", sourcePackage: "kernel-uek", arch: "x86_64", currentVersion: "5.15.0-205.149.5.1.el9uek", fixedVersion: "5.15.0-206.153.7.1.el9uek", packageManager: "dnf", sizeBytes: 16800000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel-uek kernel-uek-core kernel-uek-modules",
+      verification: "uname -r | grep 5.15.0-206",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle ORACLE-UEK-2024-2840 --os oracle-linux"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://linux.oracle.com/errata/ELBA-2024-2840.html",
+    sourceFeed: {
+      sourceId: "feed-oracle-errata",
+      feedName: "Oracle Linux Bug Errata (ELBA & ELEA)",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://linux.oracle.com/security/"
+    }
   }
+
 ];
 
 export interface ArgentQueryFilters {
   os?: string; // e.g. "ubuntu", "debian", "rocky", "all"
   severity?: string; // "critical", "important", "moderate", "low", "all"
-  type?: string; // "all", "security", "bugfix", "enhancement", "maintenance", "general"
+  type?: string; // "all", "bugfix", "enhancement", "maintenance", "general"
   advisoryType?: string;
   query?: string; // search query
   reboot?: boolean | 'true' | 'false';
@@ -2252,10 +2521,10 @@ export interface ArgentQueryResult {
   limit: number;
   totalPages: number;
   totalConsolidatedCount: number;
-  securityCount: number;
   bugfixCount: number;
   enhancementCount: number;
   maintenanceCount: number;
+  generalCount: number;
   zeroDowntimeCount: number;
   rebootRequiredCount: number;
   totalPackagesUpdated: number;
@@ -2265,10 +2534,10 @@ export interface ArgentQueryResult {
 export interface ArgentStats {
   totalBundles: number;
   totalPackagesUpdated: number;
-  securityCount: number;
   bugfixCount: number;
   enhancementCount: number;
   maintenanceCount: number;
+  generalCount: number;
   criticalCount: number;
   importantCount: number;
   moderateCount: number;
@@ -2282,7 +2551,7 @@ export interface ArgentStats {
 }
 
 /**
- * Filter and query vendor patch bundles (1:1 feature parity with Vantage threat feed)
+ * Filter and query regular vendor patch bundles (1:1 feature parity with Vantage threat feed)
  */
 export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryResult {
   let list = [...ARGENT_PATCH_BUNDLES];
@@ -2311,7 +2580,7 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
     list = list.filter(b => b.sourceFeed.sourceId === filters.source);
   }
 
-  // Filter by Advisory Type (Security, Bugfix, Enhancement, Maintenance)
+  // Filter by Advisory Type (Bugfix, Enhancement, Maintenance, General)
   const targetType = filters.type || filters.advisoryType;
   if (targetType && targetType !== 'all' && targetType !== 'ALL') {
     const normType = targetType.toUpperCase();
@@ -2356,13 +2625,12 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
       b.synopsis.toLowerCase().includes(q) ||
       b.osDisplayName.toLowerCase().includes(q) ||
       b.advisoryType.toLowerCase().includes(q) ||
-      b.cveList.some(c => c.toLowerCase().includes(q)) ||
       b.packages.some(p => p.name.toLowerCase().includes(q) || p.fixedVersion.toLowerCase().includes(q))
     );
   }
 
   // Sorting
-  const sortBy = filters.sortBy || 'cvss_desc';
+  const sortBy = filters.sortBy || 'date_desc';
   if (sortBy === 'cvss_desc') {
     list.sort((a, b) => b.severityScore - a.severityScore);
   } else if (sortBy === 'date_desc') {
@@ -2382,10 +2650,10 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
   const startIndex = (page - 1) * limit;
   const pagedBundles = list.slice(startIndex, startIndex + limit);
 
-  const securityCount = ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'SECURITY').length;
   const bugfixCount = ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'BUGFIX').length;
   const enhancementCount = ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'ENHANCEMENT').length;
   const maintenanceCount = ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'MAINTENANCE').length;
+  const generalCount = ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'GENERAL').length;
   const zeroDowntimeCount = ARGENT_PATCH_BUNDLES.filter(b => b.impact.zeroDowntime).length;
   const rebootRequiredCount = ARGENT_PATCH_BUNDLES.filter(b => b.impact.rebootRequired).length;
   const totalPackagesUpdated = ARGENT_PATCH_BUNDLES.reduce((acc, b) => acc + b.packages.length, 0);
@@ -2396,10 +2664,10 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
     limit,
     totalPages,
     totalConsolidatedCount: ARGENT_PATCH_BUNDLES.length,
-    securityCount,
     bugfixCount,
     enhancementCount,
     maintenanceCount,
+    generalCount,
     zeroDowntimeCount,
     rebootRequiredCount,
     totalPackagesUpdated,
@@ -2417,10 +2685,10 @@ export function getArgentStats(): ArgentStats {
   let importantCount = 0;
   let moderateCount = 0;
   let lowCount = 0;
-  let securityCount = 0;
   let bugfixCount = 0;
   let enhancementCount = 0;
   let maintenanceCount = 0;
+  let generalCount = 0;
   let zeroDowntimeCount = 0;
   let rebootRequiredCount = 0;
   let totalPackagesUpdated = 0;
@@ -2430,10 +2698,10 @@ export function getArgentStats(): ArgentStats {
     byType[b.advisoryType] = (byType[b.advisoryType] || 0) + 1;
     totalPackagesUpdated += b.packages.length;
 
-    if (b.advisoryType === 'SECURITY') securityCount++;
-    else if (b.advisoryType === 'BUGFIX') bugfixCount++;
+    if (b.advisoryType === 'BUGFIX') bugfixCount++;
     else if (b.advisoryType === 'ENHANCEMENT') enhancementCount++;
     else if (b.advisoryType === 'MAINTENANCE') maintenanceCount++;
+    else if (b.advisoryType === 'GENERAL') generalCount++;
 
     if (b.vendorSeverity === 'CRITICAL') criticalCount++;
     else if (b.vendorSeverity === 'IMPORTANT') importantCount++;
@@ -2447,10 +2715,10 @@ export function getArgentStats(): ArgentStats {
   return {
     totalBundles: ARGENT_PATCH_BUNDLES.length,
     totalPackagesUpdated,
-    securityCount,
     bugfixCount,
     enhancementCount,
     maintenanceCount,
+    generalCount,
     criticalCount,
     importantCount,
     moderateCount,
@@ -2504,8 +2772,6 @@ export function getArgentAdvisoryTypeBadge(type: ArgentAdvisoryType): {
   text: string;
 } {
   switch (type) {
-    case "SECURITY":
-      return { label: "SECURITY", icon: "🛡️", bg: "rgba(239, 68, 68, 0.15)", border: "rgba(239, 68, 68, 0.4)", text: "#F87171" };
     case "BUGFIX":
       return { label: "BUG FIX", icon: "🐛", bg: "rgba(245, 158, 11, 0.15)", border: "rgba(245, 158, 11, 0.4)", text: "#FBBF24" };
     case "ENHANCEMENT":
@@ -2545,7 +2811,7 @@ export function generateArgentBashScript(bundles: ArgentPatchBundle[]): string {
     "# Exultia Argent - Automated Operating System Vendor Patch Stream",
     `# Generated at: ${new Date().toISOString()}`,
     `# Total Bundles Queued: ${bundles.length}`,
-    "# Native Distribution Package Updates: Security Errata, Bugfixes & Enhancements",
+    "# Native Distribution Package Updates: Bug Fixes, Enhancements & Maintenance",
     "# ==============================================================================",
     "set -euo pipefail",
     "",

@@ -103,7 +103,7 @@ export default function ArgentThreatFeedPage() {
   // Live Aggregated Data State
   const [bundles, setBundles] = useState<ArgentPatchBundle[]>([]);
   const [totalUniversalCount, setTotalUniversalCount] = useState<number>(0);
-  const [securityCount, setSecurityCount] = useState<number>(0);
+  const [generalCount, setGeneralCount] = useState<number>(0);
   const [bugfixCount, setBugfixCount] = useState<number>(0);
   const [enhancementCount, setEnhancementCount] = useState<number>(0);
   const [maintenanceCount, setMaintenanceCount] = useState<number>(0);
@@ -174,7 +174,7 @@ export default function ArgentThreatFeedPage() {
           if (data && Array.isArray(data.bundles)) {
             setBundles(data.bundles);
             setTotalUniversalCount(data.totalConsolidatedCount ?? ARGENT_PATCH_BUNDLES.length);
-            setSecurityCount(data.securityCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'SECURITY').length);
+            setGeneralCount(data.generalCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'GENERAL').length);
             setBugfixCount(data.bugfixCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'BUGFIX').length);
             setEnhancementCount(data.enhancementCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'ENHANCEMENT').length);
             setMaintenanceCount(data.maintenanceCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'MAINTENANCE').length);
@@ -335,9 +335,15 @@ export default function ArgentThreatFeedPage() {
               Argent
             </h1>
           </div>
-          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: 0 }}>
-            Real-time multi-source vendor patch consensus across {ARGENT_PUBLIC_FEED_SOURCES.length} synchronized OS distribution feeds, native binary updates, and zero-reboot errata.
+          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: "0 0 0.5rem 0" }}>
+            Aggregating authoritative regular vendor operating system updates, non-security stability errata, driver enhancements, and maintenance point releases across {ARGENT_PUBLIC_FEED_SOURCES.length} Linux, BSD, and Cloud distributions.
           </p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.82rem", color: "#94A3B8" }}>
+            <span>Seeking vulnerability advisories, CVEs, or zero-days?</span>
+            <Link href="/app/uvi" style={{ color: "#38BDF8", textDecoration: "none", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+              Explore Vantage Threat Feed <ArrowRight size={13} />
+            </Link>
+          </div>
         </div>
 
         {/* Right Column: Patches Total Summary Tile */}
@@ -371,11 +377,11 @@ export default function ArgentThreatFeedPage() {
             borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
             paddingTop: "0.75rem" 
           }}>
-            <span>🛡️ <strong style={{ color: "#F87171" }}>{securityCount}</strong> Security</span>
-            <span>•</span>
-            <span>🐛 <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bugfixes</span>
+            <span>🐛 <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bug Fixes</span>
             <span>•</span>
             <span>⚡ <strong style={{ color: "#38BDF8" }}>{enhancementCount}</strong> Enhancements</span>
+            <span>•</span>
+            <span>🔧 <strong style={{ color: "#A78BFA" }}>{maintenanceCount}</strong> Maintenance</span>
             <span>•</span>
             <span>📦 <strong style={{ color: "#C084FC" }}>{totalPackagesCount}</strong> Packages</span>
             <span>•</span>
@@ -963,11 +969,11 @@ export default function ArgentThreatFeedPage() {
                 Advisory Stream:
               </span>
               {[
-                { id: "ALL", label: "All Updates", icon: "🌐", count: totalUniversalCount },
-                { id: "SECURITY", label: "Security (CVEs)", icon: "🛡️", count: securityCount },
+                { id: "ALL", label: "All Regular Updates", icon: "🌐", count: totalUniversalCount },
                 { id: "BUGFIX", label: "Bug Fixes (RHBA/RLBA/EN)", icon: "🐛", count: bugfixCount },
                 { id: "ENHANCEMENT", label: "Enhancements (HWE/Perf)", icon: "⚡", count: enhancementCount },
-                { id: "MAINTENANCE", label: "Maintenance & Point Releases", icon: "🔧", count: maintenanceCount }
+                { id: "MAINTENANCE", label: "Maintenance & Point Releases", icon: "🔧", count: maintenanceCount },
+                { id: "GENERAL", label: "General Packages", icon: "📦", count: generalCount }
               ].map(tab => {
                 const isActive = selectedAdvisoryType === tab.id;
                 return (

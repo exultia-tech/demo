@@ -2454,7 +2454,14 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     scope: "UNCHANGED",
     cveList: ["CVE-2024-6387"],
     affectedTargets: [
-      { product: "OpenSSH sshd (Linux glibc)", ecosystem: "Linux", affectedVersions: "8.5p1 - 9.7p1", fixedInVersion: "9.8p1", purl: "pkg:generic/openssh@9.7p1" }
+      { product: "OpenSSH sshd (Linux glibc)", ecosystem: "Linux", affectedVersions: "8.5p1 - 9.7p1", fixedInVersion: "9.8p1", purl: "pkg:generic/openssh@9.7p1" },
+      { product: "Ubuntu Linux OpenSSH (Noble/Jammy)", ecosystem: "Ubuntu", affectedVersions: "1:9.6p1-3ubuntu13", fixedInVersion: "1:9.6p1-3ubuntu13.3 (USN-6856-1)", purl: "pkg:deb/ubuntu/openssh-server@1:9.6p1-3ubuntu13.3" },
+      { product: "RHEL 9 / Rocky 9 / Alma 9 OpenSSH", ecosystem: "Enterprise Linux", affectedVersions: "8.7p1-38.el9", fixedInVersion: "8.7p1-38.el9_4.1 (RHSA-2024:4211 / RLSA-2024:4312)", purl: "pkg:rpm/redhat/openssh@8.7p1-38.el9_4.1" },
+      { product: "Debian 12 Bookworm OpenSSH", ecosystem: "Debian", affectedVersions: "1:9.2p1-2+deb12u1", fixedInVersion: "1:9.2p1-2+deb12u3 (DSA-5712-1)", purl: "pkg:deb/debian/openssh-server@1:9.2p1-2+deb12u3" },
+      { product: "SUSE Linux Enterprise 15 SP5 OpenSSH", ecosystem: "SUSE", affectedVersions: "8.4p1-150300.3.35.1", fixedInVersion: "8.4p1-150300.3.38.1 (SUSE-SU-2024:2308-1)", purl: "pkg:rpm/suse/openssh@8.4p1-150300.3.38.1" },
+      { product: "Amazon Linux 2023 OpenSSH", ecosystem: "Amazon Linux", affectedVersions: "8.7p1-8.amzn2023.0.4", fixedInVersion: "8.7p1-8.amzn2023.0.9 (ALAS2023-2024-610)", purl: "pkg:rpm/amazon/openssh@8.7p1-8.amzn2023.0.9" },
+      { product: "FreeBSD 14.0/13.3 OpenSSH Base", ecosystem: "FreeBSD", affectedVersions: "FreeBSD 14.0-RELEASE", fixedInVersion: "FreeBSD-SA-24:04.openssh", purl: "pkg:bsd/freebsd/openssh@14.0-p9" },
+      { product: "Alpine Linux OpenSSH", ecosystem: "Alpine", affectedVersions: "9.7_p1-r0", fixedInVersion: "9.7_p1-r1 (SEC-2024-07-001)", purl: "pkg:apk/alpine/openssh@9.7_p1-r1" }
     ],
     cisaKev: {
       isKnownExploited: false,
@@ -2462,7 +2469,19 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     },
     upstreamSignals: [
       { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 8.1", finding: "Remote pre-auth root code execution in OpenSSH server.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
-      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Heap Exploitation", finding: "Analyzed glibc malloc state corruption triggered by async signal handler re-entrancy.", signalType: "AST_IOC", confidence: "CONFIRMED" }
+      { sourceId: "trail_of_bits_vsix", sourceName: "Trail of Bits", badge: "Heap Exploitation", finding: "Analyzed glibc malloc state corruption triggered by async signal handler re-entrancy.", signalType: "AST_IOC", confidence: "CONFIRMED" },
+      { sourceId: "canonical_usn_6856", sourceName: "Ubuntu USN-6856-1", badge: "Vendor Errata", finding: "Canonical security advisory: OpenSSH vulnerability in Ubuntu 24.04 LTS, 22.04 LTS, 20.04 LTS.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "redhat_rhsa_4211", sourceName: "Red Hat RHSA-2024:4211", badge: "RHSA Critical", finding: "Red Hat Enterprise Linux 9 security errata: Critical OpenSSH update mitigating remote root execution.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "rocky_rlsa_4312", sourceName: "Rocky RLSA-2024:4312", badge: "RLSA Advisory", finding: "Rocky Linux RESF security errata for Rocky 9 & 8 openssh packages.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "debian_dsa_5712", sourceName: "Debian DSA-5712-1", badge: "DSA Advisory", finding: "Debian Security Advisory: DSA-5712-1 openssh security update for Debian 12 (bookworm).", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "alma_alsa_4211", sourceName: "AlmaLinux ALSA-2024:4211", badge: "ALSA Advisory", finding: "AlmaLinux OS Foundation security advisory ALSA-2024:4211 for OpenSSH.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "suse_su_2308", sourceName: "SUSE-SU-2024:2308-1", badge: "SUSE Security", finding: "SUSE Linux Enterprise Server 15 SP5 & openSUSE Leap 15.6 security advisory.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "amazon_alas_610", sourceName: "Amazon ALAS2023-2024-610", badge: "Amazon Security", finding: "Amazon Linux 2023 security bulletin ALAS2023-2024-610.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "freebsd_sa_24_04", sourceName: "FreeBSD-SA-24:04.openssh", badge: "FreeBSD-SA", finding: "FreeBSD Security Officer advisory: OpenSSH signal handler race condition in base system.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "openbsd_errata_008", sourceName: "OpenBSD 7.5 Errata 008", badge: "OpenBSD Errata", finding: "Official OpenBSD project patch 008 for sshd signal race condition.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "alpine_sec_2024", sourceName: "Alpine SEC-2024-07-001", badge: "Alpine SecFix", finding: "Alpine Linux main repository security update openssh-9.7_p1-r1.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "photon_phsa_0582", sourceName: "VMware PHSA-2024-3.0-0582", badge: "Photon Advisory", finding: "VMware Photon OS security advisory PHSA-2024-3.0-0582 for OpenSSH.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "openeuler_sa_1829", sourceName: "openEuler-SA-2024-1829", badge: "openEuler-SA", finding: "openEuler security advisory for OpenSSH component in 22.03 LTS and 24.03 LTS.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
     ],
     remediation: {
       recommendedAction: "Upgrade OpenSSH to 9.8p1 or install distribution vendor security updates.",

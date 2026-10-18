@@ -22,7 +22,8 @@ export async function GET(request: Request) {
   const severity = searchParams.get('severity') || undefined;
   const type = searchParams.get('type') || searchParams.get('advisoryType') || undefined;
   const query = searchParams.get('q') || searchParams.get('query') || undefined;
-  const reboot = searchParams.get('reboot') || undefined;
+  const rebootParam = searchParams.get('reboot');
+  const reboot = rebootParam === 'true' ? true : rebootParam === 'false' ? false : undefined;
   const release = searchParams.get('release') || undefined;
   const domain = searchParams.get('domain') || undefined;
   const source = searchParams.get('source') || undefined;

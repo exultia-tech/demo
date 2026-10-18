@@ -9,6 +9,7 @@ import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
 import { isIsolatedThreatFeed } from "@/config/site-config";
+import { ChevronDown, User as UserIcon, Shield, Sparkles, RotateCcw, LogOut } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();

@@ -3364,5 +3364,164 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
     },
     publishedDate: "2022-05-30",
     lastUpdatedDate: "2022-06-15"
+  },
+
+  // 6. Linux Kernel Netlink Route Cleanup Use-After-Free (CVE-2024-36971)
+  {
+    uviId: "Vantage-2024-36971",
+    title: "Linux Kernel Netlink Route Cleanup Use-After-Free Vulnerability",
+    headline: "Race condition in networking route cleanup allows local unprivileged attackers to execute code in kernel space or cause denial of service.",
+    summary: "A use-after-free vulnerability exists in the Linux kernel network routing subsystem when cleaning up obsolete routes over netlink sockets. An unprivileged local attacker can leverage this flaw to elevate privileges to root or trigger kernel panics.",
+    technicalDetails: "In net/ipv4/route.c, when a route cache entry is destroyed asynchronously, improper reference counting during concurrent netlink dump requests allows a thread to access freed dst_entry structures. Memory reallocation allows control of kernel function pointers.",
+    globalImpact: "Widespread exposure across enterprise Linux distributions running kernel versions 5.10 through 6.9.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Local privilege escalation on developer Linux workstations running untrusted containers or local scripts.",
+      buildPipelineRisk: "Compromise of container build runners allowing containers to escape into host kernel space.",
+      recommendationForIdeBuilds: "Deploy vendor distribution security updates (Ubuntu USN-6917-1, RHSA-2024:5120, RLSA-2024:5201) immediately."
+    },
+    severity: "HIGH",
+    cvssScore: 7.8,
+    cvssVector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-416: Use After Free",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "LOCAL",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-36971"],
+    affectedTargets: [
+      { product: "Linux Kernel", ecosystem: "Linux", affectedVersions: "5.10 - 6.9.7", fixedInVersion: "6.9.8 / 6.6.37" },
+      { product: "Ubuntu Linux Kernel (USN-6917-1)", ecosystem: "Ubuntu", affectedVersions: "6.8.0-31", fixedInVersion: "6.8.0-38.38", purl: "pkg:deb/ubuntu/linux@6.8.0-38.38" },
+      { product: "Red Hat Enterprise Linux Kernel (RHSA-2024:5120)", ecosystem: "Enterprise Linux", affectedVersions: "5.14.0-427", fixedInVersion: "5.14.0-427.28.1.el9_4", purl: "pkg:rpm/redhat/kernel@5.14.0-427.28.1" },
+      { product: "Debian GNU/Linux Kernel (DSA-5731-1)", ecosystem: "Debian", affectedVersions: "6.1.90-1", fixedInVersion: "6.1.94-1", purl: "pkg:deb/debian/linux@6.1.94-1" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2024-08-07",
+      ransomwareUse: false,
+      notes: "CISA added to KEV based on evidence of active exploitation in targeted intrusion campaigns."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.8", finding: "Local privilege escalation via netlink route cleanup use-after-free.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Identified in wild exploitation against Linux infrastructure.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "canonical_usn_6917", sourceName: "Ubuntu USN-6917-1", badge: "Vendor Errata", finding: "Official Canonical Ubuntu kernel security advisory.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "redhat_rhsa_5120", sourceName: "Red Hat RHSA-2024:5120", badge: "RHSA Important", finding: "Red Hat Enterprise Linux 9 kernel security advisory.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "debian_dsa_5731", sourceName: "Debian DSA-5731-1", badge: "DSA Security", finding: "Debian Security Advisory DSA-5731-1 for Linux 6.1 LTS.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade distribution kernel packages and schedule a reboot.",
+      patchDetails: "Added explicit reference acquire during route dst cleanup in net/core/dst.c.",
+      workarounds: ["Restrict unprivileged user namespaces via `sysctl kernel.unprivileged_userns_clone=0`."]
+    },
+    publishedDate: "2024-06-18",
+    lastUpdatedDate: "2024-08-08"
+  },
+
+  // 7. OpenSSL TLS Session Cache Unbounded Memory Growth DoS (CVE-2024-2511)
+  {
+    uviId: "Vantage-2024-2511",
+    title: "OpenSSL TLS Session Cache Unbounded Memory Growth Denial of Service (SlyFlake)",
+    headline: "Unbounded session cache growth in OpenSSL TLS 1.3 servers allows unauthenticated attackers to cause memory exhaustion crashes.",
+    summary: "A vulnerability in OpenSSL allows a remote attacker to send unauthenticated, non-resumable TLS 1.3 handshakes, leading to infinite session cache accumulation and daemon out-of-memory crashes.",
+    technicalDetails: "When a TLS 1.3 client repeatedly connects and aborts after receiving the NewSessionTicket message, OpenSSL server logic retains session ticket data in internal caches without enforcing cache maximum size limits, leading to process OOM termination.",
+    globalImpact: "Impacts reverse proxies, load balancers, web servers (Nginx, Apache), and API gateways using OpenSSL 3.0, 3.1, or 3.2.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: false,
+      severityOnDeveloperEnv: "MEDIUM",
+      workstationVector: "Local development web servers and Docker reverse proxies subjected to connection flood.",
+      buildPipelineRisk: "Denial of service on shared continuous integration ingress proxies.",
+      recommendationForIdeBuilds: "Upgrade OpenSSL to 3.0.14+, 3.1.6+, or 3.2.2+ across host OS and container base images."
+    },
+    severity: "MEDIUM",
+    cvssScore: 7.5,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+    cwe: "CWE-770: Allocation of Resources Without Limits or Throttling",
+    domainCategory: "Networking, Protocols & Cryptography",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-2511"],
+    affectedTargets: [
+      { product: "OpenSSL", ecosystem: "C / C++", affectedVersions: "3.0.0 - 3.0.13, 3.1.0 - 3.1.5, 3.2.0 - 3.2.1", fixedInVersion: "3.0.14, 3.1.6, 3.2.2" },
+      { product: "RHEL 9 / Rocky 9 OpenSSL (RHSA-2024:3910)", ecosystem: "Enterprise Linux", affectedVersions: "3.0.7-27.el9", fixedInVersion: "3.0.7-27.el9_4.2", purl: "pkg:rpm/redhat/openssl@3.0.7-27.el9_4.2" },
+      { product: "Ubuntu Linux OpenSSL (USN-6750-1)", ecosystem: "Ubuntu", affectedVersions: "3.0.13-0ubuntu3", fixedInVersion: "3.0.13-0ubuntu3.1", purl: "pkg:deb/ubuntu/openssl@3.0.13-0ubuntu3.1" },
+      { product: "FreeBSD Base OpenSSL (FreeBSD-SA-24:02.openssl)", ecosystem: "FreeBSD", affectedVersions: "14.0-RELEASE", fixedInVersion: "FreeBSD-SA-24:02.openssl", purl: "pkg:bsd/freebsd/openssl@14.0-p6" }
+    ],
+    cisaKev: {
+      isKnownExploited: false,
+      notes: "Denial of service vector publicly documented by OpenSSL project security team."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.5", finding: "Unbounded memory growth in OpenSSL TLS session cache.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "openssl_advisory", sourceName: "OpenSSL Security Advisory", badge: "Vendor Errata", finding: "Official OpenSSL Foundation security bulletin [8 April 2024].", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "redhat_rhsa_3910", sourceName: "Red Hat RHSA-2024:3910", badge: "RHSA Moderate", finding: "Red Hat Enterprise Linux 9 OpenSSL security update.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "canonical_usn_6750", sourceName: "Ubuntu USN-6750-1", badge: "USN Advisory", finding: "Canonical security notice for OpenSSL in Ubuntu 24.04 and 22.04 LTS.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "freebsd_sa_24_02", sourceName: "FreeBSD-SA-24:02.openssl", badge: "FreeBSD-SA", finding: "FreeBSD base system OpenSSL security advisory.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade OpenSSL to patched distribution release or configure `SSL_CTX_set_session_cache_mode` to `SSL_SESS_CACHE_OFF`.",
+      patchDetails: "Enforced strict expiration timeouts and queue bounding for TLS 1.3 session tickets.",
+      workarounds: ["Disable server-side session caching in Nginx (`ssl_session_cache off;`) or Apache."]
+    },
+    publishedDate: "2024-04-08",
+    lastUpdatedDate: "2024-05-10"
+  },
+
+  // 8. Linux Kernel Netfilter nf_tables Double Free LPE (CVE-2024-1086)
+  {
+    uviId: "Vantage-2024-1086",
+    title: "Linux Kernel Netfilter nf_tables Double Free Local Privilege Escalation",
+    headline: "Use-after-free and double-free in nf_tables nft_verdict subsystem allows unprivileged local users to gain root privileges.",
+    summary: "A use-after-free flaw was discovered in the netfilter subsystem of the Linux kernel where invalid verdicts drop packets but fail to unlink packet buffers, allowing arbitrary root execution.",
+    technicalDetails: "In net/netfilter/nf_tables_api.c, when evaluating nft_verdict with NF_DROP, the packet sk_buff is freed while the caller continues referencing it, resulting in a double-free on slab allocator structures and complete kASLR bypass.",
+    globalImpact: "High severity local privilege escalation impacting servers, workstations, and container hosts globally.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Local developer or CI runner sandbox escape to host root.",
+      buildPipelineRisk: "Root privilege escalation by untrusted build scripts or compromised npm/PyPI dependencies running in CI.",
+      recommendationForIdeBuilds: "Deploy vendor kernel security patches (USN-6701-1, RHSA-2024:1284, DSA-5647-1)."
+    },
+    severity: "HIGH",
+    cvssScore: 7.8,
+    cvssVector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-415: Double Free",
+    domainCategory: "Operating Systems & Kernels",
+    attackVector: "LOCAL",
+    attackComplexity: "LOW",
+    privilegesRequired: "LOW",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-1086"],
+    affectedTargets: [
+      { product: "Linux Kernel", ecosystem: "Linux", affectedVersions: "5.14 - 6.6", fixedInVersion: "6.7.3" },
+      { product: "Ubuntu Linux (USN-6701-1)", ecosystem: "Ubuntu", affectedVersions: "6.5.0-14", fixedInVersion: "6.5.0-26.26", purl: "pkg:deb/ubuntu/linux@6.5.0-26.26" },
+      { product: "Red Hat Enterprise Linux (RHSA-2024:1284)", ecosystem: "Enterprise Linux", affectedVersions: "5.14.0-362", fixedInVersion: "5.14.0-362.24.1.el9_3", purl: "pkg:rpm/redhat/kernel@5.14.0-362.24.1" },
+      { product: "Debian GNU/Linux (DSA-5647-1)", ecosystem: "Debian", affectedVersions: "6.1.76-1", fixedInVersion: "6.1.82-1", purl: "pkg:deb/debian/linux@6.1.82-1" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2024-05-30",
+      ransomwareUse: false,
+      notes: "Actively weaponized in public GitHub exploit repositories and penetration testing frameworks."
+    },
+    upstreamSignals: [
+      { sourceId: "nvd_cve", sourceName: "NIST NVD", badge: "CVSS 7.8", finding: "Double-free in nf_tables subsystem permitting local root escalation.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Cataloged in CISA Known Exploited Vulnerabilities catalog.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "canonical_usn_6701", sourceName: "Ubuntu USN-6701-1", badge: "USN Advisory", finding: "Canonical security errata for Linux kernel in Ubuntu 23.10 and 22.04 LTS.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "redhat_rhsa_1284", sourceName: "Red Hat RHSA-2024:1284", badge: "RHSA Important", finding: "Red Hat Enterprise Linux 9 security errata.", signalType: "CVE_RECORD", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Apply Linux distribution kernel updates and reboot host.",
+      patchDetails: "Properly handle NF_DROP return status in nft_verdict without freeing buffer twice.",
+      workarounds: ["Disable user namespaces via `sysctl -w user.max_user_namespaces=0`."]
+    },
+    publishedDate: "2024-01-31",
+    lastUpdatedDate: "2024-06-01"
   }
 ];

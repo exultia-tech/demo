@@ -43,20 +43,24 @@ describe('Argent Public OS Distribution Patch Feed Aggregator', () => {
     expect(distros).toContain('azure-linux');
   });
 
-  it('aggregates curated vendor patch bundles across security, bug fixes, and enhancements', () => {
+  it('aggregates pure regular vendor updates across bug fixes, enhancements, and maintenance point releases', () => {
     expect(ARGENT_PATCH_BUNDLES.length).toBeGreaterThanOrEqual(30);
 
-    // Security Advisory
-    const rockySecurity = ARGENT_PATCH_BUNDLES.find(b => b.bundleId === 'RLSA-2024:4312');
-    expect(rockySecurity).toBeDefined();
-    expect(rockySecurity?.advisoryType).toBe('SECURITY');
-    expect(rockySecurity?.packages[0].name).toBe('openssh');
+    // Strictly NO weakness enumeration noise
+    expect(ARGENT_PATCH_BUNDLES.every(b => b.cveList.length === 0)).toBe(true);
+    expect(ARGENT_PATCH_BUNDLES.every(b => ['BUGFIX', 'ENHANCEMENT', 'MAINTENANCE', 'GENERAL'].includes(b.advisoryType))).toBe(true);
 
     // Bug Fix Advisory (RLBA)
     const rockyBugfix = ARGENT_PATCH_BUNDLES.find(b => b.bundleId === 'RLBA-2024:3910');
     expect(rockyBugfix).toBeDefined();
     expect(rockyBugfix?.advisoryType).toBe('BUGFIX');
     expect(rockyBugfix?.title).toContain('NVMe');
+
+    // glibc optimization bugfix (RHBA)
+    const rhelGlibc = ARGENT_PATCH_BUNDLES.find(b => b.bundleId === 'RHBA-2024:4120');
+    expect(rhelGlibc).toBeDefined();
+    expect(rhelGlibc?.advisoryType).toBe('BUGFIX');
+    expect(rhelGlibc?.packages[0].name).toBe('glibc');
 
     // FreeBSD Errata Notice (FreeBSD-EN)
     const freebsdEN = ARGENT_PATCH_BUNDLES.find(b => b.bundleId === 'FreeBSD-EN-24:08.zfs');
@@ -85,11 +89,7 @@ describe('Argent Public OS Distribution Patch Feed Aggregator', () => {
     expect(rockyOnly.bundles.every(b => b.os === 'rocky' || b.os === 'rhel')).toBe(true);
   });
 
-  it('filters by advisory stream type (security vs bugfix vs enhancement vs maintenance)', () => {
-    const securityOnly = getArgentBundles({ type: 'security' });
-    expect(securityOnly.bundles.length).toBeGreaterThan(0);
-    expect(securityOnly.bundles.every(b => b.advisoryType === 'SECURITY')).toBe(true);
-
+  it('filters by advisory stream type (bugfix vs enhancement vs maintenance vs general)', () => {
     const bugfixOnly = getArgentBundles({ type: 'bugfix' });
     expect(bugfixOnly.bundles.length).toBeGreaterThan(0);
     expect(bugfixOnly.bundles.every(b => b.advisoryType === 'BUGFIX')).toBe(true);
@@ -101,16 +101,20 @@ describe('Argent Public OS Distribution Patch Feed Aggregator', () => {
     const maintenanceOnly = getArgentBundles({ type: 'maintenance' });
     expect(maintenanceOnly.bundles.length).toBeGreaterThan(0);
     expect(maintenanceOnly.bundles.every(b => b.advisoryType === 'MAINTENANCE')).toBe(true);
+
+    const generalOnly = getArgentBundles({ type: 'general' });
+    expect(generalOnly.bundles.length).toBeGreaterThan(0);
+    expect(generalOnly.bundles.every(b => b.advisoryType === 'GENERAL')).toBe(true);
   });
 
   it('filters by vendor severity and query keywords', () => {
-    const criticalOnly = getArgentBundles({ severity: 'critical' });
-    expect(criticalOnly.bundles.every(b => b.vendorSeverity === 'CRITICAL')).toBe(true);
+    const importantOnly = getArgentBundles({ severity: 'important' });
+    expect(importantOnly.bundles.every(b => b.vendorSeverity === 'IMPORTANT')).toBe(true);
 
-    const searchSsh = getArgentBundles({ query: 'openssh' });
-    expect(searchSsh.bundles.length).toBeGreaterThanOrEqual(4);
-    expect(searchSsh.bundles.some(b => b.os === 'ubuntu')).toBe(true);
-    expect(searchSsh.bundles.some(b => b.os === 'rocky')).toBe(true);
+    const searchKernel = getArgentBundles({ query: 'kernel' });
+    expect(searchKernel.bundles.length).toBeGreaterThanOrEqual(2);
+    expect(searchKernel.bundles.some(b => b.os === 'rocky')).toBe(true);
+    expect(searchKernel.bundles.some(b => b.os === 'kernel')).toBe(true);
   });
 
   it('generates executable bash orchestrator script', () => {
@@ -170,9 +174,10 @@ describe('Argent Public OS Distribution Patch Feed Aggregator', () => {
     const stats = await res.json();
     expect(stats.totalBundles).toBeGreaterThanOrEqual(30);
     expect(stats.activeFeedSourcesCount).toBeGreaterThanOrEqual(25);
-    expect(stats.securityCount).toBeGreaterThan(0);
     expect(stats.bugfixCount).toBeGreaterThan(0);
     expect(stats.enhancementCount).toBeGreaterThan(0);
+    expect(stats.maintenanceCount).toBeGreaterThan(0);
+    expect(stats.generalCount).toBeGreaterThan(0);
     expect(stats.byOs.ubuntu).toBeGreaterThan(0);
     expect(stats.byOs.rocky).toBeGreaterThan(0);
     expect(stats.byOs.freebsd).toBeGreaterThan(0);
