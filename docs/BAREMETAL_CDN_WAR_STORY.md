@@ -17,7 +17,7 @@ Hosting these on Vercel Blob or AWS S3 means:
 2. Crippling bandwidth egress bills ($0.09–$0.15/GB) every time users or automated testers download an update.
 3. Slow cloud compilation times on constrained 2-core GitHub-hosted VMs.
 
-Meanwhile, sitting on the local network (`192.168.1.100`) was a **24/7 48-core Dell Precision workstation** with 128GB ECC RAM and blazing fast NVMe storage, doing light duty.
+Meanwhile, sitting on the local network was a **24/7 48-core Dell Precision workstation** with 128GB ECC RAM and blazing fast NVMe storage, doing light duty.
 
 **The Plan:**
 - Turn the 48-core beast into a self-hosted GitHub Actions compilation runner.
@@ -38,7 +38,7 @@ graph TD
         B --> C["Runner Request: [self-hosted, Windows, X64, baremetal]"]
     end
 
-    subgraph Tower ["Dell Precision 48-Core (angrysquare @ 192.168.1.100)"]
+    subgraph Tower ["Dell Precision 48-Core Build Server"]
         C --> D["GitHubActionsRunner (C:\actions-runner)"]
         D -->|Compile in 90s on 48 Cores| E["./dist/Exultia-Setup.exe"]
         E -->|Direct Local NVMe Copy| F["C:\releases"]
@@ -178,7 +178,7 @@ Instead of fighting the Cloudflare dashboard menus or wrestling with remote UI t
 
 | Component | Target Location | Specification / Role |
 | :--- | :--- | :--- |
-| **Physical Host** | `192.168.1.100` (`angrysquare`) | Dell Precision 48-Core Tower, 128GB RAM, Windows Server 2022 |
+| **Physical Host** | Private Build Cluster Host | Dell Precision 48-Core Tower, 128GB RAM, Windows Server 2022 |
 | **GitHub Actions Runner** | `C:\actions-runner` | Runner: `angrysquare-precision-48c`, Labels: `[self-hosted, Windows, X64, baremetal]` |
 | **Release Storage Directory** | `C:\releases` | Local NVMe storage serving `.exe`, `.zip`, `.dmg`, SHA256 sums |
 | **Release Daemon** | `C:\releases\server.js` | Scheduled Task: `ExultiaReleaseServer` (Runs at startup, Highest Privileges) |
