@@ -255,11 +255,8 @@ export default function Footer() {
         fontSize: "0.8rem",
         color: "#64748B"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div>
           <span>© {new Date().getFullYear()} EXULTIA TECHNOLOGIES (exultia.tech). All rights reserved.</span>
-          <span style={{ color: "var(--accent-primary)", fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem" }}>
-            [ SPEC // ISO-9001-SEC ]
-          </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>

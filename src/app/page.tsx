@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIcon, ExultiaLogo } from "@/components/BrandIcons";
-import BrandIdentityShowcase from "@/components/brand/BrandIdentityShowcase";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
@@ -65,8 +64,8 @@ export default function HomePage() {
       {/* CORE PRODUCT PLATFORMS */}
       <section id="core-platforms" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem" }}>
         <div style={{ marginBottom: "2.5rem" }}>
-          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            // ARMED WORKSTATION SUITE
+          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Our Products
           </div>
           <h2 style={{ fontSize: "2.1rem", fontWeight: 900, color: "#FFFFFF", marginTop: "4px", letterSpacing: "0.05em" }}>
             Core Platforms
@@ -311,8 +310,6 @@ export default function HomePage() {
 
         </div>
 
-        {/* RADICAL DOOM BRAND IDENTITY SPECIFICATION SHOWCASE */}
-        <BrandIdentityShowcase />
       </section>
     </div>
   );
