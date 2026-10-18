@@ -8,27 +8,28 @@ export const dynamic = 'force-dynamic';
 const PRICING_CATALOG: Record<string, Record<string, { monthly: number; annual: number }>> = {
   pureide: {
     pro: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
   uvi: {
     pro: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
   inquest: {
     pro: { monthly: 49, annual: 39 * 12 },
     legal: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
   axiom: {
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
   praxis: {
     pro: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
   pureos: {
     pro: { monthly: 49, annual: 39 * 12 },
-    enterprise: { monthly: 149, annual: 119 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
   },
 };
 
@@ -61,11 +62,10 @@ export async function POST(req: Request) {
     }
 
     // Pay-what-you-want dynamic tier entitlement unlocking:
-    // Pro entitlements unlock at 49, Enterprise entitlements unlock at 149
     let resolvedTier = (tier || 'pro').toLowerCase();
-    if (amount >= 149) {
+    if (amount >= 399 || resolvedTier === 'enterprise') {
       resolvedTier = 'enterprise';
-    } else if (amount >= 49) {
+    } else if (amount >= 49 || resolvedTier === 'pro') {
       resolvedTier = 'pro';
     } else {
       resolvedTier = 'community';

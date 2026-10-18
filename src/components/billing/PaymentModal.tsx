@@ -49,12 +49,12 @@ export default function PaymentModal() {
   const isAxiom = paymentOptions.product === "axiom";
   const isKinetic = paymentOptions.product === "kinetic";
   const proThreshold = isMultiPass ? 196 : 49;
-  const enterpriseThreshold = isMultiPass ? 595 : 149;
+  const enterpriseThreshold = isMultiPass ? 595 : 399;
 
   const unlockedTier: "community" | "pro" | "enterprise" =
     paymentOptions.tier === "enterprise" || customPrice >= enterpriseThreshold
       ? (paymentOptions.tier === "pro" && isKinetic ? "pro" : "enterprise")
-      : (!isAxiom && (paymentOptions.tier === "pro" || customPrice >= proThreshold))
+      : (paymentOptions.tier === "pro" || customPrice >= proThreshold)
       ? "pro"
       : "community";
 
@@ -277,10 +277,10 @@ export default function PaymentModal() {
                     {isMultiPass 
                       ? "Thresholds: MultiPass Pro at $196 · MultiPass Enterprise at $595"
                       : isKinetic
-                      ? "Thresholds: 1 Host Free · Pro at $49/host/mo · Enterprise at $149/host/mo"
+                      ? "Thresholds: 2 Hosts Free · Pro at $49/host/mo · Fleet Enterprise at $499/host/mo"
                       : isAxiom
-                      ? "Thresholds: Community at $0 · Enterprise LMS API at $149"
-                      : "Thresholds: Pro activates at $49 · Enterprise activates at $149"}
+                      ? "Thresholds: Community at $0 · Pro Exports at $49 · Institutional LMS Feed at $499"
+                      : "Thresholds: Pro activates at $49 · Enterprise activates at $499"}
                   </div>
                 </div>
 
@@ -323,20 +323,21 @@ export default function PaymentModal() {
                 ] : isKinetic ? [
                   { label: "$49", value: 49, hint: "1 Pro Host" },
                   { label: "$98", value: 98, hint: "2 Pro Hosts" },
-                  { label: "$149", value: 149, hint: "1 Ent Host" },
                   { label: "$245", value: 245, hint: "5 Pro Hosts" },
-                  { label: "$490", value: 490, hint: "10 Pro Hosts" },
+                  { label: "$499", value: 499, hint: "Fleet Ent" },
+                  { label: "$998", value: 998, hint: "2 Fleet Ent" },
                 ] : isAxiom ? [
-                  { label: "$50", value: 50, hint: "Student Backer" },
-                  { label: "$100", value: 100, hint: "Advocate" },
-                  { label: "$149", value: 149, hint: "Enterprise LMS" },
-                  { label: "$250", value: 250, hint: "Institution" },
+                  { label: "$49", value: 49, hint: "Pro Exports" },
+                  { label: "$100", value: 100, hint: "Pro Supporter" },
+                  { label: "$399", value: 399, hint: "Inst Annual" },
+                  { label: "$499", value: 499, hint: "Inst LMS" },
+                  { label: "$999", value: 999, hint: "Multi-Campus" },
                 ] : [
                   { label: "$25", value: 25, hint: "Supporter" },
                   { label: "$49", value: 49, hint: "Pro" },
-                  { label: "$100", value: 100, hint: "Pro Backer" },
-                  { label: "$149", value: 149, hint: "Enterprise" },
-                  { label: "$250", value: 250, hint: "Sponsor" },
+                  { label: "$149", value: 149, hint: "Pro Backer" },
+                  { label: "$499", value: 499, hint: "Enterprise" },
+                  { label: "$999", value: 999, hint: "Sponsor" },
                 ]).map((preset) => {
                   const isSelected = customPrice === preset.value;
                   return (

@@ -877,6 +877,16 @@ export default function Navbar() {
                 Exam Simulator
               </Link>
               <Link 
+                href="/app/axiom?tab=exports" 
+                onClick={() => {
+                  setAxiomTab("exports");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("axiom-tab-change", { detail: "exports" }));
+                }}
+                className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "exports" ? "active-rose" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Exports &amp; Certs
+              </Link>
+              <Link 
                 href="/app/axiom?tab=api" 
                 onClick={() => {
                   setAxiomTab("api");
@@ -884,13 +894,13 @@ export default function Navbar() {
                 }}
                 className={`submenu-link ${pathname === "/app/axiom" && axiomTab === "api" ? "active-rose" : ""}`}
                 style={{ fontWeight: 600 }}>
-                Enterprise API
+                Institutional LMS API
               </Link>
               <Link 
                 href="/account/subscription?product=axiom" 
                 className="submenu-link"
                 style={{ color: "#FDA4AF", fontWeight: 700 }}>
-                Plans & Pricing
+                Plans &amp; Pricing
               </Link>
             </div>
           )}

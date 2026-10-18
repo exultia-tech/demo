@@ -1398,42 +1398,62 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#F43F5E" />
                     <span>
-                      {getSubTier("axiom") === "enterprise" ? "Enterprise LMS API (Enterprise)" : "Web Exam Simulator (Community)"}
+                      {getSubTier("axiom") === "enterprise" 
+                        ? "Enterprise LMS Simulator Feed ($499/mo)" 
+                        : getSubTier("axiom") === "pro" 
+                        ? "Pro Exports & API Queries ($49/mo)" 
+                        : "Web Exam Simulator (Free)"}
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                     <button
                       onClick={() => handleQuickTierSwitch("axiom", "free")}
                       disabled={updatingSubProduct === "axiom" || getSubTier("axiom") === "free"}
                       style={{
-                        padding: "8px",
+                        padding: "8px 4px",
                         background: getSubTier("axiom") === "free" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
                         border: "1px solid rgba(244, 63, 94, 0.3)",
                         borderRadius: "8px",
                         color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
                         cursor: getSubTier("axiom") === "free" ? "default" : "pointer"
                       }}
                     >
-                      {getSubTier("axiom") === "free" ? "Active (Free)" : "Free ($0)"}
+                      {getSubTier("axiom") === "free" ? "Active (Free)" : "Free"}
+                    </button>
+                    <button
+                      onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "pro" ? "free" : "pro")}
+                      disabled={updatingSubProduct === "axiom"}
+                      style={{
+                        padding: "8px 4px",
+                        background: getSubTier("axiom") === "pro" ? "rgba(244, 63, 94, 0.35)" : "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(244, 63, 94, 0.5)",
+                        borderRadius: "8px",
+                        color: "#FDA4AF",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {getSubTier("axiom") === "pro" ? "Active (Pro)" : "Pro ($49)"}
                     </button>
                     <button
                       onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "enterprise" ? "free" : "enterprise")}
                       disabled={updatingSubProduct === "axiom"}
                       style={{
-                        padding: "8px",
-                        background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.25)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(244, 63, 94, 0.4)",
+                        padding: "8px 4px",
+                        background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.45)" : "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(244, 63, 94, 0.6)",
                         borderRadius: "8px",
-                        color: "#FDA4AF",
-                        fontSize: "0.75rem",
+                        color: "#FECDD3",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
                         cursor: "pointer"
                       }}
                     >
-                      {getSubTier("axiom") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
+                      {getSubTier("axiom") === "enterprise" ? "Active (Ent)" : "Ent ($499)"}
                     </button>
                   </div>
                 </div>

@@ -22,11 +22,10 @@ export async function POST(req: Request) {
     let resolvedTier = (tier || 'pro').toLowerCase();
 
     // Pay-what-you-want dynamic entitlement unlocking:
-    // Pro entitlements unlock at 49, Enterprise entitlements unlock at 149
     if (paidAmount !== null) {
-      if (paidAmount >= 149) {
+      if (paidAmount >= 399 || tier === 'enterprise') {
         resolvedTier = 'enterprise';
-      } else if (paidAmount >= 49) {
+      } else if (paidAmount >= 49 || tier === 'pro') {
         resolvedTier = 'pro';
       } else {
         resolvedTier = 'community';

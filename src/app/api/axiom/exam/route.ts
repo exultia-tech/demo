@@ -3,6 +3,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import { MOCK_EXAM_DB } from '@/lib/axiom-exam-data';
 import { getCurrentUser } from '@/lib/auth/session';
 import { recordLicenseActivity } from '@/lib/licensing/audit';
+import { resolveAxiomAuthAndTier } from '@/lib/axiom-server-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -147,6 +148,58 @@ export async function POST(request: Request) {
 
   const action = body.action;
 
+  // ---- LMS EXAM SIMULATOR EMBEDDING FEED (ENTERPRISE ONLY) ----
+  const url = new URL(request.url);
+  const isLms = action === 'lms_embed' || 
+                body?.lmsEmbed === true || 
+                url.searchParams.get('feed') === 'lms' || 
+                url.searchParams.get('feed') === 'scorm' || 
+                url.searchParams.get('embed') === 'lms' || 
+                url.searchParams.get('embed') === 'true' || 
+                url.searchParams.get('action') === 'lms_embed';
+
+  if (isLms) {
+    const auth = await resolveAxiomAuthAndTier(request);
+    if (!auth || auth.tier !== 'enterprise') {
+      return NextResponse.json({
+        error: 'Active Axiom Enterprise LMS tier required.',
+        code: 'ENTERPRISE_TIER_REQUIRED',
+        message: 'The API feed for embedding the exam simulator in an LMS system (Canvas, Blackboard, Moodle, SCORM, LTI) is restricted to Enterprise subscribers. Axiom Pro allows export of course history, certificates, and scores, but live LMS simulator embedding requires Axiom Enterprise ($499/mo).'
+      }, { status: 403, headers: NO_STORE });
+    }
+
+    const seed = randomBytes(4).readUInt32BE(0);
+    const embedToken = signToken({
+      sid: randomBytes(12).toString('hex'),
+      seed,
+      n: 50,
+      i: 0,
+      a: '',
+      iv: true,
+      ci: 5,
+      c: typeof body?.cert === 'string' ? body.cert : null,
+      exp: Date.now() + 180 * 60_000,
+    });
+
+    return NextResponse.json({
+      success: true,
+      tier: 'enterprise',
+      service: 'Axiom Institutional Exam Simulator LMS Feed',
+      protocol: 'LTI_v1_3_SCORM_2004',
+      embedSessionToken: embedToken,
+      embedUrl: `/app/axiom?embed=true&token=${embedToken}`,
+      scormPackageUrl: `/api/axiom/export?format=scorm`,
+      gradebookSyncEndpoint: `/api/axiom/export?type=scores`,
+      features: [
+        'canvas_blackboard_moodle_compatibility',
+        'lti_1p3_deep_linking',
+        'scorm_2004_cmi_interaction_tracking',
+        'realtime_gradebook_passback'
+      ],
+      expiresAt: new Date(Date.now() + 180 * 60_000).toISOString()
+    }, { headers: NO_STORE });
+  }
+
   // ---- START ----
   if (action === 'start') {
     const certFilter = typeof body.cert === 'string' ? body.cert : null;
@@ -249,3 +302,48 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400, headers: NO_STORE });
 }
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const isLms = url.searchParams.get('feed') === 'lms' || 
+                url.searchParams.get('feed') === 'scorm' || 
+                url.searchParams.get('embed') === 'lms' || 
+                url.searchParams.get('embed') === 'true' || 
+                url.searchParams.get('action') === 'lms_embed';
+
+  if (isLms) {
+    const auth = await resolveAxiomAuthAndTier(request);
+    if (!auth || auth.tier !== 'enterprise') {
+      return NextResponse.json({
+        error: 'Active Axiom Enterprise LMS tier required.',
+        code: 'ENTERPRISE_TIER_REQUIRED',
+        message: 'The API feed for embedding the exam simulator in an LMS system (Canvas, Blackboard, Moodle, SCORM, LTI) is restricted to Enterprise subscribers. Axiom Pro allows export of course history, certificates, and scores, but live LMS simulator embedding requires Axiom Enterprise ($499/mo).'
+      }, { status: 403, headers: NO_STORE });
+    }
+
+    return NextResponse.json({
+      success: true,
+      tier: 'enterprise',
+      service: 'Axiom Institutional Exam Simulator LMS Feed',
+      protocol: 'LTI_v1_3_SCORM_2004',
+      status: 'active',
+      endpoints: {
+        launch: '/api/axiom/exam',
+        scormExport: '/api/axiom/export?format=scorm',
+        gradebookPassback: '/api/axiom/export?type=scores'
+      }
+    }, { headers: NO_STORE });
+  }
+
+  return NextResponse.json({
+    service: 'Axiom Exam Simulator API',
+    endpoints: {
+      startSession: 'POST /api/axiom/exam (action: start)',
+      answerQuestion: 'POST /api/axiom/exam (action: answer)',
+      finishSession: 'POST /api/axiom/exam (action: finish)',
+      lmsEmbedFeed: 'POST /api/axiom/exam (action: lms_embed) [Enterprise Gated]',
+      studentExports: 'GET /api/axiom/export [Pro & Enterprise]'
+    }
+  }, { headers: NO_STORE });
+}
+

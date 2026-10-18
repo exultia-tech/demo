@@ -105,8 +105,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
+        priceMonthly: 499,
+        priceAnnual: 399,
         description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
         features: [
           "Everything in Pro",
@@ -151,14 +151,15 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
-        description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
+        name: "Enterprise Commercial Feed",
+        priceMonthly: 499,
+        priceAnnual: 399,
+        description: "Commercial redistributable feed, high-frequency webhook ingest, and raw STIX/TAXII/JSON feeds.",
         features: [
           "Everything in Pro",
-          "Organization Volume Entitlements",
-          "Dedicated CISO advisory portal",
+          "Commercial Redistributable Threat & Patch Feeds",
+          "Real-time Enterprise SIEM Webhooks (Splunk, Sentinel, QRadar)",
+          "Dedicated CISO Advisory Portal",
           "Unlimited unmetered API quotas"
         ],
         cta: "Upgrade to Enterprise",
@@ -173,7 +174,7 @@ function SubscriptionContent() {
         priceAnnual: 0,
         description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation.",
         features: [
-          "1 Active Workstation / Host Node Free Forever",
+          "Up to 2 Active Nodes Free Forever",
           "Standard Vantage CVE synchronization",
           "Manual hotfix inspection & verification",
           "Deterministic rollback recipes",
@@ -201,13 +202,13 @@ function SubscriptionContent() {
       },
       {
         tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
-        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($149/host/mo).",
+        name: "Enterprise Fleet",
+        priceMonthly: 499,
+        priceAnnual: 399,
+        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($499/host/mo).",
         features: [
           "Everything in Pro",
-          "$149/host/mo ($119/host/mo billed annually)",
+          "$499/host/mo ($399/host/mo billed annually)",
           "Phased multi-ring deployment orchestrator",
           "Cosign OIDC SLSA Level 3 signed manifests",
           "Emergency fleet-wide rollback orchestrator",
@@ -250,8 +251,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
+        priceMonthly: 499,
+        priceAnnual: 399,
         description: "Fleet-wide operations scale and compliance tracking.",
         features: [
           "Everything in Pro",
@@ -296,8 +297,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
+        priceMonthly: 499,
+        priceAnnual: 399,
         description: "Air-gapped compatibility and full compliance infrastructure.",
         features: [
           "Everything in Pro",
@@ -315,29 +316,50 @@ function SubscriptionContent() {
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Cybersecurity certification prep testing (e.g. Security+, CEH).",
+        description: "Zero-cost cybersecurity certification exam simulator for individual self-study.",
         features: [
           "Single Student License",
-          "Standard exam question banks",
-          "Basic scoring & progress tracking"
+          "Standard exam question banks (Security+, CySA+, CC)",
+          "In-browser instant score feedback",
+          "Basic practice mode & domain review"
         ],
         cta: "Current Free Tier",
         isPopular: false
       },
       {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
-        description: "Institutional scale testing platforms with custom enterprise workflows.",
+        tier: "pro",
+        name: "Pro",
+        priceMonthly: 49,
+        priceAnnual: 39,
+        description: "Student transcript export engine, verifiable certificates, and automated score sync API.",
         features: [
           "Everything in Community",
-          "Institutional Volume Entitlements (Multi-seat)",
-          "Dedicated Enterprise REST API endpoints",
-          "SSO SAML 2.0 integration & self-service admin API"
+          "Export Course History & Transcripts (CSV & JSON)",
+          "Printable Verifiable SHA-256 Certificates",
+          "Complete Score Transcripts & Objective Analytics",
+          "Programmatic Export REST API Query Access",
+          "No question bank limits or cooldown timers"
         ],
-        cta: "Upgrade to Enterprise",
+        cta: "Upgrade to Pro",
         isPopular: true
+      },
+      {
+        tier: "enterprise",
+        name: "Institutional LMS",
+        priceMonthly: 499,
+        priceAnnual: 399,
+        description: "Live LMS simulator embedding feed for colleges, universities, bootcamps, and defense academies.",
+        features: [
+          "Everything in Pro",
+          "Live LMS Simulator Embedding Feed (Canvas, Blackboard, Moodle)",
+          "SCORM 1.2 / 2004 & LTI 1.3 Deep Linking Feed API",
+          "Institutional Multi-Seat Licensing (Up to 250 students)",
+          "Automated Real-Time Gradebook Passback API",
+          "SSO SAML 2.0 & Institutional Exam Proctoring Mode",
+          "Dedicated Academic Standards & Accreditation Advisory"
+        ],
+        cta: "Upgrade to Institutional LMS",
+        isPopular: false
       }
     ],
     inquest: [
@@ -373,8 +395,8 @@ function SubscriptionContent() {
       {
         tier: "enterprise",
         name: "Enterprise",
-        priceMonthly: 149,
-        priceAnnual: 119,
+        priceMonthly: 499,
+        priceAnnual: 399,
         description: "Organization-wide deployments and multi-agency collaboration support.",
         features: [
           "Everything in Pro",
@@ -400,7 +422,8 @@ function SubscriptionContent() {
           "Inquest Pro",
           "Praxis Pro",
           "PureOS Pro",
-          "Includes 1 Product 100% Free (Save $49/seat/mo)"
+          "Axiom Pro (Verifiable certs & export API)",
+          "Huge Bundle Savings across the entire suite"
         ],
         cta: "Unlock MultiPass Pro",
         isPopular: true
@@ -909,13 +932,11 @@ function SubscriptionContent() {
 
                 // MultiPass Bundle Savings:
                 // Standalone individual products cost $49/mo ($39 annual) for Pro, $149/mo ($119 annual) for Enterprise.
-                // MultiPass bundles them with 1 entire product free:
-                // Pro: 5 products at $49 = $245 standalone value vs $196 MultiPass (saves $49/seat/mo)
-                // Enterprise: 6 products at $149 = $894 standalone value vs $745 MultiPass (saves $149/seat/mo)
+                // MultiPass bundles them with massive multi-product savings:
                 const isMultiPassPlan = isMultiPass && !isFree;
                 const singleProductRate = plan.tier === "pro" 
                   ? (billingCycle === "annual" ? 39 : 49) 
-                  : (billingCycle === "annual" ? 119 : 149);
+                  : (billingCycle === "annual" ? 399 : 499);
                 const bundleSavings = isMultiPassPlan ? singleProductRate * userCount : 0;
                 const unbundledPrice = totalPrice + bundleSavings;
 
