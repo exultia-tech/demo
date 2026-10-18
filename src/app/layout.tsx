@@ -7,7 +7,6 @@ import { DoomThemeProvider } from "@/context/DoomThemeContext";
 import CrtScanlineOverlay from "@/components/CrtScanlineOverlay";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
-import OperatorPreviewBanner from "@/components/OperatorPreviewBanner";
 import AiSupportWidget from "@/components/support/AiSupportWidget";
 
 export const metadata: Metadata = {
@@ -39,7 +38,6 @@ export default function RootLayout({
             <Footer />
             <AuthModal />
             <PaymentModal />
-            <OperatorPreviewBanner />
             <AiSupportWidget />
             <CrtScanlineOverlay />
           </AuthProvider>

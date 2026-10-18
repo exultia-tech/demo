@@ -9,7 +9,7 @@ import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
 import { isIsolatedThreatFeed } from "@/config/site-config";
-import { ChevronDown, User as UserIcon, Shield, Sparkles, RotateCcw, LogOut } from "lucide-react";
+import { ChevronDown, User as UserIcon, Shield, Sparkles, RotateCcw, LogOut, Lock } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -24,6 +24,14 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "inquest">("pureide");
+  const [isOperator, setIsOperator] = useState(false);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const hasCookie = document.cookie.includes("exultia_operator_key");
+      setIsOperator(hasCookie || user?.role === "admin" || process.env.NODE_ENV !== "production");
+    }
+  }, [user]);
 
   // Axiom active tab state synchronized with URL search param
   const [axiomTab, setAxiomTab] = useState<string>("syllabus");
@@ -489,6 +497,48 @@ export default function Navbar() {
 
         {/* RIGHT COLUMN: AUTHENTICATION & USER STATUS */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.75rem" }}>
+          {/* Site Locking Control (Operator Preview / Admin / Dev) */}
+          {isOperator && (
+            <a
+              href="/api/preview/lock"
+              title="Lock site preview and return to holding screen"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "8px",
+                padding: "6px 12px",
+                color: "#FCA5A5",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                textDecoration: "none",
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                boxShadow: "0 0 10px rgba(239, 68, 68, 0.08)",
+                whiteSpace: "nowrap"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.22)";
+                e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.65)";
+                e.currentTarget.style.color = "#FFFFFF";
+                e.currentTarget.style.boxShadow = "0 0 16px rgba(239, 68, 68, 0.35)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
+                e.currentTarget.style.color = "#FCA5A5";
+                e.currentTarget.style.boxShadow = "0 0 10px rgba(239, 68, 68, 0.08)";
+                e.currentTarget.style.transform = "none";
+              }}
+            >
+              <Lock size={13} color="#F87171" style={{ strokeWidth: 2.2 }} />
+              <span>Lock Site</span>
+            </a>
+          )}
+
           {loading ? (
             <div style={{ width: "80px", height: "32px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }} />
           ) : user ? (
@@ -660,6 +710,30 @@ export default function Navbar() {
                       <RotateCcw size={15} color="#F59E0B" />
                       Exit Impersonation
                     </button>
+                  )}
+
+                  {isOperator && (
+                    <a
+                      href="/api/preview/lock"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "9px",
+                        padding: "8px 10px",
+                        color: "#FCA5A5",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        transition: "background 0.15s ease"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <Lock size={15} color="#F87171" />
+                      Lock Site Preview
+                    </a>
                   )}
 
                   <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "4px 0" }} />
