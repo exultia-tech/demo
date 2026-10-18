@@ -11,6 +11,11 @@ import { recordLicenseActivity } from '@/lib/licensing/audit';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    return NextResponse.json({ error: 'Administrative privileges required' }, { status: 403 });
+  }
+
   return NextResponse.json({
     isVercel: !!process.env.VERCEL,
     hasGithubToken: !!process.env.GITHUB_TOKEN,
@@ -42,6 +47,9 @@ export async function POST(req: NextRequest) {
     const safeBrand = (brandName || 'SecureIDE Studio').replace(/[^a-zA-Z0-9\-_ ]/g, '').trim();
     const safeLocale = (locale || 'en').replace(/[^a-zA-Z0-9\-_]/g, '').toLowerCase().trim();
     const safeVersion = (version || 'latest').replace(/[^a-zA-Z0-9\-._/]/g, '').trim();
+    const safeRegistryUrl = (registryUrl || '').replace(/[^a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]/g, '').trim();
+    const safeExtensions = (extensions || '').replace(/[^a-zA-Z0-9\-._,]/g, '').trim();
+    const safeTelemetryUrl = (telemetryUrl || '').replace(/[^a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]/g, '').trim();
 
     // Enforce mandatory user authentication for build execution
     const user = await getCurrentUser();
@@ -93,9 +101,9 @@ export async function POST(req: NextRequest) {
         brandName: safeBrand,
         locale: safeLocale,
         version: safeVersion,
-        registryUrl,
-        extensions,
-        telemetryUrl,
+        registryUrl: safeRegistryUrl,
+        extensions: safeExtensions,
+        telemetryUrl: safeTelemetryUrl,
         buildId,
         owner: githubOwner,
         repo: githubRepo,
@@ -241,14 +249,14 @@ function cleanStepName(name: string): string | null {
       '-OutputDir', distDir
     ];
 
-    if (registryUrl) {
-      psArgs.push('-RegistryUrl', registryUrl);
+    if (safeRegistryUrl) {
+      psArgs.push('-RegistryUrl', safeRegistryUrl);
     }
-    if (extensions) {
-      psArgs.push('-Extensions', extensions);
+    if (safeExtensions) {
+      psArgs.push('-Extensions', safeExtensions);
     }
-    if (telemetryUrl) {
-      psArgs.push('-TelemetryUrl', telemetryUrl);
+    if (safeTelemetryUrl) {
+      psArgs.push('-TelemetryUrl', safeTelemetryUrl);
     }
 
     if (process.env.VERCEL) {

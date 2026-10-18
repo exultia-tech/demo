@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { db, users, subscriptions } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 import { getCurrentUser, startImpersonation, stopImpersonation, IMPERSONATOR_COOKIE_NAME } from '@/lib/auth/session';
+import { verifySignedPayload } from '@/lib/auth/crypto';
 import { initializeDatabase } from '@/lib/db/init';
 
 export const dynamic = 'force-dynamic';
@@ -79,9 +80,10 @@ export async function POST(req: Request) {
     await initializeDatabase();
     const currentUser = await getCurrentUser();
     const cookieStore = await cookies();
-    const existingImpersonatorAdminId = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+    const rawCookie = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+    const existingImpersonatorAdminId = rawCookie ? verifySignedPayload(rawCookie) : null;
 
-    // Must be admin OR already impersonating
+    // Must be admin OR already legitimately impersonating
     if (!currentUser || (currentUser.role !== 'admin' && !existingImpersonatorAdminId && !currentUser.isImpersonating)) {
       return NextResponse.json({ error: 'Administrative privileges required to substitute user personas' }, { status: 403 });
     }
@@ -134,6 +136,17 @@ export async function POST(req: Request) {
 
 export async function DELETE() {
   try {
+    await initializeDatabase();
+    const currentUser = await getCurrentUser();
+    const cookieStore = await cookies();
+    const rawCookie = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+    const impersonatorAdminId = rawCookie ? verifySignedPayload(rawCookie) : null;
+
+    // Reject unauthenticated requests: Caller MUST have an active session and be an admin or active impersonator
+    if (!currentUser || (!impersonatorAdminId && !currentUser.isImpersonating && currentUser.role !== 'admin')) {
+      return NextResponse.json({ error: 'Administrative privileges required' }, { status: 403 });
+    }
+
     const restoredUser = await stopImpersonation();
     return NextResponse.json({
       success: true,

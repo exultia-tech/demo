@@ -127,30 +127,46 @@ jobs:
       - name: Execute Deterministic Hardening & Binary Assembly
         if: ${{ matrix.enable }}
         shell: pwsh
+        env:
+          INPUT_TIER: ${{ inputs.tier }}
+          INPUT_OS: ${{ matrix.os }}
+          INPUT_ENGINE: ${{ inputs.engine }}
+          INPUT_BRAND: ${{ inputs.brand_name }}
+          INPUT_LOCALE: ${{ inputs.locale }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_REGISTRY: ${{ inputs.registry_url }}
+          INPUT_EXTENSIONS: ${{ inputs.extensions }}
+          INPUT_TELEMETRY: ${{ inputs.telemetry_url }}
+          INPUT_BUILD_ID: ${{ inputs.build_id }}
         run: |
           ./scripts/assemble-ide.ps1 `
-            -Tier "${{ inputs.tier }}" `
-            -TargetOS "${{ matrix.os }}" `
-            -Engine "${{ inputs.engine }}" `
-            -BrandName "${{ inputs.brand_name }}" `
-            -Locale "${{ inputs.locale }}" `
-            -Version "${{ inputs.version }}" `
-            -RegistryUrl "${{ inputs.registry_url }}" `
-            -Extensions "${{ inputs.extensions }}" `
-            -TelemetryUrl "${{ inputs.telemetry_url }}" `
-            -BuildId "${{ inputs.build_id }}" `
+            -Tier "$env:INPUT_TIER" `
+            -TargetOS "$env:INPUT_OS" `
+            -Engine "$env:INPUT_ENGINE" `
+            -BrandName "$env:INPUT_BRAND" `
+            -Locale "$env:INPUT_LOCALE" `
+            -Version "$env:INPUT_VERSION" `
+            -RegistryUrl "$env:INPUT_REGISTRY" `
+            -Extensions "$env:INPUT_EXTENSIONS" `
+            -TelemetryUrl "$env:INPUT_TELEMETRY" `
+            -BuildId "$env:INPUT_BUILD_ID" `
             -OutputDir "./dist"
 
       - name: Generate Cryptographic CycloneDX 1.5 SBOM
         if: ${{ matrix.enable }}
         shell: pwsh
+        env:
+          INPUT_BRAND: ${{ inputs.brand_name }}
+          INPUT_TIER: ${{ inputs.tier }}
+          INPUT_ENGINE: ${{ inputs.engine }}
+          INPUT_OS: ${{ matrix.os }}
         run: |
           node ./scripts/generate-sbom.js `
             --dist "./dist" `
-            --brand "${{ inputs.brand_name }}" `
-            --tier "${{ inputs.tier }}" `
-            --engine "${{ inputs.engine }}" `
-            --os "${{ matrix.os }}" `
+            --brand "$env:INPUT_BRAND" `
+            --tier "$env:INPUT_TIER" `
+            --engine "$env:INPUT_ENGINE" `
+            --os "$env:INPUT_OS" `
             --output "./dist/cyclonedx-sbom.json"
 
       - name: Compute SHA-256 Checksums

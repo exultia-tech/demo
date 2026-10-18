@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { db, users, sessions, subscriptions } from '@/lib/db';
 import { eq, and, gt } from 'drizzle-orm';
-import { generateToken } from './crypto';
+import { generateToken, signPayload, verifySignedPayload } from './crypto';
 
 export const SESSION_COOKIE_NAME = 'exultia_session';
 export const IMPERSONATOR_COOKIE_NAME = 'exultia_impersonator';
@@ -45,7 +45,8 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-    const impersonatorAdminId = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+    const rawImpersonatorCookie = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+    const impersonatorAdminId = rawImpersonatorCookie ? verifySignedPayload(rawImpersonatorCookie) : null;
 
     if (!token) return null;
 
@@ -123,8 +124,8 @@ export async function startImpersonation(adminUserId: string, targetUserId: stri
     path: '/',
   });
 
-  // Persist the admin impersonator cookie
-  cookieStore.set(IMPERSONATOR_COOKIE_NAME, adminUserId, {
+  // Persist the cryptographically signed admin impersonator cookie
+  cookieStore.set(IMPERSONATOR_COOKIE_NAME, signPayload(adminUserId), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -140,7 +141,8 @@ export async function startImpersonation(adminUserId: string, targetUserId: stri
  */
 export async function stopImpersonation(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
-  const impersonatorAdminId = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+  const rawImpersonatorCookie = cookieStore.get(IMPERSONATOR_COOKIE_NAME)?.value;
+  const impersonatorAdminId = rawImpersonatorCookie ? verifySignedPayload(rawImpersonatorCookie) : null;
   const currentToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
   // Clean up current temporary impersonation session
@@ -153,7 +155,7 @@ export async function stopImpersonation(): Promise<SessionUser | null> {
 
   if (impersonatorAdminId) {
     const adminRecord = await db.query.users.findFirst({
-      where: eq(users.id, impersonatorAdminId),
+      where: and(eq(users.id, impersonatorAdminId), eq(users.role, 'admin')),
     });
 
     if (adminRecord) {

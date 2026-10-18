@@ -35,46 +35,9 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      // If the user already registered via SSO or exists, attach the new password and log in
-      const passwordHash = hashPassword(password);
-      await db.update(users)
-        .set({
-          passwordHash,
-          name: name?.trim() || existing.name,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, existing.id));
-
-      const { token, expiresAt } = await createSession(existing.id);
-
-      const cookieStore = await cookies();
-      cookieStore.set(SESSION_COOKIE_NAME, token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        expires: expiresAt,
-        path: '/',
-      });
-
-      const userSubs = await db.query.subscriptions.findMany({
-        where: eq(subscriptions.userId, existing.id),
-      });
-
       return NextResponse.json({
-        success: true,
-        message: 'Account linked with password and signed in successfully.',
-        user: {
-          id: existing.id,
-          email: existing.email,
-          name: name?.trim() || existing.name,
-          role: existing.role,
-          subscriptions: userSubs.map(s => ({
-            product: s.product,
-            tier: s.tier,
-            status: s.status,
-          })),
-        }
-      });
+        error: 'An account with this email address already exists. Please sign in or reset your password.',
+      }, { status: 409 });
     }
 
     const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
