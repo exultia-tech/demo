@@ -7,6 +7,7 @@ export type DoomPalette = "cyan" | "orange" | "green" | "magenta";
 interface DoomThemeContextType {
   palette: DoomPalette;
   setPalette: (palette: DoomPalette) => void;
+  rollRandomPalette: () => void;
   scanlines: boolean;
   toggleScanlines: () => void;
 }
@@ -58,9 +59,12 @@ export const DOOM_PALETTES = {
   },
 };
 
+const ALL_PALETTES: DoomPalette[] = ["cyan", "orange", "green", "magenta"];
+
 const DoomThemeContext = createContext<DoomThemeContextType>({
   palette: "cyan",
   setPalette: () => {},
+  rollRandomPalette: () => {},
   scanlines: true,
   toggleScanlines: () => {},
 });
@@ -72,33 +76,48 @@ export function DoomThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const storedPalette = localStorage.getItem("exultia_doom_palette") as DoomPalette | null;
-      if (storedPalette && DOOM_PALETTES[storedPalette]) {
-        setPaletteState(storedPalette);
-        document.documentElement.setAttribute("data-doom-palette", storedPalette);
-      } else {
-        document.documentElement.setAttribute("data-doom-palette", "cyan");
-      }
+    // On load / hard-refresh: read the randomly assigned palette from html tag or generate one
+    const activeOnHtml = typeof document !== "undefined"
+      ? (document.documentElement.getAttribute("data-doom-palette") as DoomPalette | null)
+      : null;
 
+    let initialPalette: DoomPalette;
+    if (activeOnHtml && DOOM_PALETTES[activeOnHtml]) {
+      initialPalette = activeOnHtml;
+    } else {
+      // Pick random
+      initialPalette = ALL_PALETTES[Math.floor(Math.random() * ALL_PALETTES.length)];
+      if (typeof document !== "undefined") {
+        document.documentElement.setAttribute("data-doom-palette", initialPalette);
+      }
+    }
+
+    setPaletteState(initialPalette);
+
+    try {
       const storedScanlines = localStorage.getItem("exultia_doom_scanlines");
       if (storedScanlines !== null) {
         setScanlines(storedScanlines === "true");
       }
     } catch {
-      // Ignore localStorage errors in private / sandboxed mode
+      // Fallback
     }
   }, []);
 
   const setPalette = (newPalette: DoomPalette) => {
     setPaletteState(newPalette);
-    try {
-      localStorage.setItem("exultia_doom_palette", newPalette);
+    if (typeof document !== "undefined") {
       document.documentElement.setAttribute("data-doom-palette", newPalette);
-      window.dispatchEvent(new CustomEvent("exultia-doom-palette-change", { detail: { palette: newPalette } }));
-    } catch {
-      // Fallback
     }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("exultia-doom-palette-change", { detail: { palette: newPalette } }));
+    }
+  };
+
+  const rollRandomPalette = () => {
+    const choices = ALL_PALETTES.filter((p) => p !== palette);
+    const next = choices[Math.floor(Math.random() * choices.length)];
+    setPalette(next);
   };
 
   const toggleScanlines = () => {
@@ -114,7 +133,7 @@ export function DoomThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DoomThemeContext.Provider value={{ palette, setPalette, scanlines, toggleScanlines }}>
+    <DoomThemeContext.Provider value={{ palette, setPalette, rollRandomPalette, scanlines, toggleScanlines }}>
       {children}
     </DoomThemeContext.Provider>
   );

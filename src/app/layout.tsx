@@ -22,6 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" data-doom-palette="cyan" style={{ colorScheme: 'dark' }}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=['cyan','orange','green','magenta'];var r=p[Math.floor(Math.random()*p.length)];document.documentElement.setAttribute('data-doom-palette',r);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
         <DoomThemeProvider>
           <AuthProvider>

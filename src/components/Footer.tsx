@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ExultiaLogo } from "@/components/BrandIcons";
-import DoomPaletteSelector from "@/components/DoomPaletteSelector";
 import { isIsolatedThreatFeed } from "@/config/site-config";
 
 export default function Footer() {
@@ -30,30 +29,31 @@ export default function Footer() {
           
           {/* BRAND & MISSION - ISOLATED Vantage FOCUS */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-              <ExultiaLogo size={36} glow={true} />
-              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+              <ExultiaLogo size={46} glow={true} />
+              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                   <span style={{ 
                     fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
-                    fontSize: "1.2rem", 
+                    fontSize: "1.45rem", 
                     fontWeight: 900, 
                     color: "#FFFFFF", 
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase" 
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    textShadow: "0 0 16px var(--accent-glow)"
                   }}>
                     EXULTIA
                   </span>
                   <span style={{
                     fontFamily: "var(--font-mono, monospace)",
-                    fontSize: "0.62rem",
-                    background: "rgba(0, 229, 255, 0.15)",
+                    fontSize: "0.68rem",
+                    background: "rgba(0, 229, 255, 0.18)",
                     color: "var(--accent-primary)",
                     border: "1px solid var(--accent-primary)",
-                    padding: "1px 6px",
+                    padding: "2px 7px",
                     borderRadius: "2px",
                     fontWeight: 800,
-                    letterSpacing: "0.05em",
+                    letterSpacing: "0.08em",
                     textTransform: "uppercase"
                   }}>
                     Vantage
@@ -61,11 +61,12 @@ export default function Footer() {
                 </div>
                 <span style={{ 
                   fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
-                  fontSize: "0.6rem", 
-                  fontWeight: 700, 
+                  fontSize: "0.66rem", 
+                  fontWeight: 800, 
                   color: "var(--accent-primary)", 
-                  letterSpacing: "0.32em", 
-                  textTransform: "uppercase" 
+                  letterSpacing: "0.38em", 
+                  textTransform: "uppercase",
+                  marginTop: "2px"
                 }}>
                   TECHNOLOGIES
                 </span>
@@ -154,26 +155,28 @@ export default function Footer() {
         
         {/* BRAND & MISSION */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-            <ExultiaLogo size={36} glow={true} />
-            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+            <ExultiaLogo size={46} glow={true} />
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
               <span style={{ 
                 fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
-                fontSize: "1.2rem", 
+                fontSize: "1.45rem", 
                 fontWeight: 900, 
                 color: "#FFFFFF", 
-                letterSpacing: "0.08em",
-                textTransform: "uppercase" 
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                textShadow: "0 0 16px var(--accent-glow)"
               }}>
                 EXULTIA
               </span>
               <span style={{ 
                 fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
-                fontSize: "0.6rem", 
-                fontWeight: 700, 
+                fontSize: "0.66rem", 
+                fontWeight: 800, 
                 color: "var(--accent-primary)", 
-                letterSpacing: "0.32em", 
-                textTransform: "uppercase" 
+                letterSpacing: "0.38em", 
+                textTransform: "uppercase",
+                marginTop: "2px"
               }}>
                 TECHNOLOGIES
               </span>
@@ -259,7 +262,6 @@ export default function Footer() {
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-          <DoomPaletteSelector compact={true} showLabels={true} />
           <Link href="/#products" style={{ color: "#94A3B8", textDecoration: "none" }}>Products</Link>
           <Link href="/app/uvi/stats" style={{ color: "#94A3B8", textDecoration: "none" }}>Vantage</Link>
           <Link href="/app/inquest" style={{ color: "#94A3B8", textDecoration: "none" }}>Inquest</Link>

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 
 interface IconProps {
   size?: number;
@@ -20,7 +22,7 @@ interface ExultiaLogoProps extends IconProps {
   palette?: "cyan" | "orange" | "green" | "magenta" | "auto";
 }
 
-export function ExultiaLogo({ size = 36, className = "", glow = true, palette = "auto" }: ExultiaLogoProps) {
+export function ExultiaLogo({ size = 48, className = "", glow = true, palette = "auto" }: ExultiaLogoProps) {
   const [activePalette, setActivePalette] = React.useState<string>("cyan");
 
   React.useEffect(() => {
@@ -54,6 +56,7 @@ export function ExultiaLogo({ size = 36, className = "", glow = true, palette = 
         height: size,
         position: "relative",
         userSelect: "none",
+        flexShrink: 0,
       }}
     >
       <img
@@ -65,8 +68,10 @@ export function ExultiaLogo({ size = 36, className = "", glow = true, palette = 
           width: `${size}px`,
           height: `${size}px`,
           objectFit: "contain",
-          filter: glow ? "drop-shadow(0 0 10px var(--accent-glow))" : "none",
-          transition: "filter 0.2s ease, transform 0.2s ease",
+          filter: glow
+            ? "drop-shadow(0 0 16px var(--accent-glow)) drop-shadow(0 0 4px var(--accent-primary))"
+            : "none",
+          transition: "filter 0.25s ease, transform 0.25s ease",
         }}
       />
     </div>
@@ -78,7 +83,7 @@ export function ExultiaLogo({ size = 36, className = "", glow = true, palette = 
  * Emblem + Chiseled Uppercase 'EXULTIA' + High-tracking 'TECHNOLOGIES'
  */
 export function ExultiaBrandLockup({
-  size = 38,
+  size = 48,
   isIsolated = false,
   isolatedTag = "Vantage",
   showTagline = true,
@@ -89,19 +94,19 @@ export function ExultiaBrandLockup({
   showTagline?: boolean;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
       <ExultiaLogo size={size} glow={true} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
           <span
             style={{
               fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-              fontSize: "1.3rem",
+              fontSize: "1.55rem",
               fontWeight: 900,
               color: "#FFFFFF",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.1em",
               textTransform: "uppercase",
-              textShadow: "0 0 12px var(--accent-glow)",
+              textShadow: "0 0 16px var(--accent-glow), 0 0 32px var(--accent-glow)",
             }}
           >
             EXULTIA
@@ -110,11 +115,11 @@ export function ExultiaBrandLockup({
             <span
               style={{
                 fontFamily: "var(--font-mono, monospace)",
-                fontSize: "0.62rem",
-                background: "rgba(0, 229, 255, 0.15)",
+                fontSize: "0.68rem",
+                background: "rgba(0, 229, 255, 0.18)",
                 color: "var(--accent-primary)",
                 border: "1px solid var(--accent-primary)",
-                padding: "1px 6px",
+                padding: "2px 7px",
                 borderRadius: "2px",
                 fontWeight: 800,
                 letterSpacing: "0.08em",
@@ -129,11 +134,12 @@ export function ExultiaBrandLockup({
           <span
             style={{
               fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
-              fontSize: "0.62rem",
-              fontWeight: 700,
+              fontSize: "0.68rem",
+              fontWeight: 800,
               color: "var(--accent-primary)",
-              letterSpacing: "0.32em",
+              letterSpacing: "0.38em",
               textTransform: "uppercase",
+              marginTop: "1px",
             }}
           >
             TECHNOLOGIES

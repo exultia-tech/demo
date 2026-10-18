@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
 import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon } from "@/components/BrandIcons";
-import DoomPaletteSelector from "@/components/DoomPaletteSelector";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -111,30 +110,30 @@ export default function Navbar() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
           <Link 
             href={isIsolated ? threatFeedHome : "/"} 
-            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.85rem" }}
+            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "1rem" }}
           >
-            <ExultiaLogo size={38} glow={true} />
-            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+            <ExultiaLogo size={48} glow={true} />
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                 <span style={{ 
                   fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
-                  fontSize: "1.28rem", 
+                  fontSize: "1.52rem", 
                   fontWeight: 900, 
                   color: "#FFFFFF", 
-                  letterSpacing: "0.08em",
+                  letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  textShadow: "0 0 12px var(--accent-glow)"
+                  textShadow: "0 0 16px var(--accent-glow), 0 0 32px var(--accent-glow)"
                 }}>
                   EXULTIA
                 </span>
                 {isIsolated && (
                   <span style={{
                     fontFamily: "var(--font-mono, monospace)",
-                    fontSize: "0.62rem",
-                    background: "rgba(0, 229, 255, 0.15)",
+                    fontSize: "0.68rem",
+                    background: "rgba(0, 229, 255, 0.18)",
                     color: "var(--accent-primary)",
                     border: "1px solid var(--accent-primary)",
-                    padding: "1px 6px",
+                    padding: "2px 7px",
                     borderRadius: "2px",
                     fontWeight: 800,
                     letterSpacing: "0.08em",
@@ -146,11 +145,12 @@ export default function Navbar() {
               </div>
               <span style={{ 
                 fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)", 
-                fontSize: "0.62rem", 
-                fontWeight: 700, 
+                fontSize: "0.68rem", 
+                fontWeight: 800, 
                 color: "var(--accent-primary)", 
-                letterSpacing: "0.32em", 
-                textTransform: "uppercase" 
+                letterSpacing: "0.38em", 
+                textTransform: "uppercase",
+                marginTop: "2px"
               }}>
                 TECHNOLOGIES
               </span>
@@ -466,9 +466,6 @@ export default function Navbar() {
 
         {/* RIGHT COLUMN: AUTHENTICATION & USER STATUS */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.75rem" }}>
-          {/* HUD PALETTE SELECTOR (Option A, B, C, D) */}
-          <DoomPaletteSelector compact={true} />
-
           {loading ? (
             <div style={{ width: "80px", height: "32px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }} />
           ) : user ? (

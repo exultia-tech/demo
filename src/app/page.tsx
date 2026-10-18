@@ -18,10 +18,25 @@ export default function HomePage() {
   return (
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* RADICAL DOOM-ESQUE HERO */}
-      <section className="hero-section" style={{ paddingTop: "4rem", paddingBottom: "3rem", textAlign: "center", position: "relative" }}>
+      <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3rem", textAlign: "center", position: "relative" }}>
+        {/* PROMINENT CYBERNETIC DEMON HELM LOGO EMBLEM */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+          <div style={{
+            position: "relative",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            background: "radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%)",
+            filter: "drop-shadow(0 0 35px var(--accent-glow))",
+          }}>
+            <ExultiaLogo size={110} glow={true} />
+          </div>
+        </div>
+
         {/* HUD TELEMETRY BADGE */}
         <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "1.25rem" }}>
-          <span className="doom-badge" style={{ fontSize: "0.75rem", padding: "4px 12px" }}>
+          <span className="doom-badge" style={{ fontSize: "0.78rem", padding: "4px 14px", letterSpacing: "0.1em" }}>
             [ EXULTIA TECHNOLOGIES // DEFENSE-IN-DEPTH MATRIX // ARMED ]
           </span>
         </div>

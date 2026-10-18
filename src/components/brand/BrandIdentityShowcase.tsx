@@ -6,7 +6,7 @@ import { useDoomTheme, DOOM_PALETTES, DoomPalette } from "@/context/DoomThemeCon
 import { Download, Check, Sparkles, Terminal } from "lucide-react";
 
 export default function BrandIdentityShowcase() {
-  const { palette, setPalette } = useDoomTheme();
+  const { palette, setPalette, rollRandomPalette } = useDoomTheme();
 
   const options: { id: DoomPalette; label: string; code: string; hex: string; cardImg: string }[] = [
     {
@@ -85,7 +85,7 @@ export default function BrandIdentityShowcase() {
           </h2>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <span
             style={{
               fontFamily: "var(--font-mono, monospace)",
@@ -94,22 +94,52 @@ export default function BrandIdentityShowcase() {
               letterSpacing: "0.08em",
             }}
           >
-            [ ACTIVE HUD: {DOOM_PALETTES[palette].hex} // {DOOM_PALETTES[palette].name.toUpperCase()} ]
+            [ ACTIVE COLORWAY: {DOOM_PALETTES[palette].option.toUpperCase()} // {DOOM_PALETTES[palette].hex} ]
           </span>
+          <button
+            type="button"
+            onClick={rollRandomPalette}
+            className="btn-primary"
+            style={{ fontSize: "0.78rem", padding: "6px 14px", display: "inline-flex", gap: "6px" }}
+          >
+            <Sparkles size={14} />
+            Reroll Random Color
+          </button>
           <a
             href="/branding/brand_identity_guidelines.jpg"
             target="_blank"
             download="exultia_brand_identity_guidelines.jpg"
             className="btn-secondary"
-            style={{ fontSize: "0.75rem", padding: "4px 10px", display: "inline-flex", gap: "6px" }}
+            style={{ fontSize: "0.75rem", padding: "6px 12px", display: "inline-flex", gap: "6px" }}
           >
             <Download size={13} />
-            Download Spec Sheet
+            Spec Sheet
           </a>
         </div>
       </div>
 
-      {/* 4 COLOR VARIATIONS INTERACTIVE SELECTOR */}
+      {/* HARD REFRESH RANDOM COLORWAY BANNER */}
+      <div
+        style={{
+          background: "rgba(0, 0, 0, 0.45)",
+          border: "1px dashed var(--border-color)",
+          padding: "0.85rem 1.25rem",
+          borderRadius: "4px",
+          marginBottom: "2rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          fontSize: "0.85rem",
+          color: "var(--text-muted)",
+        }}
+      >
+        <Terminal size={16} style={{ color: "var(--accent-primary)", flexShrink: 0 }} />
+        <span>
+          <strong style={{ color: "#FFFFFF" }}>Hard-Refresh Randomization Active:</strong> Every time the platform loads from a hard-refresh or full reload, a random authentic colorway is automatically selected from the 4 brand variations below.
+        </span>
+      </div>
+
+      {/* 4 COLOR VARIATIONS GALLERY */}
       <div style={{ marginBottom: "2rem" }}>
         <div
           style={{
@@ -123,7 +153,7 @@ export default function BrandIdentityShowcase() {
           }}
         >
           <Terminal size={14} />
-          SELECT COLOR VARIATION TO ENGAGE LIVE SYSTEM PALETTE:
+          OFFICIAL COLOR VARIATIONS SPECIFICATION:
         </div>
 
         <div
