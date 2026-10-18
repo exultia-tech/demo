@@ -1,9 +1,16 @@
-# Exultia Security Suite - Live Demos & Multi-Node Test Fleet
+<div align="center">
+
+<img src="assets/logo.png" alt="Exultia Technologies" width="220" />
+
+# Exultia Security Suite
+### Live Demonstrations & Multi-Node Test Fleet
 
 [![Exultia Security](https://img.shields.io/badge/Exultia-Security%20Suite-06B6D4?style=for-the-badge&logo=shield)](https://exultia.tech)
 [![SLSA Level 3](https://img.shields.io/badge/SLSA-Level%203%20Signed-34D399?style=for-the-badge&logo=security)](https://slsa.dev)
 [![Sub-Second Rollback](https://img.shields.io/badge/Deterministic%20Rollback-%3C100ms-3B82F6?style=for-the-badge)](https://exultia.tech/app/patches)
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-8B5CF6?style=for-the-badge)](https://exultia.tech/account/subscription)
+
+</div>
 
 This repository contains the interactive demonstration suites, test fixtures, standalone binaries, and automated provisioning harnesses for testing the **Exultia Cybersecurity Product Suite** firsthand inside real, isolated Linux virtual environments.
 
