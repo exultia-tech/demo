@@ -5,8 +5,8 @@ import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIco
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
-  title: "Exultia Technologies | Practical & Transparent Security Tools",
-  description: "Exultia Technologies builds practical and transparent security tools: secure IDE packaging (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  title: "Exultia Technologies | Practical. Transparent. Secure.",
+  description: "Exultia Technologies builds practical, transparent, and secure tools: hermetic developer workstations (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
 };
 
 export default function HomePage() {
@@ -46,18 +46,18 @@ export default function HomePage() {
         </div>
 
         <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: "1.25rem", letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
-          PRACTICAL &amp; TRANSPARENT <br/>
+          PRACTICAL. TRANSPARENT. <br/>
           <span style={{ 
             color: "var(--accent-primary)", 
             textShadow: "0 0 25px var(--accent-glow)",
             fontFamily: "var(--font-display)"
           }}>
-            SECURITY TOOLS
+            SECURE.
           </span>
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
-          Practical and transparent security tools for software engineering teams, threat researchers, and public accountability—from hermetic developer workstations to real-time CVE feeds and automated open records.
+          Software engineering environments, real-time threat intelligence feeds, and automated open-records management built for verifiable integrity and public transparency.
         </p>
 
         {/* HERO CTA ACTIONS */}
