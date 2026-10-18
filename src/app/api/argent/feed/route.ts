@@ -20,6 +20,7 @@ export async function GET(request: Request) {
 
   const os = searchParams.get('os') || undefined;
   const severity = searchParams.get('severity') || undefined;
+  const type = searchParams.get('type') || searchParams.get('advisoryType') || undefined;
   const query = searchParams.get('q') || searchParams.get('query') || undefined;
   const reboot = searchParams.get('reboot') || undefined;
   const release = searchParams.get('release') || undefined;
@@ -34,6 +35,7 @@ export async function GET(request: Request) {
   const result = getArgentBundles({
     os,
     severity,
+    type,
     query,
     reboot,
     release,

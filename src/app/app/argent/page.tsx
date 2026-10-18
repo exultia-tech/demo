@@ -10,7 +10,9 @@ import {
   ARGENT_PATCH_BUNDLES, 
   ArgentVendorSeverity, 
   ArgentOperationalDomain,
+  ArgentAdvisoryType,
   getArgentOperationalDomainBadge,
+  getArgentAdvisoryTypeBadge,
   formatRelativeAge
 } from "@/lib/argent-feed";
 import { 
@@ -36,7 +38,9 @@ import {
   Package,
   Cpu,
   ArrowRight,
-  Shield
+  Shield,
+  Bug,
+  Wrench
 } from "lucide-react";
 
 export default function ArgentThreatFeedPage() {
@@ -45,6 +49,9 @@ export default function ArgentThreatFeedPage() {
 
   // Quad-Perspective Scope State: "ALL" vs "ZERO_REBOOT" vs "KERNEL_CORE" vs "ENTERPRISE_LTS"
   const [feedScope, setFeedScope] = useState<"ALL" | "ZERO_REBOOT" | "KERNEL_CORE" | "ENTERPRISE_LTS">("ALL");
+
+  // Advisory Type Filter: "ALL" vs "SECURITY" vs "BUGFIX" vs "ENHANCEMENT" vs "MAINTENANCE"
+  const [selectedAdvisoryType, setSelectedAdvisoryType] = useState<string>("ALL");
 
   // Feed Sources Directory Modal & Category Filtering
   const [isFeedDirectoryOpen, setIsFeedDirectoryOpen] = useState(false);
@@ -60,10 +67,12 @@ export default function ArgentThreatFeedPage() {
   const FEED_CATEGORIES = useMemo(() => [
     { id: "ALL", label: "All Distros", icon: "🌐", count: ARGENT_PUBLIC_FEED_SOURCES.length },
     { id: "Debian & Ubuntu Ecosystem", label: "Debian & Ubuntu", icon: "🟠", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Debian & Ubuntu Ecosystem").length },
-    { id: "Enterprise Linux (RHEL/Rocky/Alma)", label: "Enterprise RHEL", icon: "🟢", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Enterprise Linux (RHEL/Rocky/Alma)").length },
+    { id: "Enterprise Linux (RHEL/Rocky/Alma)", label: "Enterprise Linux", icon: "🟢", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Enterprise Linux (RHEL/Rocky/Alma)").length },
     { id: "Lightweight & Container OS", label: "Container & Edge", icon: "🏔️", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Lightweight & Container OS").length },
-    { id: "Cloud & Hyperscaler Linux", label: "Cloud & AWS", icon: "📦", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Cloud & Hyperscaler Linux").length },
+    { id: "Cloud & Hyperscaler Linux", label: "Cloud & Hyperscalers", icon: "📦", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Cloud & Hyperscaler Linux").length },
+    { id: "BSD & Unix Ecosystem", label: "BSD & UNIX", icon: "😈", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "BSD & Unix Ecosystem").length },
     { id: "Independent & Rolling Distros", label: "Rolling & Community", icon: "🏹", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Independent & Rolling Distros").length },
+    { id: "Embedded & Edge Linux", label: "Embedded & IoT", icon: "📶", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Embedded & Edge Linux").length },
     { id: "Upstream Linux Kernel", label: "Kernel Stable", icon: "🐧", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Upstream Linux Kernel").length }
   ], []);
 
@@ -94,6 +103,10 @@ export default function ArgentThreatFeedPage() {
   // Live Aggregated Data State
   const [bundles, setBundles] = useState<ArgentPatchBundle[]>([]);
   const [totalUniversalCount, setTotalUniversalCount] = useState<number>(0);
+  const [securityCount, setSecurityCount] = useState<number>(0);
+  const [bugfixCount, setBugfixCount] = useState<number>(0);
+  const [enhancementCount, setEnhancementCount] = useState<number>(0);
+  const [maintenanceCount, setMaintenanceCount] = useState<number>(0);
   const [zeroDowntimeCount, setZeroDowntimeCount] = useState<number>(0);
   const [rebootRequiredCount, setRebootRequiredCount] = useState<number>(0);
   const [totalPackagesCount, setTotalPackagesCount] = useState<number>(0);
@@ -126,7 +139,11 @@ export default function ArgentThreatFeedPage() {
     "NETWORK",
     "KERNEL",
     "CONTAINER",
-    "SYSTEMD"
+    "SYSTEMD",
+    "STORAGE",
+    "DRIVER",
+    "STABILITY",
+    "PERFORMANCE"
   ];
 
   // Fetch from Aggregator API whenever filters, search, or pagination changes
@@ -139,6 +156,7 @@ export default function ArgentThreatFeedPage() {
         const params = new URLSearchParams();
         if (searchQuery.trim()) params.set("query", searchQuery.trim());
         if (feedScope !== "ALL") params.set("scope", feedScope);
+        if (selectedAdvisoryType !== "ALL") params.set("type", selectedAdvisoryType);
         if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
         if (ratingMode === "classic" && selectedSeverity !== "ALL") {
           params.set("severity", selectedSeverity);
@@ -156,6 +174,10 @@ export default function ArgentThreatFeedPage() {
           if (data && Array.isArray(data.bundles)) {
             setBundles(data.bundles);
             setTotalUniversalCount(data.totalConsolidatedCount ?? ARGENT_PATCH_BUNDLES.length);
+            setSecurityCount(data.securityCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'SECURITY').length);
+            setBugfixCount(data.bugfixCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'BUGFIX').length);
+            setEnhancementCount(data.enhancementCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'ENHANCEMENT').length);
+            setMaintenanceCount(data.maintenanceCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.advisoryType === 'MAINTENANCE').length);
             setZeroDowntimeCount(data.zeroDowntimeCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.impact.zeroDowntime).length);
             setRebootRequiredCount(data.rebootRequiredCount ?? ARGENT_PATCH_BUNDLES.filter(b => b.impact.rebootRequired).length);
             setTotalPackagesCount(data.totalPackagesUpdated ?? ARGENT_PATCH_BUNDLES.reduce((acc, b) => acc + b.packages.length, 0));
@@ -174,7 +196,7 @@ export default function ArgentThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, zeroDowntimeOnly, rebootRequiredOnly, page, pageSize, sortBy]);
+  }, [searchQuery, feedScope, selectedAdvisoryType, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, zeroDowntimeOnly, rebootRequiredOnly, page, pageSize, sortBy]);
 
   // Reset page to 1 when filters change
   const handleFilterChange = (setter: () => void) => {
@@ -349,13 +371,15 @@ export default function ArgentThreatFeedPage() {
             borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
             paddingTop: "0.75rem" 
           }}>
-            <span>⚡ <strong style={{ color: "#34D399" }}>{zeroDowntimeCount}</strong> Zero-Downtime</span>
+            <span>🛡️ <strong style={{ color: "#F87171" }}>{securityCount}</strong> Security</span>
             <span>•</span>
-            <span>🔄 <strong style={{ color: "#FBBF24" }}>{rebootRequiredCount}</strong> Reboot Req</span>
+            <span>🐛 <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bugfixes</span>
             <span>•</span>
-            <span>📦 <strong style={{ color: "#38BDF8" }}>{totalPackagesCount}</strong> Packages</span>
+            <span>⚡ <strong style={{ color: "#38BDF8" }}>{enhancementCount}</strong> Enhancements</span>
             <span>•</span>
-            <span>🐧 <strong style={{ color: "#A78BFA" }}>{ARGENT_PUBLIC_FEED_SOURCES.length}</strong> Distros</span>
+            <span>📦 <strong style={{ color: "#C084FC" }}>{totalPackagesCount}</strong> Packages</span>
+            <span>•</span>
+            <span>🌐 <strong style={{ color: "#34D399" }}>{ARGENT_PUBLIC_FEED_SOURCES.length}</strong> Distros</span>
           </div>
         </div>
       </div>
@@ -926,6 +950,62 @@ export default function ArgentThreatFeedPage() {
             gap: "0.85rem",
             boxShadow: "0 6px 24px rgba(0, 0, 0, 0.3)"
           }}>
+            {/* Advisory Stream Selector: Security vs Bugfix vs Enhancement vs Maintenance */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              flexWrap: "wrap",
+              paddingBottom: "0.6rem",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.07)"
+            }}>
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+                Advisory Stream:
+              </span>
+              {[
+                { id: "ALL", label: "All Updates", icon: "🌐", count: totalUniversalCount },
+                { id: "SECURITY", label: "Security (CVEs)", icon: "🛡️", count: securityCount },
+                { id: "BUGFIX", label: "Bug Fixes (RHBA/RLBA/EN)", icon: "🐛", count: bugfixCount },
+                { id: "ENHANCEMENT", label: "Enhancements (HWE/Perf)", icon: "⚡", count: enhancementCount },
+                { id: "MAINTENANCE", label: "Maintenance & Point Releases", icon: "🔧", count: maintenanceCount }
+              ].map(tab => {
+                const isActive = selectedAdvisoryType === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleFilterChange(() => setSelectedAdvisoryType(tab.id))}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                      padding: "0.3rem 0.65rem",
+                      borderRadius: "6px",
+                      background: isActive ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.04)",
+                      border: isActive ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.08)",
+                      color: isActive ? "#38BDF8" : "#94A3B8",
+                      fontSize: "0.76rem",
+                      fontWeight: isActive ? 700 : 500,
+                      cursor: "pointer",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <span>{tab.icon}</span>
+                    <span>{tab.label}</span>
+                    <span style={{
+                      fontSize: "0.68rem",
+                      padding: "0.05rem 0.35rem",
+                      borderRadius: "4px",
+                      background: isActive ? "rgba(56, 189, 248, 0.3)" : "rgba(255, 255, 255, 0.06)",
+                      color: isActive ? "#FFFFFF" : "#64748B",
+                      fontWeight: 600
+                    }}>
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Dropdown Filter Controls */}
             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
               {/* Feed Source Dropdown */}
@@ -977,13 +1057,17 @@ export default function ArgentThreatFeedPage() {
                     width: "100%"
                   }}
                 >
-                  <option value="ALL">All Subsystems (6 Domains)</option>
+                  <option value="ALL">All Subsystems (10 Domains)</option>
                   <option value="PATCH">⚡ Patch &amp; Packaging</option>
                   <option value="CORE">⚙️ Core &amp; Glibc</option>
                   <option value="NETWORK">🌐 Network &amp; SSH</option>
                   <option value="KERNEL">🐧 Kernel &amp; Drivers</option>
                   <option value="CONTAINER">📦 Container &amp; Musl</option>
                   <option value="SYSTEMD">🔒 Systemd &amp; Services</option>
+                  <option value="STORAGE">💾 Storage &amp; NVMe</option>
+                  <option value="DRIVER">🔌 Driver &amp; Hardware</option>
+                  <option value="STABILITY">🛡️ Stability &amp; Resiliency</option>
+                  <option value="PERFORMANCE">🚀 Performance Tuning</option>
                 </select>
               </div>
 
@@ -1207,6 +1291,7 @@ export default function ArgentThreatFeedPage() {
                       bundles.map((bundle) => {
                         const sevStyle = getSeverityStyle(bundle.vendorSeverity);
                         const domBadge = getArgentOperationalDomainBadge(bundle.operationalDomain);
+                        const typeBadge = getArgentAdvisoryTypeBadge(bundle.advisoryType);
 
                         return (
                           <tr
@@ -1348,6 +1433,22 @@ export default function ArgentThreatFeedPage() {
 
                                 {/* Domain & Signal Badges */}
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
+                                  <span style={{
+                                    fontSize: "0.68rem",
+                                    fontWeight: 800,
+                                    padding: "0.1rem 0.45rem",
+                                    borderRadius: "4px",
+                                    background: typeBadge.bg,
+                                    border: `1px solid ${typeBadge.border}`,
+                                    color: typeBadge.text,
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.25rem"
+                                  }}>
+                                    <span>{typeBadge.icon}</span>
+                                    <span>{typeBadge.label}</span>
+                                  </span>
+
                                   <span style={{
                                     fontSize: "0.68rem",
                                     fontWeight: 700,
@@ -1493,6 +1594,7 @@ export default function ArgentThreatFeedPage() {
                 bundles.map((bundle) => {
                   const sevStyle = getSeverityStyle(bundle.vendorSeverity);
                   const domBadge = getArgentOperationalDomainBadge(bundle.operationalDomain);
+                  const typeBadge = getArgentAdvisoryTypeBadge(bundle.advisoryType);
 
                   return (
                     <div
@@ -1516,22 +1618,39 @@ export default function ArgentThreatFeedPage() {
                       }}
                     >
                       <div>
-                        {/* Card Header: Bundle ID & Severity */}
+                        {/* Card Header: Bundle ID & Severity & Advisory Type */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                           <span style={{ fontFamily: "monospace", fontSize: "0.95rem", fontWeight: 800, color: "#38BDF8" }}>
                             {bundle.bundleId}
                           </span>
-                          <span style={{
-                            fontSize: "0.72rem",
-                            fontWeight: 800,
-                            padding: "0.15rem 0.5rem",
-                            borderRadius: "4px",
-                            background: sevStyle.bg,
-                            border: `1px solid ${sevStyle.border}`,
-                            color: sevStyle.text
-                          }}>
-                            {bundle.vendorSeverity}
-                          </span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                            <span style={{
+                              fontSize: "0.68rem",
+                              fontWeight: 800,
+                              padding: "0.12rem 0.4rem",
+                              borderRadius: "4px",
+                              background: typeBadge.bg,
+                              border: `1px solid ${typeBadge.border}`,
+                              color: typeBadge.text,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.2rem"
+                            }}>
+                              <span>{typeBadge.icon}</span>
+                              <span>{typeBadge.label}</span>
+                            </span>
+                            <span style={{
+                              fontSize: "0.72rem",
+                              fontWeight: 800,
+                              padding: "0.15rem 0.5rem",
+                              borderRadius: "4px",
+                              background: sevStyle.bg,
+                              border: `1px solid ${sevStyle.border}`,
+                              color: sevStyle.text
+                            }}>
+                              {bundle.vendorSeverity}
+                            </span>
+                          </div>
                         </div>
 
                         <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginBottom: "0.5rem" }}>
@@ -1752,6 +1871,28 @@ export default function ArgentThreatFeedPage() {
                   }}>
                     {selectedBundle.bundleId}
                   </span>
+
+                  {/* Advisory Type Badge */}
+                  {(() => {
+                    const modalTypeBadge = getArgentAdvisoryTypeBadge(selectedBundle.advisoryType);
+                    return (
+                      <span style={{
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                        padding: "0.2rem 0.6rem",
+                        borderRadius: "4px",
+                        background: modalTypeBadge.bg,
+                        color: modalTypeBadge.text,
+                        border: `1px solid ${modalTypeBadge.border}`,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.3rem"
+                      }}>
+                        <span>{modalTypeBadge.icon}</span>
+                        <span>{modalTypeBadge.label}</span>
+                      </span>
+                    );
+                  })()}
 
                   {/* Status / Severity Pill */}
                   {ratingMode === "observational" ? (
