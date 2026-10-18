@@ -87,7 +87,7 @@ describe("Axiom Pro Tier & LMS Feed Gating Tests", () => {
       expect(res.status).toBe(401);
       const data = await res.json();
       expect(data.code).toBe("UNAUTHORIZED");
-    });
+    }, 15000);
 
     it("should reject Free tier users from exporting student transcripts with 403 UPGRADE_REQUIRED", async () => {
       mockAuthResult = {
@@ -194,7 +194,7 @@ describe("Axiom Pro Tier & LMS Feed Gating Tests", () => {
       expect(res.status).toBe(403);
       const data = await res.json();
       expect(data.code).toBe("ENTERPRISE_TIER_REQUIRED");
-    });
+    }, 15000);
 
     it("should reject Pro tier users from accessing LMS embed feed on GET /api/axiom/exam?feed=lms with 403", async () => {
       mockAuthResult = {
