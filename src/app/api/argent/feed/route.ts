@@ -23,6 +23,10 @@ export async function GET(request: Request) {
   const query = searchParams.get('q') || searchParams.get('query') || undefined;
   const reboot = searchParams.get('reboot') || undefined;
   const release = searchParams.get('release') || undefined;
+  const domain = searchParams.get('domain') || undefined;
+  const source = searchParams.get('source') || undefined;
+  const scope = (searchParams.get('scope') as any) || undefined;
+  const sortBy = (searchParams.get('sortBy') as any) || undefined;
   const format = (searchParams.get('format') || 'json').toLowerCase();
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '50', 10);
@@ -33,6 +37,10 @@ export async function GET(request: Request) {
     query,
     reboot,
     release,
+    domain,
+    source,
+    scope,
+    sortBy,
     page,
     limit
   });
