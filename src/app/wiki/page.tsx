@@ -9,7 +9,8 @@ import {
   PraxisIcon, 
   PureOsIcon, 
   AxiomIcon, 
-  KineticIcon 
+  KineticIcon,
+  ArgentIcon 
 } from "@/components/BrandIcons";
 import { 
   Search, 
@@ -48,7 +49,7 @@ interface ProductWiki {
   tagline: string;
   icon: React.ReactNode;
   accentColor: string;
-  githubFile: string;
+  specDoc: string;
   quickStart: {
     title: string;
     description: string;
@@ -76,7 +77,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     tagline: "Autonomous Zero-Downtime Hotfix Stream & Sub-Second Deterministic Rollback",
     icon: <KineticIcon size={36} />,
     accentColor: "#06B6D4",
-    githubFile: "wiki/kinetic.md",
+    specDoc: "kinetic.md",
     quickStart: {
       title: "Deploying Kinetic in 60 Seconds",
       description: "Kinetic provides both a standalone compiled binary and on-demand streamed POSIX shell hotfixes for zero-agent infrastructure.",
@@ -204,12 +205,143 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     ]
   },
   {
+    id: "argent",
+    name: "Argent",
+    tagline: "Public Operating System Vendor Patch Feed Aggregator & Errata Telemetry Hub",
+    icon: <ArgentIcon size={36} />,
+    accentColor: "#38BDF8",
+    specDoc: "argent.md",
+    quickStart: {
+      title: "Query and Ingest Distro Patch Bundles in 60 Seconds",
+      description: "Argent aggregates official machine-readable security errata categorized by OS distribution (Ubuntu, Debian, Rocky/RHEL, Alpine, SUSE, Arch, Amazon Linux) with zero abstract CWE noise.",
+      steps: [
+        {
+          label: "Query Ubuntu Security Notices (USN) via cURL",
+          command: "curl -s \"https://exultia.tech/api/argent/feed?os=ubuntu&severity=critical\" | jq .",
+          codeLang: "bash",
+          details: "Returns structured patch bundles with package names, fixed versions, and native upgrade commands."
+        },
+        {
+          label: "Deploy Rocky Linux Errata via Kinetic CLI",
+          command: "kinetic upgrade --bundle RLSA-2024:4312 --os rocky",
+          codeLang: "bash",
+          details: "Atomically snapshots package states, executes DNF updates, verifies installation, and enables sub-second rollback."
+        },
+        {
+          label: "Stream Executable POSIX Shell Fixes Directly (Zero-Agent)",
+          command: "curl -sSL \"https://exultia.tech/api/argent/feed?os=debian&format=bash\" | sudo bash",
+          codeLang: "bash",
+          details: "Dynamically synthesizes native APT package upgrade commands directly from Debian Security Tracker."
+        }
+      ]
+    },
+    productDetails: {
+      overview: "Argent is a specialized derivative of the Vantage intelligence feed designed for SecOps and infrastructure engineers who require concrete package errata and vendor advisories rather than academic weakness taxonomies.",
+      architectureTitle: "Multi-Distro Public Feed Aggregation Architecture",
+      architecturePoints: [
+        "8 Major OS Ecosystems: Canonical USN (OSV/OVAL), Debian Security Tracker JSON, Rocky Linux Errata, Red Hat CSAF 2.0, Alpine SecDB, SUSE OVAL, Arch ASA, Amazon Linux ALAS.",
+        "Zero CWE Noise: Strips abstract vulnerability taxonomies to focus on atomic package bundles and native version deltas.",
+        "Deterministic Rollback & Verification: Supplies exact rollback transaction strings (e.g. dnf history undo, apt-get install =<prev>) and post-upgrade package query commands.",
+        "Direct Kinetic Pipeline: Feeds seamlessly into the Kinetic autonomous daemon for canary rollouts and zero-downtime micro-mitigations."
+      ],
+      capabilities: [
+        { title: "Categorized by OS Distribution", desc: "Filter by Ubuntu, Debian, Rocky/RHEL, Alpine, SUSE, Arch, Amazon Linux, and upstream Linux Kernel." },
+        { title: "Zero-Downtime & Reboot Flags", desc: "Instantly identifies whether an errata package requires a system reboot or seamless service restart." },
+        { title: "Executable Bash Streaming", desc: "Outputs ready-to-run shell scripts with pre-flight OS detection and verification checks." }
+      ],
+      specifications: [
+        { label: "Monitored Public Feeds", value: "9 authoritative distro feeds" },
+        { label: "Supported Package Managers", value: "APT, DNF, APK, Zypper, Pacman, kmod" },
+        { label: "Update Ingestion Cadence", value: "Real-time notice webhooks + sub-hourly polling" },
+        { label: "Output Formats", value: "JSON, POSIX Shell Script, Kinetic Feed Format" }
+      ]
+    },
+    apiEndpoints: [
+      {
+        method: "GET",
+        path: "/api/argent/feed",
+        summary: "Stream aggregated OS vendor patch bundles filtered by distro, severity, and keywords",
+        authRequired: false,
+        queryParams: [
+          { name: "os", type: "string", required: false, description: "Target OS filter (e.g. ubuntu, rocky, debian, alpine, suse, arch)", example: "rocky" },
+          { name: "severity", type: "string", required: false, description: "Vendor severity level (critical, important, moderate, low)", example: "critical" },
+          { name: "q", type: "string", required: false, description: "Keyword search matching package names or bundle IDs", example: "openssh" },
+          { name: "format", type: "string", required: false, description: "Output format: json, bash, or kinetic", example: "json" },
+          { name: "reboot", type: "boolean", required: false, description: "Filter by reboot requirement (true/false)", example: "false" }
+        ],
+        responses: [
+          {
+            status: 200,
+            description: "Filtered vendor patch bundles",
+            example: {
+              total: 1,
+              page: 1,
+              limit: 25,
+              totalPages: 1,
+              bundles: [
+                {
+                  id: "ARG-RLSA-2024-4312",
+                  bundleId: "RLSA-2024:4312",
+                  os: "rocky",
+                  title: "OpenSSH Remote Code Execution Signal Race Errata Bundle",
+                  vendorSeverity: "CRITICAL",
+                  packages: [{ name: "openssh-server", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.1", packageManager: "dnf" }],
+                  commands: { nativeUpgrade: "dnf upgrade -y openssh openssh-server openssh-clients", verification: "rpm -q openssh-server" },
+                  impact: { rebootRequired: false, zeroDowntime: true }
+                }
+              ]
+            }
+          }
+        ],
+        curlExample: "curl -s \"https://exultia.tech/api/argent/feed?os=rocky&severity=critical\" | jq ."
+      },
+      {
+        method: "GET",
+        path: "/api/argent/stats",
+        summary: "Macro-level OS errata metrics, severity distributions, and public distro feed counts",
+        authRequired: false,
+        responses: [
+          {
+            status: 200,
+            description: "Argent telemetry summary",
+            example: {
+              totalBundles: 9,
+              totalPackagesUpdated: 19,
+              criticalCount: 6,
+              importantCount: 3,
+              zeroDowntimeCount: 7,
+              byOs: { ubuntu: 2, debian: 2, rocky: 2, alpine: 2, suse: 1, arch: 1, amazonLinux: 1, kernel: 1 }
+            }
+          }
+        ],
+        curlExample: "curl -s \"https://exultia.tech/api/argent/stats\" | jq ."
+      },
+      {
+        method: "GET",
+        path: "/api/argent/sources",
+        summary: "Directory of authoritative public Linux distribution security feeds monitored by Argent",
+        authRequired: false,
+        responses: [
+          {
+            status: 200,
+            description: "Public distro feeds list",
+            example: {
+              totalSources: 9,
+              sources: [{ name: "Canonical Ubuntu Security Notices (USN) & OVAL", format: "OSV", status: "active" }]
+            }
+          }
+        ],
+        curlExample: "curl -s \"https://exultia.tech/api/argent/sources\" | jq ."
+      }
+    ]
+  },
+  {
     id: "vantage",
     name: "Vantage",
     tagline: "Universal Threat Feed Aggregating 110+ Global Vulnerability Registries",
     icon: <VantageIcon size={36} />,
     accentColor: "#A855F7",
-    githubFile: "wiki/vantage.md",
+    specDoc: "vantage.md",
     quickStart: {
       title: "Querying Threat Intelligence",
       description: "Access high-throughput vulnerability telemetry, CISA KEV synchronization, and CVSS v3.1 scoring in real time.",
@@ -331,7 +463,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     tagline: "Cybersecurity Exam Simulator, Adaptive Question Bank & Enterprise LMS Feed",
     icon: <AxiomIcon size={36} glow={false} />,
     accentColor: "#F43F5E",
-    githubFile: "wiki/axiom.md",
+    specDoc: "axiom.md",
     quickStart: {
       title: "Interactive Certification Simulations",
       description: "Prepare security teams for CISSP, Security+, CISM, CEH, OSCP, and AWS Security with psychometric scoring and LMS integrations.",
@@ -457,7 +589,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     tagline: "Autonomous Digital Forensics, Incident Response & Public Records Compliance",
     icon: <InquestIcon size={36} />,
     accentColor: "#06B6D4",
-    githubFile: "wiki/inquest.md",
+    specDoc: "inquest.md",
     quickStart: {
       title: "Forensic Case Management & Public Records Intake",
       description: "Manage digital evidence, automate statutory FOIA deadlines, and execute multi-jurisdiction PII redactions.",
@@ -537,7 +669,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     tagline: "Tactical Adversary Emulation, Fleet Defense & Verified Remediation Playbooks",
     icon: <PraxisIcon size={36} />,
     accentColor: "#10B981",
-    githubFile: "wiki/praxis.md",
+    specDoc: "praxis.md",
     quickStart: {
       title: "Synthesizing Automated Remediation Playbooks",
       description: "Convert threat vectors identified in Vantage into deployable, verified Ansible playbooks.",
@@ -610,7 +742,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     tagline: "Zero-Trust Developer Workstation & Pre-Hardened Container Catalogue",
     icon: <PureIdeIcon size={36} />,
     accentColor: "#3B82F6",
-    githubFile: "wiki/pureide-pureos.md",
+    specDoc: "pureide-pureos.md",
     quickStart: {
       title: "Hermetic Builds & Hardened Container Deployment",
       description: "Run reproducible compilations in an isolated, zero-egress sandbox.",
@@ -728,22 +860,13 @@ export default function WikiPage() {
               TECHNICAL WIKI & KNOWLEDGE BASE
             </span>
             <span style={{ fontSize: "0.8rem", color: "#64748B" }}>•</span>
-            <Link 
-              href="https://github.com/wstrika/exultia/tree/main/wiki" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "0.8rem",
-                color: "#94A3B8",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-                textDecoration: "none"
-              }}
-            >
-              <span>GitHub Repo Wiki</span>
-              <ExternalLink size={12} />
-            </Link>
+            <span style={{
+              fontSize: "0.8rem",
+              color: "#94A3B8",
+              fontFamily: "var(--font-mono, monospace)"
+            }}>
+              Enterprise Reference v2.4
+            </span>
           </div>
 
           <h1 style={{
@@ -983,10 +1106,7 @@ export default function WikiPage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <Link
-              href={`https://github.com/wstrika/exultia/blob/main/${activeProduct.githubFile}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -997,14 +1117,12 @@ export default function WikiPage() {
                 borderRadius: "8px",
                 background: "rgba(255, 255, 255, 0.05)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
-                color: "#FFFFFF",
-                textDecoration: "none"
+                color: "#94A3B8"
               }}
             >
-              <FileText size={14} />
-              <span>Raw Markdown ({activeProduct.githubFile})</span>
-              <ExternalLink size={12} />
-            </Link>
+              <FileText size={14} color="var(--accent-primary, #00E5FF)" />
+              <span>Specification: {activeProduct.specDoc}</span>
+            </span>
           </div>
         </div>
 

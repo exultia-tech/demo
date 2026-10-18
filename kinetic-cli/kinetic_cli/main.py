@@ -43,6 +43,13 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--os", help="Target operating system distribution filter")
     apply_parser.add_argument("--dry-run", action="store_true", help="Simulate mitigation without modifying files")
 
+    # Command: upgrade (Standard OS Distribution Package Updates via Argent / Distro Feeds)
+    upgrade_parser = subparsers.add_parser("upgrade", help="Deploy standard OS package updates and vendor errata bundles from Argent")
+    upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or USN-6856-1)")
+    upgrade_parser.add_argument("--feed-url", default="http://localhost:3000/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
+    upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, suse)")
+    upgrade_parser.add_argument("--dry-run", action="store_true", help="Simulate upgrade without executing package manager")
+
     # Command: rollback
     rollback_parser = subparsers.add_parser("rollback", help="Execute sub-second deterministic rollback")
     rollback_parser.add_argument("--cve", help="Specific CVE ID to rollback")
@@ -164,6 +171,15 @@ def cli_entry():
 
         print(f"\n[Kinetic] Completed. Applied {applied}/{len(patches)} hot-mitigations.")
         sys.exit(0 if applied > 0 or len(patches) == 0 else 1)
+
+    elif args.command == "upgrade":
+        success = engine.upgrade_os_packages(
+            bundle_id=args.bundle,
+            os_filter=args.os,
+            feed_url=args.feed_url,
+            dry_run=args.dry_run
+        )
+        sys.exit(0 if success else 1)
 
     elif args.command == "rollback":
         success = engine.rollback_patch(cve_id=args.cve, latest=args.latest)

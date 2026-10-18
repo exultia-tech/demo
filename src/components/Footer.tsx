@@ -64,15 +64,6 @@ export default function Footer() {
         <a href="/wiki" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
           Site Wiki & API Docs
         </a>
-        <span style={{ color: "rgba(255, 255, 255, 0.2)" }}>•</span>
-        <a 
-          href="https://github.com/wstrika/exultia/tree/main/wiki" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: "#94A3B8", textDecoration: "none" }}
-        >
-          GitHub Wiki Repo ↗
-        </a>
       </div>
       <div style={{
         fontSize: "0.75rem",

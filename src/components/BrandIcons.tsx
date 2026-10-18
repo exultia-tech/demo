@@ -519,6 +519,48 @@ export function AxiomIcon({ size = 32, className = "", glow = true }: IconProps)
 }
 
 /**
+ * Argent Product Icon
+ * Polished platinum / silver heraldic crest with layered distribution patch bundle plates.
+ */
+export function ArgentIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(148, 163, 184, 0.45))" : "none";
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
+      <defs>
+        <linearGradient id="argent-grad-silver" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#F8FAFC" />
+          <stop offset="35%" stopColor="#CBD5E1" />
+          <stop offset="70%" stopColor="#94A3B8" />
+          <stop offset="100%" stopColor="#475569" />
+        </linearGradient>
+        <linearGradient id="argent-grad-cyan" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#E0F2FE" />
+          <stop offset="50%" stopColor="#38BDF8" />
+          <stop offset="100%" stopColor="#0284C7" />
+        </linearGradient>
+      </defs>
+
+      {/* Layered Hexagonal Chassis (Armored Silver Package Plate) */}
+      <polygon points="24,4 42,12 42,36 24,44 6,36 6,12" fill="rgba(15, 23, 42, 0.9)" stroke="url(#argent-grad-silver)" strokeWidth="2.5" strokeLinejoin="round" />
+
+      {/* Sub-Plate 1 (Top Distribution Shingle) */}
+      <path d="M12 15 L24 21 L36 15" stroke="url(#argent-grad-silver)" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+
+      {/* Sub-Plate 2 (Middle Distribution Shingle) */}
+      <path d="M10 24 L24 31 L38 24" stroke="url(#argent-grad-silver)" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+
+      {/* Core Argent Prismatic Ingot (OS Package Core) */}
+      <polygon points="24,14 31,19 31,29 24,34 17,29 17,19" fill="rgba(56, 189, 248, 0.18)" stroke="url(#argent-grad-cyan)" strokeWidth="2" strokeLinejoin="round" />
+      <polygon points="24,18 28,21 28,27 24,30 20,27 20,21" fill="url(#argent-grad-cyan)" opacity="0.9" />
+
+      {/* Synchronized Bundle Core Node */}
+      <circle cx="24" cy="24" r="2" fill="#FFFFFF" />
+    </svg>
+  );
+}
+
+/**
  * Kinetic / PatchFeed Product Icon
  * High-velocity patch stream symbol representing instantaneous micro-mitigation and continuous remediation.
  */
@@ -550,4 +592,6 @@ export function KineticIcon({ size = 32, className = "", glow = true }: IconProp
     </svg>
   );
 }
+
+
 

@@ -3,6 +3,7 @@ import { SAMPLE_PATCH_FEED, type PatchFeedItem } from '@/lib/patch-data';
 export { SAMPLE_PATCH_FEED, type PatchFeedItem };
 import { getAggregatedUviAdvisories } from '@/lib/feed-aggregator';
 import { batchSynthesizeKineticPatches } from '@/lib/kinetic-engine';
+import { getAllStandardOsPatches, PUBLIC_DISTRO_PATCH_SOURCES } from '@/lib/os-patch-feed';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -11,8 +12,17 @@ export async function GET(request: NextRequest) {
   const format = searchParams.get('format') || 'json';
   const source = searchParams.get('source');
   const limitParam = searchParams.get('limit');
+  const patchType = searchParams.get('type'); // 'cve' | 'os-upgrade' | 'all'
+  const tierParam = searchParams.get('tier') || '1'; // '1' (hotfix), '2' (pkg upgrade), 'all'
+  const includeOs = searchParams.get('include_os') === 'true' || patchType === 'os-upgrade' || patchType === 'all';
 
   let feedItems = [...SAMPLE_PATCH_FEED];
+
+  if (patchType === 'os-upgrade') {
+    feedItems = getAllStandardOsPatches(os || undefined);
+  } else if (includeOs) {
+    feedItems = [...SAMPLE_PATCH_FEED, ...getAllStandardOsPatches(os || undefined)];
+  }
 
   if (source === 'vantage' || limitParam) {
     try {
@@ -25,7 +35,7 @@ export async function GET(request: NextRequest) {
         limit = isNaN(parsed) ? 1000 : parsed;
       }
       const synthetic = batchSynthesizeKineticPatches(advs, limit);
-      feedItems = [...SAMPLE_PATCH_FEED, ...synthetic];
+      feedItems = [...feedItems, ...synthetic];
     } catch (e) {
       console.error('Failed to load Vantage feed for kinetic synthesis:', e);
     }
@@ -43,10 +53,11 @@ export async function GET(request: NextRequest) {
 
   if (format === 'bash') {
     // Compile single bash script that can be piped into sh
+    const targetOs = os ? os.toLowerCase() : 'ubuntu';
     const lines: string[] = [
       '#!/bin/sh',
       '# Exultia Kinetic Patch Feed - Automated Fleet Remediation',
-      '# Generated on-demand for rapid enterprise response',
+      '# Generated on-demand for rapid enterprise response & standard OS updates',
       'set -e',
       '',
       'log() { echo "[Exultia Kinetic] $(date +\'%Y-%m-%d %H:%M:%S\') $1"; }',
@@ -62,15 +73,37 @@ export async function GET(request: NextRequest) {
     ];
 
     for (const item of filtered) {
-      lines.push(`log "Applying hot-mitigation for ${item.id} (${item.cveId}): ${item.title}"`);
-      for (const cmd of item.remediationTier.tier1_hotMitigation.commands) {
-        lines.push(`  ${cmd}`);
+      if (tierParam === '2') {
+        // Execute Tier 2 standard distro package upgrade
+        const distroCmd = item.remediationTier.tier2_packageUpgrade.distroCommands[targetOs] 
+          || item.remediationTier.tier1_hotMitigation.commands[0];
+        lines.push(`log "Applying Tier 2 OS package upgrade for ${item.id} (${item.cveId}): ${item.title}"`);
+        lines.push(`  ${distroCmd}`);
+        lines.push(`log "Verified: ${item.remediationTier.tier1_hotMitigation.verificationCommand}"`);
+      } else if (tierParam === 'all') {
+        // Apply Tier 1 hotfix followed by Tier 2 package reconciliation
+        lines.push(`log "Applying Tier 1 hotfix for ${item.id} (${item.cveId}): ${item.title}"`);
+        for (const cmd of item.remediationTier.tier1_hotMitigation.commands) {
+          lines.push(`  ${cmd}`);
+        }
+        const distroCmd = item.remediationTier.tier2_packageUpgrade.distroCommands[targetOs];
+        if (distroCmd) {
+          lines.push(`log "Reconciling with Tier 2 OS package: ${distroCmd}"`);
+          lines.push(`  ${distroCmd}`);
+        }
+        lines.push(`log "Verified: ${item.remediationTier.tier1_hotMitigation.verificationCommand}"`);
+      } else {
+        // Default Tier 1 hot-mitigations
+        lines.push(`log "Applying hot-mitigation for ${item.id} (${item.cveId}): ${item.title}"`);
+        for (const cmd of item.remediationTier.tier1_hotMitigation.commands) {
+          lines.push(`  ${cmd}`);
+        }
+        lines.push(`log "Verified: ${item.remediationTier.tier1_hotMitigation.verificationCommand}"`);
       }
-      lines.push(`log "Verified: ${item.remediationTier.tier1_hotMitigation.verificationCommand}"`);
       lines.push('');
     }
 
-    lines.push('log "All pending hot-mitigations applied successfully. Zero reboot required."');
+    lines.push('log "All pending remediations applied successfully. Zero reboot required."');
 
     return new NextResponse(lines.join('\n'), {
       headers: {
@@ -85,6 +118,7 @@ export async function GET(request: NextRequest) {
     feedVersion: '2.0.0',
     generatedAt: new Date().toISOString(),
     totalActivePatches: filtered.length,
+    publicDistroFeeds: PUBLIC_DISTRO_PATCH_SOURCES,
     patches: filtered
   }, {
     headers: {

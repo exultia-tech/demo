@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, User as UserIcon, Shield, ChevronDown, Sparkles, RotateCcw } from "lucide-react";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -93,8 +92,13 @@ export default function Navbar() {
     pathname.startsWith("/products/kinetic")
   );
 
+  const isArgentContext = !isIsolated && (
+    pathname.startsWith("/app/argent") ||
+    pathname.startsWith("/argent")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
 
   // Active subscription helper
   const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
@@ -274,6 +278,34 @@ export default function Navbar() {
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Vantage</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal threat feed aggregating 110+ global registries</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT: ARGENT (Public OS Distro Patch Aggregator) */}
+                    <Link 
+                      href="/argent" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isArgentContext ? "rgba(148, 163, 184, 0.2)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <ArgentIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Argent</span>
+                          <span style={{ fontSize: "0.65rem", background: "rgba(148, 163, 184, 0.2)", color: "#E2E8F0", border: "1px solid rgba(148, 163, 184, 0.4)", padding: "1px 5px", borderRadius: "4px", fontWeight: 700 }}>NEW</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Public OS vendor patch bundles categorized by distro</div>
                       </div>
                     </Link>
 
@@ -912,6 +944,41 @@ export default function Navbar() {
                 href="/research" 
                 className="submenu-link">
                 Testing Rig
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION: ARGENT SUBMENU */}
+          {isArgentContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(148, 163, 184, 0.15)", color: "#F1F5F9", borderColor: "rgba(148, 163, 184, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <ArgentIcon size={16} glow={false} />
+                Argent
+              </span>
+
+              <Link 
+                href="/argent" 
+                className={`submenu-link ${pathname === "/argent" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Vendor Patch Bundles
+              </Link>
+              <Link 
+                href="/api/argent/feed" 
+                target="_blank"
+                className="submenu-link">
+                JSON Feed
+              </Link>
+              <Link 
+                href="/api/argent/feed?format=bash" 
+                target="_blank"
+                className="submenu-link">
+                Bash Script
+              </Link>
+              <Link 
+                href="/wiki#argent" 
+                className="submenu-link"
+                style={{ color: "#38BDF8", fontWeight: 700 }}>
+                Wiki &amp; API Docs
               </Link>
             </div>
           )}

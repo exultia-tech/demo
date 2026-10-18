@@ -206,13 +206,14 @@ export async function GET(request: Request) {
         blobs: foundBlobs.map((b: any) => ({ pathname: b.pathname, url: b.url, uploadedAt: b.uploadedAt })),
         matches: matches.map((b: any) => ({ pathname: b.pathname, url: b.url, uploadedAt: b.uploadedAt })),
         localFilePath,
-        fallbackTarget: 'https://github.com/wstrika/secure-ide/releases/latest'
+        fallbackTarget: null
       });
     }
 
-    // 5. If not found in local OR blob, redirect to official GitHub release fallback
-    const githubReleaseFallback = 'https://github.com/wstrika/secure-ide/releases/latest';
-    return NextResponse.redirect(githubReleaseFallback);
+    // 5. If not found in local OR blob, return staging response
+    return NextResponse.json({
+      error: 'Requested binary artifact is currently staging. Please check back shortly.'
+    }, { status: 404 });
 
   } catch (error: any) {
     console.error('Download route error:', error);

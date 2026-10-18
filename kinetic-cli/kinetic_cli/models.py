@@ -27,6 +27,18 @@ class Provenance:
 
 
 @dataclass
+class PackageUpgrade:
+    summary: str = ""
+    distro_commands: Dict[str, str] = field(default_factory=dict)
+    upgrade_command: str = ""
+    package_name: str = ""
+    version_before: str = ""
+    version_target: str = ""
+    requires_reboot: bool = False
+    package_manager: str = "apt"
+
+
+@dataclass
 class KineticPatch:
     id: str
     cve_id: str
@@ -38,16 +50,21 @@ class KineticPatch:
     affected_distros: List[str]
     hot_mitigation: HotMitigation
     provenance: Provenance
+    package_upgrade: PackageUpgrade = field(default_factory=PackageUpgrade)
+    bundle_id: str = ""
     published_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "KineticPatch":
         rem = data.get("remediationTier", {}).get("tier1_hotMitigation", {})
+        pkg_rem = data.get("remediationTier", {}).get("tier2_packageUpgrade", {})
         prov = data.get("provenance", {})
+        meta = data.get("metadata", {})
 
         return cls(
             id=data.get("id", f"PAT-{data.get('cveId', 'UNKNOWN')}"),
             cve_id=data.get("cveId", "UNKNOWN"),
+            bundle_id=meta.get("bundleId", data.get("id", "")),
             title=data.get("title", "Advisory Remediation"),
             severity=data.get("severity", "HIGH"),
             cvss=float(data.get("cvss", 7.5)),
@@ -60,6 +77,16 @@ class KineticPatch:
                 commands=rem.get("commands", []),
                 verification_command=rem.get("verificationCommand", "echo verified"),
                 rollback_command=rem.get("rollbackCommand", "true")
+            ),
+            package_upgrade=PackageUpgrade(
+                summary=pkg_rem.get("summary", "Standard OS Package Upgrade"),
+                distro_commands=pkg_rem.get("distroCommands", {}),
+                upgrade_command=pkg_rem.get("upgradeCommand", ""),
+                package_name=pkg_rem.get("packageName", ""),
+                version_before=pkg_rem.get("versionBefore", ""),
+                version_target=pkg_rem.get("versionTarget", ""),
+                requires_reboot=pkg_rem.get("requiresReboot", False),
+                package_manager=pkg_rem.get("packageManager", "apt")
             ),
             provenance=Provenance(
                 signed_by=prov.get("signedBy", "security@exultia.tech (Cosign OIDC Keyless)"),
