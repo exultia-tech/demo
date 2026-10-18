@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll } from "vitest";
-import { IDE_ENGINES } from "@/app/app/pureide/page";
+import { IDE_ENGINES, generateStackBlueprintName } from "@/app/app/pureide/page";
 import { generateCycloneDX } from "@/lib/sbom";
 import fs from "fs";
 import path from "path";
@@ -41,6 +41,46 @@ describe("PureIDE Module: Zero-Trust Multi-Engine IDE Packager", () => {
     });
   });
 
+  describe("Stack Blueprint Auto-Naming Generator", () => {
+    it("should generate standardized names from toolchain extensions without allowing vanity titles", () => {
+      const extensions = [
+        { name: "rust-analyzer", displayName: "Rust Analyzer" },
+        { name: "vscode-lldb", displayName: "CodeLLDB Native Debugger" }
+      ];
+      const title = generateStackBlueprintName("vscode", extensions);
+      expect(title).toBe("Rust Analyzer + CodeLLDB Stack");
+    });
+
+    it("should clean verbose boilerplate and deduplicate toolchain items", () => {
+      const extensions = [
+        { name: "python", displayName: "Python Language Support for Visual Studio Code" },
+        { name: "jupyter", displayName: "Jupyter Extension Pack" }
+      ];
+      const title = generateStackBlueprintName("jupyter", extensions);
+      expect(title).toBe("Python + Jupyter Stack");
+    });
+
+    it("should summarize large toolchains with a (+N tools) overflow counter", () => {
+      const extensions = [
+        { name: "go", displayName: "Go Language Support" },
+        { name: "docker", displayName: "Docker Tools" },
+        { name: "kubernetes", displayName: "Kubernetes Tools" },
+        { name: "terraform", displayName: "HashiCorp Terraform" },
+        { name: "sqltools", displayName: "SQLTools Database Manager" }
+      ];
+      const title = generateStackBlueprintName("vscode", extensions);
+      expect(title).toBe("Go + Docker + Kubernetes Stack (+2 tools)");
+    });
+
+    it("should provide a clean fallback when no extensions are selected", () => {
+      expect(generateStackBlueprintName("vscode", [])).toBe("VS Code Minimal Developer Stack");
+      expect(generateStackBlueprintName("zed", [])).toBe("Zed Minimal Developer Stack");
+      expect(generateStackBlueprintName("neovim", [])).toBe("Neovim Minimal Developer Stack");
+      expect(generateStackBlueprintName("theia", [])).toBe("Theia Minimal Developer Stack");
+      expect(generateStackBlueprintName("jupyter", [])).toBe("JupyterLab Minimal Developer Stack");
+    });
+  });
+
   describe("SBOM & Zero-Trust Integrity Engine", () => {
     it("should generate a valid CycloneDX SBOM structure with metadata and hashes", () => {
       const res = generateCycloneDX({
@@ -60,3 +100,4 @@ describe("PureIDE Module: Zero-Trust Multi-Engine IDE Packager", () => {
     });
   });
 });
+

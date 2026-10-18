@@ -156,6 +156,67 @@ interface StackBlueprint {
   createdAt?: string;
 }
 
+export const ENGINE_LABELS: Record<string, string> = {
+  vscode: "VS Code",
+  theia: "Theia",
+  zed: "Zed",
+  neovim: "Neovim",
+  jupyter: "JupyterLab",
+};
+
+/**
+ * Standardized Stack Blueprint Name Generator.
+ * Community blueprint names are strictly derived from the toolchain contents (languages, tools, extensions)
+ * so developers can immediately see what stacks their peers built without arbitrary or misleading custom vanity titles.
+ */
+export function generateStackBlueprintName(
+  engine: string,
+  extensions: { displayName?: string; name: string; [key: string]: any }[] = []
+): string {
+  const engineLabel = ENGINE_LABELS[engine] || (engine ? engine.charAt(0).toUpperCase() + engine.slice(1) : "Universal");
+  if (!extensions || extensions.length === 0) {
+    return `${engineLabel} Minimal Developer Stack`;
+  }
+
+  // Clean up noisy prefixes/suffixes from extension names to get concise tool names
+  const cleanToolName = (item: { displayName?: string; name: string }) => {
+    let raw = item.displayName || item.name;
+    raw = raw
+      .replace(/\b(Language Support|for Visual Studio Code|Extension Pack|IntelliSense|Native Debugger|Support|Tools|Extension|Official|Plugin)\b/gi, "")
+      .replace(/[()]/g, "")
+      .trim();
+    if (!raw) raw = item.name.replace(/^vscode-/, "");
+    return raw.split(/\s+/).slice(0, 2).join(" ");
+  };
+
+  const toolNames = extensions
+    .map(cleanToolName)
+    .filter(Boolean);
+
+  // Deduplicate case-insensitively
+  const uniqueTools: string[] = [];
+  const seen = new Set<string>();
+  for (const t of toolNames) {
+    const lower = t.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      uniqueTools.push(t);
+    }
+  }
+
+  if (uniqueTools.length === 0) {
+    return `${engineLabel} Developer Stack`;
+  }
+
+  const primaryTools = uniqueTools.slice(0, 3).join(" + ");
+  const extraCount = uniqueTools.length - 3;
+  
+  if (extraCount > 0) {
+    return `${primaryTools} Stack (+${extraCount} tools)`;
+  }
+  return `${primaryTools} Stack`;
+}
+
 const initialCommunityBlueprints: StackBlueprint[] = [
   {
     id: "community-elixir",
@@ -356,7 +417,6 @@ export default function ConsolePage() {
 
   // Custom Blueprint Submission Modal State
   const [showCreateBlueprintModal, setShowCreateBlueprintModal] = useState(false);
-  const [newBpName, setNewBpName] = useState("");
   const [newBpCategory, setNewBpCategory] = useState("Full Stack");
   const [newBpIcon, setNewBpIcon] = useState("🚀");
   const [newBpEngine, setNewBpEngine] = useState<IdeEngine>("vscode");
@@ -1706,10 +1766,6 @@ export default function ConsolePage() {
 
   const handlePublishBlueprint = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newBpName.trim()) {
-      alert("Please provide a name for your Stack Blueprint.");
-      return;
-    }
     const tagsArray = newBpTags.split(",").map(t => t.trim()).filter(Boolean);
     if (tagsArray.length === 0) tagsArray.push("Community Stack");
 
@@ -1725,9 +1781,11 @@ export default function ConsolePage() {
           { namespace: "vadimcn", name: "vscode-lldb", displayName: "CodeLLDB Native Debugger", icon: "https://open-vsx.org/api/vadimcn/vscode-lldb/1.10.0/file/icon.png" }
         ];
 
+    const autoStackName = generateStackBlueprintName(newBpEngine, bpExtensions);
+
     const newBlueprint: StackBlueprint = {
       id: `custom-bp-${Date.now()}`,
-      name: newBpName.trim(),
+      name: autoStackName,
       category: newBpCategory,
       icon: newBpIcon || "🚀",
       description: newBpDesc.trim() || `Community curated ${newBpCategory} stack with ${bpExtensions.length} security-vetted extensions.`,
@@ -1747,7 +1805,6 @@ export default function ConsolePage() {
     }
     setBlueprintSourceFilter("COMMUNITY");
     setShowCreateBlueprintModal(false);
-    setNewBpName("");
     setNewBpDesc("");
     setNewBpTags("");
     setToastMessage(`🎉 "${newBlueprint.name}" published to Community Catalog! Unlocked for Team & Enterprise builders.`);
@@ -2078,9 +2135,7 @@ build_hardened_ide:
 
       // Auto-publish to Community Blueprints catalog if enabled and cart has extensions
       if (autoPublishBlueprint && cart.length > 0) {
-        const autoBpName = brandName && brandName !== "PureIDE Studio" 
-          ? `${brandName} Distribution` 
-          : `${selectedEngine.toUpperCase()} ${cart.slice(0, 2).map(c => c.displayName.split(" ")[0]).join(" + ")} Stack`;
+        const autoBpName = generateStackBlueprintName(selectedEngine, cart);
         
         const autoBp: StackBlueprint = {
           id: `build-bp-${Date.now()}`,
@@ -3234,7 +3289,7 @@ build_hardened_ide:
                   gap: '0.5rem',
                   boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)'
                 }}>
-                <span>✨</span> Publish Custom Blueprint
+                <span>✨</span> Share Stack to Community
               </button>
 
               {tier === "COMMUNITY" && (
@@ -5115,7 +5170,7 @@ build_hardened_ide:
                   ✨
                 </div>
                 <div>
-                  <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Publish Custom Stack Blueprint</h2>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Publish Stack to Community Catalog</h2>
                   <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Community catalog • Unlocked to build on Team & Enterprise</span>
                 </div>
               </div>
@@ -5129,15 +5184,31 @@ build_hardened_ide:
             <form onSubmit={handlePublishBlueprint} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '0.75rem' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Blueprint Name *</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Rust WebAssembly & Axum Cluster" 
-                    value={newBpName} 
-                    onChange={(e) => setNewBpName(e.target.value)}
-                    required
-                    style={{ padding: '0.65rem 0.85rem', fontSize: '0.85rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'white' }} 
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Stack Blueprint Name</label>
+                    <span style={{ fontSize: '0.68rem', background: 'rgba(59, 130, 246, 0.18)', color: '#93C5FD', padding: '0.1rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(59, 130, 246, 0.35)', fontWeight: 600, letterSpacing: '0.04em' }}>AUTO-GENERATED</span>
+                  </div>
+                  <div 
+                    id="pureide-auto-bp-name-preview"
+                    style={{ 
+                      padding: '0.65rem 0.85rem', 
+                      fontSize: '0.85rem', 
+                      background: 'rgba(15, 23, 42, 0.6)', 
+                      border: '1px solid rgba(59, 130, 246, 0.3)', 
+                      borderRadius: '6px', 
+                      color: '#93C5FD', 
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <span>🏷️</span>
+                    <span>{generateStackBlueprintName(newBpEngine, cart.length > 0 ? cart : [{ namespace: "vadimcn", name: "vscode-lldb", displayName: "CodeLLDB Native Debugger" }])}</span>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', display: 'block' }}>
+                    Titles are standardized by toolchain contents so the community can immediately discover exact stacks without custom vanity names.
+                  </span>
                 </div>
                 <div className="form-group" style={{ margin: 0 }}>
                   <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Icon</label>
