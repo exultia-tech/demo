@@ -6,7 +6,7 @@ import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
   title: "Exultia Technologies | Practical. Transparent. Secure.",
-  description: "Exultia Technologies builds practical, transparent, and secure tools: hermetic developer workstations (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  description: "Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.",
 };
 
 export default function HomePage() {
@@ -57,7 +57,7 @@ export default function HomePage() {
         </h1>
 
         <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
-          Software engineering environments, real-time threat intelligence feeds, and automated open-records management built for verifiable integrity and public transparency.
+          Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.
         </p>
 
         {/* HERO CTA ACTIONS */}

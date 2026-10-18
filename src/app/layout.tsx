@@ -12,7 +12,7 @@ import AiSupportWidget from "@/components/support/AiSupportWidget";
 
 export const metadata: Metadata = {
   title: "Exultia Technologies | Practical. Transparent. Secure.",
-  description: "Exultia Technologies builds practical, transparent, and secure tools: hermetic developer workstations (PureIDE), global vulnerability feeds (Vantage), and open-records request management (Inquest).",
+  description: "Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.",
 };
 
 export default function RootLayout({
