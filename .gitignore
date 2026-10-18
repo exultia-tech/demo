@@ -23,12 +23,17 @@
 # downloads & staged builds (large binaries)
 /public/downloads/*
 !/public/downloads/.gitkeep
+!/public/downloads/kinetic
+!/public/downloads/kinetic/**
 bin/dist/*.exe
 kinetic.spec
 
 # misc
 .DS_Store
 *.pem
+__pycache__/
+*.py[cod]
+*$py.class
 tmp_orchestrator.ps1
 local.db
 local.db-journal

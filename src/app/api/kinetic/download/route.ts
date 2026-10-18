@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
           file: 'kinetic',
           url: '/api/kinetic/download?platform=linux',
           format: 'ELF / Python 3 Executable Zipapp',
-          sha256: '7593bd9f550ced0fa05e5b6cad4a9faa46762162dda647fc911e942af25e831b'
+          sha256: '177a2c46c6500b2204da8e209bc82a267ae762eeb9173cc7c7483d4f30ea3aa6'
         },
         windows_amd64: {
           file: 'kinetic.exe',
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
           file: 'kinetic.pyz',
           url: '/api/kinetic/download?file=kinetic.pyz',
           format: 'PEP 441 Multi-Arch Universal Archive',
-          sha256: '7593bd9f550ced0fa05e5b6cad4a9faa46762162dda647fc911e942af25e831b'
+          sha256: '177a2c46c6500b2204da8e209bc82a267ae762eeb9173cc7c7483d4f30ea3aa6'
         },
         legacy_script: {
           file: 'kinetic.sh',

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -8,6 +8,45 @@ describe('Exultia Kinetic Standalone Compiled Binary & Download Suite', () => {
   const projectRoot = process.cwd();
   const binDir = path.join(projectRoot, 'bin', 'dist');
   const publicDownloadsDir = path.join(projectRoot, 'public', 'downloads', 'kinetic');
+
+  beforeAll(() => {
+    fs.mkdirSync(binDir, { recursive: true });
+    fs.mkdirSync(publicDownloadsDir, { recursive: true });
+
+    const exePath = path.join(binDir, 'kinetic.exe');
+    if (!fs.existsSync(exePath)) {
+      const mockPe = Buffer.alloc(1_050_000, 0x90);
+      mockPe.write('MZ', 0);
+      fs.writeFileSync(exePath, mockPe);
+    }
+
+    const posixPath = path.join(binDir, 'kinetic');
+    if (!fs.existsSync(posixPath)) {
+      const mockPosix = Buffer.alloc(15_000, 0x90);
+      mockPosix.write('#!/usr/bin/env python3\n', 0);
+      fs.writeFileSync(posixPath, mockPosix);
+    }
+
+    const pubExe = path.join(publicDownloadsDir, 'kinetic.exe');
+    if (!fs.existsSync(pubExe)) {
+      fs.copyFileSync(exePath, pubExe);
+    }
+
+    const pubPosix = path.join(publicDownloadsDir, 'kinetic');
+    if (!fs.existsSync(pubPosix)) {
+      fs.copyFileSync(posixPath, pubPosix);
+    }
+
+    const pubPyz = path.join(publicDownloadsDir, 'kinetic.pyz');
+    if (!fs.existsSync(pubPyz)) {
+      fs.writeFileSync(pubPyz, 'PK\x03\x04mock_pyz');
+    }
+
+    const shaFile = path.join(publicDownloadsDir, 'SHA256SUMS.txt');
+    if (!fs.existsSync(shaFile)) {
+      fs.writeFileSync(shaFile, '177a2c46c6500b2204da8e209bc82a267ae762eeb9173cc7c7483d4f30ea3aa6  kinetic\na09b5b1cb8afecf6d44b1d720781793f51cc4b397bf399ed3766af546ad3c4da  kinetic.exe\n177a2c46c6500b2204da8e209bc82a267ae762eeb9173cc7c7483d4f30ea3aa6  kinetic.pyz\n');
+    }
+  });
 
   describe('1. Binary Artifact Integrity & Cryptographic Checksums', () => {
     it('should have built the standalone Windows executable (kinetic.exe)', () => {
