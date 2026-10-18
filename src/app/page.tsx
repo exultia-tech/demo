@@ -17,32 +17,50 @@ export default function HomePage() {
   return (
     <div className="fade-in" style={{ paddingBottom: "5rem" }}>
       {/* RADICAL DOOM-ESQUE HERO */}
-      <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "3rem", textAlign: "center", position: "relative" }}>
-        {/* PROMINENT CYBERNETIC DEMON HELM LOGO EMBLEM */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.75rem" }}>
+      <section className="hero-section" style={{ maxWidth: "1280px", margin: "0 auto", padding: "3.5rem 2rem 2.5rem 2rem", textAlign: "left", position: "relative" }}>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "2.5rem",
+          flexWrap: "wrap",
+        }}>
+          {/* SCALED UP CYBERNETIC DEMON HELM LOGO EMBLEM */}
           <div style={{
             position: "relative",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "1rem",
+            flexShrink: 0,
+            padding: "0.5rem",
             background: "radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%)",
             filter: "drop-shadow(0 0 35px var(--accent-glow))",
           }}>
-            <ExultiaLogo size={110} glow={true} />
+            <ExultiaLogo size={165} glow={true} />
           </div>
-        </div>
 
-        <h1 className="hero-title" style={{ fontSize: "3.6rem", marginBottom: 0, letterSpacing: "0.04em", lineHeight: 1.15, textTransform: "uppercase" }}>
-          PRACTICAL. TRANSPARENT. <br/>
-          <span style={{ 
-            color: "var(--accent-primary)", 
-            textShadow: "0 0 25px var(--accent-glow)",
-            fontFamily: "var(--font-display)"
+          {/* THREE STACKED WORDS LEFT-ALIGNED TO THE LOGO */}
+          <h1 className="hero-title" style={{
+            margin: 0,
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "3.2rem",
+            lineHeight: 1.06,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
+            fontWeight: 900,
+            textAlign: "left",
           }}>
-            SECURE.
-          </span>
-        </h1>
+            <span style={{ color: "#FFFFFF" }}>PRACTICAL.</span>
+            <span style={{ color: "#FFFFFF" }}>TRANSPARENT.</span>
+            <span style={{ 
+              color: "var(--accent-primary)", 
+              textShadow: "0 0 25px var(--accent-glow)"
+            }}>
+              SECURE.
+            </span>
+          </h1>
+        </div>
       </section>
 
       {/* CORE PRODUCT PLATFORMS */}
