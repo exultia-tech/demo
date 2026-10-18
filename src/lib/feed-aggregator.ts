@@ -1445,7 +1445,7 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
       fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json", {
         signal: controller.signal,
         headers: { "User-Agent": "SecureIDE-Vantage-Aggregator/3.0" },
-        next: { revalidate: 3600 }
+        cache: "no-store"
       }),
       fetch("https://osv-vulnerabilities.storage.googleapis.com/VSCode/all.zip", {
         signal: controller.signal,

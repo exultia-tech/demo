@@ -294,6 +294,22 @@ class KineticEngine:
                 new_snapshots.append(rec)
                 print(f"[Kinetic] Snapshot created: {tf} -> {backup_path or 'NEW_FILE'} (SHA: {sha_pre[:16]}...)")
 
+        if not new_snapshots:
+            rec = SnapshotRecord(
+                snapshot_id=f"SNAP-{patch.cve_id}-{int(time.time()*1000)}",
+                cve_id=patch.cve_id,
+                target_path="system:runtime",
+                backup_path="",
+                sha256_pre="RUNTIME_STATE",
+                sha256_post="RUNTIME_STATE",
+                rollback_command=patch.hot_mitigation.rollback_command,
+                verification_command=patch.hot_mitigation.verification_command,
+                created_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                status="active"
+            )
+            new_snapshots.append(rec)
+            print(f"[Kinetic] Snapshot created: system:runtime (SHA: RUNTIME_STATE)")
+
         # 2. Execute Hot-Mitigation Commands
         print(f"[Kinetic] Executing {len(patch.hot_mitigation.commands)} mitigation commands...")
         for cmd in patch.hot_mitigation.commands:

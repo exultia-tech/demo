@@ -21,12 +21,14 @@ export function proxy(request: NextRequest) {
   const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {
-    // Whitelist the preview page itself, unlock/lock APIs, auth routes, and the emergency admin login
+    // Whitelist the preview page itself, unlock/lock APIs, auth routes, wiki/docs, and the emergency admin login
     if (
       pathname.startsWith("/preview") ||
       pathname.startsWith("/api/preview") ||
       pathname.startsWith("/admin/login") ||
-      pathname.startsWith("/api/auth")
+      pathname.startsWith("/api/auth") ||
+      pathname.startsWith("/wiki") ||
+      pathname.startsWith("/docs")
     ) {
       return NextResponse.next();
     }

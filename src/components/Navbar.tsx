@@ -451,6 +451,34 @@ export default function Navbar() {
                 LAB
               </span>
             </Link>
+
+            {/* SITE WIKI & API DOCUMENTATION */}
+            <Link 
+              href="/wiki"
+              className={`nav-link ${pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname?.startsWith("/docs") ? "active" : ""}`}
+              style={{
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                color: pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname?.startsWith("/docs") ? "var(--accent-primary)" : undefined
+              }}
+            >
+              Wiki
+              <span style={{
+                fontSize: "0.62rem",
+                background: "rgba(0, 229, 255, 0.15)",
+                color: "var(--accent-primary)",
+                border: "1px solid rgba(0, 229, 255, 0.35)",
+                padding: "1px 5px",
+                borderRadius: "4px",
+                fontWeight: 700,
+                letterSpacing: "0.03em"
+              }}>
+                DOCS
+              </span>
+            </Link>
           </nav>
         )}
 

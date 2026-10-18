@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" data-doom-palette="cyan" style={{ colorScheme: 'dark' }}>
+    <html lang="en" className="dark" data-doom-palette="cyan" suppressHydrationWarning style={{ colorScheme: 'dark' }}>
       <head>
         <script
           dangerouslySetInnerHTML={{

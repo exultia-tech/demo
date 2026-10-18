@@ -98,8 +98,10 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
         status: s.status,
       })),
     };
-  } catch (error) {
-    console.error('Failed to get current user:', error);
+  } catch (error: any) {
+    if (!error?.message?.includes?.('request scope') && !error?.message?.includes?.('outside a request')) {
+      console.error('Failed to get current user:', error);
+    }
     return null;
   }
 }
