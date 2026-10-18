@@ -56,19 +56,9 @@ export default function HomePage() {
           </span>
         </h1>
 
-        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto 2.25rem auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
+        <p className="hero-desc" style={{ maxWidth: "800px", margin: "0 auto", fontSize: "1.2rem", lineHeight: "1.7", color: "var(--text-muted)" }}>
           Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.
         </p>
-
-        {/* HERO CTA ACTIONS */}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-          <a href="#core-platforms" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "0.95rem" }}>
-            EXPLORE PLATFORMS →
-          </a>
-          <Link href="/app/uvi/stats" className="btn-secondary" style={{ padding: "0.85rem 1.8rem", fontSize: "0.92rem" }}>
-            LAUNCH VANTAGE INTEL
-          </Link>
-        </div>
       </section>
 
       {/* CORE PRODUCT PLATFORMS */}
