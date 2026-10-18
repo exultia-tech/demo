@@ -607,35 +607,37 @@ function SubscriptionContent() {
           })}
         </div>
 
-        {/* USER COUNT / SEAT SPECIFICATION PANEL */}
+        {/* USER / MACHINE SIZING PANEL */}
         <div style={{
           marginTop: "1.75rem",
           background: "linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.95) 100%)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
+          border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.12)"}`,
           borderRadius: "18px",
           padding: "1.5rem 2rem",
           maxWidth: "960px",
           margin: "1.75rem auto 0 auto",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.08)"
+          boxShadow: isKinetic 
+            ? "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.1)"
+            : "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.08)"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.25rem" }}>
             <div style={{ textAlign: "left", maxWidth: "520px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Users size={20} color="#38BDF8" />
+                {isKinetic ? <Cpu size={20} color="#06B6D4" /> : <Users size={20} color="#38BDF8" />}
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
                   {isKinetic ? "Specify Fleet Host Nodes" : "Specify Team Size & Seats"}
                 </h3>
                 <span style={{
                   fontSize: "0.68rem",
-                  background: "rgba(56, 189, 248, 0.15)",
-                  color: "#38BDF8",
-                  border: "1px solid rgba(56, 189, 248, 0.3)",
+                  background: isKinetic ? "rgba(6, 182, 212, 0.15)" : "rgba(56, 189, 248, 0.15)",
+                  color: isKinetic ? "#22D3EE" : "#38BDF8",
+                  border: isKinetic ? "1px solid rgba(6, 182, 212, 0.35)" : "1px solid rgba(56, 189, 248, 0.3)",
                   padding: "2px 8px",
                   borderRadius: "999px",
                   fontWeight: 700,
                   textTransform: "uppercase"
                 }}>
-                  Dynamic Pricing
+                  {isKinetic ? "Per-Machine Licensing" : "Per-Seat Licensing"}
                 </span>
               </div>
               <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "6px 0 0 0", lineHeight: 1.45 }}>
@@ -651,7 +653,7 @@ function SubscriptionContent() {
               alignItems: "center",
               gap: "8px",
               background: "rgba(0, 0, 0, 0.4)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
+              border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.3)" : "rgba(255, 255, 255, 0.15)"}`,
               borderRadius: "14px",
               padding: "6px 12px"
             }}>
@@ -659,7 +661,7 @@ function SubscriptionContent() {
                 type="button"
                 onClick={() => setUserCount(Math.max(1, userCount - 1))}
                 disabled={userCount <= 1}
-                aria-label="Decrease user count"
+                aria-label="Decrease count"
                 style={{
                   width: "36px",
                   height: "36px",
@@ -691,7 +693,7 @@ function SubscriptionContent() {
                   style={{
                     width: "72px",
                     background: "rgba(0, 0, 0, 0.5)",
-                    border: "1px solid rgba(56, 189, 248, 0.4)",
+                    border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.5)" : "rgba(56, 189, 248, 0.4)"}`,
                     borderRadius: "8px",
                     color: "#FFFFFF",
                     fontSize: "1.25rem",
@@ -702,7 +704,7 @@ function SubscriptionContent() {
                     outline: "none"
                   }}
                 />
-                <span style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: 600, minWidth: "48px" }}>
+                <span style={{ fontSize: "0.85rem", color: isKinetic ? "#22D3EE" : "#94A3B8", fontWeight: 600, minWidth: "48px" }}>
                   {isKinetic ? (userCount === 1 ? "Host" : "Hosts") : (userCount === 1 ? "User" : "Users")}
                 </span>
               </div>
@@ -710,7 +712,7 @@ function SubscriptionContent() {
               <button
                 type="button"
                 onClick={() => setUserCount(Math.min(1000, userCount + 1))}
-                aria-label="Increase user count"
+                aria-label="Increase count"
                 style={{
                   width: "36px",
                   height: "36px",
@@ -747,15 +749,19 @@ function SubscriptionContent() {
             {[1, 5, 10, 25, 50, 100].map((preset) => {
               const isSelected = userCount === preset;
               const label = isKinetic ? `${preset} ${preset === 1 ? "Host" : "Hosts"}` : `${preset} ${preset === 1 ? "User" : "Users"}`;
+              const activeBg = isKinetic ? "rgba(6, 182, 212, 0.2)" : "rgba(56, 189, 248, 0.2)";
+              const activeBorder = isKinetic ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(56, 189, 248, 0.5)";
+              const activeColor = isKinetic ? "#22D3EE" : "#38BDF8";
+
               return (
                 <button
                   key={preset}
                   type="button"
                   onClick={() => setUserCount(preset)}
                   style={{
-                    background: isSelected ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.04)",
-                    border: isSelected ? "1px solid rgba(56, 189, 248, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
-                    color: isSelected ? "#38BDF8" : "#94A3B8",
+                    background: isSelected ? activeBg : "rgba(255, 255, 255, 0.04)",
+                    border: isSelected ? activeBorder : "1px solid rgba(255, 255, 255, 0.08)",
+                    color: isSelected ? activeColor : "#94A3B8",
                     padding: "4px 12px",
                     borderRadius: "8px",
                     fontSize: "0.78rem",
