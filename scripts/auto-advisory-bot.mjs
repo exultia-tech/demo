@@ -104,8 +104,8 @@ export function formatNaturalPost(cve) {
     }
   }
 
-  // 3. HERE'S THE FIX: The solution link
-  const fix = `Here's the zero-downtime hotfix & canary Ansible playbook:\n${linkUrl}`;
+  // 3. Remediation link
+  const fix = `Remediation:  ${linkUrl}`;
 
   const postText = `${what}\n\n${how}\n\n${fix}`;
   return { what, how, fix, postText, linkUrl };
@@ -181,11 +181,11 @@ async function postToTelegram(cve) {
 
   if (!token || !chatId) {
     console.log(`[Telegram Dry-Run] Missing TELEGRAM_BOT_TOKEN/CHAT_ID. Broadcast preview:`);
-    console.log(`*${cve.cveId}*: ${what}\n\n${how}\n\n👉 [Zero-Downtime Hotfix & Playbook](${linkUrl})`);
+    console.log(`*${cve.cveId}*: ${what}\n\n${how}\n\nRemediation:  ${linkUrl}`);
     return false;
   }
 
-  const message = `*${cve.cveId}*: ${what}\n\n${how}\n\n👉 [Zero-Downtime Hotfix & Playbook](${linkUrl})`;
+  const message = `*${cve.cveId}*: ${what}\n\n${how}\n\nRemediation:  ${linkUrl}`;
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
