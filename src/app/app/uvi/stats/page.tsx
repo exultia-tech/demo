@@ -7,8 +7,7 @@ import { VantageIcon } from "@/components/BrandIcons";
 
 export default function ThreatFeedStatsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState<"overview" | "sources" | "cwe" | "vendors" | "api">("overview");
-  const [copiedApi, setCopiedApi] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "sources" | "cwe" | "vendors">("overview");
 
   // Top Metrics
   const totalFeeds = UVI_PUBLIC_FEED_SOURCES.length;
@@ -90,12 +89,6 @@ export default function ThreatFeedStatsPage() {
       .sort((a, b) => b.recordsIngested - a.recordsIngested)
       .slice(0, 12);
   }, []);
-
-  const handleCopyApi = () => {
-    navigator.clipboard.writeText(`curl -s "https://exultia.tech/api/threat-feed/stats" | jq .`);
-    setCopiedApi(true);
-    setTimeout(() => setCopiedApi(false), 2000);
-  };
 
   return (
     <div className="fade-in" style={{ paddingBottom: "6rem" }}>
@@ -215,13 +208,6 @@ export default function ThreatFeedStatsPage() {
               className={`stats-tab-btn ${activeTab === "vendors" ? "active" : ""}`}
             >
               🏢 Vendors & Assigners
-            </button>
-            <button 
-              type="button"
-              onClick={() => setActiveTab("api")}
-              className={`stats-tab-btn ${activeTab === "api" ? "active" : ""}`}
-            >
-              ⚡ REST Stats API
             </button>
           </div>
 
@@ -453,68 +439,25 @@ export default function ThreatFeedStatsPage() {
           </div>
         )}
 
-        {/* TAB 5: REST STATS API EXPLORER */}
-        {(activeTab === "overview" || activeTab === "api") && (
-          <div className="glass-card" style={{ padding: "2.5rem", background: "linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.98) 100%)", border: "1px solid rgba(139, 92, 246, 0.3)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
-              <div>
-                <span style={{ fontSize: "0.75rem", color: "#C084FC", fontWeight: 700, textTransform: "uppercase" }}>Automated Pipelines & Telemetry</span>
-                <h3 style={{ fontSize: "1.45rem", fontWeight: 800, marginTop: "0.2rem" }}>Real-time Statistics API Endpoint</h3>
-              </div>
-              <button 
-                type="button"
-                onClick={handleCopyApi}
-                className="btn btn-secondary"
-                style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem" }}
-              >
-                {copiedApi ? "✓ Copied curl!" : "📋 Copy curl command"}
-              </button>
-            </div>
-
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              Access full JSON statistics directly for your SIEM, vulnerability dashboard, or automated compliance scripts via our high-speed, rate-limit-free endpoint:
-            </p>
-
-            {/* CODE BOX */}
-            <div style={{
-              background: "rgba(0, 0, 0, 0.6)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "10px",
-              padding: "1.25rem",
-              fontFamily: "monospace",
-              fontSize: "0.85rem",
-              color: "#A78BFA",
-              overflowX: "auto"
-            }}>
-              <div>GET https://exultia.tech/api/threat-feed/stats?period=all&amp;limit=10</div>
-            </div>
-
-            <div style={{ marginTop: "1.25rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-              <a 
-                href="/api/threat-feed/stats" 
-                target="_blank" 
-                rel="noreferrer" 
-                className="btn btn-primary"
-                style={{
-                  background: "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)",
-                  border: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "0.85rem"
-                }}
-              >
-                Open Live JSON Response
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </a>
-              <Link 
-                href="/app/uvi" 
-                className="btn btn-secondary"
-                style={{ fontSize: "0.85rem" }}
-              >
-                Explore Threat Feed Registry
-              </Link>
-            </div>
+        {/* EXPLORE FEED REGISTRY BANNER */}
+        {activeTab === "overview" && (
+          <div style={{ marginTop: "2rem", textAlign: "center" }}>
+            <Link 
+              href="/app/uvi" 
+              className="btn btn-primary"
+              style={{
+                background: "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "0.85rem 1.75rem",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                textDecoration: "none"
+              }}
+            >
+              Explore Real-Time Feed Registry →
+            </Link>
           </div>
         )}
 
