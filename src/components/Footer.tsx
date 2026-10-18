@@ -62,7 +62,7 @@ export default function Footer() {
         marginTop: "4px"
       }}>
         <a href="/wiki" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
-          Site Wiki & API Docs
+          Research Wiki
         </a>
       </div>
       <div style={{

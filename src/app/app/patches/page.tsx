@@ -215,7 +215,7 @@ export default function PatchFeedConceptPage() {
               <span>Explore Kinetic Plans &amp; Pricing →</span>
             </Link>
             <Link
-              href="/research"
+              href="/wiki?product=kinetic&tab=simulator"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -230,7 +230,7 @@ export default function PatchFeedConceptPage() {
                 textDecoration: 'none'
               }}
             >
-              <span>Validation Testing Lab</span>
+              <span>Research Wiki Simulator</span>
             </Link>
           </div>
         </div>
@@ -449,24 +449,24 @@ export default function PatchFeedConceptPage() {
             </div>
           </div>
           <Link
-            href="/research"
+            href="/wiki?product=kinetic&tab=simulator"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
               padding: '0.65rem 1.25rem',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #EAB308, #CA8A04)',
+              background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
               color: '#000000',
               fontWeight: 700,
               fontSize: '0.85rem',
               textDecoration: 'none',
-              boxShadow: '0 0 20px rgba(234, 179, 8, 0.3)',
+              boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)',
               transition: 'all 0.2s ease',
               flexShrink: 0
             }}
           >
-            Launch Research Portal
+            Launch Research Wiki
             <ArrowRight size={16} />
           </Link>
         </div>

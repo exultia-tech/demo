@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   PureIdeIcon, 
@@ -12,6 +12,7 @@ import {
   KineticIcon,
   ArgentIcon 
 } from "@/components/BrandIcons";
+import ProductSimulators from "@/components/research/ProductSimulators";
 import { 
   Search, 
   Terminal, 
@@ -29,7 +30,9 @@ import {
   ArrowRight,
   FileText,
   Key,
-  Database
+  Database,
+  Play,
+  RotateCcw
 } from "lucide-react";
 
 interface ApiEndpoint {
@@ -798,11 +801,25 @@ const WIKI_PRODUCTS: ProductWiki[] = [
   }
 ];
 
-export default function WikiPage() {
+export default function ResearchWikiPage() {
   const [activeProductId, setActiveProductId] = useState<string>("kinetic");
-  const [activeTab, setActiveTab] = useState<"quickstart" | "details" | "api" | "all-apis">("quickstart");
+  const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis">("simulator");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const productParam = params.get("product");
+      const tabParam = params.get("tab");
+      if (productParam && WIKI_PRODUCTS.some(p => p.id === productParam.toLowerCase())) {
+        setActiveProductId(productParam.toLowerCase());
+      }
+      if (tabParam && ["simulator", "details", "quickstart", "api", "all-apis"].includes(tabParam)) {
+        setActiveTab(tabParam as any);
+      }
+    }
+  }, []);
 
   const activeProduct = useMemo(() => {
     return WIKI_PRODUCTS.find(p => p.id === activeProductId) || WIKI_PRODUCTS[0];
@@ -840,11 +857,11 @@ export default function WikiPage() {
       {/* HERO BANNER */}
       <div style={{
         borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-        background: "linear-gradient(180deg, rgba(14, 21, 37, 0.8) 0%, rgba(7, 9, 14, 0.95) 100%)",
-        padding: "3rem 1.5rem 2rem 1.5rem"
+        background: "radial-gradient(ellipse at top, rgba(14, 21, 37, 0.9) 0%, rgba(7, 9, 14, 0.98) 100%)",
+        padding: "3.5rem 1.5rem 2.5rem 1.5rem"
       }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem", flexWrap: "wrap" }}>
             <span style={{
               fontFamily: "var(--font-mono, monospace)",
               fontSize: "0.75rem",
@@ -857,7 +874,7 @@ export default function WikiPage() {
               letterSpacing: "0.1em",
               textTransform: "uppercase"
             }}>
-              TECHNICAL WIKI & KNOWLEDGE BASE
+              RESEARCH WIKI • LIVE LABS &amp; ARCHITECTURE
             </span>
             <span style={{ fontSize: "0.8rem", color: "#64748B" }}>•</span>
             <span style={{
@@ -865,7 +882,7 @@ export default function WikiPage() {
               color: "#94A3B8",
               fontFamily: "var(--font-mono, monospace)"
             }}>
-              Enterprise Reference v2.4
+              Interactive Engineering Reference v2.6
             </span>
           </div>
 
@@ -877,23 +894,50 @@ export default function WikiPage() {
             letterSpacing: "0.02em",
             marginBottom: "0.75rem"
           }}>
-            EXULTIA PLATFORM WIKI
+            EXULTIA RESEARCH WIKI
           </h1>
           <p style={{
             fontSize: "1.05rem",
             color: "#94A3B8",
-            maxWidth: "800px",
-            lineHeight: 1.6
+            maxWidth: "850px",
+            lineHeight: 1.6,
+            marginBottom: "1.75rem"
           }}>
-            Exhaustive operational guides, architectural specifications, and complete REST/Streaming API specifications for every security tool in the Exultia fleet.
+            Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, forensic redaction engines, and explore architectural specifications and enterprise REST API schemas.
           </p>
 
+          {/* Quick Metrics Bar */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "12px",
+            marginBottom: "1.75rem",
+            textAlign: "left"
+          }}>
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Core Systems</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--accent-primary, #00E5FF)" }}>8 Products</div>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Testing Rigs</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#C084FC" }}>8 Live Simulators</div>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Deterministic Rollback</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#34D399" }}>Sub-50ms Local</div>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Compliance Baseline</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#FDE047" }}>100% Zero-Trust</div>
+            </div>
+          </div>
+
           {/* SEARCH BAR */}
-          <div style={{ marginTop: "1.5rem", maxWidth: "680px", position: "relative" }}>
+          <div style={{ maxWidth: "680px", position: "relative" }}>
             <Search size={18} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#64748B" }} />
             <input
               type="text"
-              placeholder="Search guides, endpoints (e.g. /api/patches/feed, daemon, cisa kev, rollback)..."
+              placeholder="Search specifications, simulators, API endpoints (e.g. rollback, sandbox, /api/patches/feed)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -903,7 +947,7 @@ export default function WikiPage() {
                 border: "1px solid rgba(255, 255, 255, 0.15)",
                 borderRadius: "10px",
                 color: "#FFFFFF",
-                fontSize: "0.95rem",
+                fontSize: "0.92rem",
                 fontFamily: "var(--font-mono, monospace)",
                 outline: "none",
                 boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)"
@@ -1126,13 +1170,54 @@ export default function WikiPage() {
           </div>
         </div>
 
-        {/* SUB-TABS (QUICKSTART, DETAILS, API REFERENCE) */}
+        {/* SUB-TABS (SIMULATOR, ARCHITECTURE, QUICKSTART, API REFERENCE) */}
         <div style={{
           display: "flex",
           borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
           marginBottom: "1.75rem",
-          gap: "8px"
+          gap: "8px",
+          flexWrap: "wrap"
         }}>
+          <button
+            onClick={() => setActiveTab("simulator")}
+            style={{
+              padding: "10px 18px",
+              background: "transparent",
+              border: "none",
+              borderBottom: activeTab === "simulator" ? `2px solid ${activeProduct.accentColor}` : "2px solid transparent",
+              color: activeTab === "simulator" ? "#FFFFFF" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.92rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <Sparkles size={16} color={activeTab === "simulator" ? activeProduct.accentColor : "#94A3B8"} />
+            Interactive Lab Simulator
+          </button>
+
+          <button
+            onClick={() => setActiveTab("details")}
+            style={{
+              padding: "10px 18px",
+              background: "transparent",
+              border: "none",
+              borderBottom: activeTab === "details" ? `2px solid ${activeProduct.accentColor}` : "2px solid transparent",
+              color: activeTab === "details" ? "#FFFFFF" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.92rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <BookOpen size={16} color={activeTab === "details" ? activeProduct.accentColor : "#94A3B8"} />
+            Architecture &amp; Specs
+          </button>
+
           <button
             onClick={() => setActiveTab("quickstart")}
             style={{
@@ -1154,26 +1239,6 @@ export default function WikiPage() {
           </button>
 
           <button
-            onClick={() => setActiveTab("details")}
-            style={{
-              padding: "10px 18px",
-              background: "transparent",
-              border: "none",
-              borderBottom: activeTab === "details" ? `2px solid ${activeProduct.accentColor}` : "2px solid transparent",
-              color: activeTab === "details" ? "#FFFFFF" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.92rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <BookOpen size={16} color={activeTab === "details" ? activeProduct.accentColor : "#94A3B8"} />
-            Extensive Product Details
-          </button>
-
-          <button
             onClick={() => setActiveTab("api")}
             style={{
               padding: "10px 18px",
@@ -1190,9 +1255,14 @@ export default function WikiPage() {
             }}
           >
             <Code2 size={16} color={activeTab === "api" ? activeProduct.accentColor : "#94A3B8"} />
-            Complete API Documentation ({activeProduct.apiEndpoints.length})
+            API &amp; cURL Reference ({activeProduct.apiEndpoints.length})
           </button>
         </div>
+
+        {/* TAB 0: INTERACTIVE LAB SIMULATOR */}
+        {activeTab === "simulator" && (
+          <ProductSimulators productId={activeProduct.id} accentColor={activeProduct.accentColor} />
+        )}
 
         {/* TAB 1: QUICK-START GUIDE */}
         {activeTab === "quickstart" && (

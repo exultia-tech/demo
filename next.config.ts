@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         destination: "/app/patches",
         permanent: false,
       },
+      {
+        source: "/research",
+        destination: "/wiki",
+        permanent: false,
+      },
     ];
   },
 };

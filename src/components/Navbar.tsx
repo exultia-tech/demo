@@ -457,48 +457,20 @@ export default function Navbar() {
               Pricing & Plans
             </Link>
 
-            {/* TOP-LEVEL SYSTEMS RESEARCH LAB */}
-            <Link 
-              href="/research"
-              className={`nav-link ${pathname === "/research" || pathname.startsWith("/research") ? "active" : ""}`}
-              style={{
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                color: pathname === "/research" || pathname?.startsWith("/research") ? "#EAB308" : undefined
-              }}
-            >
-              Research
-              <span style={{
-                fontSize: "0.62rem",
-                background: "rgba(234, 179, 8, 0.15)",
-                color: "#EAB308",
-                border: "1px solid rgba(234, 179, 8, 0.35)",
-                padding: "1px 5px",
-                borderRadius: "4px",
-                fontWeight: 700,
-                letterSpacing: "0.03em"
-              }}>
-                LAB
-              </span>
-            </Link>
-
-            {/* SITE WIKI & API DOCUMENTATION */}
+            {/* RESEARCH WIKI: SPECIFICATIONS, INTERACTIVE LAB SIMULATORS & API REFERENCE */}
             <Link 
               href="/wiki"
-              className={`nav-link ${pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname?.startsWith("/docs") ? "active" : ""}`}
+              className={`nav-link ${pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname === "/research" || pathname?.startsWith("/research") || pathname?.startsWith("/docs") ? "active" : ""}`}
               style={{
                 fontWeight: 600,
                 fontSize: "0.9rem",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                color: pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname?.startsWith("/docs") ? "var(--accent-primary)" : undefined
+                color: pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname === "/research" || pathname?.startsWith("/research") || pathname?.startsWith("/docs") ? "var(--accent-primary)" : undefined
               }}
             >
-              Wiki
+              Research Wiki
               <span style={{
                 fontSize: "0.62rem",
                 background: "rgba(0, 229, 255, 0.15)",
@@ -509,7 +481,7 @@ export default function Navbar() {
                 fontWeight: 700,
                 letterSpacing: "0.03em"
               }}>
-                DOCS
+                LAB &amp; DOCS
               </span>
             </Link>
           </nav>
@@ -952,7 +924,7 @@ export default function Navbar() {
                 Plans &amp; Pricing
               </Link>
               <Link 
-                href="/research" 
+                href="/wiki?product=kinetic&tab=simulator" 
                 className="submenu-link">
                 Testing Rig
               </Link>
