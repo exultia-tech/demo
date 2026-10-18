@@ -28,7 +28,9 @@ export function proxy(request: NextRequest) {
       pathname.startsWith("/admin/login") ||
       pathname.startsWith("/api/auth") ||
       pathname.startsWith("/wiki") ||
-      pathname.startsWith("/docs")
+      pathname.startsWith("/docs") ||
+      pathname.startsWith("/cve") ||
+      pathname.startsWith("/api/patches")
     ) {
       return NextResponse.next();
     }
