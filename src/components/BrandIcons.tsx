@@ -69,7 +69,7 @@ export function ExultiaLogo({ size = 48, className = "", glow = true, palette = 
           height: `${size}px`,
           objectFit: "contain",
           filter: glow
-            ? "drop-shadow(0 0 16px var(--accent-glow)) drop-shadow(0 0 4px var(--accent-primary))"
+            ? "drop-shadow(0 0 8px var(--accent-glow)) drop-shadow(0 0 2px var(--accent-primary))"
             : "none",
           transition: "filter 0.25s ease, transform 0.25s ease",
         }}

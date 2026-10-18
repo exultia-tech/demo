@@ -31,9 +31,6 @@ export default function HomePage() {
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            padding: "0.5rem",
-            background: "radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%)",
-            filter: "drop-shadow(0 0 35px var(--accent-glow))",
           }}>
             <ExultiaLogo size={165} glow={true} />
           </div>
