@@ -1056,11 +1056,9 @@ function SubscriptionContent() {
                   >
                     {isCurrent 
                       ? "Current Plan" 
-                      : (isFree 
+                      : isFree 
                         ? "Select Free Tier" 
-                        : userCount > 1 
-                        ? `${plan.cta} (${userCount} ${entityTerm}: $${totalPrice}/mo) →` 
-                        : `${plan.cta} ($${totalPrice}/mo) →`)}
+                        : `${plan.cta} →`}
                   </button>
                 );
               })()}
