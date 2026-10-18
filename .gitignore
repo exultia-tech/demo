@@ -23,6 +23,8 @@
 # downloads & staged builds (large binaries)
 /public/downloads/*
 !/public/downloads/.gitkeep
+bin/dist/*.exe
+kinetic.spec
 
 # misc
 .DS_Store

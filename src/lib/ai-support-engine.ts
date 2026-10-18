@@ -118,10 +118,13 @@ You can set your exact host count using the slider on the [Pricing & Plans page]
       };
     }
 
-    // 3. Kinetic Installation & Setup Commands
+    // 3. Kinetic Installation, Compiled Binary & Setup Commands
     if (
       q.includes('install') ||
       q.includes('setup') ||
+      q.includes('binary') ||
+      q.includes('compiled') ||
+      q.includes('download') ||
       q.includes('curl') ||
       q.includes('systemd') ||
       q.includes('daemon') ||
@@ -131,12 +134,28 @@ You can set your exact host count using the slider on the [Pricing & Plans page]
       return {
         topic: 'installation',
         timestamp: now,
-        reply: `### 🚀 Installing the Kinetic Zero-Agent Patch Daemon
+        reply: `### 🚀 Installing the Kinetic Standalone Binary & Daemon
 
-Kinetic is engineered as a lightweight, zero-agent systemd runner that streams signed hotfix payloads directly from Vantage.
+Kinetic is available as both a **compiled standalone executable binary** (Linux AMD64, Windows PE32+, and multi-arch zipapp) and as a **legacy streaming shell script (.sh)**.
 
-#### 1. One-Line Streamlined Installer
-Run the official bootstrap script with your Exultia API token:
+#### Option A: Standalone Compiled Binary (Recommended)
+Download and execute the self-contained binary with built-in sub-second deterministic rollbacks and atomic snapshotting:
+\`\`\`bash
+# 1. Download compiled standalone binary for Linux
+sudo curl -fsSL "https://exultia.io/api/kinetic/download?platform=linux" -o /usr/local/bin/kinetic
+sudo chmod +x /usr/local/bin/kinetic
+
+# 2. Run automated self-test verification
+kinetic test
+
+# 3. Apply hot-mitigations or launch autonomous daemon
+sudo kinetic apply --cve=CVE-2024-3094
+sudo kinetic daemon --interval=3600
+\`\`\`
+*(For Windows fleets, download the compiled native PE32+ executable: \`https://exultia.io/api/kinetic/download?platform=windows\`)*
+
+#### Option B: Legacy Streamed Shell Script (.sh)
+If you prefer running a direct POSIX shell stream without installing a binary:
 \`\`\`bash
 curl -fsSL https://exultia.io/install/kinetic.sh | sudo bash -s -- --token=EX_TOKEN_YOUR_KEY
 \`\`\`

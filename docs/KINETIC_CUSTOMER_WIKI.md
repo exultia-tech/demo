@@ -40,11 +40,42 @@ Traditional vulnerability remediation in the enterprise operates on a **21-day a
 
 ## 2. Step-by-Step Implementation Guide
 
-### Step 1: Ingesting the Feed & Authentication
+### Step 1: Kinetic Runner Options (Compiled Binary vs Legacy .sh)
 
-The Kinetic feed provides both structured JSON for orchestration systems and raw executable POSIX shell scripts for zero-agent hosts.
+Exultia Kinetic provides two execution modalities:
+1. **Compiled Standalone Binary (Recommended):** A self-contained executable with built-in sub-second deterministic rollbacks, atomic pre-image snapshotting, canary health probes, and SLSA Level 3 verification.
+2. **Legacy POSIX Shell Stream (.sh):** Raw shell script stream piped directly into `/bin/sh` for minimal legacy environments.
 
-#### Access Endpoints
+#### Option A: Compiled Standalone Binary (Recommended)
+Download the standalone executable directly onto your host or packaging pipeline:
+
+```bash
+# 1. Download compiled binary for Linux (AMD64 / Universal)
+sudo curl -fsSL "https://exultia.tech/api/kinetic/download?platform=linux" -o /usr/local/bin/kinetic
+sudo chmod +x /usr/local/bin/kinetic
+
+# (For Windows fleets, download the compiled PE32+ executable)
+# curl -fsSL "https://exultia.tech/api/kinetic/download?platform=windows" -o kinetic.exe
+
+# 2. Verify binary integrity and self-test
+kinetic --version
+kinetic test
+
+# 3. Apply hotfixes with atomic snapshotting
+sudo kinetic apply --cve=CVE-2024-3094
+
+# 4. Run autonomous background daemon (Ring 0 Canary -> Ring 2 Fleet)
+sudo kinetic daemon --interval=3600 --ring=0
+
+# 5. Execute sub-second deterministic rollback at any time
+sudo kinetic rollback --cve=CVE-2024-3094
+# Or rollback latest:
+sudo kinetic rollback --latest
+```
+
+#### Option B: Legacy Shell Script Stream (.sh)
+Stream on-demand remediation scripts directly into your shell:
+
 - **Standard JSON Feed**:
   ```bash
   curl -s -H "Authorization: Bearer YOUR_KINETIC_TOKEN" \
@@ -53,7 +84,7 @@ The Kinetic feed provides both structured JSON for orchestration systems and raw
 - **Distro-Tailored Bash Stream (Ubuntu/Debian)**:
   ```bash
   curl -s -H "Authorization: Bearer YOUR_KINETIC_TOKEN" \
-    "https://exultia.tech/api/patches/feed?format=bash&os=ubuntu"
+    "https://exultia.tech/api/patches/feed?format=bash&os=ubuntu" | sudo sh
   ```
 - **Distro-Tailored Bash Stream (RHEL/Rocky)**:
   ```bash
