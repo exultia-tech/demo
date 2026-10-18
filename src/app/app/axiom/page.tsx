@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { AxiomIcon } from "@/components/BrandIcons";
 import { CERTIFICATIONS, Certification } from "@/lib/axiom-data";
 
 const TOTAL_QUESTIONS = 15000;

@@ -444,7 +444,7 @@ export default function PatchFeedConceptPage() {
                 </span>
               </div>
               <p style={{ fontSize: '0.82rem', color: '#94A3B8', margin: '3px 0 0 0', lineHeight: 1.4 }}>
-                We&apos;ve graduated the 1972 Unix V1 PDP-11 simulator, Dennis Ritchie C kernel lineage, and Commercial Unix Titans (Solaris, IBM AIX, HP-UX) into our dedicated Systems Research Lab.
+                Explore interactive hermetic compiler benchmarks, live threat ingest telemetry, 3-tier hotfix simulations, and air-gapped test harnesses in our Systems Research Lab.
               </p>
             </div>
           </div>

@@ -352,7 +352,7 @@ Exultia provides security engineering tools designed for solo operators, securit
 5. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
 6. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
 7. **[Inquest](/products/inquest):** Autonomous public records compliance platform with 9-exemption discovery vault and automated redaction.
-8. **[Research Lab](/research):** Interactive validation playground demonstrating live compiler tests, historic UNIX mitigations (SunOS, AIX, HP-UX), and real threat simulations.`,
+8. **[Research Lab](/research):** Interactive validation playground demonstrating live compiler tests, 3-tier hotfix remediations, and full ecosystem simulations.`,
         suggestions: [
           'How does Kinetic per-host pricing work?',
           'What is the Kinetic daemon install command?',
