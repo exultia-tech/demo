@@ -63,17 +63,54 @@ async function fetchFeed() {
   }
 }
 
+export function formatNaturalPost(cve) {
+  const linkUrl = `https://exultia.tech/cve/${cve.cveId.toLowerCase()}`;
+  const rawPkg = (cve.affectedPackages && cve.affectedPackages[0]) || 'Linux systems';
+  const pkgClean = rawPkg.split(/[<=>\s]/)[0];
+
+  let friendlyPkg = pkgClean;
+  if (pkgClean.toLowerCase() === 'openssh-server' || pkgClean.toLowerCase() === 'openssh') friendlyPkg = 'OpenSSH';
+  if (pkgClean.toLowerCase() === 'xz-utils' || pkgClean.toLowerCase() === 'xz') friendlyPkg = 'XZ Utils';
+  if (pkgClean.toLowerCase() === 'cups-browsed' || pkgClean.toLowerCase() === 'cups') friendlyPkg = 'CUPS';
+  if (pkgClean.toLowerCase() === 'runc') friendlyPkg = 'runc';
+
+  // 1. WHAT: What is it, who is affected
+  const what = `Critical flaw in ${friendlyPkg} (${cve.cveId})${cve.cisaKev ? ', confirmed active in the wild' : ''}.`;
+
+  // 2. HOW: How it works / why it matters
+  let how = '';
+  if (cve.cveId === 'CVE-2024-6387') {
+    how = "Attackers hit a race condition in sshd's SIGALRM handler when LoginGraceTime expires to get unauthenticated root.";
+  } else if (cve.cveId === 'CVE-2024-3094') {
+    how = 'Malicious tarballs in 5.6.x hook sshd pre-auth functions via systemd notify to achieve unauthorized access.';
+  } else if (cve.cveId === 'CVE-2024-47176') {
+    how = 'Binds unauthenticated UDP to port 631 allowing attackers to inject arbitrary remote commands.';
+  } else if (cve.cveId === 'CVE-2024-21626') {
+    how = 'Leaked file descriptors allow attackers to escape containers and access the host as root.';
+  } else {
+    const cleanTitle = cve.title.replace(/^.+?:\s*/, '').replace(/\(CVE-[^)]+\)/, '').trim();
+    how = `Attackers can exploit ${cleanTitle.toLowerCase()} to compromise vulnerable hosts.`;
+    if (how.length > 130) {
+      how = how.slice(0, 127) + '...';
+    }
+  }
+
+  // 3. HERE'S THE FIX: The solution link
+  const fix = `Here's the zero-downtime hotfix & canary Ansible playbook:\n${linkUrl}`;
+
+  const postText = `${what}\n\n${how}\n\n${fix}`;
+  return { what, how, fix, postText, linkUrl };
+}
+
 async function postToBluesky(cve) {
   const handle = process.env.BLUESKY_IDENTIFIER;
   const password = process.env.BLUESKY_PASSWORD;
+  const { postText, linkUrl } = formatNaturalPost(cve);
+
   if (!handle || !password) {
-    console.log(`[Bluesky Dry-Run] Missing BLUESKY_IDENTIFIER/PASSWORD. Post preview:`);
+    console.log(`[Bluesky Dry-Run] Missing credentials. Post preview:`);
     console.log(`-------------------------------------------------------------------`);
-    console.log(`🚨 CRITICAL THREAT ALERT: ${cve.cveId}`);
-    console.log(`${cve.title}`);
-    console.log(`CVSS: ${cve.cvss} (${cve.severity}) | CISA KEV: ${cve.cisaKev ? 'YES (Active)' : 'NO'}`);
-    console.log(`\nVerified zero-downtime hotfix & 10% canary Ansible playbook:`);
-    console.log(`https://exultia.tech/cve/${cve.cveId.toLowerCase()}`);
+    console.log(postText);
     console.log(`-------------------------------------------------------------------`);
     return false;
   }
@@ -89,10 +126,6 @@ async function postToBluesky(cve) {
     const session = await authRes.json();
 
     // 2. Create post record with clickable link facets
-    const linkUrl = `https://exultia.tech/cve/${cve.cveId.toLowerCase()}`;
-    const postText = `🚨 CRITICAL ALERT: ${cve.cveId}\n\n${cve.title.slice(0, 120)}\nCVSS: ${cve.cvss} | CISA KEV: ${cve.cisaKev ? 'ACTIVE EXPLOIT' : 'NO'}\n\nZero-downtime hotfix & Ansible playbook:\n${linkUrl}`;
-
-    // Calculate UTF-8 byte offsets for the link facet
     const byteStart = Buffer.from(postText.slice(0, postText.indexOf(linkUrl)), 'utf-8').length;
     const byteEnd = byteStart + Buffer.from(linkUrl, 'utf-8').length;
 
@@ -135,20 +168,15 @@ async function postToBluesky(cve) {
 async function postToTelegram(cve) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
+  const { what, how, linkUrl } = formatNaturalPost(cve);
+
   if (!token || !chatId) {
     console.log(`[Telegram Dry-Run] Missing TELEGRAM_BOT_TOKEN/CHAT_ID. Broadcast preview:`);
-    console.log(`🚨 *CRITICAL CVE ALERT*: [${cve.cveId}](https://exultia.tech/cve/${cve.cveId.toLowerCase()})`);
-    console.log(`*Title*: ${cve.title}`);
-    console.log(`*CVSS*: ${cve.cvss} | *CISA KEV*: ${cve.cisaKev ? 'ACTIVE EXPLOIT' : 'NO'}`);
+    console.log(`*${cve.cveId}*: ${what}\n\n${how}\n\n👉 [Zero-Downtime Hotfix & Playbook](${linkUrl})`);
     return false;
   }
 
-  const message = `🚨 *CRITICAL CVE ALERT*: [${cve.cveId}](https://exultia.tech/cve/${cve.cveId.toLowerCase()})\n\n` +
-    `*Title*: ${cve.title}\n` +
-    `*CVSS Score*: ${cve.cvss} (${cve.severity})\n` +
-    `*CISA KEV*: ${cve.cisaKev ? '⚡ ACTIVE IN THE WILD' : 'Standard'}\n` +
-    `*Affected*: \`${cve.affectedPackages.join(', ')}\`\n\n` +
-    `👉 [Get Zero-Downtime Hotfix & Playbook](https://exultia.tech/cve/${cve.cveId.toLowerCase()})`;
+  const message = `*${cve.cveId}*: ${what}\n\n${how}\n\n👉 [Zero-Downtime Hotfix & Playbook](${linkUrl})`;
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -241,6 +269,7 @@ ${cve.remediationTier.tier1_hotMitigation.rollbackCommand}
   }
 }
 
+async function main() {
   const isLivePublish = process.argv.includes('--publish');
   const maxLimit = 1; // Strict safety limit: at most 1 alert per run
 
@@ -272,8 +301,11 @@ ${cve.remediationTier.tier1_hotMitigation.rollbackCommand}
       await postToDevTo(cve);
       posted.push(cve.cveId);
     } else {
+      const { postText } = formatNaturalPost(cve);
       console.log('[Bot] Running in SAFE DRY-RUN mode. Pass --publish to broadcast live.');
-      await postToBluesky(cve);
+      console.log('-------------------------------------------------------------------');
+      console.log(postText);
+      console.log('-------------------------------------------------------------------');
     }
   }
 
