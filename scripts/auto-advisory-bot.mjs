@@ -88,11 +88,28 @@ async function postToBluesky(cve) {
     if (!authRes.ok) throw new Error(`Auth failed: ${authRes.status}`);
     const session = await authRes.json();
 
-    // 2. Create post record
-    const postText = `🚨 CRITICAL ALERT: ${cve.cveId}\n\n${cve.title}\nCVSS: ${cve.cvss} | CISA KEV: ${cve.cisaKev ? 'ACTIVE' : 'NO'}\n\nZero-downtime hotfix & Ansible playbook:\nhttps://exultia.tech/cve/${cve.cveId.toLowerCase()}`;
+    // 2. Create post record with clickable link facets
+    const linkUrl = `https://exultia.tech/cve/${cve.cveId.toLowerCase()}`;
+    const postText = `🚨 CRITICAL ALERT: ${cve.cveId}\n\n${cve.title.slice(0, 120)}\nCVSS: ${cve.cvss} | CISA KEV: ${cve.cisaKev ? 'ACTIVE EXPLOIT' : 'NO'}\n\nZero-downtime hotfix & Ansible playbook:\n${linkUrl}`;
+
+    // Calculate UTF-8 byte offsets for the link facet
+    const byteStart = Buffer.from(postText.slice(0, postText.indexOf(linkUrl)), 'utf-8').length;
+    const byteEnd = byteStart + Buffer.from(linkUrl, 'utf-8').length;
+
     const record = {
       $type: 'app.bsky.feed.post',
       text: postText,
+      facets: [
+        {
+          index: { byteStart, byteEnd },
+          features: [
+            {
+              $type: 'app.bsky.richtext.facet#link',
+              uri: linkUrl
+            }
+          ]
+        }
+      ],
       createdAt: new Date().toISOString()
     };
 
@@ -224,28 +241,45 @@ ${cve.remediationTier.tier1_hotMitigation.rollbackCommand}
   }
 }
 
-async function main() {
-  console.log('[Bot] Running Exultia Autonomous Advisory Dispatcher...');
+  const isLivePublish = process.argv.includes('--publish');
+  const maxLimit = 1; // Strict safety limit: at most 1 alert per run
+
+  console.log(`[Bot] Running Exultia Advisory Dispatcher (Mode: ${isLivePublish ? 'LIVE PUBLISH' : 'DRY-RUN SAFE MODE'})...`);
   const posted = loadPostedState();
   const feed = await fetchFeed();
 
-  // Find critical / CISA KEV items
+  // Strict Filter: Genuine CVEs only, CISA KEV active, CVSS >= 9.0
   const candidates = feed.filter(item => 
-    (item.severity === 'CRITICAL' || item.cisaKev || item.cvss >= 8.5) &&
+    item.cveId &&
+    item.cveId.toUpperCase().startsWith('CVE-') &&
+    item.cisaKev === true &&
+    item.cvss >= 9.0 &&
     !posted.includes(item.cveId)
-  );
+  ).slice(0, maxLimit);
 
-  console.log(`[Bot] Found ${candidates.length} new high-priority candidate CVE(s) to broadcast.`);
+  if (candidates.length === 0) {
+    console.log('[Bot] No new high-priority CISA KEV CVEs to broadcast.');
+    return;
+  }
+
+  console.log(`[Bot] Selected ${candidates.length} vetted CISA KEV CVE for broadcast.`);
 
   for (const cve of candidates) {
     console.log(`\n>>> Processing ${cve.cveId}: ${cve.title}`);
-    await postToBluesky(cve);
-    await postToTelegram(cve);
-    await postToDevTo(cve);
-    posted.push(cve.cveId);
+    if (isLivePublish) {
+      await postToBluesky(cve);
+      await postToTelegram(cve);
+      await postToDevTo(cve);
+      posted.push(cve.cveId);
+    } else {
+      console.log('[Bot] Running in SAFE DRY-RUN mode. Pass --publish to broadcast live.');
+      await postToBluesky(cve);
+    }
   }
 
-  savePostedState(posted);
+  if (isLivePublish) {
+    savePostedState(posted);
+  }
   console.log('\n[Bot] Advisory cycle complete.');
 }
 
