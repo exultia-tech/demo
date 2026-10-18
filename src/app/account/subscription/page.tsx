@@ -400,7 +400,7 @@ function SubscriptionContent() {
           "Inquest Pro",
           "Praxis Pro",
           "PureOS Pro",
-          "100% bundled multi-product discount"
+          "Includes 1 Product 100% Free (Save $49/seat/mo)"
         ],
         cta: "Unlock MultiPass Pro",
         isPopular: true
@@ -420,7 +420,8 @@ function SubscriptionContent() {
           "PureOS Enterprise",
           "Axiom Enterprise LMS API",
           "Cosign SLSA Level 3 signed manifests",
-          "24/7 AI Support Agent & automated self-hosted test suites"
+          "24/7 AI Support Agent & automated self-hosted test suites",
+          "Includes 1 Product 100% Free (Save $149/seat/mo)"
         ],
         cta: "Unlock MultiPass Enterprise",
         isPopular: false
@@ -906,21 +907,63 @@ function SubscriptionContent() {
                 const totalPrice = isFree ? 0 : unitPrice * userCount;
                 const entityTerm = isKinetic ? (userCount === 1 ? "host" : "hosts") : (userCount === 1 ? "user" : "users");
 
+                // MultiPass Bundle Savings:
+                // Standalone individual products cost $49/mo ($39 annual) for Pro, $149/mo ($119 annual) for Enterprise.
+                // MultiPass bundles them with 1 entire product free:
+                // Pro: 5 products at $49 = $245 standalone value vs $196 MultiPass (saves $49/seat/mo)
+                // Enterprise: 6 products at $149 = $894 standalone value vs $745 MultiPass (saves $149/seat/mo)
+                const isMultiPassPlan = isMultiPass && !isFree;
+                const singleProductRate = plan.tier === "pro" 
+                  ? (billingCycle === "annual" ? 39 : 49) 
+                  : (billingCycle === "annual" ? 119 : 149);
+                const bundleSavings = isMultiPassPlan ? singleProductRate * userCount : 0;
+                const unbundledPrice = totalPrice + bundleSavings;
+
                 return (
                   <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                      {isMultiPassPlan && (
+                        <span style={{
+                          fontSize: "1.4rem",
+                          fontWeight: 700,
+                          color: "#64748B",
+                          textDecoration: "line-through",
+                          marginRight: "2px"
+                        }}>
+                          ${unbundledPrice}
+                        </span>
+                      )}
                       <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${totalPrice}</span>
                       <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
                         {isFree ? "forever" : "/mo"}
                       </span>
                       {!isFree && billingCycle === "annual" && (
-                        <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "6px", fontWeight: 600 }}>
+                        <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "4px", fontWeight: 600 }}>
                           billed annually
                         </span>
                       )}
                     </div>
 
-                    {!isFree && userCount > 1 && (
+                    {/* MultiPass 1-Product-Free Savings Badge */}
+                    {isMultiPassPlan && (
+                      <div style={{
+                        marginTop: "6px",
+                        background: "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(168, 85, 247, 0.2) 100%)",
+                        border: "1px solid rgba(236, 72, 153, 0.4)",
+                        borderRadius: "8px",
+                        padding: "6px 10px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px"
+                      }}>
+                        <Sparkles size={14} color="#F472B6" style={{ flexShrink: 0 }} />
+                        <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#F472B6" }}>
+                          Save ${bundleSavings}/mo ({userCount > 1 ? `$${singleProductRate}/seat/mo • ` : ""}1 Product Free!)
+                        </span>
+                      </div>
+                    )}
+
+                    {!isFree && userCount > 1 && !isMultiPassPlan && (
                       <div style={{ fontSize: "0.82rem", color: accentColor, fontWeight: 700, marginTop: "2px" }}>
                         ${unitPrice} / {isKinetic ? "host" : "user"} / mo × {userCount} {entityTerm} = ${totalPrice}/mo
                       </div>
@@ -941,13 +984,27 @@ function SubscriptionContent() {
                       alignItems: "center",
                       gap: "6px",
                       fontWeight: 700,
-                      background: isFree ? "rgba(16, 185, 129, 0.15)" : "rgba(56, 189, 248, 0.15)",
-                      color: isFree ? "#34D399" : "#38BDF8",
-                      border: isFree ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(56, 189, 248, 0.3)"
+                      background: isFree 
+                        ? "rgba(16, 185, 129, 0.15)" 
+                        : isMultiPassPlan 
+                          ? "rgba(236, 72, 153, 0.15)" 
+                          : "rgba(56, 189, 248, 0.15)",
+                      color: isFree 
+                        ? "#34D399" 
+                        : isMultiPassPlan 
+                          ? "#F472B6" 
+                          : "#38BDF8",
+                      border: isFree 
+                        ? "1px solid rgba(16, 185, 129, 0.3)" 
+                        : isMultiPassPlan 
+                          ? "1px solid rgba(236, 72, 153, 0.35)" 
+                          : "1px solid rgba(56, 189, 248, 0.3)"
                     }}>
                       {isFree 
                         ? (isKinetic ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
-                        : `✓ SCALED FOR ${userCount} ${entityTerm.toUpperCase()}`}
+                        : isMultiPassPlan 
+                          ? `✓ SUITE BUNDLE FOR ${userCount} ${userCount === 1 ? "SEAT" : "SEATS"} • 1 PRODUCT FREE` 
+                          : `✓ SCALED FOR ${userCount} ${entityTerm.toUpperCase()}`}
                     </div>
                   </div>
                 );
@@ -976,6 +1033,12 @@ function SubscriptionContent() {
                 const entityTerm = isKinetic ? (userCount === 1 ? "Host" : "Hosts") : (userCount === 1 ? "User" : "Users");
                 const planLabel = isFree ? plan.name : `${plan.name} (${userCount} ${entityTerm})`;
 
+                const isMultiPassPlan = isMultiPass && !isFree;
+                const singleProductRate = plan.tier === "pro" 
+                  ? (billingCycle === "annual" ? 39 : 49) 
+                  : (billingCycle === "annual" ? 119 : 149);
+                const bundleSavings = isMultiPassPlan ? singleProductRate * userCount : 0;
+
                 return (
                   <button
                     disabled={isCurrent || isSwitchingFree}
@@ -1001,6 +1064,8 @@ function SubscriptionContent() {
                       ? "Current Plan" 
                       : (isFree 
                         ? "Select Free Tier" 
+                        : isMultiPassPlan
+                        ? `${plan.cta} ($${totalPrice}/mo • Save $${bundleSavings}/mo) →`
                         : userCount > 1 
                         ? `${plan.cta} (${userCount} ${entityTerm}: $${totalPrice}/mo) →` 
                         : `${plan.cta} ($${totalPrice}/mo) →`)}
