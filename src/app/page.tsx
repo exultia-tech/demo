@@ -180,8 +180,8 @@ export default function HomePage() {
             className="megaman-tile megaman-cell-argent"
             style={{
               // @ts-ignore
-              "--tile-color": "#94A3B8",
-              "--tile-glow": "rgba(148, 163, 184, 0.4)",
+              "--tile-color": "#EF4444",
+              "--tile-glow": "rgba(239, 68, 68, 0.45)",
             }}
           >
             <div className="megaman-tile-icon">
