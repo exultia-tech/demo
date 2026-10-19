@@ -188,9 +188,9 @@ export default function HomePage() {
               <ArgentIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Argent</h3>
-            <div className="megaman-tile-sub">General Patch Management</div>
+            <div className="megaman-tile-sub">Distribution Errata Conduit</div>
             <p className="megaman-tile-desc">
-              Consolidated vendor update errata, OS package streams, and distribution patch management.
+              Unified upstream vendor errata, kernel patches, and continuous OS distribution streams.
             </p>
           </Link>
 
