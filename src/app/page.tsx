@@ -188,9 +188,9 @@ export default function HomePage() {
               <ArgentIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Argent</h3>
-            <div className="megaman-tile-sub">Distribution Errata Conduit</div>
+            <div className="megaman-tile-sub">Dynamic Patching Pipeline</div>
             <p className="megaman-tile-desc">
-              Unified upstream vendor errata, kernel patches, and continuous OS distribution streams.
+              Stream and deploy upstream vendor errata, kernel patches, and multi-OS distribution updates.
             </p>
           </Link>
 
