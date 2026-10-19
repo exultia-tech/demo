@@ -523,7 +523,7 @@ class KineticEngine:
                 rb_cmd = p.hot_mitigation.rollback_command
                 requires_reboot = p.hot_mitigation.downtime_required
 
-            print(f"\n[Kinetic Upgrade] ── Applying: {p.title} ──")
+            print(f"\n[Kinetic Upgrade] ── Applying [{p.cve_id}]: {p.title} ──")
             print(f"[Kinetic Upgrade] Target Package: {pkg_name} | Reboot Required: {requires_reboot}")
             print(f"[Kinetic Upgrade] Executing: `{upgrade_cmd}`")
 

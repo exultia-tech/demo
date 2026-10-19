@@ -188,9 +188,9 @@ export default function HomePage() {
               <ArgentIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Argent</h3>
-            <div className="megaman-tile-sub">Threat Wire & Research</div>
+            <div className="megaman-tile-sub">General Patch Management</div>
             <p className="megaman-tile-desc">
-              Real-time curated cyber intelligence wire and unified vulnerability research.
+              Consolidated vendor update errata, OS package streams, and distribution patch management.
             </p>
           </Link>
 

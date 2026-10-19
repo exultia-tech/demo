@@ -25,18 +25,21 @@ if sys.platform == "win32":
 
 
 def build_parser() -> argparse.ArgumentParser:
+    common_parser = argparse.ArgumentParser(add_help=False)
+    common_parser.add_argument("--state-dir", help="Custom state and snapshot directory", default=None)
+    common_parser.add_argument("--json", action="store_true", help="Output results in JSON format")
+
     parser = argparse.ArgumentParser(
         prog="kinetic",
+        parents=[common_parser],
         description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream & Sub-Second Deterministic Rollback Binary"
     )
     parser.add_argument("--version", action="version", version=f"kinetic {__version__}")
-    parser.add_argument("--state-dir", help="Custom state and snapshot directory", default=None)
-    parser.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     subparsers = parser.add_subparsers(dest="command", help="Available Kinetic commands")
 
     # Command: apply
-    apply_parser = subparsers.add_parser("apply", help="Apply hot-mitigations from patch feed or specific CVE")
+    apply_parser = subparsers.add_parser("apply", parents=[common_parser], help="Apply hot-mitigations from patch feed or specific CVE")
     apply_parser.add_argument("--cve", help="Specific CVE ID to mitigate (e.g. CVE-2024-3094)")
     apply_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
     apply_parser.add_argument("--token", help="Exultia Kinetic authorization token")
@@ -44,36 +47,35 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--dry-run", action="store_true", help="Simulate mitigation without modifying files")
 
     # Command: upgrade (Standard OS Distribution Package Updates via Argent / Distro Feeds)
-    upgrade_parser = subparsers.add_parser("upgrade", help="Deploy standard OS package updates and vendor errata bundles from Argent")
+    upgrade_parser = subparsers.add_parser("upgrade", parents=[common_parser], help="Deploy standard OS package updates and vendor errata bundles from Argent")
     upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or USN-6856-1)")
     upgrade_parser.add_argument("--feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
     upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, suse)")
     upgrade_parser.add_argument("--dry-run", action="store_true", help="Simulate upgrade without executing package manager")
 
     # Command: rollback
-    rollback_parser = subparsers.add_parser("rollback", help="Execute sub-second deterministic rollback")
+    rollback_parser = subparsers.add_parser("rollback", parents=[common_parser], help="Execute sub-second deterministic rollback")
     rollback_parser.add_argument("--cve", help="Specific CVE ID to rollback")
     rollback_parser.add_argument("--latest", action="store_true", help="Rollback the most recently applied mitigation")
 
     # Command: daemon
-    daemon_parser = subparsers.add_parser("daemon", help="Run autonomous patch daemon with canary health probes")
+    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with canary health probes")
     daemon_parser.add_argument("--interval", type=int, default=3600, help="Sync interval in seconds (default: 3600)")
     daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
     daemon_parser.add_argument("--token", help="Exultia Kinetic authorization token")
     daemon_parser.add_argument("--ring", type=int, choices=[0, 1, 2], default=0, help="Staged rollout ring (0=Canary, 1=Cautious, 2=Broad)")
 
     # Command: status
-    status_parser = subparsers.add_parser("status", help="Inspect host mitigation status and active snapshots")
+    status_parser = subparsers.add_parser("status", parents=[common_parser], help="Inspect host mitigation status and active snapshots")
     status_parser.add_argument("--audit", action="store_true", help="Include full recent audit trail")
-    status_parser.add_argument("--json", action="store_true", help="Output status in JSON format")
 
     # Command: verify
-    verify_parser = subparsers.add_parser("verify", help="Verify SLSA Level 3 cryptographic provenance")
+    verify_parser = subparsers.add_parser("verify", parents=[common_parser], help="Verify SLSA Level 3 cryptographic provenance")
     verify_parser.add_argument("--cve", help="CVE ID to verify (default: verifies all available feed items)")
     verify_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
 
     # Command: test
-    subparsers.add_parser("test", help="Run self-contained end-to-end simulation and rollback verification")
+    subparsers.add_parser("test", parents=[common_parser], help="Run self-contained end-to-end simulation and rollback verification")
 
     return parser
 
