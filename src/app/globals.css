@@ -1934,7 +1934,7 @@ textarea.input-field {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem 1.5rem;
+  padding: 1.75rem 1.5rem;
   text-decoration: none;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%);
@@ -1951,7 +1951,7 @@ textarea.input-field {
 }
 
 .megaman-tile-icon {
-  margin-bottom: 1.15rem;
+  margin-bottom: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1959,26 +1959,27 @@ textarea.input-field {
 
 .megaman-tile-name {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #FFFFFF;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.3rem 0;
+  letter-spacing: 0.02em;
 }
 
 .megaman-tile-sub {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   color: var(--tile-color, var(--accent-primary));
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
 .megaman-tile-desc {
-  font-size: 0.86rem;
+  font-size: 0.98rem;
   line-height: 1.5;
   color: #94A3B8;
   margin: 0;
-  max-width: 280px;
+  max-width: 310px;
 }
 
 .megaman-center-emblem,

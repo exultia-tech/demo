@@ -40,7 +40,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <PureIdeIcon size={48} glow={true} />
+              <PureIdeIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">PureIDE</h3>
             <div className="megaman-tile-sub">Secure Workstation Builder</div>
@@ -60,7 +60,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <VantageIcon size={48} glow={true} />
+              <VantageIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Vantage</h3>
             <div className="megaman-tile-sub">Universal Threat Feed</div>
@@ -80,7 +80,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <KineticIcon size={48} glow={true} />
+              <KineticIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Kinetic</h3>
             <div className="megaman-tile-sub">Autonomous Patch Daemon</div>
@@ -100,7 +100,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <PureOsIcon size={48} glow={true} />
+              <PureOsIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">PureOS</h3>
             <div className="megaman-tile-sub">Zero-Trust Container OS</div>
@@ -125,7 +125,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <PraxisIcon size={48} glow={true} />
+              <PraxisIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Praxis</h3>
             <div className="megaman-tile-sub">Remediation Engine</div>
@@ -145,7 +145,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <AxiomIcon size={48} glow={true} />
+              <AxiomIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Axiom</h3>
             <div className="megaman-tile-sub">Security Education Framework</div>
@@ -165,7 +165,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <InquestIcon size={48} glow={true} />
+              <InquestIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Inquest</h3>
             <div className="megaman-tile-sub">Public Records & FOIA</div>
@@ -185,7 +185,7 @@ export default function HomePage() {
             }}
           >
             <div className="megaman-tile-icon">
-              <ArgentIcon size={48} glow={true} />
+              <ArgentIcon size={68} glow={true} />
             </div>
             <h3 className="megaman-tile-name">Argent</h3>
             <div className="megaman-tile-sub">Threat Wire & Research</div>
