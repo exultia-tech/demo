@@ -1829,4 +1829,153 @@ textarea.input-field {
   }
 }
 
+/* ==========================================================================
+   MEGA MAN 3x3 HOMEPAGE GRID SYSTEM
+   ========================================================================== */
+
+.megaman-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem 1.5rem;
+}
+
+.megaman-grid {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .megaman-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+    grid-template-areas:
+      "pureide  vantage kinetic"
+      "pureos   center  praxis"
+      "axiom    inquest argent";
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .megaman-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "center   center"
+      "pureide  vantage"
+      "kinetic  pureos"
+      "praxis   axiom"
+      "inquest  argent";
+  }
+}
+
+@media (max-width: 599px) {
+  .megaman-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "center"
+      "pureide"
+      "vantage"
+      "kinetic"
+      "pureos"
+      "praxis"
+      "axiom"
+      "inquest"
+      "argent";
+  }
+}
+
+.megaman-cell-pureide { grid-area: pureide; }
+.megaman-cell-vantage { grid-area: vantage; }
+.megaman-cell-kinetic { grid-area: kinetic; }
+.megaman-cell-pureos  { grid-area: pureos; }
+.megaman-cell-center  { grid-area: center; }
+.megaman-cell-praxis  { grid-area: praxis; }
+.megaman-cell-axiom   { grid-area: axiom; }
+.megaman-cell-inquest { grid-area: inquest; }
+.megaman-cell-argent  { grid-area: argent; }
+
+.megaman-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justifyContent: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  text-decoration: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.megaman-tile:hover {
+  transform: translateY(-4px);
+  border-color: var(--tile-color, var(--accent-primary));
+  box-shadow: 0 20px 40px -10px var(--tile-glow, rgba(0, 229, 255, 0.35));
+}
+
+.megaman-tile-icon {
+  margin-bottom: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.megaman-tile-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 0.35rem 0;
+}
+
+.megaman-tile-sub {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--tile-color, var(--accent-primary));
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.megaman-tile-desc {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.megaman-center-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.25rem 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(8, 14, 24, 0.98) 100%);
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 0 35px -8px var(--accent-glow);
+}
+
+.megaman-center-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #FFFFFF;
+  margin: 1rem 0 0.35rem 0;
+  text-shadow: 0 0 16px var(--accent-glow);
+}
+
+.megaman-center-motto {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin: 0;
+}
+
 

@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { PureIdeIcon, VantageIcon, InquestIcon, PureOsIcon, PraxisIcon, AxiomIcon, KineticIcon, ExultiaLogo } from "@/components/BrandIcons";
+import { 
+  PureIdeIcon, 
+  VantageIcon, 
+  KineticIcon, 
+  PureOsIcon, 
+  PraxisIcon, 
+  AxiomIcon, 
+  InquestIcon, 
+  ArgentIcon, 
+  ExultiaLogo 
+} from "@/components/BrandIcons";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
@@ -15,342 +25,181 @@ export default function HomePage() {
   }
 
   return (
-    <div className="fade-in" style={{ paddingBottom: "5rem" }}>
-      {/* RADICAL DOOM-ESQUE HERO */}
-      <section className="hero-section" style={{ maxWidth: "1280px", margin: "0 auto", padding: "3.5rem 2rem 2.5rem 2rem", textAlign: "left", position: "relative" }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "2.5rem",
-          flexWrap: "wrap",
-        }}>
-          {/* SCALED UP CYBERNETIC DEMON HELM LOGO EMBLEM */}
-          <div style={{
-            position: "relative",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <ExultiaLogo size={165} glow={false} />
+    <div className="fade-in">
+      <main className="megaman-container">
+        <div className="megaman-grid">
+
+          {/* 1. PureIDE */}
+          <Link 
+            href="/products/pure-ide"
+            className="megaman-tile megaman-cell-pureide"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#3B82F6",
+              "--tile-glow": "rgba(59, 130, 246, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <PureIdeIcon size={48} glow={true} />
+            </div>
+            <h3 className="megaman-tile-name">PureIDE</h3>
+            <div className="megaman-tile-sub">Secure Workstation Builder</div>
+            <p className="megaman-tile-desc">
+              Package and deploy clean, offline-ready IDEs with zero telemetry.
+            </p>
+          </Link>
+
+          {/* 2. Vantage */}
+          <Link 
+            href="/app/uvi/stats"
+            className="megaman-tile megaman-cell-vantage"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#A855F7",
+              "--tile-glow": "rgba(168, 85, 247, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <VantageIcon size={48} glow={true} />
+            </div>
+            <h3 className="megaman-tile-name">Vantage</h3>
+            <div className="megaman-tile-sub">Universal Threat Feed</div>
+            <p className="megaman-tile-desc">
+              Aggregate and verify 110+ global feeds and active zero-days in real time.
+            </p>
+          </Link>
+
+          {/* 3. Kinetic */}
+          <Link 
+            href="/app/patches"
+            className="megaman-tile megaman-cell-kinetic"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#00E5FF",
+              "--tile-glow": "rgba(0, 229, 255, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <KineticIcon size={48} glow={true} />
+            </div>
+            <h3 className="megaman-tile-name">Kinetic</h3>
+            <div className="megaman-tile-sub">Autonomous Patch Daemon</div>
+            <p className="megaman-tile-desc">
+              Continuous fleet remediation with deterministic sub-second rollbacks.
+            </p>
+          </Link>
+
+          {/* 4. PureOS */}
+          <Link 
+            href="/app/pureos"
+            className="megaman-tile megaman-cell-pureos"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#10B981",
+              "--tile-glow": "rgba(16, 185, 129, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <PureOsIcon size={48} glow={true} />
+            </div>
+            <h3 className="megaman-tile-name">PureOS</h3>
+            <div className="megaman-tile-sub">Zero-Trust Container OS</div>
+            <p className="megaman-tile-desc">
+              Build verified, CIS-hardened container images and virtual machines.
+            </p>
+          </Link>
+
+          {/* 5. CENTER: EXULTIA LOGO */}
+          <div className="megaman-center-tile megaman-cell-center">
+            <ExultiaLogo size={105} glow={true} />
+            <h2 className="megaman-center-title">EXULTIA</h2>
+            <p className="megaman-center-motto">
+              Practical. Transparent. Secure.
+            </p>
           </div>
 
-          {/* THREE STACKED WORDS LEFT-ALIGNED TO THE LOGO */}
-          <h1 className="hero-title" style={{
-            margin: 0,
-            display: "flex",
-            flexDirection: "column",
-            fontSize: "3.2rem",
-            lineHeight: 1.06,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-            fontWeight: 900,
-            textAlign: "left",
-          }}>
-            <span style={{ color: "#FFFFFF" }}>PRACTICAL.</span>
-            <span style={{ color: "#FFFFFF" }}>TRANSPARENT.</span>
-            <span style={{ 
-              color: "var(--accent-primary)", 
-              textShadow: "0 0 25px var(--accent-glow)"
-            }}>
-              SECURE.
-            </span>
-          </h1>
-        </div>
-      </section>
-
-      {/* CORE PRODUCT PLATFORMS */}
-      <section id="core-platforms" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem" }}>
-        <div style={{ marginBottom: "2.5rem" }}>
-          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Our Products
-          </div>
-          <h2 style={{ fontSize: "2.1rem", fontWeight: 900, color: "#FFFFFF", marginTop: "4px", letterSpacing: "0.05em" }}>
-            Core Platforms
-          </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "800px", margin: "0.4rem 0 0 0", lineHeight: "1.6" }}>
-            Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "2rem" }}>
-          
-          {/* PRODUCT 1: PUREIDE */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <PureIdeIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>PureIDE</h3>
-              <div style={{ color: "#60A5FA", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Secure Workstation Builder
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Package and deploy clean, offline-ready IDEs. Block untrusted plugins, eliminate unwanted background telemetry, and automatically generate full software bill-of-materials (SBOMs).
-              </p>
+          {/* 6. Praxis */}
+          <Link 
+            href="/app/praxis"
+            className="megaman-tile megaman-cell-praxis"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#F59E0B",
+              "--tile-glow": "rgba(245, 158, 11, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <PraxisIcon size={48} glow={true} />
             </div>
+            <h3 className="megaman-tile-name">Praxis</h3>
+            <div className="megaman-tile-sub">Remediation Engine</div>
+            <p className="megaman-tile-desc">
+              Compile and deploy surgical remediation scripts synced directly with Vantage.
+            </p>
+          </Link>
 
-            <div>
-              <Link 
-                href="/products/pure-ide" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600 }}>
-                Explore PureIDE →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=pureide" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
+          {/* 7. Axiom */}
+          <Link 
+            href="/app/axiom"
+            className="megaman-tile megaman-cell-axiom"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#F43F5E",
+              "--tile-glow": "rgba(244, 63, 94, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <AxiomIcon size={48} glow={true} />
             </div>
-          </div>
+            <h3 className="megaman-tile-name">Axiom</h3>
+            <div className="megaman-tile-sub">Security Education Framework</div>
+            <p className="megaman-tile-desc">
+              Open-source study paths, exam simulator, and certification terminal labs.
+            </p>
+          </Link>
 
-          {/* PRODUCT 2: Vantage */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(139, 92, 246, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <VantageIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Vantage</h3>
-              <div style={{ color: "#A78BFA", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Universal Threat Feed
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Stay ahead of emerging vulnerabilities. We aggregate and verify 110+ global security feeds, active zero-days, and supply chain threats into one clear, real-time feed.
-              </p>
+          {/* 8. Inquest */}
+          <Link 
+            href="/products/inquest"
+            className="megaman-tile megaman-cell-inquest"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#06B6D4",
+              "--tile-glow": "rgba(6, 182, 212, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <InquestIcon size={48} glow={true} />
             </div>
+            <h3 className="megaman-tile-name">Inquest</h3>
+            <div className="megaman-tile-sub">Public Records & FOIA</div>
+            <p className="megaman-tile-desc">
+              Draft, file, and track public records requests across federal FOIA and all 50 states.
+            </p>
+          </Link>
 
-            <div>
-              <Link 
-                href="/app/uvi/stats" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}>
-                Explore Threat Intelligence →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=uvi" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
+          {/* 9. Argent */}
+          <Link 
+            href="/app/argent"
+            className="megaman-tile megaman-cell-argent"
+            style={{
+              // @ts-ignore
+              "--tile-color": "#94A3B8",
+              "--tile-glow": "rgba(148, 163, 184, 0.4)",
+            }}
+          >
+            <div className="megaman-tile-icon">
+              <ArgentIcon size={48} glow={true} />
             </div>
-          </div>
-
-          {/* PRODUCT: KINETIC */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(6, 182, 212, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(5, 12, 22, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <KineticIcon size={52} glow={false} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Kinetic</h3>
-              <div style={{ color: "#22D3EE", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Autonomous Patch Pipeline
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Continuous vulnerability remediation with deterministic sub-second rollbacks. Synthesize, verify, and deploy micro-mitigations across your fleet in real time.
-              </p>
-            </div>
-
-            <div>
-              <Link 
-                href="/app/patches" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
-                Launch Remediation Console →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=kinetic" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* PRODUCT 4: PUREOS */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(16, 185, 129, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <PureOsIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>PureOS</h3>
-              <div style={{ color: "#10B981", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Zero-Trust Container Images
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Build verified, CIS-hardened container images and virtual machines with an integrated SBOM pipeline. Zero hidden dependencies.
-              </p>
-            </div>
-
-            <div>
-              <Link 
-                href="/app/pureos" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #10B981, #059669)" }}>
-                Launch Configurator →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=pureos" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* PRODUCT 5: PRAXIS */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(245, 158, 11, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <PraxisIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Praxis</h3>
-              <div style={{ color: "#F59E0B", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Remediation Engine
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Compile and deploy one-time targeted remediation scripts for critical vulnerabilities, syncing directly with the Vantage global registry.
-              </p>
-            </div>
-
-            <div>
-              <Link 
-                href="/app/praxis" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
-                Generate Scripts →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=praxis" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* PRODUCT 6: AXIOM */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem", display: "flex", flexDirection: "column", justifyContent: "space-between",
-            border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 26, 0.95) 100%)", boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)", marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}><AxiomIcon size={52} glow={true} /></div>
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Axiom</h3>
-              <div style={{ color: "#F43F5E", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>Security Education Framework</div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Open-source study paths, an interactive global exam simulator, and mock terminal labs for industry-leading certifications like CISSP, OSCP, and Security+.
-              </p>
-            </div>
-            <div>
-              <Link href="/app/axiom" className="btn-primary" style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #F43F5E, #BE123C)" }}>
-                Start Learning →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=axiom" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Explore Plans & Tiers →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* PRODUCT 3: INQUEST */}
-          <div className="glass-card" style={{
-            padding: "2.25rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            border: "1px solid rgba(6, 182, 212, 0.3)",
-            borderRadius: "18px",
-            background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(5, 12, 22, 0.95) 100%)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)",
-            marginBottom: 0
-          }}>
-            <div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <InquestIcon size={52} glow={true} />
-              </div>
-
-              <h3 style={{ fontSize: "1.65rem", marginBottom: "0.35rem", color: "#FFFFFF", fontWeight: 700 }}>Inquest</h3>
-              <div style={{ color: "#06B6D4", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.85rem" }}>
-                Public Records & FOIA Assistant
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                Draft, file, and track public records requests across federal FOIA and all 50 states. Includes automatic statutory deadline tracking, fee-waiver tools, and formal appeal templates.
-              </p>
-            </div>
-
-            <div>
-              <Link 
-                href="/products/inquest" 
-                className="btn-primary" 
-                style={{ width: "100%", textAlign: "center", textDecoration: "none", padding: "0.85rem", fontSize: "0.92rem", fontWeight: 600, background: "linear-gradient(135deg, #06B6D4, #0284C7)" }}>
-                Explore Inquest →
-              </Link>
-              <div style={{ marginTop: "0.6rem", textAlign: "center" }}>
-                <Link href="/account/subscription?product=inquest" style={{ color: "#94A3B8", fontSize: "0.8rem", textDecoration: "none" }}>
-                  Plans & Pricing →
-                </Link>
-              </div>
-            </div>
-          </div>
+            <h3 className="megaman-tile-name">Argent</h3>
+            <div className="megaman-tile-sub">Threat Wire & Research</div>
+            <p className="megaman-tile-desc">
+              Real-time curated cyber intelligence wire and unified vulnerability research.
+            </p>
+          </Link>
 
         </div>
-
-      </section>
+      </main>
     </div>
   );
 }
