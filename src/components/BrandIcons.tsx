@@ -520,121 +520,98 @@ export function AxiomIcon({ size = 32, className = "", glow = true }: IconProps)
 
 /**
  * Argent Product Icon
- * Futuristic containment cell / canister with swirling energetic red plasma core.
+ * Geometric containment canister with an energized, abstract red plasma core.
  */
 export function ArgentIcon({ size = 32, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(239, 68, 68, 0.7)) drop-shadow(0 0 3px rgba(255, 23, 68, 0.85))" : "none";
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(239, 68, 68, 0.55)) drop-shadow(0 0 2px rgba(255, 23, 68, 0.8))" : "none";
 
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: glowFilter }}
+    >
       <defs>
-        {/* Metallic Titanium / Dark Steel Container Gradient */}
-        <linearGradient id="argent-container-metal" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#CBD5E1" />
-          <stop offset="30%" stopColor="#64748B" />
-          <stop offset="70%" stopColor="#334155" />
-          <stop offset="100%" stopColor="#0F172A" />
+        {/* Sleek Titanium / Platinum Canister Gradient */}
+        <linearGradient id="argent-canister-grad" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#E2E8F0" />
+          <stop offset="45%" stopColor="#94A3B8" />
+          <stop offset="85%" stopColor="#475569" />
+          <stop offset="100%" stopColor="#1E293B" />
         </linearGradient>
 
-        {/* Highlight Edges for Container Clamps */}
-        <linearGradient id="argent-container-rim" x1="12" y1="6" x2="36" y2="6" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#64748B" />
-          <stop offset="50%" stopColor="#F1F5F9" />
-          <stop offset="100%" stopColor="#475569" />
-        </linearGradient>
-
-        {/* Deep Plasma Volumetric Core */}
-        <radialGradient id="argent-plasma-glow" cx="24" cy="24" r="12" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-          <stop offset="25%" stopColor="#FF4D6D" stopOpacity="0.9" />
-          <stop offset="60%" stopColor="#E11D48" stopOpacity="0.75" />
-          <stop offset="90%" stopColor="#9F1239" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#4C0519" stopOpacity="0" />
-        </radialGradient>
-
-        {/* Specular Glass Sheen */}
-        <linearGradient id="argent-glass-sheen" x1="14" y1="14" x2="22" y2="34" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
-          <stop offset="40%" stopColor="#FFFFFF" stopOpacity="0.1" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.02" />
-        </linearGradient>
-
-        {/* Energetic Plasma Arc Gradient */}
-        <linearGradient id="argent-arc" x1="24" y1="13" x2="24" y2="35" gradientUnits="userSpaceOnUse">
+        {/* Radiant Red Plasma Gradient */}
+        <linearGradient id="argent-plasma-grad" x1="16" y1="12" x2="32" y2="36" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FFE4E6" />
-          <stop offset="50%" stopColor="#FF1744" />
-          <stop offset="100%" stopColor="#BE123C" />
+          <stop offset="35%" stopColor="#FF4D6D" />
+          <stop offset="70%" stopColor="#E11D48" />
+          <stop offset="100%" stopColor="#9F1239" />
         </linearGradient>
+
+        {/* Core Volumetric Plasma Aura */}
+        <radialGradient id="argent-core-aura" cx="24" cy="24" r="10" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
+          <stop offset="40%" stopColor="#FF1744" stopOpacity="0.6" />
+          <stop offset="80%" stopColor="#BE123C" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#881337" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
-      {/* --- REAR HOUSING CHAMBER & SHADOW --- */}
-      <rect x="14" y="13" width="20" height="22" rx="2" fill="#0A060C" />
+      {/* --- ABSTRACT CANISTER CHASSIS (Octagonal Containment Cell) --- */}
+      <path
+        d="M17 5 H31 L37 11 V37 L31 43 H17 L11 37 V11 L17 5 Z"
+        fill="rgba(15, 12, 24, 0.88)"
+        stroke="url(#argent-canister-grad)"
+        strokeWidth="2.4"
+        strokeLinejoin="round"
+      />
 
-      {/* --- RED PLASMA GLOW VOLUME --- */}
-      <rect x="14" y="13" width="20" height="22" fill="url(#argent-plasma-glow)" />
+      {/* Inner Chamber Glass Boundary */}
+      <path
+        d="M18 10 H30 L33 13 V35 L30 38 H18 L15 35 V13 L18 10 Z"
+        stroke="rgba(255, 255, 255, 0.18)"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
 
-      {/* --- SWIRLING RED PLASMA TENDRILS / ARCS --- */}
-      {/* Primary Ionized Core Arc */}
-      <path d="M24 13 Q21 19 25 24 T23 35" stroke="url(#argent-arc)" strokeWidth="2.5" strokeLinecap="round" opacity="0.95" />
-      <path d="M24 13 Q21 19 25 24 T23 35" stroke="#FFFFFF" strokeWidth="1" strokeLinecap="round" opacity="0.9" />
+      {/* Lateral Stabilizer Pylons / Mounting Brackets */}
+      <path d="M7 20 L11 24 L7 28" stroke="url(#argent-canister-grad)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M41 20 L37 24 L41 28" stroke="url(#argent-canister-grad)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* Secondary Plasma Loop */}
-      <path d="M25 14 Q29 20 23 25 Q19 29 24 34" stroke="#FF0055" strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+      {/* Magnetic Containment Caps (Top & Bottom Bars) */}
+      <line x1="20" y1="8" x2="28" y2="8" stroke="url(#argent-canister-grad)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="20" y1="40" x2="28" y2="40" stroke="url(#argent-canister-grad)" strokeWidth="2" strokeLinecap="round" />
 
-      {/* Transverse Energy Discharge */}
-      <path d="M17 21 Q24 25 31 22" stroke="#FF4D6D" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" />
-      <path d="M18 28 Q24 24 30 27" stroke="#FF1744" strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+      {/* --- ABSTRACT RED PLASMA CORE --- */}
+      {/* Background Plasma Radiation Aura */}
+      <circle cx="24" cy="24" r="10" fill="url(#argent-core-aura)" />
 
-      {/* Ionized Plasma Sparks / Embers */}
-      <circle cx="21" cy="18" r="1.2" fill="#FFFFFF" />
-      <circle cx="27" cy="29" r="1.1" fill="#FFFFFF" />
-      <circle cx="27" cy="19" r="0.8" fill="#FF8099" />
-      <circle cx="20" cy="27" r="0.8" fill="#FF8099" />
-      <circle cx="24" cy="24" r="1.5" fill="#FFFFFF" />
+      {/* Plasma Containment Energy Ring */}
+      <circle cx="24" cy="24" r="8.5" stroke="#FF4D6D" strokeWidth="1.4" strokeDasharray="3 3" opacity="0.85" />
 
-      {/* Magnetic Containment Field Rings (dashed laser guides) */}
-      <line x1="14" y1="20" x2="34" y2="20" stroke="#FF1744" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.5" />
-      <line x1="14" y1="28" x2="34" y2="28" stroke="#FF1744" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.5" />
+      {/* Geometric Plasma Singularity Diamond */}
+      <polygon
+        points="24,14 31,24 24,34 17,24"
+        fill="url(#argent-plasma-grad)"
+        stroke="#FFFFFF"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
 
-      {/* --- GLASS CYLINDER WALLS & SPECULAR REFLECTION --- */}
-      <rect x="14" y="13" width="20" height="22" fill="url(#argent-glass-sheen)" />
-      <rect x="14" y="13" width="20" height="22" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1" rx="1" fill="none" />
-      <line x1="16.5" y1="14" x2="16.5" y2="34" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="1" strokeLinecap="round" />
+      {/* Vertical Energy Conduits / Discharge Beams */}
+      <line x1="24" y1="9" x2="24" y2="14" stroke="#FF8099" strokeWidth="2" strokeLinecap="round" />
+      <line x1="24" y1="34" x2="24" y2="39" stroke="#FF8099" strokeWidth="2" strokeLinecap="round" />
 
-      {/* --- LATERAL STABILIZER STRUTS (Left & Right Armored Rails) --- */}
-      {/* Left Strut */}
-      <path d="M10 13 H13 V35 H10 Z" fill="url(#argent-container-metal)" stroke="#475569" strokeWidth="0.8" />
-      <rect x="9" y="22" width="5" height="4" rx="0.5" fill="#1E293B" stroke="#64748B" strokeWidth="0.8" />
+      {/* Orbiting Magnetic Plasma Filaments */}
+      <path d="M19 19 C22 21.5 22 26.5 19 29" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+      <path d="M29 19 C26 21.5 26 26.5 29 29" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
 
-      {/* Right Strut */}
-      <path d="M35 13 H38 V35 H35 Z" fill="url(#argent-container-metal)" stroke="#475569" strokeWidth="0.8" />
-      <rect x="34" y="22" width="5" height="4" rx="0.5" fill="#1E293B" stroke="#64748B" strokeWidth="0.8" />
-
-      {/* --- TOP MAGNETIC CONTAINMENT COLLAR & CAP --- */}
-      {/* Top Cap Pedestal */}
-      <polygon points="18,4 30,4 32,8 16,8" fill="url(#argent-container-metal)" stroke="url(#argent-container-rim)" strokeWidth="1" strokeLinejoin="round" />
-      <line x1="20" y1="6" x2="28" y2="6" stroke="#94A3B8" strokeWidth="1" />
-
-      {/* Top Heavy Collar */}
-      <path d="M12 8 H36 L38 13 H10 L12 8 Z" fill="url(#argent-container-metal)" stroke="url(#argent-container-rim)" strokeWidth="1" strokeLinejoin="round" />
-      <rect x="15" y="10" width="18" height="2" fill="#0F172A" />
-      {/* Top Injector Emitter */}
-      <polygon points="22,13 26,13 25,15 23,15" fill="#FF1744" />
-      {/* Status Warning LED */}
-      <circle cx="34" cy="10.5" r="1" fill="#FF1744" />
-
-      {/* --- BOTTOM MAGNETIC CONTAINMENT BASE & FEET --- */}
-      {/* Bottom Heavy Collar */}
-      <path d="M10 35 H38 L36 40 H12 L10 35 Z" fill="url(#argent-container-metal)" stroke="url(#argent-container-rim)" strokeWidth="1" strokeLinejoin="round" />
-      <rect x="15" y="36" width="18" height="2" fill="#0F172A" />
-      {/* Bottom Collector Emitter */}
-      <polygon points="23,33 25,33 26,35 22,35" fill="#FF1744" />
-      {/* Status Warning LED */}
-      <circle cx="14" cy="37.5" r="1" fill="#FF1744" />
-
-      {/* Bottom Stabilizer Foot Mount */}
-      <polygon points="16,40 32,40 30,44 18,44" fill="url(#argent-container-metal)" stroke="url(#argent-container-rim)" strokeWidth="1" strokeLinejoin="round" />
-      <line x1="20" y1="42" x2="28" y2="42" stroke="#64748B" strokeWidth="1" />
+      {/* Incandescent Core Spark */}
+      <circle cx="24" cy="24" r="2.5" fill="#FFFFFF" />
     </svg>
   );
 }
