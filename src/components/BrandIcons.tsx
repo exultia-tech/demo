@@ -649,5 +649,90 @@ export function KineticIcon({ size = 32, className = "", glow = true }: IconProp
   );
 }
 
+/**
+ * Curia / Civic Cryptographic Governance & Voting Icon
+ * Classical Roman Curia pediment & civic columns fused with an isometric cryptographic
+ * ballot vault, Merkle consensus ring, and dual-custody hardware keyhole.
+ */
+export function CuriaIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 12px rgba(16, 185, 129, 0.55)) drop-shadow(0 0 4px rgba(245, 158, 11, 0.4))" : "none";
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
+      <defs>
+        <linearGradient id="curia-grad-frame" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#34D399" />
+          <stop offset="50%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#047857" />
+        </linearGradient>
+        <linearGradient id="curia-grad-gold" x1="14" y1="8" x2="34" y2="40" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="50%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+        <linearGradient id="curia-vault-bg" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="rgba(6, 78, 59, 0.85)" />
+          <stop offset="100%" stopColor="rgba(2, 44, 34, 0.95)" />
+        </linearGradient>
+        <radialGradient id="curia-core-aura" cx="24" cy="25" r="14" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="rgba(52, 211, 153, 0.5)" />
+          <stop offset="60%" stopColor="rgba(245, 158, 11, 0.2)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+      </defs>
+
+      {/* Background Consensus Radiance */}
+      <circle cx="24" cy="24" r="21" fill="url(#curia-core-aura)" />
+
+      {/* Hexagonal Outer Chamber Perimeter (Air-Gapped Enclave Boundary) */}
+      <polygon
+        points="24,3 43,13 43,35 24,45 5,35 5,13"
+        fill="url(#curia-vault-bg)"
+        stroke="url(#curia-grad-frame)"
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+
+      {/* Classical Roman Curia Pediment / Triangular Civic Gable */}
+      <polygon
+        points="24,7 39,16 9,16"
+        fill="rgba(16, 185, 129, 0.25)"
+        stroke="url(#curia-grad-gold)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+
+      {/* Four Ionic Civic Architecture Pillars / Non-Repudiation Columns */}
+      {/* Pillar 1: Quorum */}
+      <rect x="12" y="18" width="3.5" height="15" rx="1" fill="url(#curia-grad-frame)" opacity="0.9" />
+      {/* Pillar 2: Freedom of Evidence / Robert's Rules */}
+      <rect x="19" y="18" width="3" height="15" rx="1" fill="url(#curia-grad-gold)" opacity="0.8" />
+      {/* Pillar 3: Ed25519 Hardware Attestation */}
+      <rect x="26" y="18" width="3" height="15" rx="1" fill="url(#curia-grad-gold)" opacity="0.8" />
+      {/* Pillar 4: Append-Only Merkle Tree */}
+      <rect x="32.5" y="18" width="3.5" height="15" rx="1" fill="url(#curia-grad-frame)" opacity="0.9" />
+
+      {/* Pediment Architrave & Stylobate Base Plates */}
+      <rect x="10" y="16" width="28" height="2" fill="url(#curia-grad-gold)" />
+      <rect x="9" y="33" width="30" height="2.5" rx="0.5" fill="url(#curia-grad-frame)" />
+
+      {/* Central Cryptographic Ballot Vault / Merkle Node Keyhole */}
+      <circle cx="24" cy="25" r="5" fill="#042F2E" stroke="url(#curia-grad-gold)" strokeWidth="1.8" />
+      {/* Inner Radiant Keyhole */}
+      <circle cx="24" cy="24" r="1.8" fill="#FDE68A" />
+      <polygon points="23,24 25,24 25.5,27.5 22.5,27.5" fill="#FDE68A" />
+
+      {/* Orbiting Consensus Nonce Rings */}
+      <circle cx="24" cy="24" r="18" stroke="url(#curia-grad-frame)" strokeWidth="1" strokeDasharray="3 3" opacity="0.55" />
+      <circle cx="24" cy="24" r="12" stroke="url(#curia-grad-gold)" strokeWidth="0.8" strokeDasharray="2 3" opacity="0.75" />
+
+      {/* Hardware Dual-Custody Micro-Indicia (Key A & Key B) */}
+      <circle cx="8" cy="24" r="2" fill="#10B981" stroke="#FFFFFF" strokeWidth="0.8" />
+      <circle cx="40" cy="24" r="2" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+
 
 
