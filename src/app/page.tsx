@@ -109,9 +109,9 @@ export default function HomePage() {
             </p>
           </Link>
 
-          {/* 5. CENTER: EXULTIA LOGO ONLY (NO TILE, 2X SIZE) */}
+          {/* 5. CENTER: EXULTIA LOGO ONLY (NO TILE, 420px) */}
           <div className="megaman-center-emblem megaman-cell-center">
-            <ExultiaLogo size={280} glow={false} />
+            <ExultiaLogo size={420} glow={false} />
           </div>
 
           {/* 6. Praxis */}

@@ -1834,7 +1834,7 @@ textarea.input-field {
    ========================================================================== */
 
 .megaman-container {
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 3rem 1.5rem 4rem 1.5rem;
 }
@@ -1954,12 +1954,22 @@ textarea.input-field {
   background: transparent;
   border: none;
   box-shadow: none;
+  overflow: visible;
+}
+
+.megaman-center-emblem > div,
+.megaman-center-tile > div {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .megaman-center-emblem img,
 .megaman-center-tile img {
-  max-width: 100%;
-  height: auto;
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 
