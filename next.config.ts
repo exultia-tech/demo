@@ -6,6 +6,9 @@ const antiFramingHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/kinetic/download': ['./public/downloads/kinetic/**/*'],
+  },
   async headers() {
     return [
       // Exam simulator & results live on the Axiom page; block all embedding

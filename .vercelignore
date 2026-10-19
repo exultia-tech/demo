@@ -3,6 +3,8 @@ node_modules
 dist
 public/downloads/*
 !public/downloads/.gitkeep
+!public/downloads/kinetic
+!public/downloads/kinetic/*
 local.db
 local.db-journal
 tmp_orchestrator.ps1

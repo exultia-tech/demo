@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
   const filePath = path.join(downloadsDir, targetFile);
 
   if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: `Binary ${targetFile} not found on release node.` }, { status: 404 });
+    return NextResponse.redirect(new URL(`/downloads/kinetic/${targetFile}`, request.url));
   }
 
   const stat = fs.statSync(filePath);
