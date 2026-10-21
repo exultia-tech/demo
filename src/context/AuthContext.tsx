@@ -18,11 +18,11 @@ export interface User {
   subscriptions: SubscribedProduct[];
 }
 
-export type ProductId = "inquest" | "pureide" | "uvi" | "axiom" | "praxis" | "pureos" | "kinetic";
+export type ProductId = "pureide" | "uvi" | "axiom" | "praxis" | "pureos" | "kinetic" | "curia" | "argent";
 
 export interface PaymentModalOptions {
   product: ProductId | string;
-  tier: "free" | "pro" | "legal" | "enterprise" | string;
+  tier: "free" | "pro" | "enterprise" | string;
   price: number;
   billingCycle: "monthly" | "annual";
   planName: string;

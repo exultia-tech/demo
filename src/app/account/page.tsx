@@ -33,11 +33,10 @@ import {
   ShieldCheck,
   Check
 } from "lucide-react";
-import { PureIdeIcon, VantageIcon, InquestIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, KineticIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
-import InquestCustomerTools from "@/components/account/InquestCustomerTools";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
 import AdminConsole from "@/components/account/AdminConsole";
 
@@ -67,7 +66,7 @@ type AccountTab =
   | "security" 
   | "pureide" 
   | "uvi" 
-  | "inquest" 
+  | "kinetic" 
   | "axiom" 
   | "praxis" 
   | "pureos" 
@@ -146,7 +145,7 @@ function AccountPageContent() {
         "security", 
         "pureide", 
         "uvi", 
-        "inquest", 
+        "kinetic", 
         "axiom", 
         "praxis", 
         "pureos", 
@@ -279,23 +278,24 @@ function AccountPageContent() {
     }
   };
 
-  const handleQuickTierSwitch = async (product: string, tier: string) => {
+  const handleDowngradeToFree = async (product: string) => {
+    if (!confirm(`Are you sure you want to downgrade ${product.toUpperCase()} to the Free Community plan?`)) return;
     setUpdatingSubProduct(product);
     try {
       const res = await fetch("/api/user/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product, tier, billingCycle: "annual" }),
+        body: JSON.stringify({ product, tier: "free", billingCycle: "annual" }),
       });
       const data = await res.json();
       if (res.ok) {
         await refreshUser();
         loadSubscriptions();
       } else {
-        alert(data.error || "Failed to update subscription");
+        alert(data.error || "Failed to downgrade subscription");
       }
     } catch (e) {
-      console.error("Subscription update error:", e);
+      console.error("Subscription downgrade error:", e);
     } finally {
       setUpdatingSubProduct(null);
     }
@@ -405,11 +405,11 @@ function AccountPageContent() {
       actionLabel: "Open Vantage Feed →",
       actionHref: "/app/uvi"
     },
-    inquest: {
-      title: "Inquest Legal Vault",
-      subtitle: "Automated FOIA disclosure dockets, evidence Bates ledger, and statutory appeal briefs.",
-      actionLabel: "Open Legal Console →",
-      actionHref: "/app/inquest"
+    kinetic: {
+      title: "Kinetic Autonomous Patching",
+      subtitle: "Zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.",
+      actionLabel: "Launch Kinetic Console →",
+      actionHref: "/app/kinetic"
     },
     axiom: {
       title: "Axiom Certification & LMS",
@@ -574,14 +574,14 @@ function AccountPageContent() {
 
           <button 
             type="button"
-            className={`console-sidebar-item ${activeTab === "inquest" ? "active" : ""}`}
-            onClick={() => setActiveTab("inquest")}
-            title="Inquest Legal Vault"
+            className={`console-sidebar-item ${activeTab === "kinetic" ? "active" : ""}`}
+            onClick={() => setActiveTab("kinetic")}
+            title="Kinetic Autonomous Patch Stream"
           >
-            <InquestIcon size={16} />
-            {!sidebarCollapsed && <span>Inquest FOIA Vault</span>}
+            <KineticIcon size={16} glow={false} />
+            {!sidebarCollapsed && <span>Kinetic Patch Stream</span>}
             {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("inquest").toUpperCase()}</span>
+              <span className="console-sidebar-badge">{getSubTier("kinetic").toUpperCase()}</span>
             )}
           </button>
 
@@ -1158,44 +1158,71 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#60A5FA" />
                     <span>
-                      {getSubTier("pureide") === "enterprise" ? "Hermetic Airgap Cosigning (Volume)" : (getSubTier("pureide") === "pro" ? "Priority Cloud Builds (1 User)" : "Community Build Triggers")}
+                      {getSubTier("pureide") === "enterprise" ? "Hermetic Airgap Cosigning (Enterprise)" : (getSubTier("pureide") === "pro" ? "Priority Cloud Builds (Pro)" : "Community Build Triggers (Free)")}
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("pureide", getSubTier("pureide") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "pureide"}
+                  {getSubTier("pureide") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=pureide"
+                      className="btn-primary"
                       style={{
-                        padding: "8px",
-                        background: getSubTier("pureide") === "pro" ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(59, 130, 246, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("pureide") === "pro" ? "Active (Pro)" : "Pro Tier"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("pureide", getSubTier("pureide") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "pureide"}
-                      style={{
-                        padding: "8px",
-                        background: getSubTier("pureide") === "enterprise" ? "rgba(139, 92, 246, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(139, 92, 246, 0.3)",
-                        borderRadius: "8px",
-                        color: "#C084FC",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("pureide") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=pureide"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("pureide")}
+                        disabled={updatingSubProduct === "pureide"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1242,47 +1269,74 @@ function AccountPageContent() {
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("uvi", getSubTier("uvi") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "uvi"}
+                  {getSubTier("uvi") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=uvi"
+                      className="btn-primary"
                       style={{
-                        padding: "8px",
-                        background: getSubTier("uvi") === "pro" ? "rgba(139, 92, 246, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(139, 92, 246, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("uvi") === "pro" ? "Active (Pro)" : "Pro Tier"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("uvi", getSubTier("uvi") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "uvi"}
-                      style={{
-                        padding: "8px",
-                        background: getSubTier("uvi") === "enterprise" ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(59, 130, 246, 0.3)",
-                        borderRadius: "8px",
-                        color: "#93C5FD",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("uvi") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=uvi"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("uvi")}
+                        disabled={updatingSubProduct === "uvi"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* CARD 3: INQUEST */}
+              {/* CARD 3: KINETIC */}
               <div style={{
                 background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("inquest") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+                border: getSubTier("kinetic") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "16px",
                 padding: "1.5rem",
                 display: "flex",
@@ -1290,72 +1344,99 @@ function AccountPageContent() {
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <InquestIcon size={32} />
+                    <KineticIcon size={32} glow={false} />
                     <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Inquest</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>FOIA Legal Discovery</div>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Kinetic</h3>
+                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Autonomous Patch Stream</div>
                     </div>
                   </div>
                   <span style={{
                     fontSize: "0.68rem",
-                    background: getSubTier("inquest") !== "free" ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("inquest") !== "free" ? "#67E8F9" : "#94A3B8",
-                    border: getSubTier("inquest") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                    background: getSubTier("kinetic") !== "free" ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    color: getSubTier("kinetic") !== "free" ? "#67E8F9" : "#94A3B8",
+                    border: getSubTier("kinetic") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
                     padding: "2px 8px",
                     borderRadius: "6px",
                     fontWeight: 800,
                     textTransform: "uppercase"
                   }}>
-                    {getSubTier("inquest")}
+                    {getSubTier("kinetic")}
                   </span>
                 </div>
 
                 <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Autonomous public records compliance, statutory appeal generation, and Bates evidence vault.
+                  Autonomous zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.
                 </p>
 
                 <div style={{ marginTop: "auto" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
                     <CheckCircle2 size={13} color="#67E8F9" />
                     <span>
-                      {getSubTier("inquest") === "legal" ? "Statutory Briefs & Cases (Legal Pro)" : (getSubTier("inquest") === "enterprise" ? "Enterprise Multi-Firm Docket (Enterprise)" : "Standard Draft Filing (Community)")}
+                      {getSubTier("kinetic") === "enterprise" ? "Multi-Ring Phased Fleet Rollouts (Enterprise)" : (getSubTier("kinetic") === "pro" ? "Autonomous Patch Streaming Daemon (Pro)" : "Manual Node Recipes (Community)")}
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("inquest", getSubTier("inquest") === "legal" ? "free" : "legal")}
-                      disabled={updatingSubProduct === "inquest"}
+                  {getSubTier("kinetic") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=kinetic"
+                      className="btn-primary"
                       style={{
-                        padding: "8px",
-                        background: getSubTier("inquest") === "legal" ? "rgba(6, 182, 212, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(6, 182, 212, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("inquest") === "legal" ? "Active (Legal Pro)" : "Legal Pro Tier"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("inquest", getSubTier("inquest") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "inquest"}
-                      style={{
-                        padding: "8px",
-                        background: getSubTier("inquest") === "enterprise" ? "rgba(139, 92, 246, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(139, 92, 246, 0.3)",
-                        borderRadius: "8px",
-                        color: "#C084FC",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("inquest") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=kinetic"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("kinetic")}
+                        disabled={updatingSubProduct === "kinetic"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1399,67 +1480,78 @@ function AccountPageContent() {
                     <CheckCircle2 size={13} color="#F43F5E" />
                     <span>
                       {getSubTier("axiom") === "enterprise" 
-                        ? "Enterprise LMS Simulator Feed ($499/mo)" 
+                        ? "Enterprise LMS Simulator Feed (Enterprise)" 
                         : getSubTier("axiom") === "pro" 
-                        ? "Pro Exports & API Queries ($49/mo)" 
+                        ? "Pro Exports & API Queries (Pro)" 
                         : "Web Exam Simulator (Free)"}
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("axiom", "free")}
-                      disabled={updatingSubProduct === "axiom" || getSubTier("axiom") === "free"}
+                  {getSubTier("axiom") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=axiom"
+                      className="btn-primary"
                       style={{
-                        padding: "8px 4px",
-                        background: getSubTier("axiom") === "free" ? "rgba(244, 63, 94, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(244, 63, 94, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.72rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: getSubTier("axiom") === "free" ? "default" : "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("axiom") === "free" ? "Active (Free)" : "Free"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "axiom"}
-                      style={{
-                        padding: "8px 4px",
-                        background: getSubTier("axiom") === "pro" ? "rgba(244, 63, 94, 0.35)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(244, 63, 94, 0.5)",
-                        borderRadius: "8px",
-                        color: "#FDA4AF",
-                        fontSize: "0.72rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("axiom") === "pro" ? "Active (Pro)" : "Pro ($49)"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("axiom", getSubTier("axiom") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "axiom"}
-                      style={{
-                        padding: "8px 4px",
-                        background: getSubTier("axiom") === "enterprise" ? "rgba(244, 63, 94, 0.45)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(244, 63, 94, 0.6)",
-                        borderRadius: "8px",
-                        color: "#FECDD3",
-                        fontSize: "0.72rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("axiom") === "enterprise" ? "Active (Ent)" : "Ent ($499)"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=axiom"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("axiom")}
+                        disabled={updatingSubProduct === "axiom"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* CARD 5: PRAXIS (FIX LIST) */}
+              {/* CARD 5: PRAXIS */}
               <div style={{
                 background: "rgba(15, 23, 42, 0.7)",
                 border: getSubTier("praxis") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
@@ -1472,7 +1564,7 @@ function AccountPageContent() {
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <PraxisIcon size={32} />
                     <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Praxis</h3>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis</h3>
                       <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>CVE Threat Remediation</div>
                     </div>
                   </div>
@@ -1502,40 +1594,67 @@ function AccountPageContent() {
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("praxis", getSubTier("praxis") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "praxis"}
+                  {getSubTier("praxis") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=praxis"
+                      className="btn-primary"
                       style={{
-                        padding: "8px",
-                        background: getSubTier("praxis") === "pro" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(245, 158, 11, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("praxis") === "pro" ? "Active (Pro)" : "Pro Tier"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("praxis", getSubTier("praxis") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "praxis"}
-                      style={{
-                        padding: "8px",
-                        background: getSubTier("praxis") === "enterprise" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(245, 158, 11, 0.4)",
-                        borderRadius: "8px",
-                        color: "#FDE68A",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("praxis") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=praxis"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("praxis")}
+                        disabled={updatingSubProduct === "praxis"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1582,40 +1701,67 @@ function AccountPageContent() {
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <button
-                      onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "pro" ? "free" : "pro")}
-                      disabled={updatingSubProduct === "pureos"}
+                  {getSubTier("pureos") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=pureos"
+                      className="btn-primary"
                       style={{
-                        padding: "8px",
-                        background: getSubTier("pureos") === "pro" ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(16, 185, 129, 0.3)",
-                        borderRadius: "8px",
-                        color: "#FFFFFF",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
                         fontWeight: 700,
-                        cursor: "pointer"
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center"
                       }}
                     >
-                      {getSubTier("pureos") === "pro" ? "Active (Pro)" : "Pro Tier"}
-                    </button>
-                    <button
-                      onClick={() => handleQuickTierSwitch("pureos", getSubTier("pureos") === "enterprise" ? "free" : "enterprise")}
-                      disabled={updatingSubProduct === "pureos"}
-                      style={{
-                        padding: "8px",
-                        background: getSubTier("pureos") === "enterprise" ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(16, 185, 129, 0.4)",
-                        borderRadius: "8px",
-                        color: "#6EE7B7",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {getSubTier("pureos") === "enterprise" ? "Active (Enterprise)" : "Enterprise Tier"}
-                    </button>
-                  </div>
+                      Upgrade Plan →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=pureos"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("pureos")}
+                        disabled={updatingSubProduct === "pureos"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1696,11 +1842,23 @@ function AccountPageContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 7: INQUEST LEGAL VAULT */}
+        {/* VIEW 7: KINETIC FLEET REMEDIATION */}
         {/* ========================================================================= */}
-        {activeTab === "inquest" && (
-          <div className="fade-in">
-            <InquestCustomerTools />
+        {activeTab === "kinetic" && (
+          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(6, 182, 212, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
+            <KineticIcon size={64} glow={true} className="mx-auto mb-4" />
+            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Kinetic Autonomous Patch Streaming</h2>
+            <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
+              Autonomous zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.
+            </p>
+            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <Link href="/app/kinetic" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4, #0891B2)", fontWeight: 700 }}>
+                Launch Kinetic Console →
+              </Link>
+              <Link href="/account/subscription?product=kinetic" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+                Manage Kinetic Tier
+              </Link>
+            </div>
           </div>
         )}
 
@@ -1952,7 +2110,7 @@ function AccountPageContent() {
                         { scope: "read:stats", label: "Read Global CVSS Analytics" },
                         { scope: "ingest:telemetry", label: "Stream Ingestion Feeds" },
                         { scope: "builder:cli", label: "Trigger PureIDE Builds" },
-                        { scope: "inquest:api", label: "Sync Inquest Evidence Dockets" },
+                        { scope: "kinetic:api", label: "Stream Kinetic Patch Manifests" },
                       ].map(({ scope, label }) => (
                         <label key={scope} style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(255, 255, 255, 0.03)", padding: "7px 10px", borderRadius: "8px", cursor: "pointer", fontSize: "0.8rem", color: "#E2E8F0" }}>
                           <input 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { 
   PureIdeIcon, 
   VantageIcon, 
-  InquestIcon, 
+  CuriaIcon, 
   PraxisIcon, 
   PureOsIcon, 
   AxiomIcon, 
@@ -587,82 +587,82 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     ]
   },
   {
-    id: "inquest",
-    name: "Inquest",
-    tagline: "Autonomous Digital Forensics, Incident Response & Public Records Compliance",
-    icon: <InquestIcon size={36} />,
-    accentColor: "#06B6D4",
-    specDoc: "inquest.md",
+    id: "curia",
+    name: "Curia",
+    tagline: "Cryptographic Civic Governance, Verifiable Balloting & Merkle Consensus",
+    icon: <CuriaIcon size={36} />,
+    accentColor: "#10B981",
+    specDoc: "curia.md",
     quickStart: {
-      title: "Forensic Case Management & Public Records Intake",
-      description: "Manage digital evidence, automate statutory FOIA deadlines, and execute multi-jurisdiction PII redactions.",
+      title: "Civic Governance & Cryptographic Ballot Verification",
+      description: "Cast homomorphically encrypted ballots, inspect zero-knowledge proofs, and verify tally consensus.",
       steps: [
         {
-          label: "1. List Active Matters & Forensics Cases",
-          command: "curl -s \"https://exultia.tech/api/inquest/cases\" -H \"Authorization: Bearer <API_TOKEN>\" | jq .",
+          label: "1. Query Active Civic Measures & Governance Epochs",
+          command: "curl -s \"https://exultia.tech/api/curia/measures\" -H \"Authorization: Bearer <API_TOKEN>\" | jq .",
           codeLang: "bash",
-          details: "Returns active evidence collections, redaction progress, and statutory deadlines."
+          details: "Returns active ballot measures, quorum thresholds, and voter roll cryptographic roots."
         },
         {
-          label: "2. Open New Investigation Case (cURL)",
-          command: "curl -X POST \"https://exultia.tech/api/inquest/cases\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer <API_TOKEN>\" \\\n  -d '{\"title\": \"Port Security Forensics\", \"jurisdiction\": \"federal_foia\", \"exemptionsRequested\": [\"b6_privacy\"]}'",
+          label: "2. Submit Verifiable Zero-Knowledge Ballot (cURL)",
+          command: "curl -X POST \"https://exultia.tech/api/curia/vote\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer <API_TOKEN>\" \\\n  -d '{\"measureId\": \"CURIA-2026-001\", \"encryptedVote\": \"0x8f2a...c4\", \"zkProof\": \"0x5e1b...9a\"}'",
           codeLang: "bash",
-          details: "Enforces NIST SP 800-86 cryptographic chain-of-custody logging."
+          details: "Validates non-interactive zero-knowledge proofs (Groth16/Plonk) before state commitment."
         }
       ]
     },
     productDetails: {
-      overview: "Inquest streamlines high-stakes legal, law enforcement, and municipal transparency workflows with automated redaction, statutory deadline tracking, and forensic validation.",
-      architectureTitle: "Evidence Ingestion & Compliance Engine",
+      overview: "Curia provides mathematical transparency and cryptographic guarantee for civic voting, corporate governance, and community consensus.",
+      architectureTitle: "Zero-Knowledge Balloting & Merkle Tally Engine",
       architecturePoints: [
-        "Multi-Jurisdiction Exemption Engine: Pre-configured for Federal FOIA (5 U.S.C. § 552), California CPRA, Texas PIA, and New York FOIL.",
-        "Deterministic Redaction: Automated detection of SSNs, banking numbers, juvenile identities, and confidential informants.",
-        "Immutable Audit Chain: Pre- and post-redaction SHA-256 Merkle trees guarantee court admissibility."
+        "Homomorphic Vote Encryption: Tallies can be mathematically computed without decrypting individual participant ballots.",
+        "Zero-Knowledge Eligibility Proofs: Voters prove registration without revealing their personal identity.",
+        "Immutable Audit Chain: Real-time SHA-256 Merkle trees allow any participant to independently verify the final tally."
       ],
       capabilities: [
-        { title: "Statutory SLA Sentinel", desc: "Automated countdown timers adhering to legal business day rules." },
-        { title: "PII/PHI Detection", desc: "High-precision NLP models mask sensitive entities without corrupting context." },
-        { title: "Evidence Packet Export", desc: "Produces certified Bates-stamped PDF packages ready for disclosure." }
+        { title: "Verifiable Tallies", desc: "Cryptographically verifiable election outcomes without trusted third parties." },
+        { title: "Voter Anonymity", desc: "Complete mathematical separation of identity from ballot choices." },
+        { title: "Merkle Inclusion Proofs", desc: "Individual receipts allow voters to verify their ballot was counted." }
       ],
       specifications: [
-        { label: "Supported Document Types", value: "PDF, TIFF, EML, PST, DOCX, RAW Disk Images" },
-        { label: "Compliance Standard", value: "NIST SP 800-86 & Federal FOIA Statutory Guidelines" },
-        { label: "Audit Hash Algorithm", value: "SHA-256" }
+        { label: "ZK Proof System", value: "Groth16 / BN254 Curve" },
+        { label: "Encryption Scheme", value: "ElGamal Homomorphic Encryption" },
+        { label: "Consensus Model", value: "Immutable Merkle Tree Commitments" }
       ]
     },
     apiEndpoints: [
       {
         method: "GET",
-        path: "/api/inquest/cases",
-        summary: "List all accessible forensic matters and public records requests",
+        path: "/api/curia/measures",
+        summary: "List active civic governance measures and voting epochs",
         authRequired: true,
         responses: [
           {
             status: 200,
-            description: "List of active cases",
+            description: "List of active measures",
             example: {
               status: "success",
-              cases: [
-                { caseId: "CAS-2026-0042", title: "Incident 2026-088", status: "IN_REVIEW", documentsCount: 14 }
+              measures: [
+                { measureId: "CURIA-2026-001", title: "Public Infrastructure Grant", status: "VOTING_ACTIVE", quorumReached: true }
               ]
             }
           }
         ],
-        curlExample: 'curl -s "https://exultia.tech/api/inquest/cases" -H "Authorization: Bearer <TOKEN>"'
+        curlExample: 'curl -s "https://exultia.tech/api/curia/measures" -H "Authorization: Bearer <TOKEN>"'
       },
       {
         method: "POST",
-        path: "/api/inquest/cases",
-        summary: "Create a new forensics tracking case or statutory records request",
+        path: "/api/curia/vote",
+        summary: "Submit a cryptographically sealed ballot with zero-knowledge proof",
         authRequired: true,
         requestBody: {
-          description: "Case parameters and target jurisdiction",
-          schema: { title: "string", jurisdiction: "string", targetAgency: "string", exemptionsRequested: ["string"] }
+          description: "Encrypted vote payload and cryptographic proof",
+          schema: { measureId: "string", encryptedVote: "string", zkProof: "string" }
         },
         responses: [
-          { status: 201, description: "Case opened", example: { caseId: "CAS-2026-0043", status: "created" } }
+          { status: 201, description: "Ballot recorded", example: { receiptId: "REC-2026-9921", status: "COMMITTED" } }
         ],
-        curlExample: 'curl -X POST "https://exultia.tech/api/inquest/cases" -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" -d \'{"title": "Audit 2026"}\''
+        curlExample: 'curl -X POST "https://exultia.tech/api/curia/vote" -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" -d \'{"measureId": "CURIA-2026-001"}\''
       }
     ]
   },

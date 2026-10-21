@@ -109,7 +109,7 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
       expect(res.reply).toContain('Praxis');
       expect(res.reply).toContain('PureOS');
       expect(res.reply).toContain('Axiom');
-      expect(res.reply).toContain('Inquest');
+      expect(res.reply).toContain('Curia');
       expect(res.reply).toContain('Research Lab');
     });
   });

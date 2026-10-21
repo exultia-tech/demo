@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, InquestIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon, CuriaIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon, CuriaIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -23,7 +23,7 @@ export default function Navbar() {
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "inquest">("pureide");
+  const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "kinetic">("pureide");
   const [isOperator, setIsOperator] = useState(false);
 
   useEffect(() => {
@@ -75,13 +75,6 @@ export default function Navbar() {
     pathname.startsWith("/products/uvi") || 
     pathname.startsWith("/products/threat-feed");
 
-  const isFoiaContext = !isIsolated && (
-    pathname.startsWith("/app/inquest") || 
-    pathname.startsWith("/products/inquest") || 
-    pathname.startsWith("/foia") ||
-    pathname.startsWith("/products/foia")
-  );
-
   const isPraxisContext = !isIsolated && (
     pathname.startsWith("/app/praxis") || 
     pathname.startsWith("/products/praxis")
@@ -112,10 +105,7 @@ export default function Navbar() {
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isCuriaContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
-
-  // Active subscription helper
-  const activeInquestSub = user?.subscriptions?.find(s => s.product === "inquest" && s.status === "active");
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isCuriaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -204,7 +194,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isFoiaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isCuriaContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -453,9 +443,9 @@ export default function Navbar() {
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
                       </div>
                     </Link>
-                    {/* PRODUCT 3: INQUEST */}
+                    {/* PRODUCT 7: Curia */}
                     <Link 
-                      href="/products/inquest" 
+                      href="/app/curia" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -465,16 +455,16 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isFoiaContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
+                        background: isCuriaContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <InquestIcon size={32} />
+                        <CuriaIcon size={32} glow={false} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Inquest</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous public records compliance platform</div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Curia</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cryptographic civic voting & verifiable dossiers</div>
                       </div>
                     </Link>
 
@@ -498,35 +488,7 @@ export default function Navbar() {
               Pricing & Plans
             </Link>
 
-            {/* COMPLIANCE & AUDITOR PREPAREDNESS FRAMEWORKS */}
-            <Link 
-              href="/frameworks"
-              className={`nav-link ${pathname === "/frameworks" || pathname?.startsWith("/frameworks") ? "active" : ""}`}
-              style={{
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                color: pathname === "/frameworks" || pathname?.startsWith("/frameworks") ? "#60A5FA" : undefined
-              }}
-            >
-              Frameworks
-              <span style={{
-                fontSize: "0.62rem",
-                background: "rgba(59, 130, 246, 0.2)",
-                color: "#60A5FA",
-                border: "1px solid rgba(59, 130, 246, 0.4)",
-                padding: "1px 5px",
-                borderRadius: "4px",
-                fontWeight: 700,
-                letterSpacing: "0.03em"
-              }}>
-                AUDIT PREP
-              </span>
-            </Link>
-
-            {/* RESEARCH WIKI: SPECIFICATIONS, INTERACTIVE LAB SIMULATORS & API REFERENCE */}
+            {/* WIKI */}
             <Link 
               href="/wiki"
               className={`nav-link ${pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname === "/research" || pathname?.startsWith("/research") || pathname?.startsWith("/docs") ? "active" : ""}`}
@@ -539,19 +501,7 @@ export default function Navbar() {
                 color: pathname === "/wiki" || pathname?.startsWith("/wiki") || pathname === "/research" || pathname?.startsWith("/research") || pathname?.startsWith("/docs") ? "var(--accent-primary)" : undefined
               }}
             >
-              Research Wiki
-              <span style={{
-                fontSize: "0.62rem",
-                background: "rgba(0, 229, 255, 0.15)",
-                color: "var(--accent-primary)",
-                border: "1px solid rgba(0, 229, 255, 0.35)",
-                padding: "1px 5px",
-                borderRadius: "4px",
-                fontWeight: 700,
-                letterSpacing: "0.03em"
-              }}>
-                LAB &amp; DOCS
-              </span>
+              Wiki
             </Link>
           </nav>
         )}
@@ -634,15 +584,11 @@ export default function Navbar() {
                   {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                 </div>
                 <span>{user.name || user.email.split("@")[0]}</span>
-                {user.role === "admin" ? (
+                {user.role === "admin" && (
                   <span style={{ fontSize: "0.68rem", color: "#FCD34D", background: "rgba(245, 158, 11, 0.2)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
                     ADMIN
                   </span>
-                ) : activeInquestSub && activeInquestSub.tier !== "free" && !isIsolated ? (
-                  <span style={{ fontSize: "0.68rem", color: "#67E8F9", background: "rgba(6, 182, 212, 0.2)", padding: "1px 6px", borderRadius: "4px", fontWeight: 700, textTransform: "uppercase" }}>
-                    {activeInquestSub.tier}
-                  </span>
-                ) : null}
+                )}
                 <ChevronDown size={14} color="#94A3B8" />
               </button>
 
@@ -1008,33 +954,6 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#FDA4AF", fontWeight: 700 }}>
                 Plans &amp; Pricing
-              </Link>
-            </div>
-          )}
-          {/* SUBMENU OPTION 3: INQUEST SUBMENU (Hidden in Isolated Mode) */}
-          {isFoiaContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <InquestIcon size={16} glow={false} />
-                Inquest
-              </span>
-
-              <Link 
-                href="/products/inquest" 
-                className={`submenu-link ${pathname === "/products/inquest" || pathname === "/products/foia" ? "active-cyan" : ""}`}>
-                Overview
-              </Link>
-              <Link 
-                href="/app/inquest" 
-                className={`submenu-link ${pathname === "/app/inquest" || pathname === "/foia" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Inquest Workspace
-              </Link>
-              <Link 
-                href="/account/subscription?product=inquest" 
-                className="submenu-link"
-                style={{ color: "#67E8F9", fontWeight: 700 }}>
-                Plans & Pricing
               </Link>
             </div>
           )}

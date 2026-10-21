@@ -18,13 +18,14 @@ import {
   Layers,
   Cpu,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Code2
 } from "lucide-react";
 import {
   PureIdeIcon,
   VantageIcon,
   KineticIcon,
-  InquestIcon,
+  CuriaIcon,
   PraxisIcon,
   PureOsIcon,
   AxiomIcon,
@@ -215,60 +216,70 @@ export default function ProductSimulators({ productId, accentColor }: ProductSim
     }, 1000);
   };
 
-  // 4. INQUEST SIMULATOR STATE
-  const [inquestDoc, setInquestDoc] = useState<'water-contract' | 'police-ia' | 'grant-audit'>('water-contract');
-  const [inquestRedacted, setInquestRedacted] = useState(false);
-  const [inquestProcessing, setInquestProcessing] = useState(false);
+  // 4. CURIA SIMULATOR STATE
+  const [curiaMeasure, setCuriaMeasure] = useState<'infrastructure-grant' | 'charter-amendment' | 'open-source-fund'>('infrastructure-grant');
+  const [curiaBallotCast, setCuriaBallotCast] = useState(false);
+  const [curiaProcessing, setCuriaProcessing] = useState(false);
 
-  const INQUEST_DOCS = {
-    'water-contract': {
-      title: 'Municipal Acoustic Water Grid Sensor Installation Agreement (Contract #2026-0827-048)',
-      agency: 'City of Austin Water Utility & FluidTech Telemetry LLC',
-      unredacted: `CONTRACT EXECUTION DOCUMENT:
-The City hereby authorizes payment of $14,200,000 to FluidTech Telemetry LLC.
-Lead Technical Officer: Marcus Vance (SSN: 948-22-1049, Personal Phone: 512-555-0199).
-Proprietary Acoustic Calibration Frequency: 42.8 kHz with private Fourier transform algorithm patent application #US-2026-0914-A1.
-Subcontractor banking routing: Wire routing #111000025, Account #8849201948, Wells Fargo Austin Downtown.`,
-      redacted: `CONTRACT EXECUTION DOCUMENT:
-The City hereby authorizes payment of $14,200,000 to FluidTech Telemetry LLC.
-Lead Technical Officer: Marcus Vance ([REDACTED: 5 U.S.C. § 552(b)(6) - Personal Privacy], [REDACTED: 5 U.S.C. § 552(b)(6) - Personal Telephone Number]).
-Proprietary Acoustic Calibration: [REDACTED: 5 U.S.C. § 552(b)(4) - Commercial Trade Secrets & Proprietary Algorithm Patent].
-Subcontractor banking routing: [REDACTED: 5 U.S.C. § 552(b)(4) - Financial Account Information].`,
-      exemptions: ['Exemption 4 (Trade Secrets)', 'Exemption 6 (Personal Privacy)']
+  const CURIA_MEASURES = {
+    'infrastructure-grant': {
+      title: 'Civic Measure #2026-01: Municipal Open Network & Cryptographic Fiber Grid ($28.5M)',
+      authority: 'Municipal Telecommunications Board & Public Works Commission',
+      quorum: '66.7% Required (Current: 82.4% Cryptographic Roll)',
+      payload: `BALLOT SUBMISSION PAYLOAD:
+Measure: CM-2026-01 (Municipal Open Network)
+Selected Choice: AFFIRMATIVE (YES)
+Participant Voter Credential: DID:exultia:civic:7f892a01...99bc
+Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
+Homomorphic ElGamal Ciphertext: c1=0x3f98a..., c2=0x992b4...`,
+      verified: `VERIFIABLE STATE COMMITMENT:
+Status: COMMITTED TO MERKLE TREE (Height #4,821)
+Merkle Leaf Hash: 0x8f2d91b4892cfa710924b109c8491823908f91048123901bca09
+Zero-Knowledge Verification: PASS (BN254 Pairing check e(A,B) == e(Alpha,Beta) * e(X,Gamma))
+Ballot Privacy Guarantee: 100% Anonymized via ElGamal Re-encryption Shuffle
+Consensus Quorum: 82.4% (Threshold Satisfied - Measure Certified)`
     },
-    'police-ia': {
-      title: 'Internal Affairs Incident Investigation Dossier #IA-2026-019',
-      agency: 'Metropolitan Police Department Office of Professional Responsibility',
-      unredacted: `COMPLAINT INVESTIGATION SUMMARY:
-Incident Date: June 14, 2026. Complainant Jane Doe (Home Address: 742 Evergreen Terrace, Springfield, SSN: 112-44-9021).
-Undercover Narcotics Detective John Miller (Badge #4812, Active Undercover Identity: "Razor", cell: 202-555-0144) was present during vehicle intervention.
-Body-Worn Camera Segment #04-18 indicates no policy violations observed.`,
-      redacted: `COMPLAINT INVESTIGATION SUMMARY:
-Incident Date: June 14, 2026. Complainant [REDACTED: 5 U.S.C. § 552(b)(6) - Personal Privacy] ([REDACTED: Home Address], [REDACTED: SSN]).
-Undercover Narcotics Detective [REDACTED: 5 U.S.C. § 552(b)(7)(C) - Law Enforcement Undercover Officer Identity] ([REDACTED: Badge/Cell]) was present during vehicle intervention.
-Body-Worn Camera Segment #04-18 indicates no policy violations observed.`,
-      exemptions: ['Exemption 6 (Personal Privacy)', 'Exemption 7(C) (Law Enforcement Identity Protection)']
+    'charter-amendment': {
+      title: 'Charter Amendment #2026-04: Automated Algorithmic Transparency & Citizen Redaction Review',
+      authority: 'City Council & Board of Ethics and Civil Liberties',
+      quorum: '60.0% Required (Current: 74.1% Cryptographic Roll)',
+      payload: `BALLOT SUBMISSION PAYLOAD:
+Measure: CA-2026-04 (Algorithmic Transparency)
+Selected Choice: AFFIRMATIVE (YES)
+Participant Voter Credential: DID:exultia:civic:1209ac48...77aa
+Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
+Homomorphic ElGamal Ciphertext: c1=0x77ba1..., c2=0x410fe...`,
+      verified: `VERIFIABLE STATE COMMITMENT:
+Status: COMMITTED TO MERKLE TREE (Height #4,822)
+Merkle Leaf Hash: 0x44fa901bc09124e891824109baef912094c9102481092834bca0
+Zero-Knowledge Verification: PASS (Membership set verified in zero-knowledge)
+Ballot Privacy Guarantee: Identity permanently severed from vote choice
+Consensus Quorum: 74.1% (Threshold Satisfied - Amendment Ratified)`
     },
-    'grant-audit': {
-      title: 'NSF Sub-Award Quantum Cryptography Research Audit',
-      agency: 'National Science Foundation Division of Computing & Communication Foundations',
-      unredacted: `GRANT ALLOCATION AUDIT:
-Awardee Institution: Quantum Cryptographic Labs Inc. (DUNS: 948102948).
-Lead PI: Dr. Elena Rostova (DOB: 04/12/1981, Passport: US-P-908129481).
-Classified post-quantum lattice encryption benchmark formula: Matrix dimension N=1024 with q=12289 secret seed key 0xFA48B1C90819.`,
-      redacted: `GRANT ALLOCATION AUDIT:
-Awardee Institution: Quantum Cryptographic Labs Inc. (DUNS: 948102948).
-Lead PI: Dr. Elena Rostova ([REDACTED: 5 U.S.C. § 552(b)(6) - Date of Birth], [REDACTED: Passport Identifier]).
-Classified post-quantum lattice encryption benchmark formula: [REDACTED: 5 U.S.C. § 552(b)(1) - National Security & Defense Cryptographic Algorithms].`,
-      exemptions: ['Exemption 1 (National Defense)', 'Exemption 6 (Personal Privacy)']
+    'open-source-fund': {
+      title: 'Civic Measure #2026-09: Municipal Sovereign Software & Security Tooling Endowment',
+      authority: 'Public Innovation Trust & Cybersecurity Governance Council',
+      quorum: '50.0% Required (Current: 91.2% Cryptographic Roll)',
+      payload: `BALLOT SUBMISSION PAYLOAD:
+Measure: CM-2026-09 (Sovereign Software Endowment)
+Selected Choice: AFFIRMATIVE (YES)
+Participant Voter Credential: DID:exultia:civic:88bc9102...11ef
+Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
+Homomorphic ElGamal Ciphertext: c1=0x918cb..., c2=0x1892d...`,
+      verified: `VERIFIABLE STATE COMMITMENT:
+Status: COMMITTED TO MERKLE TREE (Height #4,823)
+Merkle Leaf Hash: 0x912389ba10924ecf91820491823901baef91048129038bca0199
+Zero-Knowledge Verification: PASS (Zero-Knowledge Range Proof Valid)
+Ballot Privacy Guarantee: Mathematical unlikability to voter identity
+Consensus Quorum: 91.2% (Threshold Exceeded - Endowment Funded)`
     }
   };
 
-  const runInquestRedaction = () => {
-    setInquestProcessing(true);
+  const runCuriaBallot = () => {
+    setCuriaProcessing(true);
     setTimeout(() => {
-      setInquestProcessing(false);
-      setInquestRedacted(true);
+      setCuriaProcessing(false);
+      setCuriaBallotCast(true);
     }, 700);
   };
 
@@ -913,28 +924,28 @@ impl PraxisK8sClient {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          INQUEST SIMULATOR
+          CURIA SIMULATOR
       ───────────────────────────────────────────────────────────── */}
-      {productId === "inquest" && (
-        <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(236, 72, 153, 0.3)", padding: "2rem" }}>
+      {productId === "curia" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "2rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <InquestIcon size={32} />
+              <CuriaIcon size={32} />
               <div>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#F472B6" }}>
-                  Inquest Automated Public Records &amp; FOIA Redaction Pipeline
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#34D399" }}>
+                  Curia Zero-Knowledge Civic Balloting &amp; Merkle Consensus
                 </h3>
                 <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
-                  Automated entity identification, statutory exemption tagging (FOIA 1-9), and court-admissible chain-of-custody seals.
+                  Homomorphic vote encryption, non-interactive zero-knowledge proofs (BN254), and tamper-evident Merkle state commitments.
                 </span>
               </div>
             </div>
 
             <button
-              onClick={runInquestRedaction}
-              disabled={inquestProcessing}
+              onClick={runCuriaBallot}
+              disabled={curiaProcessing}
               style={{
-                background: "linear-gradient(135deg, #EC4899, #8B5CF6)",
+                background: "linear-gradient(135deg, #10B981, #059669)",
                 color: "white",
                 border: "none",
                 padding: "8px 18px",
@@ -944,26 +955,26 @@ impl PraxisK8sClient {
                 cursor: "pointer"
               }}
             >
-              {inquestProcessing ? "Processing Redactions..." : "Run Automated Legal Discovery & Redaction"}
+              {curiaProcessing ? "Verifying ZK Proof..." : "Cast & Verify Cryptographic Ballot"}
             </button>
           </div>
 
           <div style={{ display: "flex", gap: "8px", marginBottom: "1.25rem" }}>
             {[
-              { id: 'water-contract', label: 'Austin Water Contract ($14.2M)' },
-              { id: 'police-ia', label: 'Police Internal Affairs Report' },
-              { id: 'grant-audit', label: 'NSF Quantum Cryptography Audit' }
+              { id: 'infrastructure-grant', label: 'Fiber Grid Measure ($28.5M)' },
+              { id: 'charter-amendment', label: 'Algorithmic Transparency' },
+              { id: 'open-source-fund', label: 'Sovereign Software Fund' }
             ].map(doc => (
               <button
                 key={doc.id}
                 onClick={() => {
-                  setInquestDoc(doc.id as any);
-                  setInquestRedacted(false);
+                  setCuriaMeasure(doc.id as any);
+                  setCuriaBallotCast(false);
                 }}
                 style={{
-                  background: inquestDoc === doc.id ? 'rgba(236, 72, 153, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                  border: inquestDoc === doc.id ? '1px solid #EC4899' : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: inquestDoc === doc.id ? '#F472B6' : '#CBD5E1',
+                  background: curiaMeasure === doc.id ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  border: curiaMeasure === doc.id ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
+                  color: curiaMeasure === doc.id ? '#6EE7B7' : '#CBD5E1',
                   padding: '6px 12px',
                   borderRadius: '6px',
                   fontSize: '0.78rem',
@@ -978,20 +989,20 @@ impl PraxisK8sClient {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1rem" }}>
             <div style={{ background: "#020617", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "10px", padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#EF4444", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <AlertTriangle size={15} /> ORIGINAL UNREDACTED RECORD (EXPOSES PII &amp; TRADE SECRETS)
+              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#FBBF24", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+                <Code2 size={15} /> BALLOT SUBMISSION PAYLOAD &amp; ZK WITNESS
               </div>
-              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: "#FCA5A5", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
-                {INQUEST_DOCS[inquestDoc].unredacted}
+              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: "#FDE68A", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
+                {CURIA_MEASURES[curiaMeasure].payload}
               </pre>
             </div>
 
-            <div style={{ background: "#020617", border: "1px solid rgba(236, 72, 153, 0.3)", borderRadius: "10px", padding: "1.25rem" }}>
+            <div style={{ background: "#020617", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "10px", padding: "1.25rem" }}>
               <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#34D399", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <ShieldCheck size={15} /> COMPLIANCE REDACTED OUTPUT (STATUTORY CITATIONS TAGGED)
+                <ShieldCheck size={15} /> VERIFIABLE MERKLE ROOT COMMITMENT (ZK-VERIFIED)
               </div>
-              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: inquestRedacted ? "#86EFAC" : "#64748B", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
-                {inquestRedacted ? INQUEST_DOCS[inquestDoc].redacted : 'Click "Run Automated Legal Discovery & Redaction" above to process document...'}
+              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: curiaBallotCast ? "#86EFAC" : "#64748B", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
+                {curiaBallotCast ? CURIA_MEASURES[curiaMeasure].verified : 'Click "Cast & Verify Cryptographic Ballot" above to execute zero-knowledge proof verification...'}
               </pre>
             </div>
           </div>

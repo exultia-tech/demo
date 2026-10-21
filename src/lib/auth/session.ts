@@ -71,7 +71,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
             const userEmail = parsed.email || 'operator@exultia.tech';
             const role = isAuthorized ? 'admin' : 'user';
             const tier = isAuthorized ? 'enterprise' : 'free';
-            const defaultProducts = ['pureide', 'uvi', 'inquest', 'axiom', 'praxis', 'pureos', 'kinetic', 'argent', 'curia'];
+            const defaultProducts = ['pureide', 'uvi', 'axiom', 'praxis', 'pureos', 'kinetic', 'argent', 'curia'];
             return {
               id: parsed.userId,
               email: userEmail,

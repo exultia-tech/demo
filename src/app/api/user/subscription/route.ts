@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     });
 
     // Ensure all 6 products in the suite are represented
-    const products = ['pureide', 'uvi', 'inquest', 'praxis', 'pureos', 'axiom'];
+    const products = ['pureide', 'uvi', 'kinetic', 'praxis', 'pureos', 'axiom'];
     const enriched = products.map(prod => {
       const match = subs.find(s => s.product === prod);
       return {
@@ -57,9 +57,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Product and tier are required' }, { status: 400 });
     }
 
+    // Only administrators can grant paid tiers directly without checkout verification
+    const isFree = tier.toLowerCase() === 'free' || tier.toLowerCase() === 'community';
+    const isAdmin = sessionUser.role === 'admin';
+
+    if (!isFree && !isAdmin) {
+      return NextResponse.json({ 
+        error: 'Upgrades require completing checkout via Pricing & Plans.' 
+      }, { status: 403 });
+    }
+
+    const normalizedTier = isFree ? 'free' : tier.toLowerCase();
     const oneYearFromNow = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
     const oneMonthFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const expiresAt = tier === 'free' ? null : (billingCycle === 'annual' ? oneYearFromNow : oneMonthFromNow);
+    const expiresAt = isFree ? null : (billingCycle === 'annual' ? oneYearFromNow : oneMonthFromNow);
 
     const existing = await db.query.subscriptions.findFirst({
       where: and(
@@ -71,7 +82,7 @@ export async function POST(req: Request) {
     if (existing) {
       await db.update(subscriptions)
         .set({
-          tier,
+          tier: normalizedTier,
           status: 'active',
           currentPeriodEnd: expiresAt,
         })
@@ -81,7 +92,7 @@ export async function POST(req: Request) {
         id: `sub_${product}_${sessionUser.id}`,
         userId: sessionUser.id,
         product,
-        tier,
+        tier: normalizedTier,
         status: 'active',
         currentPeriodEnd: expiresAt,
         createdAt: new Date(),
@@ -90,10 +101,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Subscription for ${product.toUpperCase()} updated to ${tier.toUpperCase()}`,
+      message: `Subscription for ${product.toUpperCase()} updated to ${normalizedTier.toUpperCase()}`,
       subscription: {
         product,
-        tier,
+        tier: normalizedTier,
         status: 'active',
         currentPeriodEnd: expiresAt,
       }

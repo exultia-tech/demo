@@ -54,7 +54,7 @@ export class AiSupportEngine {
 
 Because of this lean, focused engineering model:
 - ❌ **No Human SLAs or 24/7 Pagers:** We do not offer contractual human uptime SLAs, 24/7 on-call incident engineers, or phone support.
-- ✅ **Deterministic, Automated Software:** All Exultia products (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom, Inquest) are engineered to be completely **autonomous, self-hosted, and self-verifying**.
+- ✅ **Deterministic, Automated Software:** All Exultia products (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom) are engineered to be completely **autonomous, self-hosted, and self-verifying**.
 - ✅ **100% Automated Test Suite:** Every hotfix, patch script, and container image undergoes exhaustive automated pre-flight testing and regression sentinels prior to publication.
 - ✅ **Sub-Second Deterministic Rollbacks:** If any hotfix causes an unexpected state, Kinetic includes instant local rollback commands (\`sudo kinetic rollback --cve=...\`) that restore the previous binary state in milliseconds.
 - 🤖 **24/7 AI Sentinel:** This AI Support Agent is online around the clock to assist you with installation commands, host capacity calculations, configuration syntax, and troubleshooting.
@@ -108,7 +108,7 @@ Kinetic uses **transparent, linear per-host licensing** with **zero grouped node
 #### Why Per-Host?
 As a solo-engineered project, we believe in fair, predictable software licensing. You scale up or down based on your active production fleet size.
 
-You can set your exact host count using the slider on the [Pricing & Plans page](/account/subscription?product=kinetic).`,
+You can select your preset plan on the [Pricing & Plans page](/account/subscription?product=kinetic).`,
         suggestions: [
           'Calculate cost for 10 hosts',
           'Calculate cost for 50 hosts',
@@ -261,13 +261,13 @@ ansible-playbook -i inventory/hosts.ini kinetic-fleet-rollback.yml --extra-vars 
 MultiPass is the comprehensive bundle giving you access across the entire Exultia product ecosystem:
 
 #### 1. MultiPass Pro ($196/mo or $156/mo annual)
-Unlocks Pro-level access across all 6 core tools:
+Unlocks Pro-level access across all core tools:
 - **PureIDE Pro:** Isolated cloud compiler pipelines, egress firewall & automated CycloneDX SBOMs.
 - **Vantage Pro:** Workstation threat alerts, zero-day early warnings & 300 req/min API quota.
 - **Kinetic Pro:** Autonomous patch stream daemon & sub-second deterministic rollbacks.
 - **Praxis Pro:** Automated bash/Ansible hotfix generation & SIEM webhook payload exporters.
 - **PureOS Pro:** CIS hardened container images & cryptographic provenance.
-- **Inquest Pro:** Automated FOIA redaction, denial analyzer & case management.
+- **Axiom Pro:** Cybersecurity certification prep platform with 15,000+ question bank & exports.
 
 #### 2. MultiPass Enterprise ($595/mo or $495/mo annual)
 - Unlocks **all Enterprise features** across the stack.
@@ -276,7 +276,7 @@ Unlocks Pro-level access across all 6 core tools:
 - SLSA Level 3 signed manifests with Cosign OIDC.
 - 24/7 AI Support Agent & automated self-hosted test suites.
 
-You can activate MultiPass with aggregate slider control on the [Pricing & Plans page](/account/subscription?product=multipass).`,
+You can activate MultiPass with preset plan options on the [Pricing & Plans page](/account/subscription?product=multipass).`,
         suggestions: [
           'How does Kinetic per-host pricing work?',
           'Do you offer human SLAs?',
@@ -336,7 +336,7 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       q.includes('praxis') ||
       q.includes('pureos') ||
       q.includes('axiom') ||
-      q.includes('inquest')
+      q.includes('curia')
     ) {
       return {
         topic: 'products',
@@ -351,7 +351,7 @@ Exultia provides security engineering tools designed for solo operators, securit
 4. **[Praxis](/app/praxis):** Surgical CVE remediation compiler translating raw advisories into hardened bash scripts and Ansible playbooks.
 5. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
 6. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
-7. **[Inquest](/products/inquest):** Autonomous public records compliance platform with 9-exemption discovery vault and automated redaction.
+7. **[Curia](/app/curia):** Cryptographic civic voting and verifiable zero-knowledge balloting platform.
 8. **[Research Lab](/research):** Interactive validation playground demonstrating live compiler tests, 3-tier hotfix remediations, and full ecosystem simulations.`,
         suggestions: [
           'How does Kinetic per-host pricing work?',
@@ -375,7 +375,7 @@ Here is what I can help you with immediately:
 - **Kinetic Daemon Installation:** Step-by-step \`curl\` bootstrap, systemd configuration, and distro support.
 - **Deterministic Rollbacks:** \`sudo kinetic rollback --cve=...\` instructions and atomic snapshot mechanics.
 - **No Human SLAs Policy:** Transparent details on our automated self-hosted software model.
-- **Exultia Product Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Inquest, and MultiPass bundles.
+- **Exultia Product Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Curia, and MultiPass bundles.
 - **API Tokens & Licensing:** Generating service keys and air-gapped licensing.
 
 What would you like assistance with?`,

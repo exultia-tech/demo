@@ -25,14 +25,13 @@ import {
   PureIdeIcon, 
   VantageIcon, 
   KineticIcon, 
-  InquestIcon, 
   PraxisIcon, 
   PureOsIcon, 
   AxiomIcon 
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "kinetic" | "praxis" | "pureos" | "axiom" | "inquest" | "multipass";
+type ProductKey = "pureide" | "uvi" | "kinetic" | "praxis" | "pureos" | "axiom" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -48,7 +47,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "kinetic", "praxis", "pureos", "axiom", "inquest", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "kinetic", "praxis", "pureos", "axiom", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -57,8 +56,6 @@ function SubscriptionContent() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
   
-  const [userCount, setUserCount] = useState<number>(1);
-
   const isMultiPass = selectedProduct === "multipass";
   const isKinetic = selectedProduct === "kinetic";
 
@@ -362,52 +359,6 @@ function SubscriptionContent() {
         isPopular: false
       }
     ],
-    inquest: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Standard FOIA exemption processing and indexing for individual researchers.",
-        features: [
-          "Single User Browser Access",
-          "Public records act discovery workflow",
-          "Standard FOIA exemption 1-9 templating"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Automated redaction pipelines and case chain of custody for individual legal analysts.",
-        features: [
-          "Everything in Community",
-          "Denial letter & exemption analyzer",
-          "Statutory deadlines & case dashboard",
-          "Advanced appeal letter generator"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Organization-wide deployments and multi-agency collaboration support.",
-        features: [
-          "Everything in Pro",
-          "Firm/Agency Volume Entitlements (Multi-seat)",
-          "Multi-agency collaboration portal",
-          "Local-first bring-your-own-key (BYOK)"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
     multipass: [
       {
         tier: "pro",
@@ -419,7 +370,6 @@ function SubscriptionContent() {
           "PureIDE Pro",
           "Vantage Pro",
           "Kinetic Pro (Autonomous per-host patch stream)",
-          "Inquest Pro",
           "Praxis Pro",
           "PureOS Pro",
           "Axiom Pro (Verifiable certs & export API)",
@@ -438,7 +388,6 @@ function SubscriptionContent() {
           "PureIDE Enterprise",
           "Vantage Enterprise",
           "Kinetic Enterprise (Fleet-wide patch orchestrator)",
-          "Inquest Enterprise",
           "Praxis Enterprise",
           "PureOS Enterprise",
           "Axiom Enterprise LMS API",
@@ -494,13 +443,6 @@ function SubscriptionContent() {
       icon: <AxiomIcon size={18} glow={false} />,
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
-    },
-    inquest: {
-      name: "Inquest",
-      subtitle: "Autonomous public records compliance & 9-exemption discovery vault",
-      icon: <InquestIcon size={18} glow={false} />,
-      color: "#EC4899",
-      bgGradient: "linear-gradient(135deg, #EC4899, #DB2777)"
     },
     multipass: {
       name: "MultiPass",
@@ -568,7 +510,7 @@ function SubscriptionContent() {
           Manage Plans & Feature Entitlements
         </h1>
         <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "760px", margin: "0 auto" }}>
-          Seamlessly scale your developer workstation security, global threat intelligence feeds, legal discovery vaults, automated patch remediation, hardened OS images, and certification simulators.
+          Seamlessly scale your developer workstation security, global threat intelligence feeds, automated patch remediation, hardened OS images, and certification simulators.
         </p>
 
         {/* Product Selector Tabs (All 6 products) */}
@@ -631,175 +573,6 @@ function SubscriptionContent() {
           })}
         </div>
 
-        {/* USER / MACHINE SIZING PANEL */}
-        <div style={{
-          marginTop: "1.75rem",
-          background: "linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.95) 100%)",
-          border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.12)"}`,
-          borderRadius: "18px",
-          padding: "1.5rem 2rem",
-          maxWidth: "960px",
-          margin: "1.75rem auto 0 auto",
-          boxShadow: isKinetic 
-            ? "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.1)"
-            : "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.08)"
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.25rem" }}>
-            <div style={{ textAlign: "left", maxWidth: "520px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {isKinetic ? <Cpu size={20} color="#06B6D4" /> : <Users size={20} color="#38BDF8" />}
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                  {isKinetic ? "Specify Fleet Host Nodes" : "Specify Team Size & Seats"}
-                </h3>
-                <span style={{
-                  fontSize: "0.68rem",
-                  background: isKinetic ? "rgba(6, 182, 212, 0.15)" : "rgba(56, 189, 248, 0.15)",
-                  color: isKinetic ? "#22D3EE" : "#38BDF8",
-                  border: isKinetic ? "1px solid rgba(6, 182, 212, 0.35)" : "1px solid rgba(56, 189, 248, 0.3)",
-                  padding: "2px 8px",
-                  borderRadius: "999px",
-                  fontWeight: 700,
-                  textTransform: "uppercase"
-                }}>
-                  {isKinetic ? "Per-Machine Licensing" : "Per-Seat Licensing"}
-                </span>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: "6px 0 0 0", lineHeight: 1.45 }}>
-                {isKinetic
-                  ? "Enter the number of host workstations or server nodes in your fleet. Displayed plan prices adjust dynamically."
-                  : "Specify how many developers, analysts, or operators need access. Tier prices adjust dynamically relative to your seat count."}
-              </p>
-            </div>
-
-            {/* Stepper & Direct Input */}
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "rgba(0, 0, 0, 0.4)",
-              border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.3)" : "rgba(255, 255, 255, 0.15)"}`,
-              borderRadius: "14px",
-              padding: "6px 12px"
-            }}>
-              <button
-                type="button"
-                onClick={() => setUserCount(Math.max(1, userCount - 1))}
-                disabled={userCount <= 1}
-                aria-label="Decrease count"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  background: userCount <= 1 ? "rgba(255, 255, 255, 0.03)" : "rgba(255, 255, 255, 0.08)",
-                  color: userCount <= 1 ? "#475569" : "#FFFFFF",
-                  fontSize: "1.2rem",
-                  fontWeight: 800,
-                  cursor: userCount <= 1 ? "not-allowed" : "pointer",
-                  display: "grid",
-                  placeItems: "center",
-                  transition: "all 0.15s ease"
-                }}
-              >
-                -
-              </button>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <input
-                  type="number"
-                  min="1"
-                  max="1000"
-                  value={userCount}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    setUserCount(isNaN(val) ? 1 : Math.max(1, Math.min(1000, val)));
-                  }}
-                  style={{
-                    width: "72px",
-                    background: "rgba(0, 0, 0, 0.5)",
-                    border: `1px solid ${isKinetic ? "rgba(6, 182, 212, 0.5)" : "rgba(56, 189, 248, 0.4)"}`,
-                    borderRadius: "8px",
-                    color: "#FFFFFF",
-                    fontSize: "1.25rem",
-                    fontWeight: 800,
-                    textAlign: "center",
-                    padding: "4px 8px",
-                    fontFamily: "var(--font-mono, monospace)",
-                    outline: "none"
-                  }}
-                />
-                <span style={{ fontSize: "0.85rem", color: isKinetic ? "#22D3EE" : "#94A3B8", fontWeight: 600, minWidth: "48px" }}>
-                  {isKinetic ? (userCount === 1 ? "Host" : "Hosts") : (userCount === 1 ? "User" : "Users")}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setUserCount(Math.min(1000, userCount + 1))}
-                aria-label="Increase count"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  background: "rgba(255, 255, 255, 0.08)",
-                  color: "#FFFFFF",
-                  fontSize: "1.2rem",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  display: "grid",
-                  placeItems: "center",
-                  transition: "all 0.15s ease"
-                }}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            marginTop: "1.25rem",
-            paddingTop: "1rem",
-            borderTop: "1px solid rgba(255, 255, 255, 0.07)",
-            flexWrap: "wrap"
-          }}>
-            <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "4px" }}>
-              Quick Presets:
-            </span>
-            {[1, 5, 10, 25, 50, 100].map((preset) => {
-              const isSelected = userCount === preset;
-              const label = isKinetic ? `${preset} ${preset === 1 ? "Host" : "Hosts"}` : `${preset} ${preset === 1 ? "User" : "Users"}`;
-              const activeBg = isKinetic ? "rgba(6, 182, 212, 0.2)" : "rgba(56, 189, 248, 0.2)";
-              const activeBorder = isKinetic ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(56, 189, 248, 0.5)";
-              const activeColor = isKinetic ? "#22D3EE" : "#38BDF8";
-
-              return (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => setUserCount(preset)}
-                  style={{
-                    background: isSelected ? activeBg : "rgba(255, 255, 255, 0.04)",
-                    border: isSelected ? activeBorder : "1px solid rgba(255, 255, 255, 0.08)",
-                    color: isSelected ? activeColor : "#94A3B8",
-                    padding: "4px 12px",
-                    borderRadius: "8px",
-                    fontSize: "0.78rem",
-                    fontWeight: isSelected ? 800 : 500,
-                    cursor: "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Current Product Descriptor Banner */}
         <div style={{ marginTop: "1.25rem", color: "#64748B", fontSize: "0.9rem" }}>
@@ -926,19 +699,17 @@ function SubscriptionContent() {
               {/* Price */}
               {(() => {
                 const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const unitPrice = billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly;
-                const totalPrice = isFree ? 0 : unitPrice * userCount;
-                const entityTerm = isKinetic ? (userCount === 1 ? "host" : "hosts") : (userCount === 1 ? "user" : "users");
+                const price = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
 
                 // MultiPass Bundle Savings:
-                // Standalone individual products cost $49/mo ($39 annual) for Pro, $149/mo ($119 annual) for Enterprise.
+                // Standalone individual products cost $49/mo ($39 annual) for Pro, $499/mo ($399 annual) for Enterprise.
                 // MultiPass bundles them with massive multi-product savings:
                 const isMultiPassPlan = isMultiPass && !isFree;
                 const singleProductRate = plan.tier === "pro" 
                   ? (billingCycle === "annual" ? 39 : 49) 
                   : (billingCycle === "annual" ? 399 : 499);
-                const bundleSavings = isMultiPassPlan ? singleProductRate * userCount : 0;
-                const unbundledPrice = totalPrice + bundleSavings;
+                const bundleSavings = isMultiPassPlan ? singleProductRate : 0;
+                const unbundledPrice = price + bundleSavings;
 
                 return (
                   <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
@@ -954,7 +725,7 @@ function SubscriptionContent() {
                           ${unbundledPrice}
                         </span>
                       )}
-                      <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${totalPrice}</span>
+                      <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
                       <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
                         {isFree ? "forever" : "/mo"}
                       </span>
@@ -979,14 +750,8 @@ function SubscriptionContent() {
                       }}>
                         <Sparkles size={14} color="#F472B6" style={{ flexShrink: 0 }} />
                         <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#F472B6" }}>
-                          Save ${bundleSavings}/mo ({userCount > 1 ? `$${singleProductRate}/seat/mo • ` : ""}1 Product Free!)
+                          Save ${bundleSavings}/mo (1 Product Free!)
                         </span>
-                      </div>
-                    )}
-
-                    {!isFree && userCount > 1 && !isMultiPassPlan && (
-                      <div style={{ fontSize: "0.82rem", color: accentColor, fontWeight: 700, marginTop: "2px" }}>
-                        ${unitPrice} / {isKinetic ? "host" : "user"} / mo × {userCount} {entityTerm} = ${totalPrice}/mo
                       </div>
                     )}
 
@@ -1018,8 +783,8 @@ function SubscriptionContent() {
                       {isFree 
                         ? (isKinetic ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
                         : isMultiPassPlan 
-                          ? `✓ SUITE BUNDLE FOR ${userCount} ${userCount === 1 ? "SEAT" : "SEATS"} • 1 PRODUCT FREE` 
-                          : `✓ SCALED FOR ${userCount} ${entityTerm.toUpperCase()}`}
+                          ? "✓ COMPLETE SUITE BUNDLE • 1 PRODUCT FREE" 
+                          : (isKinetic ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
                     </div>
                   </div>
                 );
@@ -1043,15 +808,13 @@ function SubscriptionContent() {
               {/* Action Button */}
               {(() => {
                 const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const unitPrice = billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly;
-                const totalPrice = isFree ? 0 : unitPrice * userCount;
-                const entityTerm = isKinetic ? (userCount === 1 ? "Host" : "Hosts") : (userCount === 1 ? "User" : "Users");
-                const planLabel = isFree ? plan.name : `${plan.name} (${userCount} ${entityTerm})`;
+                const price = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
+                const planLabel = plan.name;
 
                 return (
                   <button
                     disabled={isCurrent || isSwitchingFree}
-                    onClick={() => handlePlanSelect(plan.tier, planLabel, totalPrice)}
+                    onClick={() => handlePlanSelect(plan.tier, planLabel, price)}
                     className={isCurrent ? "" : "btn-primary"}
                     style={{
                       width: "100%",
@@ -1131,7 +894,7 @@ function SubscriptionContent() {
               <span>Autonomous &amp; Self-Verifying Software</span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              All software (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom, Inquest) is engineered to be self-hosted and self-verifying. Built-in test harnesses and sub-second rollbacks eliminate fear of production downtime.
+              All software (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom) is engineered to be self-hosted and self-verifying. Built-in test harnesses and sub-second rollbacks eliminate fear of production downtime.
             </p>
           </div>
 
