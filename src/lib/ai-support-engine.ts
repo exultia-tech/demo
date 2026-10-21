@@ -336,7 +336,7 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       q.includes('praxis') ||
       q.includes('pureos') ||
       q.includes('axiom') ||
-      q.includes('curia')
+      q.includes('argent')
     ) {
       return {
         topic: 'products',
@@ -348,11 +348,11 @@ Exultia provides security engineering tools designed for solo operators, securit
 1. **[PureIDE](/products/pure-ide):** Zero-telemetry developer workstation compiler with kernel sandboxing and real-time egress firewall.
 2. **[Vantage (UVI)](/app/uvi):** Universal vulnerability feed synchronizing 110+ global registries (CISA KEV, NVD, GitHub Security Lab, historical UNIX CVEs).
 3. **[Kinetic](/account/subscription?product=kinetic):** Autonomous zero-downtime hotfix stream and sub-second deterministic rollback engine ($49/host/mo Pro, 1 host free forever).
-4. **[Praxis](/app/praxis):** Surgical CVE remediation compiler translating raw advisories into hardened bash scripts and Ansible playbooks.
-5. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
-6. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
-7. **[Curia](/app/curia):** Cryptographic civic voting and verifiable zero-knowledge balloting platform.
-8. **[Research Lab](/research):** Interactive validation playground demonstrating live compiler tests, 3-tier hotfix remediations, and full ecosystem simulations.`,
+4. **[Argent](/argent):** Multi-distro vendor patch bundle stream and errata feed with native package manager automation.
+5. **[Praxis](/app/praxis):** Surgical CVE remediation compiler translating raw advisories into hardened bash scripts and Ansible playbooks.
+6. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
+7. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
+8. **[Research Wiki](/wiki):** Interactive documentation, API references, and full ecosystem simulators.`,
         suggestions: [
           'How does Kinetic per-host pricing work?',
           'What is the Kinetic daemon install command?',
@@ -375,7 +375,7 @@ Here is what I can help you with immediately:
 - **Kinetic Daemon Installation:** Step-by-step \`curl\` bootstrap, systemd configuration, and distro support.
 - **Deterministic Rollbacks:** \`sudo kinetic rollback --cve=...\` instructions and atomic snapshot mechanics.
 - **No Human SLAs Policy:** Transparent details on our automated self-hosted software model.
-- **Exultia Product Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Curia, and MultiPass bundles.
+- **Exultia Product Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Argent, and MultiPass bundles.
 - **API Tokens & Licensing:** Generating service keys and air-gapped licensing.
 
 What would you like assistance with?`,

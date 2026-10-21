@@ -25,7 +25,6 @@ import {
   PureIdeIcon,
   VantageIcon,
   KineticIcon,
-  CuriaIcon,
   PraxisIcon,
   PureOsIcon,
   AxiomIcon,
@@ -216,72 +215,6 @@ export default function ProductSimulators({ productId, accentColor }: ProductSim
     }, 1000);
   };
 
-  // 4. CURIA SIMULATOR STATE
-  const [curiaMeasure, setCuriaMeasure] = useState<'infrastructure-grant' | 'charter-amendment' | 'open-source-fund'>('infrastructure-grant');
-  const [curiaBallotCast, setCuriaBallotCast] = useState(false);
-  const [curiaProcessing, setCuriaProcessing] = useState(false);
-
-  const CURIA_MEASURES = {
-    'infrastructure-grant': {
-      title: 'Civic Measure #2026-01: Municipal Open Network & Cryptographic Fiber Grid ($28.5M)',
-      authority: 'Municipal Telecommunications Board & Public Works Commission',
-      quorum: '66.7% Required (Current: 82.4% Cryptographic Roll)',
-      payload: `BALLOT SUBMISSION PAYLOAD:
-Measure: CM-2026-01 (Municipal Open Network)
-Selected Choice: AFFIRMATIVE (YES)
-Participant Voter Credential: DID:exultia:civic:7f892a01...99bc
-Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
-Homomorphic ElGamal Ciphertext: c1=0x3f98a..., c2=0x992b4...`,
-      verified: `VERIFIABLE STATE COMMITMENT:
-Status: COMMITTED TO MERKLE TREE (Height #4,821)
-Merkle Leaf Hash: 0x8f2d91b4892cfa710924b109c8491823908f91048123901bca09
-Zero-Knowledge Verification: PASS (BN254 Pairing check e(A,B) == e(Alpha,Beta) * e(X,Gamma))
-Ballot Privacy Guarantee: 100% Anonymized via ElGamal Re-encryption Shuffle
-Consensus Quorum: 82.4% (Threshold Satisfied - Measure Certified)`
-    },
-    'charter-amendment': {
-      title: 'Charter Amendment #2026-04: Automated Algorithmic Transparency & Citizen Redaction Review',
-      authority: 'City Council & Board of Ethics and Civil Liberties',
-      quorum: '60.0% Required (Current: 74.1% Cryptographic Roll)',
-      payload: `BALLOT SUBMISSION PAYLOAD:
-Measure: CA-2026-04 (Algorithmic Transparency)
-Selected Choice: AFFIRMATIVE (YES)
-Participant Voter Credential: DID:exultia:civic:1209ac48...77aa
-Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
-Homomorphic ElGamal Ciphertext: c1=0x77ba1..., c2=0x410fe...`,
-      verified: `VERIFIABLE STATE COMMITMENT:
-Status: COMMITTED TO MERKLE TREE (Height #4,822)
-Merkle Leaf Hash: 0x44fa901bc09124e891824109baef912094c9102481092834bca0
-Zero-Knowledge Verification: PASS (Membership set verified in zero-knowledge)
-Ballot Privacy Guarantee: Identity permanently severed from vote choice
-Consensus Quorum: 74.1% (Threshold Satisfied - Amendment Ratified)`
-    },
-    'open-source-fund': {
-      title: 'Civic Measure #2026-09: Municipal Sovereign Software & Security Tooling Endowment',
-      authority: 'Public Innovation Trust & Cybersecurity Governance Council',
-      quorum: '50.0% Required (Current: 91.2% Cryptographic Roll)',
-      payload: `BALLOT SUBMISSION PAYLOAD:
-Measure: CM-2026-09 (Sovereign Software Endowment)
-Selected Choice: AFFIRMATIVE (YES)
-Participant Voter Credential: DID:exultia:civic:88bc9102...11ef
-Zero-Knowledge Membership Witness: BN254 Groth16 Proof (Valid)
-Homomorphic ElGamal Ciphertext: c1=0x918cb..., c2=0x1892d...`,
-      verified: `VERIFIABLE STATE COMMITMENT:
-Status: COMMITTED TO MERKLE TREE (Height #4,823)
-Merkle Leaf Hash: 0x912389ba10924ecf91820491823901baef91048129038bca0199
-Zero-Knowledge Verification: PASS (Zero-Knowledge Range Proof Valid)
-Ballot Privacy Guarantee: Mathematical unlikability to voter identity
-Consensus Quorum: 91.2% (Threshold Exceeded - Endowment Funded)`
-    }
-  };
-
-  const runCuriaBallot = () => {
-    setCuriaProcessing(true);
-    setTimeout(() => {
-      setCuriaProcessing(false);
-      setCuriaBallotCast(true);
-    }, 700);
-  };
 
   // 5. PRAXIS SIMULATOR STATE
   const [praxisLang, setPraxisLang] = useState<'typescript' | 'python' | 'go' | 'rust'>('typescript');
@@ -923,91 +856,6 @@ impl PraxisK8sClient {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
-          CURIA SIMULATOR
-      ───────────────────────────────────────────────────────────── */}
-      {productId === "curia" && (
-        <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "2rem" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <CuriaIcon size={32} />
-              <div>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#34D399" }}>
-                  Curia Zero-Knowledge Civic Balloting &amp; Merkle Consensus
-                </h3>
-                <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
-                  Homomorphic vote encryption, non-interactive zero-knowledge proofs (BN254), and tamper-evident Merkle state commitments.
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={runCuriaBallot}
-              disabled={curiaProcessing}
-              style={{
-                background: "linear-gradient(135deg, #10B981, #059669)",
-                color: "white",
-                border: "none",
-                padding: "8px 18px",
-                borderRadius: "8px",
-                fontWeight: 800,
-                fontSize: "0.82rem",
-                cursor: "pointer"
-              }}
-            >
-              {curiaProcessing ? "Verifying ZK Proof..." : "Cast & Verify Cryptographic Ballot"}
-            </button>
-          </div>
-
-          <div style={{ display: "flex", gap: "8px", marginBottom: "1.25rem" }}>
-            {[
-              { id: 'infrastructure-grant', label: 'Fiber Grid Measure ($28.5M)' },
-              { id: 'charter-amendment', label: 'Algorithmic Transparency' },
-              { id: 'open-source-fund', label: 'Sovereign Software Fund' }
-            ].map(doc => (
-              <button
-                key={doc.id}
-                onClick={() => {
-                  setCuriaMeasure(doc.id as any);
-                  setCuriaBallotCast(false);
-                }}
-                style={{
-                  background: curiaMeasure === doc.id ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                  border: curiaMeasure === doc.id ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: curiaMeasure === doc.id ? '#6EE7B7' : '#CBD5E1',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                {doc.label}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1rem" }}>
-            <div style={{ background: "#020617", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "10px", padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#FBBF24", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <Code2 size={15} /> BALLOT SUBMISSION PAYLOAD &amp; ZK WITNESS
-              </div>
-              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: "#FDE68A", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
-                {CURIA_MEASURES[curiaMeasure].payload}
-              </pre>
-            </div>
-
-            <div style={{ background: "#020617", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "10px", padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#34D399", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <ShieldCheck size={15} /> VERIFIABLE MERKLE ROOT COMMITMENT (ZK-VERIFIED)
-              </div>
-              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: curiaBallotCast ? "#86EFAC" : "#64748B", fontSize: "0.76rem", lineHeight: 1.5, fontFamily: "var(--font-mono, monospace)" }}>
-                {curiaBallotCast ? CURIA_MEASURES[curiaMeasure].verified : 'Click "Cast & Verify Cryptographic Ballot" above to execute zero-knowledge proof verification...'}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ─────────────────────────────────────────────────────────────
           PRAXIS SIMULATOR

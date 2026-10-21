@@ -1,1 +1,5 @@
-export { default } from "@/app/app/curia/page";
+import { redirect } from 'next/navigation';
+
+export default function CuriaRedirectPage() {
+  redirect('/');
+}

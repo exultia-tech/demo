@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon, CuriaIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -99,13 +99,8 @@ export default function Navbar() {
     pathname.startsWith("/argent")
   );
 
-  const isCuriaContext = !isIsolated && (
-    pathname.startsWith("/app/curia") ||
-    pathname.startsWith("/curia")
-  );
-
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isCuriaContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -194,7 +189,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isCuriaContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -313,33 +308,6 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT: curia */}
-                    <Link 
-                      href="/app/curia" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isCuriaContext ? "rgba(16, 185, 129, 0.2)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <CuriaIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Curia</span>
-                          <span style={{ fontSize: "0.65rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.4)", padding: "1px 5px", borderRadius: "4px", fontWeight: 700 }}>CIVIC</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cryptographically defensible civic voting &amp; Merkle roll calls</div>
-                      </div>
-                    </Link>
 
                     {/* PRODUCT 4: praxis */}
                     <Link 
@@ -441,30 +409,6 @@ export default function Navbar() {
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Axiom</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
-                      </div>
-                    </Link>
-                    {/* PRODUCT 7: Curia */}
-                    <Link 
-                      href="/app/curia" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isCuriaContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <CuriaIcon size={32} glow={false} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Curia</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cryptographic civic voting & verifiable dossiers</div>
                       </div>
                     </Link>
 
@@ -1016,35 +960,6 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#38BDF8", fontWeight: 700 }}>
                 Wiki &amp; API Docs
-              </Link>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION: CURIA SUBMENU */}
-          {isCuriaContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <CuriaIcon size={16} glow={false} />
-                Curia Civic
-              </span>
-
-              <Link 
-                href="/curia" 
-                className={`submenu-link ${pathname === "/curia" || pathname === "/app/curia" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Chamber Console
-              </Link>
-              <Link 
-                href="/api/curia/session" 
-                target="_blank"
-                className="submenu-link">
-                Session JSON
-              </Link>
-              <Link 
-                href="/api/curia/dossier" 
-                target="_blank"
-                className="submenu-link">
-                FRE 902(13) Dossier
               </Link>
             </div>
           )}

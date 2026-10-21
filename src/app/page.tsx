@@ -8,7 +8,6 @@ import {
   PureOsIcon, 
   PraxisIcon, 
   AxiomIcon, 
-  CuriaIcon, 
   ArgentIcon, 
   ExultiaLogo 
 } from "@/components/BrandIcons";
@@ -154,25 +153,6 @@ export default function HomePage() {
             </p>
           </Link>
 
-          {/* 8. Curia */}
-          <Link 
-            href="/app/curia"
-            className="megaman-tile megaman-cell-curia"
-            style={{
-              // @ts-ignore
-              "--tile-color": "#10B981",
-              "--tile-glow": "rgba(16, 185, 129, 0.45)",
-            }}
-          >
-            <div className="megaman-tile-icon">
-              <CuriaIcon size={68} glow={true} />
-            </div>
-            <h3 className="megaman-tile-name">Curia</h3>
-            <div className="megaman-tile-sub">Cryptographic Civic Voting</div>
-            <p className="megaman-tile-desc">
-              Tamper-evident municipal roll-call governance, Merkle proofs, and FRE 902(13) record dossiers.
-            </p>
-          </Link>
 
           {/* 9. Argent */}
           <Link 
