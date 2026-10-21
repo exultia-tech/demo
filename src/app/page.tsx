@@ -195,6 +195,64 @@ export default function HomePage() {
           </Link>
 
         </div>
+
+        {/* FEATURED RESOURCE: COMPENDIUM AUDITOR PREPAREDNESS ENGINE */}
+        <div style={{ maxWidth: "1160px", margin: "2.5rem auto 0 auto", padding: "0 1rem" }}>
+          <Link
+            href="/frameworks"
+            style={{
+              textDecoration: "none",
+              display: "block",
+              background: "linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)",
+              border: "1px solid rgba(59, 130, 246, 0.4)",
+              borderRadius: "20px",
+              padding: "1.75rem 2rem",
+              boxShadow: "0 15px 35px -5px rgba(0, 0, 0, 0.7), 0 0 25px rgba(59, 130, 246, 0.15)",
+              transition: "all 0.2s ease",
+              position: "relative",
+              overflow: "hidden"
+            }}
+            className="hover-card"
+          >
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "1.5rem"
+            }}>
+              <div style={{ flex: 1, minWidth: "300px" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(59, 130, 246, 0.18)", border: "1px solid rgba(59, 130, 246, 0.4)", padding: "3px 12px", borderRadius: "999px", fontSize: "0.72rem", color: "#60A5FA", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.6rem" }}>
+                  Featured Regulatory Hub • Free Resource
+                </div>
+                <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.45rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0", letterSpacing: "0.02em" }}>
+                  Compendium: Auditor Preparedness &amp; Compliance Matrix
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.92rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                  Plain-English engineering requirements, concrete CLI verification commands, and ready-to-produce evidence lockers for <span style={{ color: "#CBD5E1" }}>NIST 800-53, ISO 27001, SOC 2, PCI-DSS, HIPAA, SOX ITGC, GDPR, and CMMC 2.0</span>.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+                <span style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)",
+                  color: "#FFFFFF",
+                  padding: "0.75rem 1.4rem",
+                  borderRadius: "12px",
+                  fontSize: "0.88rem",
+                  fontWeight: 800,
+                  letterSpacing: "0.02em"
+                }}>
+                  Launch Auditor Hub →
+                </span>
+              </div>
+            </div>
+          </Link>
+        </div>
+
       </main>
     </div>
   );

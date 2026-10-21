@@ -498,6 +498,34 @@ export default function Navbar() {
               Pricing & Plans
             </Link>
 
+            {/* COMPLIANCE & AUDITOR PREPAREDNESS FRAMEWORKS */}
+            <Link 
+              href="/frameworks"
+              className={`nav-link ${pathname === "/frameworks" || pathname?.startsWith("/frameworks") ? "active" : ""}`}
+              style={{
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                color: pathname === "/frameworks" || pathname?.startsWith("/frameworks") ? "#60A5FA" : undefined
+              }}
+            >
+              Frameworks
+              <span style={{
+                fontSize: "0.62rem",
+                background: "rgba(59, 130, 246, 0.2)",
+                color: "#60A5FA",
+                border: "1px solid rgba(59, 130, 246, 0.4)",
+                padding: "1px 5px",
+                borderRadius: "4px",
+                fontWeight: 700,
+                letterSpacing: "0.03em"
+              }}>
+                AUDIT PREP
+              </span>
+            </Link>
+
             {/* RESEARCH WIKI: SPECIFICATIONS, INTERACTIVE LAB SIMULATORS & API REFERENCE */}
             <Link 
               href="/wiki"

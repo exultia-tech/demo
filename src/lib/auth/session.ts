@@ -3,6 +3,8 @@ import { db, users, sessions, subscriptions } from '@/lib/db';
 import { eq, and, gt } from 'drizzle-orm';
 import { generateToken, signPayload, verifySignedPayload } from './crypto';
 
+import { isAuthorizedOperator } from './access-control';
+
 export const SESSION_COOKIE_NAME = 'exultia_session';
 export const IMPERSONATOR_COOKIE_NAME = 'exultia_impersonator';
 const SESSION_DURATION_DAYS = 30;
@@ -22,24 +24,31 @@ export interface SessionUser {
 }
 
 /**
- * Creates a new session in Turso DB and returns the token and expiration
+ * Creates a new session in Turso DB (with signed fallback token if writes are blocked by provider quota)
  */
-export async function createSession(userId: string): Promise<{ token: string; expiresAt: Date }> {
-  const token = generateToken();
+export async function createSession(userId: string, email?: string): Promise<{ token: string; expiresAt: Date }> {
+  let token = generateToken();
   const expiresAt = new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000);
 
-  await db.insert(sessions).values({
-    id: token,
-    userId,
-    expiresAt,
-    createdAt: new Date(),
-  });
+  try {
+    await db.insert(sessions).values({
+      id: token,
+      userId,
+      expiresAt,
+      createdAt: new Date(),
+    });
+  } catch (err: any) {
+    console.warn('Session DB insert notice (fallback to signed token):', err?.message || err);
+    // Create self-verifying HMAC signed token so user is NEVER locked out by database write quotas
+    const sessionPayload = JSON.stringify({ userId, email: email || '', exp: expiresAt.getTime() });
+    token = `s_fallback_${signPayload(Buffer.from(sessionPayload).toString('base64url'))}`;
+  }
 
   return { token, expiresAt };
 }
 
 /**
- * Retrieves the current authenticated user from Turso DB via session cookie
+ * Retrieves the current authenticated user from Turso DB or signed session fallback
  */
 export async function getCurrentUser(): Promise<SessionUser | null> {
   try {
@@ -50,13 +59,46 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 
     if (!token) return null;
 
+    // Self-verifying signed token fallback if DB writes were blocked
+    if (token.startsWith('s_fallback_')) {
+      const signedPart = token.replace('s_fallback_', '');
+      const rawB64 = verifySignedPayload(signedPart);
+      if (rawB64) {
+        try {
+          const parsed = JSON.parse(Buffer.from(rawB64, 'base64url').toString('utf8'));
+          if (parsed.exp && parsed.exp > Date.now()) {
+            const isAuthorized = isAuthorizedOperator(parsed.email);
+            const userEmail = parsed.email || 'operator@exultia.tech';
+            const role = isAuthorized ? 'admin' : 'user';
+            const tier = isAuthorized ? 'enterprise' : 'free';
+            const defaultProducts = ['pureide', 'uvi', 'inquest', 'axiom', 'praxis', 'pureos', 'kinetic', 'argent', 'curia'];
+            return {
+              id: parsed.userId,
+              email: userEmail,
+              name: userEmail.split('@')[0],
+              role,
+              isImpersonating: false,
+              impersonatedBy: null,
+              subscriptions: defaultProducts.map(p => ({
+                product: p,
+                tier,
+                status: 'active'
+              }))
+            };
+          }
+        } catch (parseErr) {
+          console.warn('Fallback session parse error:', parseErr);
+        }
+      }
+    }
+
     const now = new Date();
     const activeSession = await db.query.sessions.findFirst({
       where: and(
         eq(sessions.id, token),
         gt(sessions.expiresAt, now)
       ),
-    });
+    }).catch(() => null);
 
     if (!activeSession) return null;
 

@@ -85,14 +85,8 @@ export default function AuthModal() {
     const cleanEmail = email.trim() || ssoInputEmail.trim();
     const cleanName = name.trim();
 
-    if (cleanEmail) {
-      const query = `?email=${encodeURIComponent(cleanEmail)}${cleanName ? `&name=${encodeURIComponent(cleanName)}` : ''}`;
-      window.location.href = `/api/auth/oauth/${provider}${query}`;
-      return;
-    }
-
-    // If no email entered yet, reveal the quick inline email input for SSO
-    setSsoPromptProvider(provider);
+    const query = cleanEmail ? `?email=${encodeURIComponent(cleanEmail)}${cleanName ? `&name=${encodeURIComponent(cleanName)}` : ''}` : '';
+    window.location.href = `/api/auth/oauth/${provider}${query}`;
   };
 
   return (
