@@ -15,8 +15,8 @@ interface IconProps {
  */
 /**
  * Exultia Flagship Company Logo
- * Radical DOOM-esque cybernetic horned demon helm emblem featuring
- * glowing visor eyes, mechanical brow conduits, and wireframe perspective gateway.
+ * Radical DOOM-esque cybernetic fortress helm emblem featuring
+ * glowing visor brow, etched circuit traces, and wireframe perspective gateway.
  */
 interface ExultiaLogoProps extends IconProps {
   palette?: "cyan" | "orange" | "green" | "magenta" | "auto";
@@ -61,7 +61,7 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
     >
       <img
         src={emblemSrc}
-        alt="Exultia Technologies Cybernetic Demon Helm"
+        alt="Exultia Technologies Cybernetic Fortress Helm"
         width={size}
         height={size}
         style={{
