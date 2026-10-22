@@ -20,9 +20,16 @@ interface IconProps {
  */
 interface ExultiaLogoProps extends IconProps {
   palette?: "cyan" | "orange" | "green" | "magenta" | "auto";
+  variant?: "circle" | "helm";
 }
 
-export function ExultiaLogo({ size = 48, className = "", glow = false, palette = "auto" }: ExultiaLogoProps) {
+export function ExultiaLogo({
+  size = 48,
+  className = "",
+  glow = false,
+  palette = "auto",
+  variant = "circle",
+}: ExultiaLogoProps) {
   const [activePalette, setActivePalette] = React.useState<string>("cyan");
 
   React.useEffect(() => {
@@ -43,7 +50,14 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
     }
   }, [palette]);
 
-  const emblemSrc = `/branding/emblem_${palette !== "auto" ? palette : activePalette}.png`;
+  const p = palette !== "auto" ? palette : activePalette;
+  const emblemSrc = variant === "helm"
+    ? `/branding/navbar_helm_${p}.png`
+    : `/branding/emblem_${p}.png`;
+
+  // Aspect ratio for trimmed cyber-helm is 528 / 604 ≈ 0.874
+  const widthPx = variant === "helm" ? Math.round(size * (528 / 604)) : size;
+  const heightPx = size;
 
   return (
     <div
@@ -52,8 +66,8 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        width: size,
-        height: size,
+        width: widthPx,
+        height: heightPx,
         position: "relative",
         userSelect: "none",
         flexShrink: 0,
@@ -62,11 +76,11 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
       <img
         src={emblemSrc}
         alt="Exultia Technologies Cybernetic Fortress Helm"
-        width={size}
-        height={size}
+        width={widthPx}
+        height={heightPx}
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${widthPx}px`,
+          height: `${heightPx}px`,
           objectFit: "contain",
           filter: glow
             ? "drop-shadow(0 0 8px var(--accent-glow)) drop-shadow(0 0 2px var(--accent-primary))"
@@ -83,19 +97,21 @@ export function ExultiaLogo({ size = 48, className = "", glow = false, palette =
  * Emblem + Chiseled Uppercase 'EXULTIA' + High-tracking 'TECHNOLOGIES'
  */
 export function ExultiaBrandLockup({
-  size = 62,
+  size = 48,
+  variant = "helm",
   isIsolated = false,
   isolatedTag = "Vantage",
   showTagline = true,
 }: {
   size?: number;
+  variant?: "circle" | "helm";
   isIsolated?: boolean;
   isolatedTag?: string;
   showTagline?: boolean;
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-      <ExultiaLogo size={size} glow={false} />
+      <ExultiaLogo size={size} variant={variant} glow={false} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
           <span
