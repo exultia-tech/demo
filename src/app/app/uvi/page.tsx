@@ -320,417 +320,46 @@ export default function ThreatFeedPage() {
       style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%", userSelect: "none" }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Direct Subscription / Referral Banner */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem",
-        background: "linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(147, 51, 234, 0.12))",
-        border: "1px solid rgba(59, 130, 246, 0.3)",
-        borderRadius: "12px",
-        padding: "0.75rem 1.25rem",
-        marginBottom: "1.5rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.88rem", color: "#E2E8F0", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "1.1rem" }}>⚡</span>
-          <span>
-            <strong>Vantage Licensing:</strong> Looking for live API feeds, automated quarantine webhooks, or team seats?
-          </span>
-          <span style={{
-            fontSize: "0.75rem",
-            padding: "0.2rem 0.55rem",
-            borderRadius: "6px",
-            background: "rgba(59, 130, 246, 0.2)",
-            color: "#93C5FD",
-            fontWeight: 700
-          }}>
-            Community · Pro · Enterprise Tiers
-          </span>
-        </div>
-        <Link
-          href="/account/subscription?product=uvi"
-          style={{
-            padding: "0.45rem 1rem",
-            fontSize: "0.85rem",
-            fontWeight: 700,
-            color: "#FFFFFF",
-            background: "linear-gradient(135deg, #2563EB, #1D4ED8)",
-            borderRadius: "8px",
-            textDecoration: "none",
-            boxShadow: "0 2px 10px rgba(37, 99, 235, 0.35)",
-            whiteSpace: "nowrap"
-          }}
-        >
-          View Plans & Upgrade →
-        </Link>
-      </div>
-
-      {/* Top Header Row: Title & Subtitle (Left) + Threat Total Tile (Right) */}
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "stretch", 
-        gap: "2rem", 
-        marginBottom: "1.5rem",
-        flexWrap: "wrap"
-      }}>
-        {/* Left Column: Title & Subtitle */}
-        <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
-            <VantageIcon size={40} glow={true} />
-            <h1 style={{ 
-              fontSize: "2.35rem", 
-              fontWeight: 800, 
-              letterSpacing: "-0.03em", 
-              color: "#F8FAFC",
-              margin: 0,
-              lineHeight: 1.2
-            }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", marginBottom: "0.35rem" }}>
+            <VantageIcon size={36} glow={true} />
+            <h1 style={{ fontSize: "2rem", fontWeight: 800, letterSpacing: "-0.03em", color: "#F8FAFC", margin: 0, lineHeight: 1.2 }}>
               Vantage
             </h1>
-            <span style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              padding: "0.25rem 0.65rem",
-              borderRadius: "999px",
-              background: "rgba(0, 229, 255, 0.1)",
-              border: "1px solid rgba(0, 229, 255, 0.28)",
-              color: "#00E5FF",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase"
-            }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
-              Dual-Engine: Threat Consensus + OS Errata
-            </span>
           </div>
-          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "780px", lineHeight: 1.6, margin: 0 }}>
-            Unified security intelligence hub combining real-time multi-source threat intelligence ({UVI_PUBLIC_FEED_SOURCES.length} sovereign feeds, CISA KEV, zero-days, C2 botnets) with comprehensive OS &amp; vendor patch management across 16 operating system errata ecosystems with direct hotpatch synthesis.
+          <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", margin: 0 }}>
+            Threat feed &amp; OS patch management Â· {UVI_PUBLIC_FEED_SOURCES.length} sources
           </p>
         </div>
 
-        {/* Right Column: Threat Total Summary Tile */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.75)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "16px",
-          padding: "1.4rem 1.65rem",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "1rem",
-          minWidth: "320px",
-          flex: "0 1 360px",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
-        }}>
-          <div>
-            <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginBottom: "0.35rem" }}>
-              Total Consolidated Threats
-            </div>
-            <div style={{ fontSize: "3rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.75rem", flexWrap: "wrap" }}>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
               {totalUniversalCount.toLocaleString()}
             </div>
+            <div style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginTop: "0.3rem" }}>
+              Total Threats
+            </div>
           </div>
-          <div style={{ 
-            display: "flex", 
-            flexWrap: "wrap", 
-            gap: "0.6rem", 
-            fontSize: "0.8rem", 
-            color: "var(--text-muted)", 
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
-            paddingTop: "0.75rem" 
-          }}>
-            <span>🚨 <strong style={{ color: "#EF4444" }}>1,695+</strong> Zero-Days</span>
-            <span>•</span>
-            <span>💻 <strong style={{ color: "#10B981" }}>{directBuildImpactCount.toLocaleString()}</strong> Workstation</span>
-            <span>•</span>
-            <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE</span>
-            <span>•</span>
-            <span>📡 <strong style={{ color: "#818CF8" }}>{informationalDisclosuresCount.toLocaleString()}</strong> Informational</span>
-          </div>
+          <Link
+            href="/account/subscription?product=uvi"
+            style={{
+              padding: "0.45rem 1rem",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              color: "#93C5FD",
+              border: "1px solid rgba(59, 130, 246, 0.35)",
+              borderRadius: "8px",
+              textDecoration: "none",
+              whiteSpace: "nowrap"
+            }}
+          >
+            Plans
+          </Link>
         </div>
       </div>
-
-      {/* ========================================================================= */}
-      {/* DUAL-PILLAR ARCHITECTURE SHOWCASE BANNER (Threat Feed + Patch Management)  */}
-      {/* ========================================================================= */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(13, 19, 33, 0.95) 0%, rgba(15, 23, 42, 0.92) 50%, rgba(17, 24, 39, 0.95) 100%)",
-        border: "1px solid rgba(0, 229, 255, 0.22)",
-        borderRadius: "16px",
-        padding: "1.4rem 1.6rem",
-        marginBottom: "1.75rem",
-        boxShadow: "0 10px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        {/* Subtle cybernetic accent gradient line */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "2px",
-          background: "linear-gradient(90deg, transparent, #00E5FF, #3B82F6, #10B981, transparent)"
-        }} />
-
-        {/* Top Meta Bar */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "0.75rem",
-          marginBottom: "1.1rem",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
-          paddingBottom: "0.85rem"
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-            <span style={{
-              fontSize: "0.7rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontWeight: 800,
-              padding: "0.22rem 0.6rem",
-              borderRadius: "6px",
-              background: "rgba(0, 229, 255, 0.12)",
-              color: "#00E5FF",
-              border: "1px solid rgba(0, 229, 255, 0.3)"
-            }}>
-              Unified Architecture
-            </span>
-            <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#F1F5F9" }}>
-              Dual Purpose: Global Threat Intelligence &amp; OS Patch Management
-            </span>
-            <span style={{ fontSize: "0.8rem", color: "#64748B" }}>
-              • Consolidated from Argent &amp; UVI into a single defense plane
-            </span>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Active Scope:</span>
-            <button
-              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("ALL"))}
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: feedDirectoryCategory === "ALL" ? 700 : 500,
-                padding: "0.25rem 0.65rem",
-                borderRadius: "6px",
-                background: feedDirectoryCategory === "ALL" ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                border: feedDirectoryCategory === "ALL" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
-                color: feedDirectoryCategory === "ALL" ? "#93C5FD" : "#94A3B8",
-                cursor: "pointer",
-                transition: "all 0.15s ease"
-              }}
-            >
-              All Feeds (Dual Engine)
-            </button>
-            <button
-              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("Vendor Security Disclosures"))}
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: feedDirectoryCategory === "Vendor Security Disclosures" ? 700 : 500,
-                padding: "0.25rem 0.65rem",
-                borderRadius: "6px",
-                background: feedDirectoryCategory === "Vendor Security Disclosures" ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.04)",
-                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.08)",
-                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#94A3B8",
-                cursor: "pointer",
-                transition: "all 0.15s ease"
-              }}
-            >
-              📦 OS &amp; Vendor Errata Only
-            </button>
-          </div>
-        </div>
-
-        {/* Two-Pillar Cards Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
-          gap: "1.25rem"
-        }}>
-          {/* Pillar 1: Global Threat Intelligence */}
-          <div style={{
-            background: feedDirectoryCategory === "ALL" ? "rgba(30, 41, 59, 0.55)" : "rgba(15, 23, 42, 0.4)",
-            border: feedDirectoryCategory === "ALL" ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "12px",
-            padding: "1.1rem 1.25rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            gap: "0.85rem",
-            transition: "all 0.2s ease"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.45rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ fontSize: "1.25rem" }}>🌐</span>
-                  <div>
-                    <h3 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F8FAFC", margin: 0 }}>
-                      Pillar I: Global Threat Intelligence
-                    </h3>
-                    <span style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 600 }}>
-                      Real-Time Ingestion &amp; Multi-Source Consensus
-                    </span>
-                  </div>
-                </div>
-                <span style={{
-                  fontSize: "0.68rem",
-                  padding: "0.15rem 0.5rem",
-                  borderRadius: "999px",
-                  background: "rgba(59, 130, 246, 0.18)",
-                  color: "#93C5FD",
-                  border: "1px solid rgba(59, 130, 246, 0.35)",
-                  fontWeight: 700
-                }}>
-                  127+ Sovereign Feeds
-                </span>
-              </div>
-
-              <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5, margin: "0 0 0.75rem 0" }}>
-                Continuous synchronization across international CERTs, CISA KEV, FIRST EPSS, CIRCL MISP, NVD, ExploitDB, and live botnet C2 trackers (ThreatFox, URLhaus). Assigns authoritative Universal Vulnerability Identifiers (UVI) with deduplicated timeline reconciliation.
-              </p>
-
-              {/* Metric Badges */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
-                  🚨 CISA KEV In-the-Wild
-                </span>
-                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
-                  ⚡ EPSS Probability Score
-                </span>
-                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
-                  ☣️ Malware &amp; C2 Botnets
-                </span>
-                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
-                  🔬 Zero-Days &amp; Bug Bounties
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.6rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
-              <span style={{ fontSize: "0.74rem", color: "#64748B" }}>
-                Ingesting ~28,800+ unified threat dossiers
-              </span>
-              <button
-                onClick={() => handleFilterChange(() => {
-                  setFeedDirectoryCategory("ALL");
-                  setSelectedSourceFeed("ALL");
-                })}
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "#60A5FA",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.3rem"
-                }}
-              >
-                <span>View Full Threat Scope</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Pillar 2: OS & Vendor Patch Management */}
-          <div style={{
-            background: feedDirectoryCategory === "Vendor Security Disclosures" ? "rgba(6, 78, 59, 0.35)" : "rgba(15, 23, 42, 0.4)",
-            border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "12px",
-            padding: "1.1rem 1.25rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            gap: "0.85rem",
-            transition: "all 0.2s ease"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.45rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ fontSize: "1.25rem" }}>📦</span>
-                  <div>
-                    <h3 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F8FAFC", margin: 0 }}>
-                      Pillar II: OS &amp; Vendor Patch Management
-                    </h3>
-                    <span style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 600 }}>
-                      Package Errata &amp; Live Hotpatch Synthesis
-                    </span>
-                  </div>
-                </div>
-                <span style={{
-                  fontSize: "0.68rem",
-                  padding: "0.15rem 0.5rem",
-                  borderRadius: "999px",
-                  background: "rgba(16, 185, 129, 0.18)",
-                  color: "#6EE7B7",
-                  border: "1px solid rgba(16, 185, 129, 0.35)",
-                  fontWeight: 700
-                }}>
-                  16 OS Ecosystems
-                </span>
-              </div>
-
-              <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5, margin: "0 0 0.75rem 0" }}>
-                Authoritative vendor security advisories from 16 major OS distributions (Ubuntu USN, Debian DSA, Red Hat RHSA, Rocky RLSA, Alpine SecDB, SUSE, Arch, Amazon Linux, Linux Kernel). Delivers package reconciliation commands and direct handoff to Praxis hotpatching.
-              </p>
-
-              {/* OS Distro Badges */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
-                {["Ubuntu USN", "Debian DSA", "Red Hat RHSA", "Rocky Linux", "Alpine SecDB", "SUSE CLA", "Arch ALAS", "Amazon Linux", "Linux Kernel"].map(distro => (
-                  <span
-                    key={distro}
-                    style={{
-                      fontSize: "0.7rem",
-                      padding: "0.15rem 0.45rem",
-                      borderRadius: "4px",
-                      background: "rgba(16, 185, 129, 0.08)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      color: "#A7F3D0",
-                      fontWeight: 500
-                    }}
-                  >
-                    {distro}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.6rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
-              <span style={{ fontSize: "0.74rem", color: "#64748B" }}>
-                Remediation: apt, dnf, apk, zypper, pacman + Praxis
-              </span>
-              <button
-                onClick={() => handleFilterChange(() => {
-                  setFeedDirectoryCategory("Vendor Security Disclosures");
-                })}
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  color: "#34D399",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.3rem"
-                }}
-              >
-                <span>Filter OS &amp; Vendor Errata</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Two-Column Layout: Threat Feeds Sidebar (Left) + Advisories Content (Right) */}
       <div style={{
         display: "flex",
@@ -1157,141 +786,67 @@ export default function ThreatFeedPage() {
         {/* RIGHT MAIN COLUMN: Triage Toolbar, Filters, Advisories Table/Cards        */}
         {/* ========================================================================= */}
         <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          {/* Executive Rating System Mode Toggle & Quick View Toolbar */}
-          <div style={{
-            background: "rgba(15, 23, 42, 0.65)",
-            border: "1px solid rgba(255, 255, 255, 0.09)",
-            borderRadius: "14px",
-            padding: "0.85rem 1.25rem",
-            marginBottom: "1rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-                Triage Methodology:
-              </span>
-
-              {/* Segmented Mode Switcher */}
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                background: "rgba(10, 14, 23, 0.9)",
-                padding: "0.25rem",
-                borderRadius: "10px",
-                border: "1px solid rgba(255, 255, 255, 0.1)"
-              }}>
-                <button
-                  onClick={() => handleFilterChange(() => setRatingMode("observational"))}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.45rem",
-                    padding: "0.45rem 0.95rem",
-                    borderRadius: "8px",
-                    border: ratingMode === "observational" ? "1px solid #3B82F6" : "1px solid transparent",
-                    background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.25)" : "transparent",
-                    color: ratingMode === "observational" ? "#93C5FD" : "#94A3B8",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                  title="Assess real-world threat weaponization: CISA KEV active exploitation, in-the-wild campaigns, botnet C2 nodes, scanner sprays, and public PoCs"
-                >
-                  <span>🌐</span>
-                  <span>Exploitation Reality View</span>
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.4)" : "rgba(255, 255, 255, 0.05)",
-                    color: ratingMode === "observational" ? "#FFFFFF" : "#64748B",
-                    padding: "0.1rem 0.35rem",
-                    borderRadius: "4px",
-                    fontWeight: 600
-                  }}>
-                    IN-THE-WILD
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => handleFilterChange(() => setRatingMode("classic"))}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.45rem",
-                    padding: "0.45rem 0.95rem",
-                    borderRadius: "8px",
-                    border: ratingMode === "classic" ? "1px solid #F59E0B" : "1px solid transparent",
-                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
-                    color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                  title="Assess threats using conventional quantitative CVSS v3.1 base score, severity levels, and metric vectors"
-                >
-                  <span>📊</span>
-                  <span>Classic CVSS Scoring</span>
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.35)" : "rgba(255, 255, 255, 0.05)",
-                    color: ratingMode === "classic" ? "#FFFFFF" : "#64748B",
-                    padding: "0.1rem 0.35rem",
-                    borderRadius: "4px",
-                    fontWeight: 600
-                  }}>
-                    CVSS 3.1
-                  </span>
-                </button>
-              </div>
+          {/* Triage toolbar */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", marginBottom: "0.9rem" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <button
+                onClick={() => handleFilterChange(() => setRatingMode("observational"))}
+                style={{
+                  padding: "0.4rem 0.9rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.25)" : "transparent",
+                  color: ratingMode === "observational" ? "#93C5FD" : "#94A3B8",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  cursor: "pointer"
+                }}
+                title="Assess real-world threat weaponization: CISA KEV active exploitation, in-the-wild campaigns, botnet C2 nodes, scanner sprays, and public PoCs"
+              >
+                Exploitation Reality
+              </button>
+              <button
+                onClick={() => handleFilterChange(() => setRatingMode("classic"))}
+                style={{
+                  padding: "0.4rem 0.9rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
+                  color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  cursor: "pointer"
+                }}
+                title="Assess threats using conventional quantitative CVSS v3.1 base score, severity levels, and metric vectors"
+              >
+                CVSS 3.1
+              </button>
             </div>
 
-            {/* View Mode Switcher: Table vs Cards + Feeds Sidebar Toggle */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <button
                 onClick={() => setIsSidebarCollapsed(prev => !prev)}
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.4rem",
                   padding: "0.38rem 0.75rem",
                   borderRadius: "8px",
-                  background: isSidebarCollapsed ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.04)",
-                  border: isSidebarCollapsed ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
-                  color: isSidebarCollapsed ? "#93C5FD" : "#CBD5E1",
+                  background: "transparent",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#CBD5E1",
                   fontSize: "0.78rem",
                   fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.15s ease"
+                  cursor: "pointer"
                 }}
                 title={isSidebarCollapsed ? "Expand Threat Feeds Sidebar" : "Collapse Threat Feeds Sidebar to Maximize Table Width"}
               >
-                <span>{isSidebarCollapsed ? "⚡" : "◀"}</span>
-                <span>{isSidebarCollapsed ? `Show Feeds (${UVI_PUBLIC_FEED_SOURCES.length})` : "Hide Sidebar"}</span>
+                {isSidebarCollapsed ? `Show Feeds (${UVI_PUBLIC_FEED_SOURCES.length})` : "Hide Feeds"}
               </button>
-
-              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-                Layout:
-              </span>
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                background: "rgba(10, 14, 23, 0.9)",
-                padding: "0.2rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(255, 255, 255, 0.1)"
-              }}>
+              <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
                 <button
                   onClick={() => setViewMode("table")}
                   style={{
                     padding: "0.35rem 0.7rem",
                     borderRadius: "6px",
-                    border: viewMode === "table" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                    border: "none",
                     background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
                     color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
                     fontSize: "0.78rem",
@@ -1300,14 +855,14 @@ export default function ThreatFeedPage() {
                   }}
                   title="Consolidated Table View with locked sticky header"
                 >
-                  📋 Table
+                  Table
                 </button>
                 <button
                   onClick={() => setViewMode("cards")}
                   style={{
                     padding: "0.35rem 0.7rem",
                     borderRadius: "6px",
-                    border: viewMode === "cards" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                    border: "none",
                     background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
                     color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
                     fontSize: "0.78rem",
@@ -1316,7 +871,7 @@ export default function ThreatFeedPage() {
                   }}
                   title="Wiki Card Grid View"
                 >
-                  🎴 Cards
+                  Cards
                 </button>
               </div>
             </div>
@@ -1602,50 +1157,12 @@ export default function ThreatFeedPage() {
         )}
       </div>
 
-      {/* Results Metadata & Reset Filters */}
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center", 
-        marginBottom: "1rem",
-        padding: "0 0.5rem",
-        flexWrap: "wrap",
-        gap: "0.75rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-            Showing page <strong style={{ color: "#F8FAFC" }}>{page}</strong> of {totalPages} (<strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> matched advisories out of {totalUniversalCount.toLocaleString()} total)
-          </span>
-          {isLoading && (
-            <span style={{ fontSize: "0.75rem", color: "#60A5FA", background: "rgba(59, 130, 246, 0.15)", padding: "0.15rem 0.5rem", borderRadius: "10px" }}>
-              Streaming...
-            </span>
-          )}
-        </div>
-
-        {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || kevOnly || feedScope !== "ALL") && (
-          <button
-            onClick={() => {
-              setFeedScope("ALL");
-              setSearchQuery("");
-              setSelectedSeverity("ALL");
-              setSelectedDomain("ALL");
-              setSelectedSourceFeed("ALL");
-              setKevOnly(false);
-              setPage(1);
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#60A5FA",
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              textDecoration: "underline"
-            }}
-          >
-            Reset All Filters
-          </button>
-        )}
+      {/* Results summary */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.85rem", padding: "0 0.25rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+        <span>
+          <strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> advisories Â· page {page} of {totalPages}
+        </span>
+        {isLoading && <span style={{ fontSize: "0.72rem", color: "#60A5FA" }}>Loadingâ€¦</span>}
       </div>
 
       {/* VIEW MODE 1: Consolidated Table with LOCKED HEADER & SCROLLABLE CONTENT */}

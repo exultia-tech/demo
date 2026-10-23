@@ -310,145 +310,75 @@ export default function PraxisPage() {
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '2rem 1.5rem', color: '#F8FAFC' }}>
       
-      {/* ── TOP BREADCRUMB & ENTITLEMENTS ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link href="/" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '0.88rem' }}>Exultia Suite</Link>
-          <span style={{ color: '#64748B' }}>/</span>
-          <span style={{ color: '#F59E0B', fontSize: '0.88rem', fontWeight: 600 }}>Praxis Remediation &amp; Hotpatch Engine</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link
-            href="/account/subscription?product=praxis"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              padding: '6px 14px',
-              borderRadius: '9999px',
-              color: '#FBBF24',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              textDecoration: 'none',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Sparkles size={14} />
-            <span>Manage Praxis Plans →</span>
-          </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '6px 14px', borderRadius: '9999px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F59E0B', boxShadow: '0 0 10px #F59E0B' }} />
-            <span style={{ fontSize: '0.78rem', color: '#FBBF24', fontWeight: 600, letterSpacing: '0.04em' }}>UNIFIED REMEDIATION</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── HERO BANNER ── */}
-      <div className="glass-card" style={{ 
-        position: 'relative', 
-        overflow: 'hidden', 
-        padding: '2.5rem', 
-        marginBottom: '2rem',
-        border: '1px solid rgba(245, 158, 11, 0.25)',
-        background: 'linear-gradient(135deg, rgba(20, 16, 8, 0.85) 0%, rgba(12, 16, 26, 0.95) 100%)'
-      }}>
-        <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.15, pointerEvents: 'none' }}>
-          <PraxisIcon size={340} glow={false} />
-        </div>
-
-        <div style={{ maxWidth: '880px', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '1rem' }}>
-            <PraxisIcon size={44} glow={true} />
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #FFFFFF 0%, #FBBF24 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Praxis Remediation &amp; Hotpatching
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '0.35rem' }}>
+            <PraxisIcon size={36} glow={true} />
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#F8FAFC', lineHeight: 1.2 }}>
+              Praxis
             </h1>
-            <span style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-              ENTERPRISE ENGINE
-            </span>
           </div>
-
-          <p style={{ fontSize: '1.12rem', color: '#CBD5E1', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-            Bridge the gap between threat intelligence and production enforcement. <strong>Praxis</strong> delivers automated zero-downtime hotpatches with canary ring safety, alongside hardware firewall ACL filters (Cisco, Palo Alto, Fortinet) and deep OS baseline hardening.
+          <p style={{ fontSize: '0.95rem', color: '#94A3B8', margin: 0 }}>
+            Autonomous remediation &amp; hardening engine
           </p>
-
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Zap size={18} color="#FBBF24" />
-              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>&lt; 15 min</strong> Hot-Mitigation</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShieldAlert size={18} color="#10B981" />
-              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Zero-Downtime</strong> Live Kernel/Daemon</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Layers size={18} color="#38BDF8" />
-              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Canary Ring</strong> Rollout Safety</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShieldCheck size={18} color="#A855F7" />
-              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Hardware ACLs</strong> Cisco/Palo Alto/Fortinet</span>
-            </div>
-          </div>
         </div>
+        <Link
+          href="/account/subscription?product=praxis"
+          style={{
+            padding: '0.45rem 1rem',
+            fontSize: '0.82rem',
+            fontWeight: 600,
+            color: '#FBBF24',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          Plans
+        </Link>
       </div>
 
-      {/* ── MODE SWITCHER (Hotpatch Stream vs. Firewall & Baseline Hardening) ── */}
+      {/* Mode switcher */}
       <div style={{
-        display: 'flex',
-        gap: '8px',
-        padding: '6px',
+        display: 'inline-flex',
+        gap: '4px',
+        padding: '4px',
         background: 'rgba(15, 23, 42, 0.8)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '14px',
-        marginBottom: '2rem',
-        maxWidth: '720px'
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '12px',
+        marginBottom: '1.75rem'
       }}>
         <button
           onClick={() => setActiveMode('hotpatch')}
           style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            padding: '12px 18px',
-            borderRadius: '10px',
+            padding: '9px 18px',
+            borderRadius: '9px',
             border: 'none',
             cursor: 'pointer',
             background: activeMode === 'hotpatch' ? 'linear-gradient(135deg, #F59E0B, #D97706)' : 'transparent',
             color: activeMode === 'hotpatch' ? '#000000' : '#94A3B8',
-            fontWeight: activeMode === 'hotpatch' ? 800 : 600,
-            fontSize: '0.9rem',
-            transition: 'all 0.2s ease'
+            fontWeight: 700,
+            fontSize: '0.88rem'
           }}
         >
-          <Zap size={18} />
-          <span>Autonomous Hotpatching &amp; Canary Stream</span>
+          Hotpatching
         </button>
-
         <button
           onClick={() => setActiveMode('hardening')}
           style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            padding: '12px 18px',
-            borderRadius: '10px',
+            padding: '9px 18px',
+            borderRadius: '9px',
             border: 'none',
             cursor: 'pointer',
             background: activeMode === 'hardening' ? 'linear-gradient(135deg, #10B981, #059669)' : 'transparent',
             color: activeMode === 'hardening' ? '#000000' : '#94A3B8',
-            fontWeight: activeMode === 'hardening' ? 800 : 600,
-            fontSize: '0.9rem',
-            transition: 'all 0.2s ease'
+            fontWeight: 700,
+            fontSize: '0.88rem'
           }}
         >
-          <Sliders size={18} />
-          <span>Firewall ACLs &amp; OS Baseline Hardening</span>
+          Firewall &amp; Hardening
         </button>
       </div>
 
@@ -457,116 +387,6 @@ export default function PraxisPage() {
           ═══════════════════════════════════════════════════════════════════ */}
       {activeMode === 'hotpatch' && (
         <div>
-          {/* CONCEPT SELECTION TABS */}
-          <div style={{ marginBottom: '2rem' }}>
-            <div style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', fontWeight: 700, marginBottom: '0.75rem' }}>
-              Autonomous Remediation Architecture
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
-              
-              <button 
-                onClick={() => setActiveConcept('velocity')}
-                style={{
-                  padding: '1.2rem',
-                  borderRadius: '12px',
-                  border: activeConcept === 'velocity' ? '1px solid #F59E0B' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: activeConcept === 'velocity' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(15, 23, 42, 0.6)',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'velocity' ? '#FBBF24' : '#F8FAFC' }}>
-                    1. Velocity Stream
-                  </span>
-                  <Zap size={18} color={activeConcept === 'velocity' ? '#FBBF24' : '#64748B'} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
-                  3-tier machine-executable payloads (hot-mitigation, package pin, GitOps playbook) delivered via API &amp; Webhook.
-                </span>
-              </button>
-
-              <button 
-                onClick={() => setActiveConcept('canary')}
-                style={{
-                  padding: '1.2rem',
-                  borderRadius: '12px',
-                  border: activeConcept === 'canary' ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: activeConcept === 'canary' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(15, 23, 42, 0.6)',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'canary' ? '#10B981' : '#F8FAFC' }}>
-                    2. Canary Ring Staging
-                  </span>
-                  <Activity size={18} color={activeConcept === 'canary' ? '#10B981' : '#64748B'} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
-                  Autonomous ring deployment (Ring 0 Canary 2% → Telemetry Sentinel → Ring 1 25%) with instant automated rollback.
-                </span>
-              </button>
-
-              <button 
-                onClick={() => setActiveConcept('slsa')}
-                style={{
-                  padding: '1.2rem',
-                  borderRadius: '12px',
-                  border: activeConcept === 'slsa' ? '1px solid #8B5CF6' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: activeConcept === 'slsa' ? 'rgba(139, 92, 246, 0.12)' : 'rgba(15, 23, 42, 0.6)',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'slsa' ? '#8B5CF6' : '#F8FAFC' }}>
-                    3. Zero-Trust Provenance
-                  </span>
-                  <Lock size={18} color={activeConcept === 'slsa' ? '#8B5CF6' : '#64748B'} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
-                  SLSA Level 3 signed manifests via Cosign OIDC, automated ephemeral VM test logs, and CycloneDX VEX statements.
-                </span>
-              </button>
-
-              <button 
-                onClick={() => setActiveConcept('implement')}
-                style={{
-                  padding: '1.2rem',
-                  borderRadius: '12px',
-                  border: activeConcept === 'implement' ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: activeConcept === 'implement' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(15, 23, 42, 0.6)',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'implement' ? '#38BDF8' : '#F8FAFC' }}>
-                    4. Fleet Implementation
-                  </span>
-                  <Terminal size={18} color={activeConcept === 'implement' ? '#38BDF8' : '#64748B'} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
-                  Ready-to-deploy setups: Zero-agent systemd timer, GitOps PR bot, Ansible Tower, or micro-daemon.
-                </span>
-              </button>
-
-            </div>
-          </div>
-
           {/* INTERACTIVE CANARY SIMULATOR */}
           <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '16px', border: '1px solid rgba(245, 158, 11, 0.25)', marginBottom: '2.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
