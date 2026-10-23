@@ -57,7 +57,7 @@ export default function ThreatFeedPage() {
 
   const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
     { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
-    { id: "Vendor Security Disclosures", label: "Vendor Disclosures", icon: "🏢", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vendor Security Disclosures").length },
+    { id: "Vendor Security Disclosures", label: "OS & Vendor Patch Errata", icon: "📦", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vendor Security Disclosures").length },
     { id: "Research, Bug Bounty & Community Disclosures", label: "Research & Bounties", icon: "🔬", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Research, Bug Bounty & Community Disclosures").length },
     { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Malware, C2 & Botnets").length },
     { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Phishing & Fraud").length },
@@ -136,6 +136,10 @@ export default function ThreatFeedPage() {
         if (feedScope === "DEV_BUILD") params.set("scope", "build-impact");
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
         if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
+
+        if (feedDirectoryCategory !== "ALL") {
+          params.set("category", feedDirectoryCategory);
+        }
 
         if (selectedDomain !== "ALL") {
           params.set("domain", selectedDomain);
@@ -216,7 +220,26 @@ export default function ThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy]);
+  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy, feedDirectoryCategory]);
+
+  // Check for initial URL query parameters on mount (e.g. ?category=Vendor+Security+Disclosures from Argent redirect or links)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const catParam = searchParams.get("category");
+      if (catParam) {
+        setFeedDirectoryCategory(catParam);
+      }
+      const queryParam = searchParams.get("query") || searchParams.get("q");
+      if (queryParam) {
+        setSearchQuery(queryParam);
+      }
+      const sourceParam = searchParams.get("source");
+      if (sourceParam) {
+        setSelectedSourceFeed(sourceParam);
+      }
+    }
+  }, []);
 
   // Fetch initial agent telemetry on mount
   useEffect(() => {
@@ -355,7 +378,7 @@ export default function ThreatFeedPage() {
       }}>
         {/* Left Column: Title & Subtitle */}
         <div style={{ flex: "1 1 540px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
             <VantageIcon size={40} glow={true} />
             <h1 style={{ 
               fontSize: "2.35rem", 
@@ -367,9 +390,26 @@ export default function ThreatFeedPage() {
             }}>
               Vantage
             </h1>
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              padding: "0.25rem 0.65rem",
+              borderRadius: "999px",
+              background: "rgba(0, 229, 255, 0.1)",
+              border: "1px solid rgba(0, 229, 255, 0.28)",
+              color: "#00E5FF",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase"
+            }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
+              Dual-Engine: Threat Consensus + OS Errata
+            </span>
           </div>
-          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "760px", lineHeight: 1.6, margin: 0 }}>
-            Real-time multi-source threat consensus across {UVI_PUBLIC_FEED_SOURCES.length} synchronized global feeds, active zero-days, and supply chain malware.
+          <p style={{ fontSize: "0.98rem", color: "var(--text-muted)", maxWidth: "780px", lineHeight: 1.6, margin: 0 }}>
+            Unified security intelligence hub combining real-time multi-source threat intelligence ({UVI_PUBLIC_FEED_SOURCES.length} sovereign feeds, CISA KEV, zero-days, C2 botnets) with comprehensive OS &amp; vendor patch management across 16 operating system errata ecosystems with direct hotpatch synthesis.
           </p>
         </div>
 
@@ -411,6 +451,282 @@ export default function ThreatFeedPage() {
             <span>🛡️ <strong style={{ color: "#EC4899" }}>{nonCveThreatsCount.toLocaleString()}</strong> Non-CVE</span>
             <span>•</span>
             <span>📡 <strong style={{ color: "#818CF8" }}>{informationalDisclosuresCount.toLocaleString()}</strong> Informational</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* DUAL-PILLAR ARCHITECTURE SHOWCASE BANNER (Threat Feed + Patch Management)  */}
+      {/* ========================================================================= */}
+      <div style={{
+        background: "linear-gradient(135deg, rgba(13, 19, 33, 0.95) 0%, rgba(15, 23, 42, 0.92) 50%, rgba(17, 24, 39, 0.95) 100%)",
+        border: "1px solid rgba(0, 229, 255, 0.22)",
+        borderRadius: "16px",
+        padding: "1.4rem 1.6rem",
+        marginBottom: "1.75rem",
+        boxShadow: "0 10px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        {/* Subtle cybernetic accent gradient line */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "2px",
+          background: "linear-gradient(90deg, transparent, #00E5FF, #3B82F6, #10B981, transparent)"
+        }} />
+
+        {/* Top Meta Bar */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "0.75rem",
+          marginBottom: "1.1rem",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
+          paddingBottom: "0.85rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+            <span style={{
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              fontWeight: 800,
+              padding: "0.22rem 0.6rem",
+              borderRadius: "6px",
+              background: "rgba(0, 229, 255, 0.12)",
+              color: "#00E5FF",
+              border: "1px solid rgba(0, 229, 255, 0.3)"
+            }}>
+              Unified Architecture
+            </span>
+            <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#F1F5F9" }}>
+              Dual Purpose: Global Threat Intelligence &amp; OS Patch Management
+            </span>
+            <span style={{ fontSize: "0.8rem", color: "#64748B" }}>
+              • Consolidated from Argent &amp; UVI into a single defense plane
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Active Scope:</span>
+            <button
+              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("ALL"))}
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: feedDirectoryCategory === "ALL" ? 700 : 500,
+                padding: "0.25rem 0.65rem",
+                borderRadius: "6px",
+                background: feedDirectoryCategory === "ALL" ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.04)",
+                border: feedDirectoryCategory === "ALL" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.08)",
+                color: feedDirectoryCategory === "ALL" ? "#93C5FD" : "#94A3B8",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              All Feeds (Dual Engine)
+            </button>
+            <button
+              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("Vendor Security Disclosures"))}
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: feedDirectoryCategory === "Vendor Security Disclosures" ? 700 : 500,
+                padding: "0.25rem 0.65rem",
+                borderRadius: "6px",
+                background: feedDirectoryCategory === "Vendor Security Disclosures" ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.04)",
+                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.08)",
+                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#94A3B8",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              📦 OS &amp; Vendor Errata Only
+            </button>
+          </div>
+        </div>
+
+        {/* Two-Pillar Cards Grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+          gap: "1.25rem"
+        }}>
+          {/* Pillar 1: Global Threat Intelligence */}
+          <div style={{
+            background: feedDirectoryCategory === "ALL" ? "rgba(30, 41, 59, 0.55)" : "rgba(15, 23, 42, 0.4)",
+            border: feedDirectoryCategory === "ALL" ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px",
+            padding: "1.1rem 1.25rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            gap: "0.85rem",
+            transition: "all 0.2s ease"
+          }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.45rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "1.25rem" }}>🌐</span>
+                  <div>
+                    <h3 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F8FAFC", margin: 0 }}>
+                      Pillar I: Global Threat Intelligence
+                    </h3>
+                    <span style={{ fontSize: "0.72rem", color: "#60A5FA", fontWeight: 600 }}>
+                      Real-Time Ingestion &amp; Multi-Source Consensus
+                    </span>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.68rem",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "999px",
+                  background: "rgba(59, 130, 246, 0.18)",
+                  color: "#93C5FD",
+                  border: "1px solid rgba(59, 130, 246, 0.35)",
+                  fontWeight: 700
+                }}>
+                  127+ Sovereign Feeds
+                </span>
+              </div>
+
+              <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5, margin: "0 0 0.75rem 0" }}>
+                Continuous synchronization across international CERTs, CISA KEV, FIRST EPSS, CIRCL MISP, NVD, ExploitDB, and live botnet C2 trackers (ThreatFox, URLhaus). Assigns authoritative Universal Vulnerability Identifiers (UVI) with deduplicated timeline reconciliation.
+              </p>
+
+              {/* Metric Badges */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
+                  🚨 CISA KEV In-the-Wild
+                </span>
+                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
+                  ⚡ EPSS Probability Score
+                </span>
+                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
+                  ☣️ Malware &amp; C2 Botnets
+                </span>
+                <span style={{ fontSize: "0.72rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#CBD5E1" }}>
+                  🔬 Zero-Days &amp; Bug Bounties
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.6rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <span style={{ fontSize: "0.74rem", color: "#64748B" }}>
+                Ingesting ~28,800+ unified threat dossiers
+              </span>
+              <button
+                onClick={() => handleFilterChange(() => {
+                  setFeedDirectoryCategory("ALL");
+                  setSelectedSourceFeed("ALL");
+                })}
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  color: "#60A5FA",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
+                }}
+              >
+                <span>View Full Threat Scope</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Pillar 2: OS & Vendor Patch Management */}
+          <div style={{
+            background: feedDirectoryCategory === "Vendor Security Disclosures" ? "rgba(6, 78, 59, 0.35)" : "rgba(15, 23, 42, 0.4)",
+            border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px",
+            padding: "1.1rem 1.25rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            gap: "0.85rem",
+            transition: "all 0.2s ease"
+          }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.45rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "1.25rem" }}>📦</span>
+                  <div>
+                    <h3 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F8FAFC", margin: 0 }}>
+                      Pillar II: OS &amp; Vendor Patch Management
+                    </h3>
+                    <span style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 600 }}>
+                      Package Errata &amp; Live Hotpatch Synthesis
+                    </span>
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.68rem",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "999px",
+                  background: "rgba(16, 185, 129, 0.18)",
+                  color: "#6EE7B7",
+                  border: "1px solid rgba(16, 185, 129, 0.35)",
+                  fontWeight: 700
+                }}>
+                  16 OS Ecosystems
+                </span>
+              </div>
+
+              <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5, margin: "0 0 0.75rem 0" }}>
+                Authoritative vendor security advisories from 16 major OS distributions (Ubuntu USN, Debian DSA, Red Hat RHSA, Rocky RLSA, Alpine SecDB, SUSE, Arch, Amazon Linux, Linux Kernel). Delivers package reconciliation commands and direct handoff to Praxis hotpatching.
+              </p>
+
+              {/* OS Distro Badges */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+                {["Ubuntu USN", "Debian DSA", "Red Hat RHSA", "Rocky Linux", "Alpine SecDB", "SUSE CLA", "Arch ALAS", "Amazon Linux", "Linux Kernel"].map(distro => (
+                  <span
+                    key={distro}
+                    style={{
+                      fontSize: "0.7rem",
+                      padding: "0.15rem 0.45rem",
+                      borderRadius: "4px",
+                      background: "rgba(16, 185, 129, 0.08)",
+                      border: "1px solid rgba(16, 185, 129, 0.2)",
+                      color: "#A7F3D0",
+                      fontWeight: 500
+                    }}
+                  >
+                    {distro}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.6rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <span style={{ fontSize: "0.74rem", color: "#64748B" }}>
+                Remediation: apt, dnf, apk, zypper, pacman + Praxis
+              </span>
+              <button
+                onClick={() => handleFilterChange(() => {
+                  setFeedDirectoryCategory("Vendor Security Disclosures");
+                })}
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: "#34D399",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
+                }}
+              >
+                <span>Filter OS &amp; Vendor Errata</span>
+                <span>→</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1024,6 +1340,35 @@ export default function ThreatFeedPage() {
       }}>
         {/* Dropdown Filter Controls */}
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+          {/* Intelligence Stream (Dual Engine: Threat Feeds vs OS Patch Errata) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "210px" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Intelligence Stream
+            </label>
+            <select
+              value={feedDirectoryCategory}
+              onChange={(e) => handleFilterChange(() => setFeedDirectoryCategory(e.target.value))}
+              style={{
+                padding: "0.65rem 0.9rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">🌐 All Intelligence Streams (Dual Engine)</option>
+              {FEED_CATEGORIES.filter(c => c.id !== "ALL").map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.icon} {cat.label} ({cat.count} feeds)
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Feed Source Dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "180px" }}>
             <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
@@ -1185,9 +1530,10 @@ export default function ThreatFeedPage() {
           </div>
 
           {/* Reset Filters button if any filter is active */}
-          {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly) && (
+          {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly || feedDirectoryCategory !== "ALL") && (
             <button
               onClick={() => {
+                setFeedDirectoryCategory("ALL");
                 setFeedScope("ALL");
                 setSearchQuery("");
                 setSelectedSeverity("ALL");
@@ -1212,6 +1558,48 @@ export default function ThreatFeedPage() {
             </button>
           )}
         </div>
+
+        {/* Active Category Filter Notification Strip */}
+        {feedDirectoryCategory !== "ALL" && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0.55rem 0.9rem",
+            borderRadius: "8px",
+            background: "rgba(16, 185, 129, 0.12)",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            fontSize: "0.8rem",
+            color: "#6EE7B7",
+            marginTop: "0.25rem"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span>📦</span>
+              <span>
+                Stream Active: <strong>{FEED_CATEGORIES.find(c => c.id === feedDirectoryCategory)?.label || feedDirectoryCategory}</strong>
+                {feedDirectoryCategory === "Vendor Security Disclosures" && (
+                  <span style={{ color: "#A7F3D0", marginLeft: "0.4rem" }}>
+                    (16 OS Vendor Errata Feeds: Ubuntu, Debian, RHEL, Rocky, Alpine, SUSE, Arch, Amazon Linux, Linux Kernel)
+                  </span>
+                )}
+              </span>
+            </div>
+            <button
+              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("ALL"))}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#F8FAFC",
+                cursor: "pointer",
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                textDecoration: "underline"
+              }}
+            >
+              Reset to All Feeds ✕
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Results Metadata & Reset Filters */}

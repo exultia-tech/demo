@@ -114,7 +114,7 @@ export default function ThreatFeedStatsPage() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent"
           }}>
-            Global Vulnerability & Threat Statistics
+            Threat Intelligence &amp; OS Patch Statistics
           </h1>
 
           <p style={{
@@ -124,7 +124,7 @@ export default function ThreatFeedStatsPage() {
             maxWidth: "780px",
             margin: "0 auto 2.5rem auto"
           }}>
-            Live telemetry and empirical metrics synthesized across {totalFeeds} synchronized upstream security feeds, 395,000+ CVE records, and actively weaponized exploitation campaigns.
+            Live telemetry and empirical metrics synthesized across {totalFeeds} synchronized upstream security feeds (127+ sovereign threat intelligence sources and 16 authoritative OS vendor patch repositories), 395,000+ CVE records, and actively weaponized exploitation campaigns.
           </p>
 
           {/* KEY STATS KPI STRIP */}

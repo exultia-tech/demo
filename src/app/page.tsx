@@ -39,7 +39,7 @@ export default function HomePage() {
         {/* HERO SECTION */}
         <section className="exultia-hero-section">
           <div className="hero-emblem-wrap">
-            <ExultiaLogo size={150} variant="circle" glow={true} />
+            <ExultiaLogo size={210} variant="circle" glow={true} />
           </div>
 
           <div className="hero-badge-pill">
@@ -56,8 +56,8 @@ export default function HomePage() {
           </p>
 
           <p className="hero-description">
-            Continuous threat intelligence from 127+ public &amp; vendor feeds paired with 
-            autonomous zero-downtime hotpatching, CIS-hardened OS images, and offline-ready developer workstations.
+            Continuous threat intelligence from 127+ public feeds paired with authoritative OS vendor patch management, 
+            autonomous zero-downtime hotpatching, CIS-hardened OS images, and offline-ready workstations.
           </p>
 
           <div className="hero-cta-group">
@@ -96,7 +96,7 @@ export default function HomePage() {
                 <VantageIcon size={56} glow={true} />
               </div>
               <div className="defense-pill pill-purple">
-                <span>127 Feeds &bull; 16 Vendor Streams</span>
+                <span>127 Feeds &bull; 16 OS Vendor Errata Streams</span>
               </div>
             </div>
 
@@ -105,21 +105,20 @@ export default function HomePage() {
                 <h2 className="defense-card-name">Vantage</h2>
                 <span className="defense-card-arrow">→</span>
               </div>
-              <div className="defense-card-sub">Universal Threat &amp; Errata Intelligence</div>
+              <div className="defense-card-sub">Universal Threat Feed &amp; OS Patch Management</div>
               <p className="defense-card-desc">
-                Aggregate, de-duplicate, and cross-reference 127 authoritative feeds, 16 major OS/software vendor 
-                security disclosures (PHP, Microsoft, Red Hat, Ubuntu, Debian, Apple, Cisco), and active zero-days with EPSS velocity metrics.
+                Dual-purpose defense hub unifying 127+ global threat feeds (CISA KEV, active zero-days, C2 botnet telemetry) with authoritative OS vendor patch management across 16 ecosystems (Ubuntu USN, Debian DSA, Red Hat RHSA, Rocky RLSA, Alpine SecDB, SUSE, Arch).
               </p>
             </div>
 
             <div className="defense-card-footer">
               <div className="defense-meta-item">
                 <Activity size={14} color="#C084FC" />
-                <span>Real-Time Ingestion</span>
+                <span>Threat Consensus</span>
               </div>
               <div className="defense-meta-item">
                 <ShieldCheck size={14} color="#C084FC" />
-                <span>CVE &bull; KEV &bull; EPSS</span>
+                <span>Distro Errata (APT / DNF / APK)</span>
               </div>
             </div>
           </Link>
