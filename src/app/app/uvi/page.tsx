@@ -360,7 +360,7 @@ export default function ThreatFeedPage() {
             </h1>
           </div>
           <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", margin: 0 }}>
-            Threat feed &amp; OS patch management Â· {UVI_PUBLIC_FEED_SOURCES.length} sources
+            Threat feed &amp; OS patch management &middot; {UVI_PUBLIC_FEED_SOURCES.length} sources
           </p>
         </div>
 
@@ -401,7 +401,7 @@ export default function ThreatFeedPage() {
           display: "flex",
           flexDirection: "column",
           transition: "width 0.2s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.2s, max-width 0.2s",
-          overflow: "hidden",
+          overflowY: isSidebarCollapsed ? "hidden" : "auto",
           zIndex: 20
         }}>
           {isSidebarCollapsed ? (
@@ -666,9 +666,311 @@ export default function ThreatFeedPage() {
                 </div>
               )}
 
+              <div style={{ padding: "0.75rem 0.85rem", borderBottom: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {/* Triage toolbar */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", marginBottom: "0" }}>
+            <button
+              onClick={() => setShowScores(prev => !prev)}
+              role="switch"
+              aria-checked={showScores}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                padding: "0.35rem 0.8rem 0.35rem 0.5rem",
+                borderRadius: "999px",
+                background: "rgba(10, 14, 23, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: showScores ? "#F8FAFC" : "#94A3B8",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+              title="Show or hide CVSS severity scores"
+            >
+              <span style={{
+                position: "relative",
+                width: "34px",
+                height: "18px",
+                borderRadius: "999px",
+                background: showScores ? "#3B82F6" : "rgba(255, 255, 255, 0.15)",
+                transition: "background 0.15s ease"
+              }}>
+                <span style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: showScores ? "18px" : "2px",
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "50%",
+                  background: "#FFFFFF",
+                  transition: "left 0.15s ease"
+                }} />
+              </span>
+              <span>Scores</span>
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <button
+                  onClick={() => setViewMode("table")}
+                  style={{
+                    padding: "0.35rem 0.7rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                    color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    cursor: "pointer"
+                  }}
+                  title="Consolidated Table View with locked sticky header"
+                >
+                  Table
+                </button>
+                <button
+                  onClick={() => setViewMode("cards")}
+                  style={{
+                    padding: "0.35rem 0.7rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                    color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    cursor: "pointer"
+                  }}
+                  title="Wiki Card Grid View"
+                >
+                  Cards
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+      {/* Unified Filter Control Bar */}
+      <div style={{
+        background: "transparent",
+        border: "none",
+        borderRadius: "12px",
+        padding: "0",
+        marginBottom: "0",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.85rem",
+        boxShadow: "none"
+      }}>
+        {/* Dropdown Filter Controls */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
+          {/* Intelligence Stream (Dual Engine: Threat Feeds vs OS Patch Errata) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Intelligence Stream
+            </label>
+            <select
+              value={feedDirectoryCategory}
+              onChange={(e) => handleFilterChange(() => setFeedDirectoryCategory(e.target.value))}
+              style={{
+                padding: "0.45rem 0.7rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">🌐 {streamMode === "PATCH" ? "All Patch Streams" : streamMode === "THREAT" ? "All Threat Streams" : "All Streams (Threat + Patch)"}</option>
+              {modeCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.icon} {cat.label} ({cat.count} feeds)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {streamMode !== "PATCH" && (<>
+          {/* Unified Operational Domain Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Operational Domain
+            </label>
+            <select
+              value={selectedDomain}
+              onChange={(e) => handleFilterChange(() => setSelectedDomain(e.target.value))}
+              style={{
+                padding: "0.45rem 0.7rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">All Operational Domains (7 Domains)</option>
+              <option value="PATCH">⚡ Patch</option>
+              <option value="ENDPOINT">🛡️ Endpoint</option>
+              <option value="IDENTITY">🔐 Identity</option>
+              <option value="SUPPLY">📦 Supply</option>
+              <option value="PIPELINE">🔒 Pipeline</option>
+              <option value="AGENT">🤖 Agent</option>
+              <option value="NETWORK">🧱 Network</option>
+            </select>
+          </div>
+
+          {/* Threat Scope Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Threat Scope
+            </label>
+            <select
+              value={feedScope}
+              onChange={(e) => handleFilterChange(() => setFeedScope(e.target.value as any))}
+              style={{
+                padding: "0.45rem 0.7rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              <option value="ALL">🌐 All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
+              <option value="DEV_BUILD">💻 Developer & Build Exposure ({directBuildImpactCount.toLocaleString()})</option>
+              <option value="NON_CVE">🛡️ Pure Non-CVE Threats ({nonCveThreatsCount.toLocaleString()})</option>
+              <option value="INFORMATIONAL">📡 Informational Disclosures & Vector Research ({informationalDisclosuresCount.toLocaleString()})</option>
+            </select>
+          </div>
+          </>)}
+
+          {/* Severity Dropdown (Only in Classic CVSS Mode) */}
+          {showScores && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+              <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+                Severity
+              </label>
+              <select
+                value={selectedSeverity}
+                onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
+                style={{
+                  padding: "0.45rem 0.7rem",
+                  background: "rgba(10, 14, 23, 0.95)",
+                  border: "1px solid rgba(255, 255, 255, 0.14)",
+                  borderRadius: "8px",
+                  color: "#F8FAFC",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  cursor: "pointer",
+                  width: "100%"
+                }}
+              >
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical (9.0 - 10.0)</option>
+                <option value="HIGH">High (7.0 - 8.9)</option>
+                <option value="MEDIUM">Medium (4.0 - 6.9)</option>
+                <option value="LOW">Low (0.1 - 3.9)</option>
+              </select>
+            </div>
+          )}
+
+          {/* Sort Order Dropdown */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
+              Sort By
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setPage(1);
+                setSortBy(e.target.value as any);
+              }}
+              style={{
+                padding: "0.45rem 0.7rem",
+                background: "rgba(10, 14, 23, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "0.85rem",
+                outline: "none",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              {ratingMode === "observational" ? (
+                <>
+                  <option value="cvss_desc">Domain Urgency & Reality</option>
+                  <option value="published_desc">Date (Newest First)</option>
+                  <option value="published_asc">Date (Oldest First)</option>
+                  <option value="uvi_desc">Vantage ID (Descending)</option>
+                  <option value="uvi_asc">Vantage ID (Ascending)</option>
+                </>
+              ) : (
+                <>
+                  <option value="cvss_desc">CVSS Score (Highest First)</option>
+                  <option value="published_desc">Date (Newest First)</option>
+                  <option value="published_asc">Date (Oldest First)</option>
+                  <option value="uvi_desc">Vantage ID (Descending)</option>
+                  <option value="uvi_asc">Vantage ID (Ascending)</option>
+                </>
+              )}
+            </select>
+          </div>
+
+          {/* Reset Filters button if any filter is active */}
+          {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly || feedDirectoryCategory !== "ALL") && (
+            <button
+              onClick={() => {
+                setFeedDirectoryCategory("ALL");
+                setFeedScope("ALL");
+                setSearchQuery("");
+                setSelectedSeverity("ALL");
+                setSelectedDomain("ALL");
+                setSelectedSourceFeed("ALL");
+                setKevOnly(false);
+                setPage(1);
+              }}
+              style={{
+                padding: "0.45rem 0.8rem",
+                background: "rgba(239, 68, 68, 0.15)",
+                border: "1px solid rgba(239, 68, 68, 0.35)",
+                borderRadius: "8px",
+                color: "#FCA5A5",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                whiteSpace: "nowrap"
+              }}
+            >
+              ✕ Reset Filters
+            </button>
+          )}
+        </div>
+
+      </div>
+
+      {/* Results summary */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0", padding: "0", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+        <span>
+          <strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> advisories &middot; page {page} of {totalPages}
+        </span>
+        {isLoading && <span style={{ fontSize: "0.72rem", color: "#60A5FA" }}>Loading&hellip;</span>}
+      </div>
+              </div>
               {/* Scrollable Feed List */}
               <div style={{
-                flex: 1,
+                flex: "none", maxHeight: "320px",
                 overflowY: "auto",
                 padding: "0.4rem 0.65rem",
                 display: "flex",
@@ -826,393 +1128,6 @@ export default function ThreatFeedPage() {
         {/* RIGHT MAIN COLUMN: Triage Toolbar, Filters, Advisories Table/Cards        */}
         {/* ========================================================================= */}
         <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          {/* Triage toolbar */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", marginBottom: "0.9rem" }}>
-            <button
-              onClick={() => setShowScores(prev => !prev)}
-              role="switch"
-              aria-checked={showScores}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.6rem",
-                padding: "0.35rem 0.8rem 0.35rem 0.5rem",
-                borderRadius: "999px",
-                background: "rgba(10, 14, 23, 0.9)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: showScores ? "#F8FAFC" : "#94A3B8",
-                fontSize: "0.82rem",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-              title="Show or hide CVSS severity scores"
-            >
-              <span style={{
-                position: "relative",
-                width: "34px",
-                height: "18px",
-                borderRadius: "999px",
-                background: showScores ? "#3B82F6" : "rgba(255, 255, 255, 0.15)",
-                transition: "background 0.15s ease"
-              }}>
-                <span style={{
-                  position: "absolute",
-                  top: "2px",
-                  left: showScores ? "18px" : "2px",
-                  width: "14px",
-                  height: "14px",
-                  borderRadius: "50%",
-                  background: "#FFFFFF",
-                  transition: "left 0.15s ease"
-                }} />
-              </span>
-              <span>Scores</span>
-            </button>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <button
-                onClick={() => setIsSidebarCollapsed(prev => !prev)}
-                style={{
-                  padding: "0.38rem 0.75rem",
-                  borderRadius: "8px",
-                  background: "transparent",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  color: "#CBD5E1",
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  cursor: "pointer"
-                }}
-                title={isSidebarCollapsed ? "Expand Threat Feeds Sidebar" : "Collapse Threat Feeds Sidebar to Maximize Table Width"}
-              >
-                {isSidebarCollapsed ? `Show Feeds (${UVI_PUBLIC_FEED_SOURCES.length})` : "Hide Feeds"}
-              </button>
-              <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <button
-                  onClick={() => setViewMode("table")}
-                  style={{
-                    padding: "0.35rem 0.7rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                    color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    cursor: "pointer"
-                  }}
-                  title="Consolidated Table View with locked sticky header"
-                >
-                  Table
-                </button>
-                <button
-                  onClick={() => setViewMode("cards")}
-                  style={{
-                    padding: "0.35rem 0.7rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                    color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    cursor: "pointer"
-                  }}
-                  title="Wiki Card Grid View"
-                >
-                  Cards
-                </button>
-              </div>
-            </div>
-          </div>
-
-
-
-
-
-      {/* Unified Filter Control Bar */}
-      <div style={{
-        background: "rgba(15, 20, 32, 0.8)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        borderRadius: "12px",
-        padding: "1rem 1.25rem",
-        marginBottom: "1.25rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.85rem",
-        boxShadow: "0 6px 24px rgba(0, 0, 0, 0.3)"
-      }}>
-        {/* Dropdown Filter Controls */}
-        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
-          {/* Intelligence Stream (Dual Engine: Threat Feeds vs OS Patch Errata) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "210px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Intelligence Stream
-            </label>
-            <select
-              value={feedDirectoryCategory}
-              onChange={(e) => handleFilterChange(() => setFeedDirectoryCategory(e.target.value))}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              <option value="ALL">🌐 {streamMode === "PATCH" ? "All Patch Streams" : streamMode === "THREAT" ? "All Threat Streams" : "All Streams (Threat + Patch)"}</option>
-              {modeCategories.map(cat => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.icon} {cat.label} ({cat.count} feeds)
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Feed Source Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "180px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Feed Source
-            </label>
-            <select
-              value={selectedSourceFeed}
-              onChange={(e) => handleFilterChange(() => setSelectedSourceFeed(e.target.value))}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              <option value="ALL">All Feeds ({modeFeeds.length} Sources)</option>
-              {modeFeeds.map(feed => (
-                <option key={feed.id} value={feed.id}>
-                  {feed.icon} {feed.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {streamMode !== "PATCH" && (<>
-          {/* Unified Operational Domain Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "200px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Operational Domain
-            </label>
-            <select
-              value={selectedDomain}
-              onChange={(e) => handleFilterChange(() => setSelectedDomain(e.target.value))}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              <option value="ALL">All Operational Domains (7 Domains)</option>
-              <option value="PATCH">⚡ Patch</option>
-              <option value="ENDPOINT">🛡️ Endpoint</option>
-              <option value="IDENTITY">🔐 Identity</option>
-              <option value="SUPPLY">📦 Supply</option>
-              <option value="PIPELINE">🔒 Pipeline</option>
-              <option value="AGENT">🤖 Agent</option>
-              <option value="NETWORK">🧱 Network</option>
-            </select>
-          </div>
-
-          {/* Threat Scope Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1, minWidth: "190px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Threat Scope
-            </label>
-            <select
-              value={feedScope}
-              onChange={(e) => handleFilterChange(() => setFeedScope(e.target.value as any))}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              <option value="ALL">🌐 All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
-              <option value="DEV_BUILD">💻 Developer & Build Exposure ({directBuildImpactCount.toLocaleString()})</option>
-              <option value="NON_CVE">🛡️ Pure Non-CVE Threats ({nonCveThreatsCount.toLocaleString()})</option>
-              <option value="INFORMATIONAL">📡 Informational Disclosures & Vector Research ({informationalDisclosuresCount.toLocaleString()})</option>
-            </select>
-          </div>
-          </>)}
-
-          {/* Severity Dropdown (Only in Classic CVSS Mode) */}
-          {showScores && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
-              <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-                Severity
-              </label>
-              <select
-                value={selectedSeverity}
-                onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
-                style={{
-                  padding: "0.65rem 0.9rem",
-                  background: "rgba(10, 14, 23, 0.95)",
-                  border: "1px solid rgba(255, 255, 255, 0.14)",
-                  borderRadius: "8px",
-                  color: "#F8FAFC",
-                  fontSize: "0.85rem",
-                  outline: "none",
-                  cursor: "pointer",
-                  width: "100%"
-                }}
-              >
-                <option value="ALL">All Severities</option>
-                <option value="CRITICAL">Critical (9.0 - 10.0)</option>
-                <option value="HIGH">High (7.0 - 8.9)</option>
-                <option value="MEDIUM">Medium (4.0 - 6.9)</option>
-                <option value="LOW">Low (0.1 - 3.9)</option>
-              </select>
-            </div>
-          )}
-
-          {/* Sort Order Dropdown */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "165px" }}>
-            <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-              Sort By
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setPage(1);
-                setSortBy(e.target.value as any);
-              }}
-              style={{
-                padding: "0.65rem 0.9rem",
-                background: "rgba(10, 14, 23, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "8px",
-                color: "#F8FAFC",
-                fontSize: "0.85rem",
-                outline: "none",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              {ratingMode === "observational" ? (
-                <>
-                  <option value="cvss_desc">Domain Urgency & Reality</option>
-                  <option value="published_desc">Date (Newest First)</option>
-                  <option value="published_asc">Date (Oldest First)</option>
-                  <option value="uvi_desc">Vantage ID (Descending)</option>
-                  <option value="uvi_asc">Vantage ID (Ascending)</option>
-                </>
-              ) : (
-                <>
-                  <option value="cvss_desc">CVSS Score (Highest First)</option>
-                  <option value="published_desc">Date (Newest First)</option>
-                  <option value="published_asc">Date (Oldest First)</option>
-                  <option value="uvi_desc">Vantage ID (Descending)</option>
-                  <option value="uvi_asc">Vantage ID (Ascending)</option>
-                </>
-              )}
-            </select>
-          </div>
-
-          {/* Reset Filters button if any filter is active */}
-          {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || kevOnly || feedDirectoryCategory !== "ALL") && (
-            <button
-              onClick={() => {
-                setFeedDirectoryCategory("ALL");
-                setFeedScope("ALL");
-                setSearchQuery("");
-                setSelectedSeverity("ALL");
-                setSelectedDomain("ALL");
-                setSelectedSourceFeed("ALL");
-                setKevOnly(false);
-                setPage(1);
-              }}
-              style={{
-                padding: "0.65rem 1rem",
-                background: "rgba(239, 68, 68, 0.15)",
-                border: "1px solid rgba(239, 68, 68, 0.35)",
-                borderRadius: "8px",
-                color: "#FCA5A5",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                whiteSpace: "nowrap"
-              }}
-            >
-              ✕ Reset Filters
-            </button>
-          )}
-        </div>
-
-        {/* Active Category Filter Notification Strip */}
-        {feedDirectoryCategory !== "ALL" && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0.55rem 0.9rem",
-            borderRadius: "8px",
-            background: "rgba(16, 185, 129, 0.12)",
-            border: "1px solid rgba(16, 185, 129, 0.3)",
-            fontSize: "0.8rem",
-            color: "#6EE7B7",
-            marginTop: "0.25rem"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span>📦</span>
-              <span>
-                Stream Active: <strong>{FEED_CATEGORIES.find(c => c.id === feedDirectoryCategory)?.label || feedDirectoryCategory}</strong>
-                {feedDirectoryCategory === "Vendor Security Disclosures" && (
-                  <span style={{ color: "#A7F3D0", marginLeft: "0.4rem" }}>
-                    (16 OS Vendor Errata Feeds: Ubuntu, Debian, RHEL, Rocky, Alpine, SUSE, Arch, Amazon Linux, Linux Kernel)
-                  </span>
-                )}
-              </span>
-            </div>
-            <button
-              onClick={() => handleFilterChange(() => setFeedDirectoryCategory("ALL"))}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#F8FAFC",
-                cursor: "pointer",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                textDecoration: "underline"
-              }}
-            >
-              Reset to All Feeds ✕
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Results summary */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.85rem", padding: "0 0.25rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-        <span>
-          <strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> advisories Â· page {page} of {totalPages}
-        </span>
-        {isLoading && <span style={{ fontSize: "0.72rem", color: "#60A5FA" }}>Loadingâ€¦</span>}
-      </div>
-
       {/* VIEW MODE 1: Consolidated Table with LOCKED HEADER & SCROLLABLE CONTENT */}
       {viewMode === "table" ? (
         <div style={{
