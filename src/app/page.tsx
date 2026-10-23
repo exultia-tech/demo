@@ -59,13 +59,10 @@ export default function HomePage() {
             </div>
 
             <div className="defense-card-body">
-              <div className="defense-card-title-row">
-                <h2 className="defense-card-name">Vantage</h2>
-                <span className="defense-card-arrow">→</span>
-              </div>
-              <div className="defense-card-sub">Universal Threat Feed &amp; OS Patch Management</div>
+              <h2 className="defense-card-name">Vantage</h2>
+              <div className="defense-card-sub">Threat Feed &amp; Patch Management</div>
               <p className="defense-card-desc">
-                Dual-purpose defense hub unifying 127+ global threat feeds (CISA KEV, active zero-days, C2 botnet telemetry) with authoritative OS vendor patch management across 16 ecosystems (Ubuntu USN, Debian DSA, Red Hat RHSA, Rocky RLSA, Alpine SecDB, SUSE, Arch).
+                Aggregated threat intelligence across 127+ feeds unified with automated OS patch advisories.
               </p>
             </div>
           </Link>
@@ -87,14 +84,10 @@ export default function HomePage() {
             </div>
 
             <div className="defense-card-body">
-              <div className="defense-card-title-row">
-                <h2 className="defense-card-name">Praxis</h2>
-                <span className="defense-card-arrow">→</span>
-              </div>
-              <div className="defense-card-sub">Autonomous Remediation &amp; Hardening Engine</div>
+              <h2 className="defense-card-name">Praxis</h2>
+              <div className="defense-card-sub">Autonomous Remediation Engine</div>
               <p className="defense-card-desc">
-                Synthesize instant Tier 1 live-memory hotpatches, canary rollouts (Ring 0 &rarr; Ring 1 &rarr; Fleet), 
-                and multi-tier Systemd/GitOps playbooks, alongside hardware firewall ACLs (Cisco, Palo Alto EDL, Fortinet, iptables).
+                Zero-downtime hotpatching, staged canary rollouts, and automated network mitigations.
               </p>
             </div>
           </Link>
@@ -123,9 +116,9 @@ export default function HomePage() {
               <PureIdeIcon size={48} glow={true} />
             </div>
             <h3 className="platform-card-title">PureIDE</h3>
-            <div className="platform-card-sub">Secure Workstation Builder</div>
+            <div className="platform-card-sub">Zero-Telemetry Workstation</div>
             <p className="platform-card-desc">
-              Package, verify, and deploy clean, offline-ready IDEs stripped of telemetry with automated CycloneDX SBOMs.
+              Hardened, air-gapped development environments with automated CycloneDX SBOM verification.
             </p>
             <div className="platform-card-link">
               <span>View Specifications</span>
@@ -147,9 +140,9 @@ export default function HomePage() {
               <PureOsIcon size={48} glow={true} />
             </div>
             <h3 className="platform-card-title">PureOS</h3>
-            <div className="platform-card-sub">Zero-Trust Container OS</div>
+            <div className="platform-card-sub">Hardened Container Platform</div>
             <p className="platform-card-desc">
-              Pre-hardened, CIS-benchmarked container images and minimal Linux baselines continuously synchronized to Vantage.
+              Minimal, CIS-benchmarked Linux containers synchronized against active vulnerability feeds.
             </p>
             <div className="platform-card-link">
               <span>Explore Images</span>
@@ -171,9 +164,9 @@ export default function HomePage() {
               <AxiomIcon size={48} glow={true} />
             </div>
             <h3 className="platform-card-title">Axiom</h3>
-            <div className="platform-card-sub">Security Education Framework</div>
+            <div className="platform-card-sub">Defense Training &amp; Certs</div>
             <p className="platform-card-desc">
-              Open-source certification curricula, real-time exam simulator, and enterprise LMS gradebook API integration.
+              Hands-on security curricula, live exam simulators, and enterprise skill benchmarking.
             </p>
             <div className="platform-card-link">
               <span>Launch Simulator</span>

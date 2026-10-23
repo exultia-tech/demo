@@ -1921,7 +1921,8 @@ textarea.input-field {
 .defense-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  text-align: center;
   padding: 2.25rem 2rem;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1940,7 +1941,9 @@ textarea.input-field {
 
 .defense-card-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   margin-bottom: 1.25rem;
 }
 
@@ -1950,11 +1953,12 @@ textarea.input-field {
   justify-content: center;
 }
 
-.defense-card-title-row {
+.defense-card-body {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.25rem;
+  text-align: center;
+  width: 100%;
 }
 
 .defense-card-name {
@@ -1962,18 +1966,8 @@ textarea.input-field {
   font-size: 2rem;
   font-weight: 800;
   color: #FFFFFF;
-  margin: 0;
+  margin: 0 0 0.25rem 0;
   letter-spacing: 0.02em;
-}
-
-.defense-card-arrow {
-  font-size: 1.5rem;
-  color: var(--card-accent, var(--accent-primary));
-  transition: transform 0.2s ease;
-}
-
-.defense-card:hover .defense-card-arrow {
-  transform: translateX(5px);
 }
 
 .defense-card-sub {
@@ -1982,6 +1976,7 @@ textarea.input-field {
   color: var(--card-accent, var(--accent-primary));
   font-weight: 700;
   margin-bottom: 0.85rem;
+  text-align: center;
 }
 
 .defense-card-desc {
@@ -1989,6 +1984,7 @@ textarea.input-field {
   line-height: 1.6;
   color: #94A3B8;
   margin: 0;
+  text-align: center;
 }
 
 /* 3-Column Grid for Foundational Platforms */
@@ -2014,6 +2010,8 @@ textarea.input-field {
 .platform-card {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   padding: 1.85rem 1.6rem;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(10, 15, 26, 0.95) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -2034,6 +2032,8 @@ textarea.input-field {
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .platform-card-title {
@@ -2043,6 +2043,7 @@ textarea.input-field {
   color: #FFFFFF;
   margin: 0 0 0.25rem 0;
   letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .platform-card-sub {
@@ -2051,6 +2052,7 @@ textarea.input-field {
   color: var(--card-accent, var(--accent-primary));
   font-weight: 600;
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .platform-card-desc {
@@ -2059,11 +2061,13 @@ textarea.input-field {
   color: #94A3B8;
   margin: 0 0 1.25rem 0;
   flex: 1;
+  text-align: center;
 }
 
 .platform-card-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-family: var(--font-mono, monospace);
   font-size: 0.78rem;
