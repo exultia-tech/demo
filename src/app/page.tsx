@@ -11,6 +11,7 @@ import {
 } from "@/components/BrandIcons";
 import { ArrowRight } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site-config";
+import FeedPrefetch from "@/components/FeedPrefetch";
 
 export const metadata: Metadata = {
   title: "Exultia Technologies | Practical. Transparent. Secure.",
@@ -24,6 +25,7 @@ export default function HomePage() {
 
   return (
     <div className="fade-in">
+      <FeedPrefetch />
       <main className="exultia-home-container">
         
         {/* HERO SECTION */}

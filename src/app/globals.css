@@ -2080,10 +2080,7 @@ textarea.input-field {
   gap: 8px;
 }
 
-
-
-
-
-
-
-
+@keyframes vantage-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}

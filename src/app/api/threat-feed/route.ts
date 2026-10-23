@@ -22,6 +22,12 @@ const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const PRO_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const PRO_MAX_REQUESTS = 300;
 
+// Short-lived server-side result cache so repeat/identical queries skip the database entirely
+const RESULT_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const RESULT_CACHE_MAX_ENTRIES = 200;
+type FeedQueryResult = Awaited<ReturnType<typeof queryThreatFeedFromDb>>;
+const resultCache = new Map<string, { ts: number; result: FeedQueryResult }>();
+
 export async function GET(request: Request) {
   // Ensure autonomous CTI research agent background worker is active
   ctiResearchAgent.ensureInitialized();
@@ -145,7 +151,7 @@ export async function GET(request: Request) {
   const sortBy = searchParams.get('sortBy') || searchParams.get('sort') || 'cvss_desc';
 
   // Query indexed Turso LibSQL database
-  const result = await queryThreatFeedFromDb({
+  const queryArgs: Parameters<typeof queryThreatFeedFromDb>[0] = {
     query,
     id,
     cve,
@@ -161,7 +167,20 @@ export async function GET(request: Request) {
     page,
     limit,
     sortBy
-  });
+  };
+  const cacheKey = JSON.stringify(queryArgs);
+  const cachedEntry = resultCache.get(cacheKey);
+  let result: FeedQueryResult;
+  if (cachedEntry && now - cachedEntry.ts < RESULT_CACHE_TTL_MS) {
+    result = cachedEntry.result;
+  } else {
+    result = await queryThreatFeedFromDb(queryArgs);
+    resultCache.set(cacheKey, { ts: now, result });
+    if (resultCache.size > RESULT_CACHE_MAX_ENTRIES) {
+      const oldestKey = resultCache.keys().next().value;
+      if (oldestKey !== undefined) resultCache.delete(oldestKey);
+    }
+  }
 
   const responsePayload = {
     schemaVersion: "https://schema.secureide.dev/uvi/v3.json",
@@ -211,7 +230,7 @@ export async function GET(request: Request) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=180, stale-while-revalidate=360'
+      'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600'
     }
   });
 }

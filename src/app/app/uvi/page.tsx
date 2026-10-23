@@ -244,7 +244,7 @@ export default function ThreatFeedPage() {
       } finally {
         if (!isCancelled) setIsLoading(false);
       }
-    }, 200);
+    }, hasLiveSynced ? 200 : 0);
 
     return () => {
       isCancelled = true;
@@ -1128,6 +1128,12 @@ export default function ThreatFeedPage() {
         {/* RIGHT MAIN COLUMN: Triage Toolbar, Filters, Advisories Table/Cards        */}
         {/* ========================================================================= */}
         <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+          {/* Loading indicator */}
+          <div aria-hidden="true" style={{ height: "3px", marginBottom: "0.6rem", overflow: "hidden", borderRadius: "2px", background: isLoading ? "rgba(59, 130, 246, 0.15)" : "transparent" }}>
+            {isLoading && (
+              <div style={{ width: "40%", height: "100%", background: "linear-gradient(90deg, #3B82F6, #06B6D4)", animation: "vantage-loading 1.1s ease-in-out infinite" }} />
+            )}
+          </div>
       {/* VIEW MODE 1: Consolidated Table with LOCKED HEADER & SCROLLABLE CONTENT */}
       {viewMode === "table" ? (
         <div style={{
@@ -1205,7 +1211,7 @@ export default function ThreatFeedPage() {
                     <td colSpan={4} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
                       <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
                       <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC", marginBottom: "0.5rem" }}>
-                        No matching advisories found
+                        {(isLoading || !hasLiveSynced) ? "Loading threat feed..." : "No matching advisories found"}
                       </div>
                       <p style={{ fontSize: "0.9rem" }}>
                         Try adjusting your search query, clearing domain filters, or switching feed perspectives.
@@ -1561,7 +1567,7 @@ export default function ThreatFeedPage() {
           {advisories.length === 0 ? (
             <div style={{ gridColumn: "1 / -1", padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
               <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
-              <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC" }}>No matching advisories found</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC" }}>{(isLoading || !hasLiveSynced) ? "Loading threat feed..." : "No matching advisories found"}</div>
             </div>
           ) : (
             advisories.map((record) => {
