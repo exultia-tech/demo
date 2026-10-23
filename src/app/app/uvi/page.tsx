@@ -128,6 +128,30 @@ export default function ThreatFeedPage() {
   const [copiedModalCurl, setCopiedModalCurl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
 
+  // Praxis Flow Selection State
+  const [selectedForPraxis, setSelectedForPraxis] = useState<Map<string, UviAdvisoryRecord>>(new Map());
+
+  const toggleSelectForPraxis = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setSelectedForPraxis(prev => {
+      const next = new Map(prev);
+      if (next.has(record.uviId)) {
+        next.delete(record.uviId);
+      } else {
+        next.set(record.uviId, record);
+      }
+      return next;
+    });
+  };
+
+  const handleLaunchPraxisFlow = (records?: UviAdvisoryRecord[]) => {
+    const list = records || Array.from(selectedForPraxis.values());
+    if (list.length === 0) return;
+    localStorage.setItem('praxis_selected_entries', JSON.stringify(list));
+    const ids = list.map(l => l.uviId).join(',');
+    window.location.href = `/app/praxis?uviIds=${encodeURIComponent(ids)}`;
+  };
+
   // Single unified handler for opening the dossier modal directly into the Overview tab
   const handleOpenExplain = (record: UviAdvisoryRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -1166,6 +1190,25 @@ export default function ThreatFeedPage() {
                 borderBottom: "2px solid rgba(59, 130, 246, 0.3)"
               }}>
                 <tr>
+                  <th style={{ width: "42px", padding: "1.1rem 0.5rem 1.1rem 1rem", textAlign: "center" }}>
+                    <input
+                      type="checkbox"
+                      checked={advisories.length > 0 && advisories.every(r => selectedForPraxis.has(r.uviId))}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedForPraxis(prev => {
+                            const next = new Map(prev);
+                            advisories.forEach(a => next.set(a.uviId, a));
+                            return next;
+                          });
+                        } else {
+                          setSelectedForPraxis(new Map());
+                        }
+                      }}
+                      style={{ accentColor: "#10B981", cursor: "pointer", transform: "scale(1.15)" }}
+                      title="Select all advisories on this page for Praxis Flow"
+                    />
+                  </th>
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "190px" }}>
                     Identifier
                   </th>
@@ -1208,7 +1251,7 @@ export default function ThreatFeedPage() {
               <tbody>
                 {advisories.length === 0 ? (
                   <tr>
-                    <td colSpan={4} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
+                    <td colSpan={showScores ? 5 : 4} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
                       <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
                       <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC", marginBottom: "0.5rem" }}>
                         {(isLoading || !hasLiveSynced) ? "Loading threat feed..." : "No matching advisories found"}
@@ -1234,16 +1277,29 @@ export default function ThreatFeedPage() {
                           borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
                           transition: "background 0.15s ease",
                           cursor: "pointer",
-                          background: "transparent",
-                          borderLeft: "3px solid transparent"
+                          background: selectedForPraxis.has(record.uviId) ? "rgba(16, 185, 129, 0.08)" : "transparent",
+                          borderLeft: selectedForPraxis.has(record.uviId) ? "3px solid #10B981" : "3px solid transparent"
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(30, 41, 59, 0.45)";
+                          e.currentTarget.style.background = selectedForPraxis.has(record.uviId) ? "rgba(16, 185, 129, 0.14)" : "rgba(30, 41, 59, 0.45)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.background = selectedForPraxis.has(record.uviId) ? "rgba(16, 185, 129, 0.08)" : "transparent";
                         }}
                       >
+                        {/* Column 0: Selection Checkbox */}
+                        <td 
+                          onClick={(e) => e.stopPropagation()} 
+                          style={{ width: "42px", padding: "1.1rem 0.5rem 1.1rem 1rem", textAlign: "center", verticalAlign: "top" }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedForPraxis.has(record.uviId)}
+                            onChange={(e) => toggleSelectForPraxis(record, e as any)}
+                            style={{ accentColor: "#10B981", cursor: "pointer", transform: "scale(1.15)" }}
+                            title="Select for Praxis Flow"
+                          />
+                        </td>
                         {/* Column 1: Identifier */}
                         <td style={{ padding: "1.1rem 1.25rem", width: "190px", verticalAlign: "top" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
@@ -1380,6 +1436,30 @@ export default function ThreatFeedPage() {
                               >
                                 <span>✨</span>
                                 <span>Explain</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLaunchPraxisFlow([record]);
+                                }}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
+                                  padding: "0.22rem 0.55rem",
+                                  borderRadius: "6px",
+                                  background: "rgba(16, 185, 129, 0.15)",
+                                  border: "1px solid rgba(16, 185, 129, 0.4)",
+                                  color: "#34D399",
+                                  fontSize: "0.71rem",
+                                  fontWeight: 700,
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease",
+                                  whiteSpace: "nowrap"
+                                }}
+                                title="Send this advisory directly into Praxis Flow"
+                              >
+                                ⚡ Praxis
                               </button>
                             </div>
                           </div>
@@ -1608,6 +1688,14 @@ export default function ThreatFeedPage() {
                     {/* Card Header: Vantage ID + Severity */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedForPraxis.has(record.uviId)}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={() => toggleSelectForPraxis(record)}
+                          style={{ accentColor: "#10B981", cursor: "pointer", transform: "scale(1.15)", marginRight: "0.2rem" }}
+                          title="Select entry for Praxis Flow"
+                        />
                         <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 800, color: "#60A5FA" }}>
                           {record.uviId}
                         </span>
@@ -1778,6 +1866,31 @@ export default function ThreatFeedPage() {
                       >
                         <span>✨</span>
                         <span>Explain</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLaunchPraxisFlow([record]);
+                        }}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          padding: "0.22rem 0.55rem",
+                          borderRadius: "6px",
+                          background: "rgba(16, 185, 129, 0.15)",
+                          border: "1px solid rgba(16, 185, 129, 0.4)",
+                          color: "#34D399",
+                          fontSize: "0.74rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          whiteSpace: "nowrap"
+                        }}
+                        title="Send this advisory directly into Praxis Flow"
+                      >
+                        ⚡ Praxis
                       </button>
 
                       <span style={{ fontSize: "0.8rem", color: "#60A5FA", fontWeight: 600 }}>
@@ -2439,21 +2552,44 @@ export default function ThreatFeedPage() {
                 </button>
               </div>
 
-              <button
-                onClick={() => setSelectedAdvisory(null)}
-                style={{
-                  padding: "0.4rem 1.1rem",
-                  borderRadius: "6px",
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  color: "#F8FAFC",
-                  fontSize: "0.8rem",
-                  cursor: "pointer",
-                  fontWeight: 600
-                }}
-              >
-                Close
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <button
+                  onClick={() => {
+                    if (!selectedAdvisory) return;
+                    handleLaunchPraxisFlow([selectedAdvisory]);
+                  }}
+                  style={{
+                    padding: "0.45rem 1rem",
+                    borderRadius: "6px",
+                    background: "linear-gradient(135deg, #10B981, #059669)",
+                    border: "none",
+                    color: "#000000",
+                    fontWeight: 800,
+                    fontSize: "0.78rem",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  ⚡ Remediate in Praxis
+                </button>
+                <button
+                  onClick={() => setSelectedAdvisory(null)}
+                  style={{
+                    padding: "0.4rem 1.1rem",
+                    borderRadius: "6px",
+                    background: "rgba(255, 255, 255, 0.08)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    color: "#F8FAFC",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                    fontWeight: 600
+                  }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2867,6 +3003,76 @@ export default function ThreatFeedPage() {
                 Close Directory
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Action Bar for Selected Vantage Entries -> Praxis Flow */}
+      {selectedForPraxis.size > 0 && (
+        <div style={{
+          position: "fixed",
+          bottom: "1.75rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 999,
+          background: "rgba(10, 15, 29, 0.95)",
+          backdropFilter: "blur(18px)",
+          border: "1px solid rgba(16, 185, 129, 0.45)",
+          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(16, 185, 129, 0.25)",
+          borderRadius: "14px",
+          padding: "0.75rem 1.25rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "1.25rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <span style={{ fontSize: "1.1rem" }}>⚡</span>
+            <div>
+              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F8FAFC" }}>
+                {selectedForPraxis.size} Vantage {selectedForPraxis.size === 1 ? "Advisory" : "Advisories"} Selected
+              </div>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
+                Ready to include in autonomous Praxis remediation &amp; patching flow
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <button
+              onClick={() => handleLaunchPraxisFlow()}
+              style={{
+                background: "linear-gradient(135deg, #10B981, #059669)",
+                color: "#000000",
+                fontWeight: 800,
+                fontSize: "0.82rem",
+                padding: "0.5rem 1.15rem",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: "0 2px 10px rgba(16, 185, 129, 0.3)"
+              }}
+            >
+              <span>Launch in Praxis Flow</span>
+              <span>→</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedForPraxis(new Map())}
+              style={{
+                background: "rgba(255, 255, 255, 0.06)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                color: "#CBD5E1",
+                fontSize: "0.78rem",
+                padding: "0.45rem 0.85rem",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }}
+            >
+              Clear
+            </button>
           </div>
         </div>
       )}

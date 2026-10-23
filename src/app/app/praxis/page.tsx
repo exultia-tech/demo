@@ -35,10 +35,19 @@ import {
   Radio,
   Sliders,
   Play,
-  Shield
+  Shield,
+  FileCode,
+  Download,
+  X
 } from 'lucide-react';
 import { PraxisIcon, VantageIcon } from '@/components/BrandIcons';
 import { SAMPLE_PATCH_FEED, type PatchFeedItem } from '@/lib/patch-data';
+import { 
+  generateAfterActionCbom, 
+  generateCbomShellScriptBlock, 
+  convertAdvisoryToPatchItem, 
+  type PraxisCbomPayload 
+} from '@/lib/praxis-cbom';
 
 const REMEDIATION_CLASSES = [
   {
@@ -113,10 +122,17 @@ export default function PraxisPage() {
   const [praxisMode, setPraxisMode] = useState<'patching' | 'remediation' | 'both'>('patching');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // ── TARGETED VANTAGE FINDINGS INGESTED INTO PRAXIS FLOW ──
+  const [targetedVantageEntries, setTargetedVantageEntries] = useState<any[]>([]);
+
+  // ── AFTER-ACTION CBOM STATE ──
+  const [cbomModalOpen, setCbomModalOpen] = useState(false);
+  const [activeCbomPayload, setActiveCbomPayload] = useState<PraxisCbomPayload | null>(null);
+
   // ── PATCHING MODE STATE ──
   const [patchSearchQuery, setPatchSearchQuery] = useState('');
   const [selectedDistro, setSelectedDistro] = useState<'all' | 'ubuntu' | 'rocky' | 'alpine' | 'debian' | 'rhel'>('all');
-  const [selectedPayloadTab, setSelectedPayloadTab] = useState<'tier1' | 'tier2' | 'tier3' | 'rawJson'>('tier1');
+  const [selectedPayloadTab, setSelectedPayloadTab] = useState<'tier1' | 'tier2' | 'tier3' | 'cbom' | 'rawJson'>('tier1');
   const [selectedPatch, setSelectedPatch] = useState<PatchFeedItem>(SAMPLE_PATCH_FEED[0]);
   const [severityFilter, setSeverityFilter] = useState<'all' | 'CRITICAL' | 'HIGH'>('all');
   const [canarySlice, setCanarySlice] = useState<number>(2);
@@ -151,16 +167,70 @@ export default function PraxisPage() {
   const [profileNameInput, setProfileNameInput] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
+  // Load Saved Profiles & Ingest Selected Vantage Entries on Mount
   useEffect(() => {
     setBaseUrl(window.location.origin);
-    const loaded = localStorage.getItem('praxis_saved_profiles');
-    if (loaded) {
+    const loadedProfiles = localStorage.getItem('praxis_saved_profiles');
+    if (loadedProfiles) {
       try {
-        setSavedProfiles(JSON.parse(loaded));
+        setSavedProfiles(JSON.parse(loadedProfiles));
       } catch (e) {}
     }
+
+    // Ingest Selected Vantage Findings from localStorage or URL query
+    let entries: any[] = [];
+    const savedEntries = localStorage.getItem('praxis_selected_entries');
+    if (savedEntries) {
+      try {
+        entries = JSON.parse(savedEntries);
+      } catch (e) {}
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const uviParam = params.get('uviIds');
+    if (uviParam) {
+      const ids = uviParam.split(',').map(s => s.trim()).filter(Boolean);
+      if (ids.length > 0) {
+        // If we don't have matching objects from storage, seed placeholders
+        for (const id of ids) {
+          if (!entries.some(e => e.uviId === id)) {
+            entries.push({
+              uviId: id,
+              cveId: id,
+              title: `Targeted Advisory ${id} (Vantage Ingestion)`,
+              severity: 'HIGH',
+              cvssScore: 8.5,
+              affectedPackages: ['system-runtime'],
+              affectedDistros: ['ubuntu', 'debian', 'rocky', 'alpine'],
+              remediation: { recommendedAction: 'Apply Vendor Errata & OS Baseline Hardening' }
+            });
+          }
+        }
+      }
+    }
+
+    if (entries.length > 0) {
+      setTargetedVantageEntries(entries);
+      const convertedPatch = convertAdvisoryToPatchItem(entries[0]);
+      setSelectedPatch(convertedPatch);
+    }
+
     setReady(true);
   }, []);
+
+  const removeTargetedEntry = (uviId: string) => {
+    const updated = targetedVantageEntries.filter(e => e.uviId !== uviId);
+    setTargetedVantageEntries(updated);
+    localStorage.setItem('praxis_selected_entries', JSON.stringify(updated));
+    if (updated.length > 0) {
+      setSelectedPatch(convertAdvisoryToPatchItem(updated[0]));
+    }
+  };
+
+  const clearTargetedEntries = () => {
+    setTargetedVantageEntries([]);
+    localStorage.removeItem('praxis_selected_entries');
+  };
 
   const saveProfile = () => {
     if (!profileNameInput.trim()) return;
@@ -197,7 +267,18 @@ export default function PraxisPage() {
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // Canary Simulation Runner
+  // Download CBOM JSON helper
+  const downloadCbomJson = (cbom: any) => {
+    const blob = new Blob([JSON.stringify(cbom, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `praxis-cbom-after-action-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Canary Simulation Runner with After-Action CBOM Attestation
   const runSimulation = () => {
     setIsSimulating(true);
     setSimulationDone(false);
@@ -212,28 +293,28 @@ export default function PraxisPage() {
     const steps = [
       {
         delay: 800,
-        progress: 25,
+        progress: 20,
         log: `[RING 0 CANARY] Staging ${stagedCanaryNodes} canary nodes (${canarySlice}% slice). Deploying Tier 1 Hot-Mitigation...`
       },
       {
-        delay: 1600,
-        progress: 45,
+        delay: 1500,
+        progress: 40,
         log: `[APPLY] Executed: ${selectedPatch.remediationTier.tier1_hotMitigation.commands[0]}`
       },
       {
-        delay: 2400,
-        progress: 65,
+        delay: 2200,
+        progress: 60,
         log: `[SENTINEL TELEMETRY] Verification check: "${selectedPatch.remediationTier.tier1_hotMitigation.verificationCommand}" -> OK`
       },
       {
-        delay: 3200,
+        delay: 3000,
         progress: 80,
-        log: `[SENTINEL TELEMETRY] Error rate: 0.00% | Latency delta: +0.1ms | Services: 100% HEALTHY. Promoting to Ring 1...`
+        log: `[CBOM ATTESTATION] Synthesizing After-Action Cybersecurity Bill of Materials (CycloneDX-CBOM v1.5)...`
       },
       {
-        delay: 4000,
+        delay: 3800,
         progress: 100,
-        log: `[COMPLETED] Fleet synchronized in 4.2s. 640/640 hosts hardened. Zero reboots required.`
+        log: `[COMPLETED] Fleet synchronized in 3.8s. After-Action CBOM codified at /var/log/exultia/praxis-cbom-after-action.json (Zero reboots).`
       }
     ];
 
@@ -244,14 +325,32 @@ export default function PraxisPage() {
         if (idx === steps.length - 1) {
           setIsSimulating(false);
           setSimulationDone(true);
+          // Generate Patch-specific After-Action CBOM
+          const patchCbom = generateAfterActionCbom({
+            os,
+            executionType: 'patching',
+            selectedPatch,
+            advisories: targetedVantageEntries
+          });
+          setActiveCbomPayload(patchCbom);
         }
       }, step.delay);
     });
   };
 
-  // Filtered patches for browser
+  // Filtered patches for browser (incorporating targeted Vantage findings)
   const filteredPatches = useMemo(() => {
-    return SAMPLE_PATCH_FEED.filter(p => {
+    const convertedTargeted = targetedVantageEntries.map(e => ({
+      ...convertAdvisoryToPatchItem(e),
+      isTargeted: true
+    }));
+
+    const base = [
+      ...convertedTargeted,
+      ...SAMPLE_PATCH_FEED.filter(p => !convertedTargeted.some(ct => ct.cveId === p.cveId || ct.id === p.id))
+    ];
+
+    return base.filter(p => {
       const matchDistro = selectedDistro === 'all' || p.affectedDistros.includes(selectedDistro as any);
       const matchSeverity = severityFilter === 'all' || p.severity === severityFilter;
       const q = patchSearchQuery.trim().toLowerCase();
@@ -261,7 +360,7 @@ export default function PraxisPage() {
         p.affectedPackages.some(pkg => pkg.toLowerCase().includes(q));
       return matchDistro && matchSeverity && matchSearch;
     });
-  }, [selectedDistro, severityFilter, patchSearchQuery]);
+  }, [selectedDistro, severityFilter, patchSearchQuery, targetedVantageEntries]);
 
   // Fetch preview when generator settings change (runs in remediation & both modes)
   useEffect(() => {
@@ -278,13 +377,18 @@ export default function PraxisPage() {
             os, cron, proxy,
             preview: true,
             classes: Array.from(selectedClasses),
-            networkMode, firewallFormat, filenamePattern, customShebang
+            networkMode, firewallFormat, filenamePattern, customShebang,
+            uviIds: targetedVantageEntries.map(e => e.uviId),
+            specificAdvisories: targetedVantageEntries
           }),
         });
         const data = await res.json();
         if (!cancelled) {
           setPreviewScript(data.script ?? '');
           setThreatCount(data.threatCount ?? 0);
+          if (data.cbom) {
+            setActiveCbomPayload(data.cbom);
+          }
           setGeneratedId(null);
         }
       } catch {
@@ -296,7 +400,7 @@ export default function PraxisPage() {
 
     fetchPreview();
     return () => { cancelled = true; };
-  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl, praxisMode]);
+  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl, praxisMode, targetedVantageEntries]);
 
   const handleGenerate = async () => {
     if (!user) {
@@ -312,11 +416,16 @@ export default function PraxisPage() {
           os, cron, proxy,
           preview: false,
           classes: Array.from(selectedClasses),
-          networkMode, firewallFormat, filenamePattern, customShebang
+          networkMode, firewallFormat, filenamePattern, customShebang,
+          uviIds: targetedVantageEntries.map(e => e.uviId),
+          specificAdvisories: targetedVantageEntries
         }),
       });
       const data = await res.json();
       setGeneratedId(data.id);
+      if (data.cbom) {
+        setActiveCbomPayload(data.cbom);
+      }
       setCopied(false);
     } finally {
       setGenerating(false);
@@ -337,11 +446,21 @@ export default function PraxisPage() {
       : `curl -sL "${baseUrl}/api/praxis/download?id=${generatedId}" | sh`
     : '';
 
+  // Current computed CBOM payload for the active patch in Patching mode
+  const currentPatchCbom = useMemo(() => {
+    return generateAfterActionCbom({
+      os,
+      executionType: 'patching',
+      selectedPatch,
+      advisories: targetedVantageEntries
+    });
+  }, [os, selectedPatch, targetedVantageEntries]);
+
   return (
     <div style={{ maxWidth: '1680px', margin: '0 auto', padding: '1.25rem 1.5rem 2.5rem', color: '#F8FAFC' }}>
       
       {/* Top Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '0.25rem' }}>
             <PraxisIcon size={34} glow={true} />
@@ -354,8 +473,35 @@ export default function PraxisPage() {
           </p>
         </div>
 
-        {/* Status Pill matching active mode */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Action Controls: CBOM Payload Trigger & Mode Status Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => {
+              if (!activeCbomPayload) {
+                setActiveCbomPayload(currentPatchCbom);
+              }
+              setCbomModalOpen(true);
+            }}
+            style={{
+              padding: '0.35rem 0.85rem',
+              borderRadius: '8px',
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              color: '#34D399',
+              fontSize: '0.76rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+            title="Inspect After-Action Cybersecurity Bill of Materials"
+          >
+            <FileCode size={14} />
+            <span>After-Action CBOM</span>
+          </button>
+
           <div style={{
             fontSize: '0.76rem',
             fontWeight: 700,
@@ -389,6 +535,112 @@ export default function PraxisPage() {
           </div>
         </div>
       </div>
+
+      {/* TARGETED VANTAGE FINDINGS STRIP (When entries are sent from Vantage) */}
+      {targetedVantageEntries.length > 0 && (
+        <div style={{
+          background: 'rgba(15, 23, 42, 0.75)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: '10px',
+          padding: '0.65rem 1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ fontSize: '0.9rem' }}>🎯</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#34D399', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Targeted Vantage Findings ({targetedVantageEntries.length}):
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              {targetedVantageEntries.map(entry => {
+                const cve = entry.cveList?.[0] || entry.cveId || entry.uviId;
+                const isSelected = selectedPatch.cveId === cve || selectedPatch.id.includes(entry.uviId);
+                return (
+                  <div
+                    key={entry.uviId}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: '6px',
+                      background: isSelected ? 'rgba(16, 185, 129, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                      border: isSelected ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.1)',
+                      color: isSelected ? '#F8FAFC' : '#CBD5E1',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      setSelectedPatch(convertAdvisoryToPatchItem(entry));
+                    }}
+                    title={`Click to focus: ${entry.title}`}
+                  >
+                    <span>{entry.uviId}</span>
+                    <span style={{ color: '#93C5FD' }}>({cve})</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeTargetedEntry(entry.uviId);
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#94A3B8',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontSize: '0.75rem',
+                        lineHeight: 1
+                      }}
+                      title="Remove from target flow"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Link
+              href="/app/uvi"
+              style={{
+                fontSize: '0.72rem',
+                color: '#60A5FA',
+                textDecoration: 'none',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              <span>+ Select More in Vantage</span>
+            </Link>
+            <button
+              onClick={clearTargetedEntries}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94A3B8',
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                padding: 0
+              }}
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Dual-Layout: Left Control Sidebar + Main Unmolested View */}
       <div style={{
@@ -566,10 +818,10 @@ export default function PraxisPage() {
 
                 <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
                   {praxisMode === 'patching' 
-                    ? 'Micro-patching, kernel live-fixes & canary'
+                    ? 'Micro-patching, canary rollout & CBOM'
                     : praxisMode === 'remediation'
-                    ? 'Baseline OS hardening & dynamic firewalls'
-                    : 'Unified patching & host remediation'}
+                    ? 'Baseline OS hardening, firewalls & CBOM'
+                    : 'Unified patching, remediation & CBOM'}
                 </div>
               </div>
 
@@ -703,6 +955,7 @@ export default function PraxisPage() {
                         <option value="tier1">Tier 1: Zero-Downtime Hotfix</option>
                         <option value="tier2">Tier 2: Distro Package Upgrade</option>
                         <option value="tier3">Tier 3: Ansible Fleet Automation</option>
+                        <option value="cbom">After-Action CBOM Manifest</option>
                         <option value="rawJson">Raw Signed JSON (SLSA)</option>
                       </select>
                     </div>
@@ -1037,26 +1290,53 @@ export default function PraxisPage() {
                     </p>
                   </div>
 
-                  <button
-                    onClick={runSimulation}
-                    disabled={isSimulating}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: isSimulating ? 'rgba(245, 158, 11, 0.3)' : 'linear-gradient(135deg, #F59E0B, #D97706)',
-                      color: '#000000',
-                      fontWeight: 800,
-                      fontSize: '0.82rem',
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: isSimulating ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    {isSimulating ? <Activity size={15} className="spin" /> : <Play size={15} />}
-                    <span>{isSimulating ? 'Simulating Rollout...' : simulationDone ? 'Re-Run Simulation' : 'Execute Ring 0 Canary'}</span>
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={runSimulation}
+                      disabled={isSimulating}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: isSimulating ? 'rgba(245, 158, 11, 0.3)' : 'linear-gradient(135deg, #F59E0B, #D97706)',
+                        color: '#000000',
+                        fontWeight: 800,
+                        fontSize: '0.82rem',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: isSimulating ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {isSimulating ? <Activity size={15} className="spin" /> : <Play size={15} />}
+                      <span>{isSimulating ? 'Simulating Rollout...' : simulationDone ? 'Re-Run Simulation' : 'Execute Ring 0 Canary'}</span>
+                    </button>
+
+                    {simulationDone && (
+                      <button
+                        onClick={() => {
+                          setActiveCbomPayload(currentPatchCbom);
+                          setCbomModalOpen(true);
+                        }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          border: '1px solid rgba(16, 185, 129, 0.4)',
+                          color: '#34D399',
+                          fontWeight: 700,
+                          fontSize: '0.82rem',
+                          padding: '8px 14px',
+                          borderRadius: '8px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <FileCode size={14} />
+                        <span>View After-Action CBOM</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Progress Bar */}
@@ -1079,7 +1359,7 @@ export default function PraxisPage() {
                   lineHeight: 1.5
                 }}>
                   {simulationLogs.length === 0 ? (
-                    <span style={{ color: '#64748B' }}>// Click "Execute Ring 0 Canary" above or in the left sidebar to trigger simulated fleet hot-patching.</span>
+                    <span style={{ color: '#64748B' }}>// Click &quot;Execute Ring 0 Canary&quot; above or in the left sidebar to trigger simulated fleet hot-patching.</span>
                   ) : (
                     simulationLogs.map((log, i) => (
                       <div key={i}>{log}</div>
@@ -1100,7 +1380,8 @@ export default function PraxisPage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '520px', overflowY: 'auto' }}>
                     {filteredPatches.map(patch => {
-                      const isSelected = selectedPatch.id === patch.id;
+                      const isSelected = selectedPatch.id === patch.id || selectedPatch.cveId === patch.cveId;
+                      const isTargeted = (patch as any).isTargeted;
                       return (
                         <div
                           key={patch.id}
@@ -1108,14 +1389,33 @@ export default function PraxisPage() {
                           style={{
                             padding: '10px 12px',
                             borderRadius: '8px',
-                            border: isSelected ? '1px solid #F59E0B' : '1px solid rgba(255, 255, 255, 0.05)',
-                            background: isSelected ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                            border: isSelected 
+                              ? (isTargeted ? '1px solid #10B981' : '1px solid #F59E0B') 
+                              : '1px solid rgba(255, 255, 255, 0.05)',
+                            background: isSelected 
+                              ? (isTargeted ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.1)') 
+                              : 'rgba(255, 255, 255, 0.02)',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease'
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#38BDF8' }}>{patch.cveId}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#38BDF8' }}>{patch.cveId}</span>
+                              {isTargeted && (
+                                <span style={{
+                                  fontSize: '0.62rem',
+                                  fontWeight: 800,
+                                  padding: '1px 5px',
+                                  borderRadius: '3px',
+                                  background: 'rgba(16, 185, 129, 0.25)',
+                                  color: '#34D399',
+                                  border: '1px solid rgba(16, 185, 129, 0.4)'
+                                }}>
+                                  TARGETED
+                                </span>
+                              )}
+                            </div>
                             <span style={{
                               fontSize: '0.65rem',
                               fontWeight: 700,
@@ -1153,7 +1453,7 @@ export default function PraxisPage() {
                       <div style={{ fontSize: '0.85rem', color: '#CBD5E1', fontWeight: 500 }}>{selectedPatch.title}</div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '5px' }}>
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                       <button
                         onClick={() => setSelectedPayloadTab('tier1')}
                         style={{
@@ -1200,6 +1500,21 @@ export default function PraxisPage() {
                         Tier 3 (Ansible)
                       </button>
                       <button
+                        onClick={() => setSelectedPayloadTab('cbom')}
+                        style={{
+                          padding: '4px 9px',
+                          borderRadius: '6px',
+                          border: selectedPayloadTab === 'cbom' ? '1px solid #34D399' : '1px solid rgba(255,255,255,0.08)',
+                          background: selectedPayloadTab === 'cbom' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                          color: selectedPayloadTab === 'cbom' ? '#34D399' : '#94A3B8',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        After-Action CBOM
+                      </button>
+                      <button
                         onClick={() => setSelectedPayloadTab('rawJson')}
                         style={{
                           padding: '4px 9px',
@@ -1219,38 +1534,60 @@ export default function PraxisPage() {
 
                   {/* Payload Content Area */}
                   <div style={{ position: 'relative' }}>
-                    <button
-                      onClick={() => {
-                        const text = selectedPayloadTab === 'tier1'
-                          ? selectedPatch.remediationTier.tier1_hotMitigation.commands.join('\n')
-                          : selectedPayloadTab === 'rawJson'
-                          ? JSON.stringify(selectedPatch, null, 2)
-                          : selectedPayloadTab === 'tier2'
-                          ? Object.entries(selectedPatch.remediationTier.tier2_packageUpgrade.distroCommands).map(([d, c]) => `# ${d.toUpperCase()}:\n${c}`).join('\n\n')
-                          : selectedPatch.remediationTier.tier3_fleetAutomation.ansiblePlaybook;
-                        copyToClipboard(text, 'payload');
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: '#CBD5E1',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        zIndex: 2
-                      }}
-                    >
-                      {copiedText === 'payload' ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
-                      <span>{copiedText === 'payload' ? 'Copied' : 'Copy'}</span>
-                    </button>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '6px', zIndex: 2 }}>
+                      {selectedPayloadTab === 'cbom' && (
+                        <button
+                          onClick={() => downloadCbomJson(currentPatchCbom)}
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(16, 185, 129, 0.4)',
+                            background: 'rgba(16, 185, 129, 0.15)',
+                            color: '#34D399',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Download size={12} />
+                          <span>Download .json</span>
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => {
+                          const text = selectedPayloadTab === 'tier1'
+                            ? selectedPatch.remediationTier.tier1_hotMitigation.commands.join('\n')
+                            : selectedPayloadTab === 'cbom'
+                            ? JSON.stringify(currentPatchCbom, null, 2)
+                            : selectedPayloadTab === 'rawJson'
+                            ? JSON.stringify(selectedPatch, null, 2)
+                            : selectedPayloadTab === 'tier2'
+                            ? Object.entries(selectedPatch.remediationTier.tier2_packageUpgrade.distroCommands).map(([d, c]) => `# ${d.toUpperCase()}:\n${c}`).join('\n\n')
+                            : selectedPatch.remediationTier.tier3_fleetAutomation.ansiblePlaybook;
+                          copyToClipboard(text, 'payload');
+                        }}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          background: 'rgba(255,255,255,0.05)',
+                          color: '#CBD5E1',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        {copiedText === 'payload' ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
+                        <span>{copiedText === 'payload' ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
 
                     <pre style={{
                       background: '#05070D',
@@ -1259,7 +1596,7 @@ export default function PraxisPage() {
                       padding: '1.15rem',
                       fontFamily: 'var(--font-mono, monospace)',
                       fontSize: '0.78rem',
-                      color: selectedPayloadTab === 'tier1' ? '#34D399' : selectedPayloadTab === 'tier2' ? '#38BDF8' : '#FBBF24',
+                      color: selectedPayloadTab === 'tier1' ? '#34D399' : selectedPayloadTab === 'tier2' ? '#38BDF8' : selectedPayloadTab === 'cbom' ? '#A7F3D0' : '#FBBF24',
                       overflowX: 'auto',
                       lineHeight: 1.5,
                       minHeight: '260px'
@@ -1273,6 +1610,9 @@ export default function PraxisPage() {
                       {selectedPayloadTab === 'tier3' && (
                         `# Tier 3 Fleet Automation Ansible Playbook for ${selectedPatch.cveId}\n\n${selectedPatch.remediationTier.tier3_fleetAutomation.ansiblePlaybook}`
                       )}
+                      {selectedPayloadTab === 'cbom' && (
+                        JSON.stringify(currentPatchCbom, null, 2)
+                      )}
                       {selectedPayloadTab === 'rawJson' && (
                         JSON.stringify(selectedPatch, null, 2)
                       )}
@@ -1283,7 +1623,7 @@ export default function PraxisPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.85rem', padding: '9px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', fontSize: '0.72rem', color: '#94A3B8' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <ShieldCheck size={14} color="#10B981" />
-                      <span>SLSA Level {selectedPatch.provenance.slsaLevel} Attested</span>
+                      <span>SLSA Level {selectedPatch.provenance.slsaLevel} Attested &bull; CycloneDX-CBOM Ready</span>
                     </div>
                     <span>Cosign Digest: {selectedPatch.provenance.cosignDigest.slice(0, 24)}...</span>
                   </div>
@@ -1307,7 +1647,7 @@ export default function PraxisPage() {
                     <span style={{ fontSize: '1rem', fontWeight: 700, color: '#FFFFFF' }}>Synthesized Hardening Script Preview</span>
                   </div>
                   <div style={{ fontSize: '0.76rem', color: '#94A3B8', fontFamily: 'var(--font-mono, monospace)' }}>
-                    {threatCount} Vantage Indicators Ingested ({os})
+                    {threatCount} Vantage Indicators Ingested ({os}) &bull; Includes CBOM Manifest Generator
                   </div>
                 </div>
 
@@ -1324,35 +1664,59 @@ export default function PraxisPage() {
                     overflowY: 'auto',
                     lineHeight: 1.55
                   }}>
-                    {previewLoading ? '// Synthesizing baseline hardening script from Vantage...' : previewScript}
+                    {previewLoading ? '// Synthesizing baseline hardening script and After-Action CBOM from Vantage...' : previewScript}
                   </pre>
                 </div>
 
                 <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                   <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-                    Compiles dynamic firewall rules, account policies &amp; process mitigations for <strong style={{ color: '#F8FAFC' }}>{os}</strong>.
+                    Compiles dynamic firewall rules, account policies, and an <strong>After-Action CBOM payload</strong> for <strong style={{ color: '#F8FAFC' }}>{os}</strong>.
                   </div>
 
-                  <button
-                    onClick={handleGenerate}
-                    disabled={generating}
-                    style={{
-                      background: 'linear-gradient(135deg, #10B981, #059669)',
-                      color: '#000000',
-                      fontWeight: 800,
-                      fontSize: '0.88rem',
-                      padding: '10px 22px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: generating ? 'not-allowed' : 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                  >
-                    <Zap size={16} />
-                    <span>{generating ? 'Generating Link...' : 'Generate Single-Use Deployment Link'}</span>
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {activeCbomPayload && (
+                      <button
+                        onClick={() => setCbomModalOpen(true)}
+                        style={{
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          border: '1px solid rgba(16, 185, 129, 0.35)',
+                          color: '#34D399',
+                          fontWeight: 700,
+                          fontSize: '0.88rem',
+                          padding: '10px 18px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <FileCode size={15} />
+                        <span>View After-Action CBOM</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={handleGenerate}
+                      disabled={generating}
+                      style={{
+                        background: 'linear-gradient(135deg, #10B981, #059669)',
+                        color: '#000000',
+                        fontWeight: 800,
+                        fontSize: '0.88rem',
+                        padding: '10px 22px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: generating ? 'not-allowed' : 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <Zap size={16} />
+                      <span>{generating ? 'Generating Link...' : 'Generate Single-Use Deployment Link'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1388,7 +1752,7 @@ export default function PraxisPage() {
                   </div>
 
                   <p style={{ fontSize: '0.74rem', color: '#94A3B8', margin: '10px 0 0 0' }}>
-                    ⚠ Single-use security token. Once downloaded by the target host, this link is permanently deleted from the Exultia cache.
+                    ⚠ Single-use security token. Once executed, the script applies remediations and outputs a cryptographic After-Action CBOM manifest at <code>/var/log/exultia/praxis-cbom-after-action.json</code>.
                   </p>
                 </div>
               )}
@@ -1426,7 +1790,7 @@ export default function PraxisPage() {
                       </h3>
                     </div>
                     <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '3px 0 0 0' }}>
-                      Simultaneously hotpatch vulnerabilities ({selectedPatch.cveId}) and enforce OS baseline hardening on {os}.
+                      Simultaneously hotpatch vulnerabilities ({selectedPatch.cveId}) and enforce OS baseline hardening on {os} with After-Action CBOM.
                     </p>
                   </div>
 
@@ -1450,6 +1814,29 @@ export default function PraxisPage() {
                     >
                       {isSimulating ? <Activity size={14} className="spin" /> : <Play size={14} />}
                       <span>{isSimulating ? 'Simulating...' : 'Run Canary'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (!activeCbomPayload) setActiveCbomPayload(currentPatchCbom);
+                        setCbomModalOpen(true);
+                      }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: 'rgba(16, 185, 129, 0.15)',
+                        border: '1px solid rgba(16, 185, 129, 0.35)',
+                        color: '#34D399',
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        padding: '7px 14px',
+                        borderRadius: '7px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <FileCode size={14} />
+                      <span>CBOM Manifest</span>
                     </button>
 
                     <button
@@ -1495,7 +1882,7 @@ export default function PraxisPage() {
                   lineHeight: 1.45
                 }}>
                   {simulationLogs.length === 0 ? (
-                    <span style={{ color: '#64748B' }}>// Click "Run Canary" to test the patch rollout, or "Generate Hardening Link" to synthesize baseline rules.</span>
+                    <span style={{ color: '#64748B' }}>// Click &quot;Run Canary&quot; to test the patch rollout, or &quot;Generate Hardening Link&quot; to synthesize baseline rules.</span>
                   ) : (
                     simulationLogs.map((log, i) => (
                       <div key={i}>{log}</div>
@@ -1635,6 +2022,205 @@ export default function PraxisPage() {
         </main>
 
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          AFTER-ACTION CBOM MANIFEST MODAL
+          ═══════════════════════════════════════════════════════════════════ */}
+      {cbomModalOpen && activeCbomPayload && (
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setCbomModalOpen(false);
+          }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(3, 7, 18, 0.85)',
+            backdropFilter: 'blur(12px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem'
+          }}
+        >
+          <div style={{
+            background: '#0B1120',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            borderRadius: '16px',
+            maxWidth: '920px',
+            width: '100%',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.15)',
+            overflow: 'hidden'
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '1.25rem 1.5rem',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'rgba(15, 23, 42, 0.8)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <FileCode size={22} color="#10B981" />
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#FFFFFF' }}>
+                    After-Action Cybersecurity Bill of Materials (CBOM)
+                  </h3>
+                  <div style={{ fontSize: '0.74rem', color: '#94A3B8', marginTop: '2px' }}>
+                    Specification: CycloneDX-CBOM v1.5 &bull; Attestation: SLSA Level 3 &bull; Cryptographically Verified
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setCbomModalOpen(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#94A3B8',
+                  borderRadius: '6px',
+                  width: '30px',
+                  height: '30px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  cursor: 'pointer'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Quick Metrics Ribbon */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: '8px',
+              padding: '0.85rem 1.5rem',
+              background: 'rgba(0, 0, 0, 0.3)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <div style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Format</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#38BDF8' }}>{activeCbomPayload.cbomFormat}</div>
+              </div>
+              <div style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Vulnerabilities</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#34D399' }}>{activeCbomPayload.vulnerabilitiesRemediated.length} Remediated</div>
+              </div>
+              <div style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Actions Codified</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FBBF24' }}>{activeCbomPayload.actionsPerformed.length} Actions</div>
+              </div>
+              <div style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase' }}>Attestation</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#A78BFA' }}>SLSA Level 3</div>
+              </div>
+            </div>
+
+            {/* Code Body */}
+            <div style={{ padding: '1.25rem 1.5rem', flex: 1, overflowY: 'auto' }}>
+              <pre style={{
+                margin: 0,
+                background: '#05070D',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '10px',
+                padding: '1.15rem',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: '0.78rem',
+                color: '#34D399',
+                maxHeight: '420px',
+                overflowY: 'auto',
+                lineHeight: 1.55
+              }}>
+                {JSON.stringify(activeCbomPayload, null, 2)}
+              </pre>
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: '0.85rem 1.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'rgba(15, 23, 42, 0.6)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                Digest: {activeCbomPayload.provenance.integrityHash.slice(0, 32)}...
+              </span>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => downloadCbomJson(activeCbomPayload)}
+                  style={{
+                    padding: '0.45rem 1rem',
+                    borderRadius: '6px',
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    border: '1px solid rgba(16, 185, 129, 0.35)',
+                    color: '#34D399',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Download size={14} />
+                  <span>Download .json</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(JSON.stringify(activeCbomPayload, null, 2));
+                    setCopiedText('modal-cbom');
+                    setTimeout(() => setCopiedText(null), 2000);
+                  }}
+                  style={{
+                    padding: '0.45rem 1rem',
+                    borderRadius: '6px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#F8FAFC',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {copiedText === 'modal-cbom' ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
+                  <span>{copiedText === 'modal-cbom' ? 'Copied' : 'Copy JSON'}</span>
+                </button>
+
+                <button
+                  onClick={() => setCbomModalOpen(false)}
+                  style={{
+                    padding: '0.45rem 1rem',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#94A3B8',
+                    fontSize: '0.78rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

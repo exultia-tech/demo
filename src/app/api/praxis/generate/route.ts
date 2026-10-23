@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { scriptStore } from '@/lib/praxis-store';
 import { queryThreatFeedFromDb } from '@/lib/db/threats-query';
 import { compileRemediationBlock } from '@/lib/praxis-compiler';
+import { generateAfterActionCbom, generateCbomShellScriptBlock } from '@/lib/praxis-cbom';
 import { getCurrentUser } from '@/lib/auth/session';
 import { recordLicenseActivity } from '@/lib/licensing/audit';
 
@@ -16,7 +17,19 @@ const CLASS_QUERY_MAP: Record<string, { domain?: string; scope?: string; action?
 
 export async function POST(request: NextRequest) {
   try {
-    const { os, cron, proxy, preview, classes = [], networkMode = 'localhost', firewallFormat = 'plain', customShebang = '#!/bin/sh', filenamePattern } = await request.json();
+    const { 
+      os, 
+      cron, 
+      proxy, 
+      preview, 
+      classes = [], 
+      networkMode = 'localhost', 
+      firewallFormat = 'plain', 
+      customShebang = '#!/bin/sh', 
+      filenamePattern,
+      uviIds = [],
+      specificAdvisories = []
+    } = await request.json();
 
     const user = await getCurrentUser();
     if (!preview && !user) {
@@ -43,7 +56,6 @@ export async function POST(request: NextRequest) {
     script += `log_err() { printf '[Exultia ERROR] %s\\n' "$1" >&2; }\n\n`;
 
     // Package manager auto-detection (Linux/Unix)
-    // Sets PKG_MGR and PKG_INSTALL / PKG_UPGRADE / PKG_QUERY for use throughout
     script += `# ── Package Manager Detection ──────────────────────────────\n`;
     script += `detect_pkg_mgr() {\n`;
     script += `  if command -v apt-get >/dev/null 2>&1; then\n`;
@@ -110,10 +122,33 @@ export async function POST(request: NextRequest) {
 
     script += `log_msg "Initiating targeted threat remediation for ${os}..."\n\n`;
 
-    // Collect all unique advisories matching selected classes from DB
     const seenIds = new Set<string>();
     const advisoriesToPatch: any[] = [];
 
+    // 1. Process specifically passed client-side advisories first
+    if (Array.isArray(specificAdvisories)) {
+      for (const adv of specificAdvisories) {
+        if (adv && adv.uviId && !seenIds.has(adv.uviId)) {
+          seenIds.add(adv.uviId);
+          advisoriesToPatch.push({ advisory: adv, cls: 'vantage_selection' });
+        }
+      }
+    }
+
+    // 2. Fetch specific UVI IDs from DB if passed
+    if (Array.isArray(uviIds)) {
+      for (const id of uviIds) {
+        if (typeof id === 'string' && id.trim() && !seenIds.has(id.trim())) {
+          const res = await queryThreatFeedFromDb({ id: id.trim(), limit: 1 });
+          if (res.advisories[0] && !seenIds.has(res.advisories[0].uviId)) {
+            seenIds.add(res.advisories[0].uviId);
+            advisoriesToPatch.push({ advisory: res.advisories[0], cls: 'vantage_selection' });
+          }
+        }
+      }
+    }
+
+    // 3. Collect advisories matching selected classes from DB
     for (const cls of classes) {
       const queryParams = CLASS_QUERY_MAP[cls] || {};
 
@@ -136,10 +171,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (advisoriesToPatch.length === 0) {
-      script += `log_msg "No active threats matched the selected remediation classes."\n`;
+      script += `log_msg "No active threats matched the selected remediation targets."\n`;
     } else {
       script += `# ============================================================\n`;
-      script += `# ${advisoriesToPatch.length} threat(s) identified from Vantage registry\n`;
+      script += `# ${advisoriesToPatch.length} threat(s) targeted from Vantage registry\n`;
       script += `# ============================================================\n\n`;
 
       for (const { advisory } of advisoriesToPatch) {
@@ -153,21 +188,32 @@ export async function POST(request: NextRequest) {
       script += `# Auto-deploy: Daily cron job registration\n`;
       script += `# ──────────────────────────────────────────\n`;
       script += `SCRIPT_PATH=$(readlink -f "$0" 2>/dev/null || echo "$PWD/$0")\n`;
-      // Use RANDOM if available (bash), fallback to awk for POSIX sh
       script += `if [ -n "$RANDOM" ]; then RAND_MIN=$((RANDOM % 60)); else RAND_MIN=$(awk 'BEGIN{srand();print int(rand()*60)}'); fi\n`;
       script += `CRON_JOB="$RAND_MIN 2 * * * \$SCRIPT_PATH"\n`;
       script += `(crontab -l 2>/dev/null | grep -v "$SCRIPT_PATH"; echo "$CRON_JOB") | crontab -\n`;
       script += `log_msg "Daily cron registered to run at minute $RAND_MIN past 02:00."\n`;
     }
 
-    script += `\nlog_msg "Remediation complete."\n`;
+    // 4. Generate structured After-Action CBOM payload and embed in script
+    const cbom = generateAfterActionCbom({
+      os,
+      executionType: 'remediation',
+      advisories: advisoriesToPatch.map(a => a.advisory),
+      classes,
+      cron,
+      networkMode,
+      firewallFormat
+    });
+
+    script += `\n` + generateCbomShellScriptBlock(cbom);
+    script += `log_msg "Remediation and After-Action CBOM attestation complete."\n`;
 
     const id = crypto.randomUUID();
     if (!preview) {
       await scriptStore.set(id, { script, filenamePattern });
     }
 
-    return NextResponse.json({ id, script, threatCount: advisoriesToPatch.length });
+    return NextResponse.json({ id, script, threatCount: advisoriesToPatch.length, cbom });
 
   } catch (err) {
     console.error('praxis generation error:', err);

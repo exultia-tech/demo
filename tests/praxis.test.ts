@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { compileRemediationBlock } from "@/lib/praxis-compiler";
-import { UviAdvisoryRecord } from "@/lib/threat-feed-data";
+import { 
+  generateAfterActionCbom, 
+  generateCbomShellScriptBlock, 
+  convertAdvisoryToPatchItem 
+} from "@/lib/praxis-cbom";
+import { SAMPLE_PATCH_FEED } from "@/lib/patch-data";
 
 describe("praxis Compiler & Remediation Engine Tests", () => {
   const sampleNetworkAdvisory: any = {
@@ -101,5 +106,63 @@ describe("praxis Compiler & Remediation Engine Tests", () => {
       expect(jsonOutput).toContain('"value": "192.0.2.1"');
     });
   });
-});
 
+  describe("After-Action CBOM Manifest Generation", () => {
+    it("should synthesize a valid CycloneDX-CBOM structure for remediation", () => {
+      const cbom = generateAfterActionCbom({
+        os: "linux",
+        executionType: "remediation",
+        advisories: [sampleNetworkAdvisory],
+        classes: ["network", "phishing"],
+        cron: true
+      });
+
+      expect(cbom.cbomFormat).toBe("CycloneDX-CBOM");
+      expect(cbom.specVersion).toBe("1.5");
+      expect(cbom.serialNumber).toMatch(/^urn:uuid:/);
+      expect(cbom.targetHost.os).toBe("linux");
+      expect(cbom.targetHost.cronScheduled).toBe(true);
+      expect(cbom.vulnerabilitiesRemediated.length).toBeGreaterThanOrEqual(1);
+      expect(cbom.vulnerabilitiesRemediated[0].uviId).toBe("UVI-2026-TEST-001");
+      expect(cbom.provenance.slsaLevel).toBe(3);
+      expect(cbom.provenance.cosignDigest).toMatch(/^sha256:/);
+    });
+
+    it("should synthesize a valid CycloneDX-CBOM structure for patching", () => {
+      const cbom = generateAfterActionCbom({
+        os: "linux",
+        executionType: "patching",
+        selectedPatch: SAMPLE_PATCH_FEED[0]
+      });
+
+      expect(cbom.cbomFormat).toBe("CycloneDX-CBOM");
+      expect(cbom.executionType).toBe("patching");
+      expect(cbom.vulnerabilitiesRemediated[0].cveId).toBe(SAMPLE_PATCH_FEED[0].cveId);
+      expect(cbom.actionsPerformed.some(a => a.actionType === "HOTPATCH")).toBe(true);
+    });
+
+    it("should generate shell script block to write After-Action CBOM payload to /var/log/exultia", () => {
+      const cbom = generateAfterActionCbom({
+        os: "linux",
+        executionType: "remediation",
+        advisories: [sampleNetworkAdvisory]
+      });
+      const shellBlock = generateCbomShellScriptBlock(cbom);
+
+      expect(shellBlock).toContain("write_after_action_cbom");
+      expect(shellBlock).toContain('CBOM_DIR="/var/log/exultia"');
+      expect(shellBlock).toContain('praxis-cbom-after-action.json');
+      expect(shellBlock).toContain('"CycloneDX-CBOM"');
+    });
+
+    it("should seamlessly convert arbitrary Vantage advisories into valid PatchFeedItems", () => {
+      const patchItem = convertAdvisoryToPatchItem(sampleNetworkAdvisory);
+
+      expect(patchItem.cveId).toBe("CVE-2026-9999");
+      expect(patchItem.severity).toBe("HIGH");
+      expect(patchItem.remediationTier.tier1_hotMitigation.commands.length).toBeGreaterThan(0);
+      expect(patchItem.remediationTier.tier3_fleetAutomation.ansiblePlaybook).toContain("Apply Praxis");
+      expect(patchItem.provenance.slsaLevel).toBe(3);
+    });
+  });
+});
