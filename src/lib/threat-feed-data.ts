@@ -96,8 +96,8 @@ export interface InformationalSynthesis {
 }
 
 export interface UviAdvisoryRecord {
-  uviId: string; // Standardized: Vantage-YYYY-MM-00000001
-  legacyUviId?: string; // Original cross-reference or legacy identifier (e.g. Vantage-2024-3094, Vantage-MAL-2025-0104)
+  uviId: string; // Standardized: UVI-YYYY-MM-00000001
+  legacyUviId?: string; // Original cross-reference or legacy identifier (e.g. UVI-2024-3094, UVI-MAL-2025-0104)
   title: string;
   headline: string;
   summary: string;
@@ -2385,7 +2385,7 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
 export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
   // 1. Apache Log4j JNDI Remote Code Execution (Log4Shell)
   {
-    uviId: "Vantage-2021-44228",
+    uviId: "UVI-2021-44228",
     title: "Apache Log4j2 JNDI Message Lookup Remote Code Execution (Log4Shell)",
     headline: "Unauthenticated remote code execution via recursive JNDI resolution in log messages across enterprise Java applications.",
     summary: "Apache Log4j2 versions 2.0-beta9 through 2.15.0 did not protect against attacker-controlled LDAP, RMI, and DNS endpoints evaluated through JNDI message lookups (${jndi:ldap://...}), allowing full remote code execution.",
@@ -2434,9 +2434,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 2. XZ Utils / Liblzma Upstream Supply Chain Backdoor (Vantage-2024-3094)
+  // 2. XZ Utils / Liblzma Upstream Supply Chain Backdoor (UVI-2024-3094)
   {
-    uviId: "Vantage-2024-3094",
+    uviId: "UVI-2024-3094",
     title: "XZ Utils / Liblzma Upstream Supply Chain Backdoor in sshd Authentication",
     headline: "Critical malicious backdoor inserted into xz-utils liblzma enabling unauthorized authentication bypass in OpenSSH daemon.",
     summary: "A malicious backdoor was deliberately planted into upstream xz-utils (liblzma) versions 5.6.0 and 5.6.1 via obfuscated build scripts. The payload hooks RSA_public_decrypt in OpenSSH through systemd notify integration.",
@@ -2487,9 +2487,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-30"
   },
 
-  // 3. Node.js Windows Batch Command Injection (BatBadBut - Vantage-2024-27982)
+  // 3. Node.js Windows Batch Command Injection (BatBadBut - UVI-2024-27982)
   {
-    uviId: "Vantage-2024-27982",
+    uviId: "UVI-2024-27982",
     title: "Node.js Child Process Windows Batch File Command Injection (BatBadBut)",
     headline: "Improper argument escaping in child_process.spawn on Windows permits arbitrary shell command execution via batch files (.bat/.cmd).",
     summary: "Due to how CreateProcessW on Windows delegates to cmd.exe when executing .bat and .cmd scripts, Node.js failed to escape whitespace and metacharacters, allowing command injection when spawning batch files with untrusted inputs.",
@@ -2538,9 +2538,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-25"
   },
 
-  // 4. runc Leaked File Descriptor Container Breakout (Vantage-2024-21626)
+  // 4. runc Leaked File Descriptor Container Breakout (UVI-2024-21626)
   {
-    uviId: "Vantage-2024-21626",
+    uviId: "UVI-2024-21626",
     title: "runc Leaked Host File Descriptor Host Root Filesystem Overwrite Container Breakout",
     headline: "Vulnerability in runc allows malicious container images or exec sessions to overwrite host binaries and achieve full host breakout.",
     summary: "In runc through version 1.1.11, internal file descriptors referencing the host filesystem (/sys/fs/cgroup or /proc) were leaked to runc init during container startup, enabling a malicious container process to access the host mount namespace.",
@@ -2589,9 +2589,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 5. Rust Standard Library Command Injection on Windows (BatBadBut - Vantage-2024-24576)
+  // 5. Rust Standard Library Command Injection on Windows (BatBadBut - UVI-2024-24576)
   {
-    uviId: "Vantage-2024-24576",
+    uviId: "UVI-2024-24576",
     title: "Rust std::process Command Argument Injection on Windows (BatBadBut)",
     headline: "Improper command-line argument escaping in Rust standard library on Windows enables arbitrary command execution.",
     summary: "The Rust standard library std::process::Command on Windows did not properly escape arguments passed to batch files (.bat and .cmd) because of Windows cmd.exe command line parsing quirks.",
@@ -2639,9 +2639,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-25"
   },
 
-  // 6. OpenSSH RegreSSHion Remote Code Execution (Vantage-2024-6387)
+  // 6. OpenSSH RegreSSHion Remote Code Execution (UVI-2024-6387)
   {
-    uviId: "Vantage-2024-6387",
+    uviId: "UVI-2024-6387",
     title: "OpenSSH Server RegreSSHion Pre-Authentication Remote Code Execution",
     headline: "Signal handler race condition in OpenSSH daemon permits unauthenticated remote code execution as root on glibc Linux systems.",
     summary: "A signal handler race condition was reintroduced in OpenSSH server (sshd) versions 8.5p1 through 9.7p1. If a client does not authenticate within LoginGraceTime, sshd SIGALRM handler executes asynchronously and calls non-async-signal-safe functions.",
@@ -2704,9 +2704,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-28"
   },
 
-  // 7. Windows TCP/IP IPv6 Remote Code Execution (Vantage-2024-38063)
+  // 7. Windows TCP/IP IPv6 Remote Code Execution (UVI-2024-38063)
   {
-    uviId: "Vantage-2024-38063",
+    uviId: "UVI-2024-38063",
     title: "Windows TCP/IP Stack IPv6 Packet Processing Remote Code Execution",
     headline: "Zero-click remote code execution in Windows TCP/IP kernel stack triggered by specially crafted IPv6 packets.",
     summary: "An integer underflow vulnerability in tcpip.sys allows unauthenticated attackers to execute arbitrary code with SYSTEM privileges on vulnerable Windows machines by transmitting crafted IPv6 packets over the local network or internet.",
@@ -2753,9 +2753,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-09-02"
   },
 
-  // 8. HTTP/2 Rapid Reset Distributed Denial of Service (Vantage-2023-44487)
+  // 8. HTTP/2 Rapid Reset Distributed Denial of Service (UVI-2023-44487)
   {
-    uviId: "Vantage-2023-44487",
+    uviId: "UVI-2023-44487",
     title: "HTTP/2 Rapid Reset Stream Multiplexing Distributed Denial of Service",
     headline: "Flaw in HTTP/2 protocol stream cancellation permits unprecedented distributed denial of service volumetric attacks.",
     summary: "Attackers can cause massive CPU and memory exhaustion in web servers, proxies, and load balancers by sending a continuous burst of HTTP/2 HEADERS requests immediately followed by RST_STREAM cancellation frames.",
@@ -2801,9 +2801,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 9. cURL SOCKS5 Heap Buffer Overflow (Vantage-2023-38545)
+  // 9. cURL SOCKS5 Heap Buffer Overflow (UVI-2023-38545)
   {
-    uviId: "Vantage-2023-38545",
+    uviId: "UVI-2023-38545",
     title: "libcurl SOCKS5 Hostname Resolution Heap Buffer Overflow",
     headline: "Heap-based buffer overflow in libcurl during SOCKS5 proxy handshake permits arbitrary code execution or crash.",
     summary: "When libcurl was instructed to connect through a SOCKS5 proxy using socks5h://, passing a hostname longer than 255 bytes caused a heap buffer overflow in the curl_easy_perform loop.",
@@ -2849,9 +2849,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 10. Git Submodule Remote Code Execution on Clone (Vantage-2024-32002)
+  // 10. Git Submodule Remote Code Execution on Clone (UVI-2024-32002)
   {
-    uviId: "Vantage-2024-32002",
+    uviId: "UVI-2024-32002",
     title: "Git Client Recursive Clone Remote Code Execution via Malicious Submodules",
     headline: "Vulnerability in Git client allows arbitrary code execution during 'git clone --recursive' on case-insensitive filesystems (Windows/macOS).",
     summary: "A vulnerability in Git allows an attacker to craft a repository with a submodule whose path collides with Git internal directories (like .git/hooks) on case-insensitive filesystems, triggering hook execution during clone.",
@@ -2898,9 +2898,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-25"
   },
 
-  // 11. libwebp Heap Buffer Overflow in WebP Decoding (Vantage-2023-4863)
+  // 11. libwebp Heap Buffer Overflow in WebP Decoding (UVI-2023-4863)
   {
-    uviId: "Vantage-2023-4863",
+    uviId: "UVI-2023-4863",
     title: "libwebp Lossless Image Decoding Heap Buffer Overflow Zero-Day",
     headline: "Actively exploited heap buffer overflow in libwebp library enables remote code execution when rendering malicious WebP images.",
     summary: "A heap-based buffer overflow in the Huffman coding algorithm of libwebp versions prior to 1.3.2 allowed remote attackers to execute arbitrary code or crash applications by providing a specially crafted WebP image.",
@@ -2946,9 +2946,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 12. Spring Framework Remote Code Execution (Spring4Shell - Vantage-2022-22963)
+  // 12. Spring Framework Remote Code Execution (Spring4Shell - UVI-2022-22963)
   {
-    uviId: "Vantage-2022-22963",
+    uviId: "UVI-2022-22963",
     title: "Spring Cloud Function & Framework SpEL ClassLoader Remote Code Execution (Spring4Shell)",
     headline: "Unauthenticated remote code execution in Spring Framework via class binding on Java 9+ runtimes.",
     summary: "A flaw in Spring Framework DataBinder allowed unauthenticated attackers to access the Java 9+ ClassLoader via class.module.classLoader, modifying Apache Tomcat logging properties to write a webshell into the web root.",
@@ -2996,9 +2996,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 13. Kubernetes Ingress-Nginx Arbitrary Command Injection (Vantage-2023-5044)
+  // 13. Kubernetes Ingress-Nginx Arbitrary Command Injection (UVI-2023-5044)
   {
-    uviId: "Vantage-2023-5044",
+    uviId: "UVI-2023-5044",
     title: "Kubernetes Ingress-Nginx Incomplete Annotation Validation Arbitrary Code Injection",
     headline: "Improper input sanitization in ingress-nginx annotations allows arbitrary code execution and cluster credential theft.",
     summary: "A security issue in the ingress-nginx controller allowed users with permission to create or update Ingress objects to inject arbitrary configuration snippets into nginx.conf, executing arbitrary commands as the controller pod.",
@@ -3042,9 +3042,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 14. PyPI & npm Malicious Typosquat Credential Harvester Campaign (Vantage-2024-4291)
+  // 14. PyPI & npm Malicious Typosquat Credential Harvester Campaign (UVI-2024-4291)
   {
-    uviId: "Vantage-2024-4291",
+    uviId: "UVI-2024-4291",
     title: "Large-Scale PyPI and npm Package Typosquatting Credential Exfiltration Campaign",
     headline: "Automated distribution of over 300 trojanized open-source packages executing postinstall scripts to steal SSH keys and AWS secrets.",
     summary: "A coordinated supply chain attack published hundreds of packages typosquatting popular libraries (e.g. reqeusts, colorama-v2, axios-proxy) that executed hidden setup.py and postinstall scripts to exfiltrate .ssh/id_rsa and .aws/credentials.",
@@ -3091,9 +3091,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-30"
   },
 
-  // 15. GNU C Library (glibc) ld.so Looney Tunables Buffer Overflow (Vantage-2023-4911)
+  // 15. GNU C Library (glibc) ld.so Looney Tunables Buffer Overflow (UVI-2023-4911)
   {
-    uviId: "Vantage-2023-4911",
+    uviId: "UVI-2023-4911",
     title: "glibc Dynamic Loader Buffer Overflow via GLIBC_TUNABLES (Looney Tunables)",
     headline: "Local privilege escalation to root in GNU C library dynamic loader triggered by crafted GLIBC_TUNABLES environment variable.",
     summary: "A buffer overflow vulnerability in the dynamic loader ld.so of the GNU C Library (glibc) allowed local unprivileged users to achieve full root privileges when executing SUID binaries.",
@@ -3139,9 +3139,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 16. VS Code / Electron Workspace Trust Remote Code Execution (Vantage-2023-36742)
+  // 16. VS Code / Electron Workspace Trust Remote Code Execution (UVI-2023-36742)
   {
-    uviId: "Vantage-2023-36742",
+    uviId: "UVI-2023-36742",
     title: "Visual Studio Code / Electron Workspace Trust Command Injection Bypass",
     headline: "Bypass of Workspace Trust security boundary permits arbitrary code execution upon opening untrusted git repositories.",
     summary: "A vulnerability in Visual Studio Code core and Electron shell allowed untrusted repositories to bypass Workspace Trust protections by exploiting URI handler callbacks and launch configuration task triggers.",
@@ -3188,9 +3188,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 17. Jenkins CLI Arbitrary File Read and RCE (Vantage-2024-23897)
+  // 17. Jenkins CLI Arbitrary File Read and RCE (UVI-2024-23897)
   {
-    uviId: "Vantage-2024-23897",
+    uviId: "UVI-2024-23897",
     title: "Jenkins Core CLI args4j Arbitrary File Read and Remote Code Execution",
     headline: "Unauthenticated arbitrary file read on Jenkins controllers via args4j @ file expansion feature leading to full server takeover.",
     summary: "Jenkins versions through 2.441 and LTS through 2.426.2 use the args4j library to parse command arguments, which by default expands any argument starting with '@' into file contents, allowing unauthenticated attackers to read arbitrary files from the controller.",
@@ -3236,9 +3236,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 18. Docker Desktop Arbitrary File Overwrite Host Escape (Vantage-2024-21624)
+  // 18. Docker Desktop Arbitrary File Overwrite Host Escape (UVI-2024-21624)
   {
-    uviId: "Vantage-2024-21624",
+    uviId: "UVI-2024-21624",
     title: "Docker Desktop Windows and macOS Host File Overwrite Vulnerability",
     headline: "Symlink traversal vulnerability in Docker Desktop container mount synchronization allows host filesystem write.",
     summary: "A vulnerability in Docker Desktop prior to 4.27.0 allowed containers with bind mounts to traverse symlinks and write files outside the intended host directory on Windows and macOS.",
@@ -3282,9 +3282,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 19. Sudo Baron Samedit Local Privilege Escalation (Vantage-2021-3156)
+  // 19. Sudo Baron Samedit Local Privilege Escalation (UVI-2021-3156)
   {
-    uviId: "Vantage-2021-3156",
+    uviId: "UVI-2021-3156",
     title: "Sudo Heap-Based Buffer Overflow Local Root Privilege Escalation (Baron Samedit)",
     headline: "Heap buffer overflow in Sudo allows any local user to obtain root privileges without authentication.",
     summary: "A heap-based buffer overflow was discovered in Sudo's command-line unescaping logic. Any local user, regardless of whether they were in the sudoers file, could exploit this flaw to obtain root privileges.",
@@ -3330,9 +3330,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 20. PostgreSQL pg_dump Remote Code Execution (Vantage-2024-1597)
+  // 20. PostgreSQL pg_dump Remote Code Execution (UVI-2024-1597)
   {
-    uviId: "Vantage-2024-1597",
+    uviId: "UVI-2024-1597",
     title: "PostgreSQL pg_dump and pg_dumpall SQL Injection and Command Execution",
     headline: "Improper quoting in pg_dump when dumping databases containing object names with newlines permits code execution.",
     summary: "PostgreSQL pg_dump did not properly sanitize object names containing newline characters or SQL comments, allowing a malicious database owner to execute arbitrary SQL commands when an administrator backed up the database.",
@@ -3375,9 +3375,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 21. OpenSSL Punycode Buffer Overflow (Vantage-2022-37868)
+  // 21. OpenSSL Punycode Buffer Overflow (UVI-2022-37868)
   {
-    uviId: "Vantage-2022-37868",
+    uviId: "UVI-2022-37868",
     title: "OpenSSL X.509 Certificate Name Constraint Punycode Buffer Overflow",
     headline: "Buffer overflow in OpenSSL during certificate verification when parsing email addresses containing Punycode characters.",
     summary: "A buffer overflow can be triggered in OpenSSL 3.0.x during X.509 certificate verification when checking name constraints on email addresses with internationalized domain names (IDN/Punycode).",
@@ -3420,9 +3420,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 22. Heartbleed OpenSSL TLS Heartbeat Extension Memory Leak (Vantage-2014-0160)
+  // 22. Heartbleed OpenSSL TLS Heartbeat Extension Memory Leak (UVI-2014-0160)
   {
-    uviId: "Vantage-2014-0160",
+    uviId: "UVI-2014-0160",
     title: "OpenSSL TLS Heartbeat Extension Memory Information Disclosure (Heartbleed)",
     headline: "Catastrophic missing bounds check in OpenSSL Heartbeat extension enables unauthenticated remote memory dumping.",
     summary: "The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g did not properly handle Heartbeat Extension packets, allowing remote attackers to obtain up to 64KB of memory per request from process memory.",
@@ -3468,9 +3468,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-10"
   },
 
-  // 23. EternalBlue SMBv1 Remote Code Execution (Vantage-2017-0144)
+  // 23. EternalBlue SMBv1 Remote Code Execution (UVI-2017-0144)
   {
-    uviId: "Vantage-2017-0144",
+    uviId: "UVI-2017-0144",
     title: "Microsoft Windows SMBv1 Server Remote Code Execution (EternalBlue / WannaCry)",
     headline: "Zero-click remote code execution in Windows SMBv1 server protocol exploited by WannaCry and NotPetya worms.",
     summary: "The SMBv1 server in Microsoft Windows allowed remote attackers to execute arbitrary code via specially crafted packets, enabling wormable zero-click propagation across enterprise networks.",
@@ -3517,9 +3517,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 24. SolarWinds Orion SUNBURST Supply Chain Trojan (Vantage-2020-10148)
+  // 24. SolarWinds Orion SUNBURST Supply Chain Trojan (UVI-2020-10148)
   {
-    uviId: "Vantage-2020-10148",
+    uviId: "UVI-2020-10148",
     title: "SolarWinds Orion Platform SUNBURST Supply Chain DLL Backdoor",
     headline: "Trojanized SolarWinds.Orion.Core.BusinessLayer.dll injected into official build releases by nation-state actors.",
     summary: "Attackers compromised the software build pipeline of SolarWinds Orion, injecting a stealthy backdoor (SUNBURST) into signed software updates distributed to over 18,000 global customers.",
@@ -3565,9 +3565,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-10"
   },
 
-  // 25. EventStream Malicious Flatmap-Stream Bitcoin Harvester (Vantage-2018-20834)
+  // 25. EventStream Malicious Flatmap-Stream Bitcoin Harvester (UVI-2018-20834)
   {
-    uviId: "Vantage-2018-20834",
+    uviId: "UVI-2018-20834",
     title: "npm Event-Stream Flatmap-Stream Social Engineering Supply Chain Attack",
     headline: "Legitimate maintainer social engineered into transferring npm package ownership to attacker who injected Bitcoin wallet stealer.",
     summary: "The widely used npm package 'event-stream' was transferred to an attacker who added 'flatmap-stream' as a dependency, containing encrypted code designed to steal Bitcoin private keys from the Copay cryptocurrency wallet.",
@@ -3615,9 +3615,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-10"
   },
 
-  // 26. nghttp2 HTTP/2 CONTINUATION Flood Denial of Service (Vantage-2024-28182)
+  // 26. nghttp2 HTTP/2 CONTINUATION Flood Denial of Service (UVI-2024-28182)
   {
-    uviId: "Vantage-2024-28182",
+    uviId: "UVI-2024-28182",
     title: "HTTP/2 CONTINUATION Frame Flood Denial of Service across Web Servers & Proxies",
     headline: "Unbounded HTTP/2 CONTINUATION frame processing permits remote resource exhaustion and server crash.",
     summary: "An attacker can trigger out-of-memory crashes and 100% CPU utilization on HTTP/2 servers by sending a continuous stream of CONTINUATION frames without ending the header block.",
@@ -3663,9 +3663,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-22"
   },
 
-  // 27. Go net/http Request Smuggling (Vantage-2024-45338)
+  // 27. Go net/http Request Smuggling (UVI-2024-45338)
   {
-    uviId: "Vantage-2024-45338",
+    uviId: "UVI-2024-45338",
     title: "Go net/http Content-Length Chunked Encoding HTTP Request Smuggling",
     headline: "Inconsistent handling of chunked transfer encoding in Go HTTP server permits HTTP request smuggling.",
     summary: "Go net/http server versions prior to 1.22.4 and 1.21.11 improperly processed Content-Length and Transfer-Encoding headers with unconventional capitalization or whitespace, enabling request smuggling behind reverse proxies.",
@@ -3708,9 +3708,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-20"
   },
 
-  // 28. Jinja2 Template Attribute Injection (Vantage-2024-34064)
+  // 28. Jinja2 Template Attribute Injection (UVI-2024-34064)
   {
-    uviId: "Vantage-2024-34064",
+    uviId: "UVI-2024-34064",
     title: "Jinja2 Template Engine XML/HTML Attribute Injection via Macro Arguments",
     headline: "Flaw in Jinja2 XML and HTML attribute escaping allows attribute injection and Cross-Site Scripting (XSS).",
     summary: "In Jinja2 versions prior to 3.1.4, when rendering tags with keys containing spaces or special characters in user-supplied dictionaries, attribute injection was possible despite autoescaping enabled.",
@@ -3755,9 +3755,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-08-15"
   },
 
-  // 29. OpenSSL ChaCha20-Poly1305 State Corruption (Vantage-2024-52303)
+  // 29. OpenSSL ChaCha20-Poly1305 State Corruption (UVI-2024-52303)
   {
-    uviId: "Vantage-2024-52303",
+    uviId: "UVI-2024-52303",
     title: "OpenSSL ChaCha20-Poly1305 Cipher State Corruption and Cryptographic Bypass",
     headline: "Improper state handling in OpenSSL ChaCha20-Poly1305 can result in uninitialized memory leaks or integrity bypass.",
     summary: "A flaw in OpenSSL ChaCha20-Poly1305 cipher implementation when reinitializing contexts allowed authentication tags to be evaluated improperly under specific streaming chunk conditions.",
@@ -3800,9 +3800,9 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
     lastUpdatedDate: "2026-09-01"
   },
 
-  // 30. MOVEit Transfer SQL Injection & Exfiltration (Vantage-2023-34362)
+  // 30. MOVEit Transfer SQL Injection & Exfiltration (UVI-2023-34362)
   {
-    uviId: "Vantage-2023-34362",
+    uviId: "UVI-2023-34362",
     title: "Progress Software MOVEit Transfer SQL Injection Zero-Day (CL0P Ransomware)",
     headline: "Unauthenticated SQL injection in MOVEit Transfer web application exploited in massive global corporate extortion campaign.",
     summary: "An unauthenticated SQL injection vulnerability in the MOVEit Transfer web application allowed attackers to access database contents, alter database records, and execute remote code to exfiltrate massive files.",
@@ -3852,7 +3852,7 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
 export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
   // 1. Credential-Stuffing Wave Abusing Residential Proxy Botnets
   {
-    uviId: "Vantage-INFO-2025-0001",
+    uviId: "UVI-INFO-2025-0001",
     title: "Informational: Residential Proxy Botnets Fueling Automated Credential-Stuffing Against Dev & Git Portals",
     headline: "Public chatter and investigative reports track massive distributed botnets rotating consumer IPs to bypass rate-limiting on developer portals.",
     summary: "Investigative reporting by Brian Krebs and threat researcher telemetry reveal widespread credential-stuffing campaigns utilizing residential proxy micro-tunnels to systematically brute-force developer Git repositories and CI/CD portals.",
@@ -3942,7 +3942,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 2. Prompt Injection Exfiltration in Autonomous IDE AI Coding Agents
   {
-    uviId: "Vantage-INFO-2025-0002",
+    uviId: "UVI-INFO-2025-0002",
     title: "Informational: Prompt Injection Vectors in Autonomous IDE AI Coding Assistants",
     headline: "Security research highlights untrusted context poisoning in AI coding extensions, enabling silent workspace secret exfiltration.",
     summary: "Academic preprints and researcher teardowns demonstrate that untrusted markdown, comments, or repository files can manipulate IDE-integrated AI agents into reading local environment variables and making unauthorized outbound network calls.",
@@ -4032,7 +4032,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 3. Post-Quantum Transition Race Conditions in TLS 1.3 Hybrid Key Exchange
   {
-    uviId: "Vantage-INFO-2025-0003",
+    uviId: "UVI-INFO-2025-0003",
     title: "Informational: Post-Quantum Transition Race Conditions & Degradation Vectors in Hybrid TLS 1.3",
     headline: "Cryptographic researcher chatter and preprints identify record fragmentation vulnerabilities in early ML-KEM deployments.",
     summary: "Discussions across IACR ePrint and cryptographer blogs highlight that hybrid post-quantum key encapsulation (X25519 + ML-KEM-768) causes packet fragmentation that intermediate middleboxes misinterpret, creating downgrade or denial-of-service vectors.",
@@ -4122,7 +4122,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 4. Targeted Subdomain Hijacking of Dead Cloud Storage Endpoints in Build Pipelines
   {
-    uviId: "Vantage-INFO-2025-0004",
+    uviId: "UVI-INFO-2025-0004",
     title: "Informational: Dangling CNAME Hijacking of Orphaned Cloud Storage in CI/CD Build Pipelines",
     headline: "Underground chatter and telemetry indicate threat actors systematically claiming abandoned S3 and Blob domains cited in legacy setup scripts.",
     summary: "Security researchers and hacker forum observers warn of automated scanners monitoring public Git repositories for setup scripts referencing expired or abandoned cloud storage buckets to inject backdoored build dependencies.",
@@ -4212,7 +4212,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 5. eBPF Rootkit Persistence and Container Escape Techniques Discussed in Underground Forums
   {
-    uviId: "Vantage-INFO-2025-0005",
+    uviId: "UVI-INFO-2025-0005",
     title: "Informational: eBPF Stealth Rootkit Techniques & Container Escape Vectors Discussed in Underground Channels",
     headline: "Underground hacker telemetry and researcher PoCs demonstrate eBPF ring-buffer manipulation to conceal malicious processes.",
     summary: "Discussions across underground hacker forums and vx-underground repositories catalog advanced proof-of-concepts using privileged Linux eBPF programs to blind security agents and mask container breakout operations.",
@@ -4301,7 +4301,7 @@ export const CURATED_INFORMATIONAL_DISCLOSURES: UviAdvisoryRecord[] = [
 
   // 6. Silent Session Hijacking via Browser Extension Native Messaging Host Spoofing
   {
-    uviId: "Vantage-INFO-2025-0006",
+    uviId: "UVI-INFO-2025-0006",
     title: "Informational: Browser Extension Native Messaging Bridge Hijacking by Infostealer Malware",
     headline: "Investigative reporting and infostealer malware analysis reveal systematic tampering with Native Messaging host registries on dev machines.",
     summary: "Threat intel from Brian Krebs and security researchers highlights evolving infostealer malware targeting the Native Messaging JSON manifests used by password managers, developer tokens, and hardware security keys.",

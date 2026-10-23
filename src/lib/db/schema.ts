@@ -96,7 +96,7 @@ export const licenseAuditLogs = sqliteTable('license_audit_logs', {
 // ============================================================================
 
 export const uviThreats = sqliteTable('uvi_threats', {
-  uviId: text('uvi_id').primaryKey(), // e.g. Vantage-2026-09-00000001
+  uviId: text('uvi_id').primaryKey(), // e.g. UVI-2026-09-00000001
   legacyUviId: text('legacy_uvi_id'),
   title: text('title').notNull(),
   headline: text('headline').notNull(),

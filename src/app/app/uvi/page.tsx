@@ -2848,7 +2848,7 @@ export default function ThreatFeedPage() {
               alignItems: "center"
             }}>
               <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
-                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>Vantage-YYYY-MM-00000001</code> schema.
+                All feed telemetry normalized into unified <code style={{ color: "#60A5FA" }}>UVI-YYYY-MM-00000001</code> schema.
               </span>
 
               <button

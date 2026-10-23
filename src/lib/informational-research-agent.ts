@@ -573,14 +573,14 @@ export class InformationalResearchAgent {
     const year = new Date().getFullYear();
     let maxSeq = 37;
     for (const record of CURATED_INFORMATIONAL_DISCLOSURES) {
-      const match = record.uviId.match(/Vantage-INFO-\d{4}-(\d+)/);
+      const match = record.uviId.match(/UVI-INFO-\d{4}-(\d+)/);
       if (match) {
         const seq = parseInt(match[1], 10);
         if (seq > maxSeq) maxSeq = seq;
       }
     }
     const nextSeq = (maxSeq + 1).toString().padStart(4, "0");
-    const uviId = `Vantage-INFO-${year}-${nextSeq}`;
+    const uviId = `UVI-INFO-${year}-${nextSeq}`;
 
     let canonicalSourceId = raw.sourceName.toLowerCase().replace(/[^a-z0-9]/g, "_");
     if (canonicalSourceId.includes("hackerone") || canonicalSourceId.includes("hacktivity")) canonicalSourceId = "hackerone_hacktivity";

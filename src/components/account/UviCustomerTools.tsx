@@ -37,7 +37,7 @@ export default function UviCustomerTools() {
   // Sample Developer Threat Radar Items
   const sampleWorkstationThreats = [
     {
-      uviId: "Vantage-2026-09-00000104",
+      uviId: "UVI-2026-09-00000104",
       title: "VS Code / Open VSX Malicious Extension Token Harvester",
       severity: "CRITICAL",
       cvss: 9.8,
@@ -45,7 +45,7 @@ export default function UviCustomerTools() {
       mitigation: "PureIDE Hermetic Sandbox Block Active"
     },
     {
-      uviId: "Vantage-2026-09-00000318",
+      uviId: "UVI-2026-09-00000318",
       title: "PyPI Package Dependency Confusion in Torch Compiler Stubs",
       severity: "HIGH",
       cvss: 8.6,
@@ -53,7 +53,7 @@ export default function UviCustomerTools() {
       mitigation: "Strict Registry Egress Enforced"
     },
     {
-      uviId: "Vantage-2026-09-00000522",
+      uviId: "UVI-2026-09-00000522",
       title: "Language Server Protocol (LSP) Unchecked JSON-RPC Deserialization",
       severity: "HIGH",
       cvss: 8.2,
@@ -82,7 +82,7 @@ export default function UviCustomerTools() {
       },
       payload: {
         event: "threat.advisory.published",
-        uviId: "Vantage-2026-09-00000941",
+        uviId: "UVI-2026-09-00000941",
         title: "Critical C2 Command Injection in Untrusted Workstation Build Hooks",
         severity: "CRITICAL",
         cvssScore: 9.8,

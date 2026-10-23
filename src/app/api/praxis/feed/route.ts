@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   switch (os.toLowerCase()) {
     case 'linux':
       payload = `
-# Remediation: [Vantage-2026-09-00101]
+# Remediation: [UVI-2026-09-00101]
 # Scope: Basic file permissions hardening
 echo "[Exultia] Applying Linux remediations..."
 chmod 600 /etc/shadow 2>/dev/null || true

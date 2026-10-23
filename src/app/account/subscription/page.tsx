@@ -790,80 +790,14 @@ function SubscriptionContent() {
         })}
       </div>
 
-      {/* Autonomous Operational Scope & No-Human-SLA Policy */}
-      <div style={{
-        marginTop: "3rem",
-        marginBottom: "2rem",
-        background: "linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.98) 100%)",
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        borderRadius: "20px",
-        padding: "2rem 2.5rem",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem", flexWrap: "wrap" }}>
-          <ShieldCheck size={22} color="#38BDF8" />
-          <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-            Exultia Operational Model &amp; Enterprise Support Policy
-          </h3>
-          <span style={{
-            fontSize: "0.72rem",
-            background: "rgba(56, 189, 248, 0.15)",
-            color: "#38BDF8",
-            border: "1px solid rgba(56, 189, 248, 0.3)",
-            padding: "2px 8px",
-            borderRadius: "6px",
-            fontWeight: 700,
-            textTransform: "uppercase"
-          }}>
-            Clear Boundaries • No Surprises
-          </span>
-        </div>
-
-        <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0", maxWidth: "900px" }}>
-          Exultia is engineered as a lean, focused independent cybersecurity lab. We prioritize rock-solid deterministic code, self-hosted deployment, sub-second atomic rollbacks, and full transparency about our support model:
-        </p>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
-          <div style={{ background: "rgba(0, 0, 0, 0.35)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#F43F5E", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.5rem" }}>
-              <span>❌ No Human SLAs or 24/7 Pagers</span>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              Standard SaaS and Enterprise subscriptions do <strong>not</strong> include contractual human uptime SLAs, 1-hour response guarantees, or 24/7 on-call phone paging. We will never overpromise human availability that we cannot sustain.
-            </p>
-          </div>
-
-          <div style={{ background: "rgba(0, 0, 0, 0.35)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#34D399", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.5rem" }}>
-              <CheckCircle2 size={16} color="#34D399" />
-              <span>Autonomous &amp; Self-Verifying Software</span>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              All software (Vantage, Praxis, PureIDE, PureOS, Axiom) is engineered to be self-hosted and self-verifying. Built-in test harnesses and sub-second rollbacks eliminate fear of production downtime.
-            </p>
-          </div>
-
-          <div style={{ background: "rgba(0, 0, 0, 0.35)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#60A5FA", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.5rem" }}>
-              <HelpCircle size={16} color="#60A5FA" />
-              <span>24/7 AI Sentinel &amp; Technical Docs</span>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              Routine technical assistance, install commands, license sizing, and error explanations are answered instantly 24/7 by our Autonomous AI Support Agent. Reproducible issues are tracked transparently via GitHub.
-            </p>
-          </div>
-
-          <div style={{ background: "rgba(0, 0, 0, 0.35)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#F59E0B", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.5rem" }}>
-              <Building2 size={16} color="#F59E0B" />
-              <span>Custom MSAs &amp; Retainers</span>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              Organizations requiring legally binding uptime SLAs, on-site personnel, or custom software development require a separately negotiated Master Services Agreement (MSA) with bespoke retainer pricing.
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Support model & SLA language lives on the Terms of Service page */}
+      <p style={{ margin: "2.5rem 0", textAlign: "center", color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.6 }}>
+        Our support model, service levels, and other terms are described in our{" "}
+        <Link href="/terms#support" style={{ color: "#93C5FD", textDecoration: "none", fontWeight: 600 }}>
+          Terms of Service
+        </Link>
+        .
+      </p>
 
       {/* Enterprise Custom Assistance Banner */}
       <div style={{

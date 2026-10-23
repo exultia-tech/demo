@@ -64,6 +64,9 @@ export default function Footer() {
         <a href="/wiki" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
           Research Wiki
         </a>
+        <a href="/terms" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
+          Terms of Service
+        </a>
       </div>
       <div style={{
         fontSize: "0.75rem",
