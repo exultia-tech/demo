@@ -52,8 +52,8 @@ export function ExultiaLogo({
 
   const p = palette !== "auto" ? palette : activePalette;
   const emblemSrc = variant === "helm"
-    ? `/branding/navbar_helm_${p}.png`
-    : `/branding/emblem_${p}.png`;
+    ? `/branding/navbar_helm_${p}.png?v=2`
+    : `/branding/emblem_v2_${p}.png?v=2`;
 
   // Aspect ratio for trimmed cyber-helm is 528 / 604 ≈ 0.874
   const widthPx = variant === "helm" ? Math.round(size * (528 / 604)) : size;
