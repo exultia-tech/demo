@@ -96,7 +96,7 @@ export default function ThreatFeedPage() {
   const [selectedSourceFeed, setSelectedSourceFeed] = useState<string>("ALL");
   const [kevOnly, setKevOnly] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
-  const [sortBy, setSortBy] = useState<"cvss_desc" | "uvi_desc" | "uvi_asc" | "published_desc" | "published_asc">("cvss_desc");
+  const [sortBy, setSortBy] = useState<"cvss_desc" | "uvi_desc" | "uvi_asc" | "published_desc" | "published_asc">("published_desc");
 
   // Toggle date/age sort (Newest -> Oldest -> Newest)
   const handleToggleDateSort = () => {
