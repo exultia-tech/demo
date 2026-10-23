@@ -1,6 +1,106 @@
-import crypto from 'crypto';
 import type { PatchFeedItem } from './patch-data';
 import type { UviAdvisoryRecord } from './threat-feed-data';
+
+/**
+ * Universal isomorphic UUID generator (RFC4122 v4)
+ * Fully compatible across Web Browsers (window.crypto), Node.js, and Turbopack client shims.
+ */
+function getIsomorphicUuid(): string {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+/**
+ * Universal isomorphic SHA-256 implementation
+ * Produces standard hex digest without requiring Node.js 'crypto' or browserify shims.
+ */
+function getIsomorphicSha256(str: string): string {
+  function rightRotate(value: number, amount: number) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+  const mathPow = Math.pow;
+  const maxWord = mathPow(2, 32);
+  let result = '';
+  const words: number[] = [];
+  const strBitLength = str.length * 8;
+  const K: number[] = [];
+  const H: number[] = [];
+
+  const isPrime = (n: number) => {
+    for (let factor = 2; factor * factor <= n; factor++) {
+      if (n % factor === 0) return false;
+    }
+    return true;
+  };
+
+  let candidate = 2;
+  while (H.length < 8) {
+    if (isPrime(candidate)) {
+      H.push(((mathPow(candidate, 1 / 2) * maxWord) | 0));
+    }
+    candidate++;
+  }
+  candidate = 2;
+  while (K.length < 64) {
+    if (isPrime(candidate)) {
+      K.push(((mathPow(candidate, 1 / 3) * maxWord) | 0));
+    }
+    candidate++;
+  }
+
+  str += '\x80';
+  while (str.length % 64 - 56) str += '\x00';
+  for (let i = 0; i < str.length; i++) {
+    const j = str.charCodeAt(i);
+    words[i >> 2] |= j << ((3 - (i % 4)) * 8);
+  }
+  words[words.length] = ((strBitLength / maxWord) | 0);
+  words[words.length] = (strBitLength | 0);
+
+  for (let j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16);
+    const oldH = [...H];
+    for (let i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const s0 = i >= 16 ? rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3) : 0;
+      const s1 = i >= 16 ? rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10) : 0;
+      if (i >= 16) {
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      const ch = (H[4] & H[5]) ^ (~H[4] & H[6]);
+      const maj = (H[0] & H[1]) ^ (H[0] & H[2]) ^ (H[1] & H[2]);
+      const sA = rightRotate(H[0], 2) ^ rightRotate(H[0], 13) ^ rightRotate(H[0], 22);
+      const sE = rightRotate(H[4], 6) ^ rightRotate(H[4], 11) ^ rightRotate(H[4], 25);
+      const temp1 = (H[7] + sE + ch + K[i] + w[i]) | 0;
+      const temp2 = (sA + maj) | 0;
+      H[7] = H[6];
+      H[6] = H[5];
+      H[5] = H[4];
+      H[4] = (H[3] + temp1) | 0;
+      H[3] = H[2];
+      H[2] = H[1];
+      H[1] = H[0];
+      H[0] = (temp1 + temp2) | 0;
+    }
+    for (let i = 0; i < 8; i++) {
+      H[i] = (H[i] + oldH[i]) | 0;
+    }
+  }
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 3; j >= 0; j--) {
+      const b = (H[i] >> (8 * j)) & 255;
+      result += (b < 16 ? '0' : '') + b.toString(16);
+    }
+  }
+  return result;
+}
 
 export interface CbomVulnerabilityEntry {
   uviId: string;
@@ -95,7 +195,7 @@ export function generateAfterActionCbom(options: GenerateCbomOptions): PraxisCbo
     firewallFormat = 'plain'
   } = options;
 
-  const serialNumber = `urn:uuid:${crypto.randomUUID()}`;
+  const serialNumber = `urn:uuid:${getIsomorphicUuid()}`;
   const timestamp = new Date().toISOString();
 
   const vulnerabilitiesRemediated: CbomVulnerabilityEntry[] = [];
@@ -204,7 +304,7 @@ export function generateAfterActionCbom(options: GenerateCbomOptions): PraxisCbo
   }
 
   const rawJsonForDigest = JSON.stringify({ serialNumber, vulnerabilitiesRemediated, actionsPerformed });
-  const integrityHash = 'sha256:' + crypto.createHash('sha256').update(rawJsonForDigest).digest('hex');
+  const integrityHash = 'sha256:' + getIsomorphicSha256(rawJsonForDigest);
 
   return {
     cbomFormat: 'CycloneDX-CBOM',
@@ -244,7 +344,7 @@ export function generateAfterActionCbom(options: GenerateCbomOptions): PraxisCbo
     provenance: {
       engine: 'Exultia Praxis v2.4 (Cosign Keyless OIDC)',
       slsaLevel: 3,
-      cosignDigest: 'sha256:' + crypto.createHash('sha256').update(integrityHash).digest('hex'),
+      cosignDigest: 'sha256:' + getIsomorphicSha256(integrityHash),
       signedBy: 'security@exultia.tech (Cosign OIDC Keyless)',
       integrityHash
     }
@@ -383,7 +483,7 @@ export function convertAdvisoryToPatchItem(advisory: any): PatchFeedItem {
     },
     provenance: {
       signedBy: 'security@exultia.tech (Cosign OIDC Keyless)',
-      cosignDigest: 'sha256:' + crypto.createHash('sha256').update(uviId + cveId).digest('hex'),
+      cosignDigest: 'sha256:' + getIsomorphicSha256(uviId + cveId),
       slsaLevel: 3,
       testValidation: {
         targetEnv: 'Hybrid Fleet 640 Nodes (Canary Matrix)',
