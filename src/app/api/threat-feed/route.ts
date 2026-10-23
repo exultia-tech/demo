@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     recordLicenseActivity(user.id, 'uvi', request, 'feed_query').catch(() => {});
   }
 
-  // Rate Limiting Logic
+  // Rate Limiting Logic: Differentiate interactive web app browsing from external raw API consumers
   const isPro = user?.subscriptions?.some(s => 
     (s.product === 'multipass' || s.product === 'uvi' || s.product === 'praxis') &&
     s.tier === 'pro' &&
@@ -45,32 +45,56 @@ export async function GET(request: Request) {
     s.status === 'active'
   );
 
+  const referer = request.headers.get('referer') || '';
+  const host = request.headers.get('host') || '';
+  const secFetchSite = request.headers.get('sec-fetch-site');
+  const isWebClient = Boolean(user) || secFetchSite === 'same-origin' || 
+                      Boolean(referer && (referer.includes(host) || referer.includes('exultia.tech') || referer.includes('localhost') || referer.includes('secureide.dev')));
+
   const ip = request.headers.get('x-forwarded-for') || 'unknown-ip';
-  const identifier = user ? user.id : ip;
+  const identifier = user ? user.id : (isWebClient ? `web_${ip}` : ip);
   const now = Date.now();
 
-  if (!isPro && !isEnterprise) {
-    
-    const lastRequest = rateLimitMap.get(identifier);
-    if (lastRequest && (now - lastRequest < RATE_LIMIT_WINDOW_MS)) {
-      return NextResponse.json(
-        { error: 'Free tier rate limit exceeded. You are limited to 1 request per hour. Please upgrade to Pro or Enterprise for unlimited API access.' },
-        { status: 429 }
-      );
-    }
-    
-    // Simple memory cleanup for stale rate limit entries
-    if (rateLimitMap.size > 5000) {
-      const oneHourAgo = now - RATE_LIMIT_WINDOW_MS;
-      for (const [key, timestamp] of rateLimitMap.entries()) {
-        if (timestamp < oneHourAgo) {
-          rateLimitMap.delete(key);
-        }
+  if (isWebClient) {
+    // Interactive Web App users: Generous burst protection (120 req/min) so browsing, typing, and filtering never block
+    const WEB_WINDOW_MS = 60 * 1000;
+    const WEB_MAX_REQUESTS = 120;
+    const record = proRateLimitMap.get(identifier) || { count: 0, windowStart: now };
+
+    if (now - record.windowStart > WEB_WINDOW_MS) {
+      record.count = 1;
+      record.windowStart = now;
+    } else {
+      record.count++;
+      if (record.count > WEB_MAX_REQUESTS) {
+        return NextResponse.json(
+          { error: 'Interactive rate limit exceeded. Please wait a few seconds before searching again.' },
+          { status: 429 }
+        );
       }
     }
+    proRateLimitMap.set(identifier, record);
+  } else if (!isPro && !isEnterprise) {
+    // External headless API consumer (e.g. curl/scripts without web context): 60 requests per minute
+    const EXTERNAL_WINDOW_MS = 60 * 1000;
+    const EXTERNAL_MAX_REQUESTS = 60;
+    const record = proRateLimitMap.get(identifier) || { count: 0, windowStart: now };
 
-    rateLimitMap.set(identifier, now);
+    if (now - record.windowStart > EXTERNAL_WINDOW_MS) {
+      record.count = 1;
+      record.windowStart = now;
+    } else {
+      record.count++;
+      if (record.count > EXTERNAL_MAX_REQUESTS) {
+        return NextResponse.json(
+          { error: 'Free tier API rate limit exceeded. You are limited to 60 requests per minute. Please upgrade to Pro or Enterprise for higher throughput.' },
+          { status: 429 }
+        );
+      }
+    }
+    proRateLimitMap.set(identifier, record);
   } else if (isPro) {
+    // Pro API subscriber: 300 requests per minute
     const record = proRateLimitMap.get(identifier) || { count: 0, windowStart: now };
     
     if (now - record.windowStart > PRO_RATE_LIMIT_WINDOW_MS) {

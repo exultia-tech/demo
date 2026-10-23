@@ -660,7 +660,7 @@ export default function ThreatFeedPage() {
                   gap: "0.5rem"
                 }}>
                   <div style={{ fontSize: "0.72rem", color: "#FCA5A5", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    Filtered: {UVI_PUBLIC_FEED_SOURCES.find(f => f.id === selectedSourceFeed)?.name || selectedSourceFeed}
+                    Filtered: {UVI_PUBLIC_FEED_SOURCES.find(f => f.id === selectedSourceFeed)?.name || selectedSourceFeed} ({matchedCount.toLocaleString()} advisories)
                   </div>
                   <button
                     onClick={() => handleFilterChange(() => setSelectedSourceFeed("ALL"))}
@@ -727,7 +727,7 @@ export default function ThreatFeedPage() {
                     fontWeight: 600,
                     color: selectedSourceFeed === "ALL" ? "#60A5FA" : "#64748B"
                   }}>
-                    2,671 recs
+                    {totalUniversalCount ? `${totalUniversalCount.toLocaleString()} recs` : "28,800+ recs"}
                   </span>
                 </button>
 
