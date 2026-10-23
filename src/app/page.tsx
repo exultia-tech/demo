@@ -9,16 +9,7 @@ import {
   AxiomIcon, 
   ExultiaLogo 
 } from "@/components/BrandIcons";
-import { 
-  ShieldCheck, 
-  Zap, 
-  Layers, 
-  ArrowRight, 
-  Lock, 
-  Sparkles, 
-  Terminal, 
-  Activity 
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site-config";
 
 export const metadata: Metadata = {
@@ -65,9 +56,6 @@ export default function HomePage() {
               <div className="defense-icon-box">
                 <VantageIcon size={56} glow={true} />
               </div>
-              <div className="defense-pill pill-purple">
-                <span>127 Feeds &bull; 16 OS Vendor Errata Streams</span>
-              </div>
             </div>
 
             <div className="defense-card-body">
@@ -79,17 +67,6 @@ export default function HomePage() {
               <p className="defense-card-desc">
                 Dual-purpose defense hub unifying 127+ global threat feeds (CISA KEV, active zero-days, C2 botnet telemetry) with authoritative OS vendor patch management across 16 ecosystems (Ubuntu USN, Debian DSA, Red Hat RHSA, Rocky RLSA, Alpine SecDB, SUSE, Arch).
               </p>
-            </div>
-
-            <div className="defense-card-footer">
-              <div className="defense-meta-item">
-                <Activity size={14} color="#C084FC" />
-                <span>Threat Consensus</span>
-              </div>
-              <div className="defense-meta-item">
-                <ShieldCheck size={14} color="#C084FC" />
-                <span>Distro Errata (APT / DNF / APK)</span>
-              </div>
             </div>
           </Link>
 
@@ -107,9 +84,6 @@ export default function HomePage() {
               <div className="defense-icon-box">
                 <PraxisIcon size={56} glow={true} />
               </div>
-              <div className="defense-pill pill-amber">
-                <span>Zero-Downtime Hotpatches &bull; ACLs</span>
-              </div>
             </div>
 
             <div className="defense-card-body">
@@ -122,17 +96,6 @@ export default function HomePage() {
                 Synthesize instant Tier 1 live-memory hotpatches, canary rollouts (Ring 0 &rarr; Ring 1 &rarr; Fleet), 
                 and multi-tier Systemd/GitOps playbooks, alongside hardware firewall ACLs (Cisco, Palo Alto EDL, Fortinet, iptables).
               </p>
-            </div>
-
-            <div className="defense-card-footer">
-              <div className="defense-meta-item">
-                <Zap size={14} color="#FBBF24" />
-                <span>Sub-Second Rollbacks</span>
-              </div>
-              <div className="defense-meta-item">
-                <Terminal size={14} color="#FBBF24" />
-                <span>SLSA Level 3 Provenance</span>
-              </div>
             </div>
           </Link>
 
@@ -220,28 +183,7 @@ export default function HomePage() {
 
         </div>
 
-        {/* TRUST & TELEMETRY STRIP */}
-        <section className="integrity-strip">
-          <div className="integrity-col">
-            <div className="integrity-num">127+</div>
-            <div className="integrity-label">Authoritative Threat Feeds</div>
-          </div>
-          <div className="integrity-divider" />
-          <div className="integrity-col">
-            <div className="integrity-num">0 ms</div>
-            <div className="integrity-label">Reboot Requirement (Hotpatch)</div>
-          </div>
-          <div className="integrity-divider" />
-          <div className="integrity-col">
-            <div className="integrity-num">SLSA L3</div>
-            <div className="integrity-label">Cryptographic Cosign Verification</div>
-          </div>
-          <div className="integrity-divider" />
-          <div className="integrity-col">
-            <div className="integrity-num">100%</div>
-            <div className="integrity-label">Zero-Telemetry Guarantee</div>
-          </div>
-        </section>
+
 
       </main>
     </div>

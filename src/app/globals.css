@@ -1941,8 +1941,6 @@ textarea.input-field {
 .defense-card-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
   margin-bottom: 1.25rem;
 }
 
@@ -1950,29 +1948,6 @@ textarea.input-field {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.defense-pill {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-
-.pill-purple {
-  background: rgba(168, 85, 247, 0.15);
-  color: #C084FC;
-  border: 1px solid rgba(168, 85, 247, 0.35);
-}
-
-.pill-amber {
-  background: rgba(245, 158, 11, 0.15);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
 .defense-card-title-row {
@@ -2013,24 +1988,7 @@ textarea.input-field {
   font-size: 0.96rem;
   line-height: 1.6;
   color: #94A3B8;
-  margin: 0 0 1.5rem 0;
-}
-
-.defense-card-footer {
-  display: flex;
-  gap: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-family: var(--font-mono, monospace);
-  font-size: 0.78rem;
-  color: #94A3B8;
-  flex-wrap: wrap;
-}
-
-.defense-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  margin: 0;
 }
 
 /* 3-Column Grid for Foundational Platforms */
@@ -2118,57 +2076,9 @@ textarea.input-field {
   gap: 8px;
 }
 
-/* Trust & Telemetry Strip */
-.integrity-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 4rem;
-  padding: 1.75rem 2rem;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
 
-.integrity-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  flex: 1;
-  min-width: 140px;
-}
 
-.integrity-num {
-  font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: 0.04em;
-}
 
-.integrity-label {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.74rem;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-top: 3px;
-}
-
-.integrity-divider {
-  width: 1px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 680px) {
-  .integrity-divider {
-    display: none;
-  }
-}
 
 
 
