@@ -685,6 +685,7 @@ export function getRecordObservationalAssessment(record: UviAdvisoryRecord): Obs
 }
 
 export type FeedCategory =
+  | "Vendor Security Disclosures"
   | "Malware, C2 & Botnets"
   | "Phishing & Fraud"
   | "IP Reputation, Scanners & Network Telemetry"
@@ -2168,6 +2169,217 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     icon: "🪟",
     recordsIngested: 24000
   },
+  // ==========================================
+  // 7. Vendor Security Disclosures (16 Major Software Vendors)
+  // ==========================================
+  {
+    id: "vendor_php",
+    name: "PHP Foundation Security Advisories",
+    category: "Vendor Security Disclosures",
+    scope: "PHP Engine, Zend Core, PECL Extensions & Language Runtimes",
+    access: "Official Machine-Readable JSON & Security Bulletins",
+    status: "Realtime",
+    refreshRate: "Continuous (Emergency Security Releases)",
+    coverage: "Direct upstream security disclosures for the PHP programming language runtime, Zend engine fatal error unwinds (PHP2Shell), and PECL core extensions.",
+    homepageUrl: "https://www.php.net/security",
+    icon: "🐘",
+    recordsIngested: 8420
+  },
+  {
+    id: "vendor_msrc",
+    name: "Microsoft Security Response Center (MSRC)",
+    category: "Vendor Security Disclosures",
+    scope: "Windows OS, Azure, Office, .NET, Edge & Visual Studio",
+    access: "MSRC CVRF/CSAF v2.0 REST API",
+    status: "Realtime",
+    refreshRate: "Patch Tuesday & Out-of-Band Disclosures",
+    coverage: "Official security updates, zero-day advisories, and CVSS scores directly from Microsoft's global security response center.",
+    homepageUrl: "https://msrc.microsoft.com/update-guide/",
+    icon: "🪟",
+    recordsIngested: 185000
+  },
+  {
+    id: "vendor_redhat",
+    name: "Red Hat Product Security Advisories (RHSA)",
+    category: "Vendor Security Disclosures",
+    scope: "RHEL, OpenShift, JBoss, Fedora & Enterprise Linux Stack",
+    access: "Public CSAF 2.0 Provider & OVAL Feeds",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Authoritative security errata (RHSA/RHBA) and CVE impact assessments for Red Hat Enterprise Linux and cloud native workloads.",
+    homepageUrl: "https://access.redhat.com/security/",
+    icon: "🎩",
+    recordsIngested: 94000
+  },
+  {
+    id: "vendor_ubuntu",
+    name: "Ubuntu / Canonical Security Notices (USN)",
+    category: "Vendor Security Disclosures",
+    scope: "Ubuntu Server, Cloud Images, Snaps & Desktop Packages",
+    access: "Canonical JSON Notices Feed / OVAL / CVE Tracker",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Comprehensive vulnerability errata published by the Canonical Security Team covering Ubuntu LTS and interim releases.",
+    homepageUrl: "https://ubuntu.com/security/notices",
+    icon: "🟠",
+    recordsIngested: 68500
+  },
+  {
+    id: "vendor_debian",
+    name: "Debian Security Tracker (DSA)",
+    category: "Vendor Security Disclosures",
+    scope: "Debian GNU/Linux Stable, Testing & LTS Distribution Packages",
+    access: "Public JSON Tracker API & DSA Mailing List",
+    status: "Active",
+    refreshRate: "Continuous",
+    coverage: "The Debian Security Team's official vulnerability tracking database cataloging cross-package fixes and backported security patches.",
+    homepageUrl: "https://security-tracker.debian.org/",
+    icon: "🌀",
+    recordsIngested: 112000
+  },
+  {
+    id: "vendor_apple",
+    name: "Apple Product Security (PSIRT)",
+    category: "Vendor Security Disclosures",
+    scope: "macOS, iOS, iPadOS, Safari, WebKit, Darwin Kernel & Xcode",
+    access: "Apple Security Releases & Web Feed",
+    status: "Realtime",
+    refreshRate: "As Released",
+    coverage: "Security updates, zero-day CVE attributions, and active in-the-wild exploitation notices across all Apple operating system platforms.",
+    homepageUrl: "https://support.apple.com/en-us/HT201222",
+    icon: "🍎",
+    recordsIngested: 36200
+  },
+  {
+    id: "vendor_google",
+    name: "Google & Android Security Bulletins",
+    category: "Vendor Security Disclosures",
+    scope: "Android OS, Pixel Firmware, Chromium, V8 & Google Cloud",
+    access: "Android Security Bulletins & Chrome Releases Feed",
+    status: "Realtime",
+    refreshRate: "Monthly & Out-of-Band",
+    coverage: "Official security bulletins and exploitation telemetry covering Android platform patches, Chrome zero-days, and hardware firmware updates.",
+    homepageUrl: "https://source.android.com/security/bulletin",
+    icon: "🤖",
+    recordsIngested: 49800
+  },
+  {
+    id: "vendor_apache",
+    name: "Apache Software Foundation Security (ASF)",
+    category: "Vendor Security Disclosures",
+    scope: "Apache HTTP Server, Tomcat, Kafka, Log4j, Struts, Spark & Lucene",
+    access: "ASF Security JSON Feed & Security Announcements",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Coordinated security advisories covering over 350 open source enterprise projects maintained by the Apache Software Foundation.",
+    homepageUrl: "https://security.apache.org/",
+    icon: "🪶",
+    recordsIngested: 28400
+  },
+  {
+    id: "vendor_openssl",
+    name: "OpenSSL Project Security Advisories",
+    category: "Vendor Security Disclosures",
+    scope: "OpenSSL Cryptographic Library, TLS 1.3 Engine & FIPS Modules",
+    access: "Machine-Readable JSON Vulnerabilities Feed",
+    status: "Realtime",
+    refreshRate: "As Disclosed",
+    coverage: "Cryptographic vulnerability disclosures and memory safety fixes for the internet's core TLS/SSL protocol implementation.",
+    homepageUrl: "https://www.openssl.org/news/vulnerabilities.html",
+    icon: "🔒",
+    recordsIngested: 1650
+  },
+  {
+    id: "vendor_linux_kernel",
+    name: "Linux Kernel Organization (Kernel CVE)",
+    category: "Vendor Security Disclosures",
+    scope: "Upstream Linux Kernel Trees, BPF, Netfilter, Drivers & KVM",
+    access: "Official Kernel Git CVE Tracking / JSON API",
+    status: "Realtime",
+    refreshRate: "Hourly",
+    coverage: "Authoritative CVE allocations assigned directly by the Linux Kernel CNA for upstream kernel patches and subsystem fixes.",
+    homepageUrl: "https://kernel.org/doc/html/latest/process/cve.html",
+    icon: "🐧",
+    recordsIngested: 172000
+  },
+  {
+    id: "vendor_mozilla",
+    name: "Mozilla Foundation Security Advisories (MFSA)",
+    category: "Vendor Security Disclosures",
+    scope: "Firefox, Gecko Engine, SpiderMonkey JavaScript & Thunderbird",
+    access: "MFSA Public JSON Feed & Bulletins",
+    status: "Active",
+    refreshRate: "Every Release Cycle",
+    coverage: "Browser engine security advisories, memory safety mitigations, sandbox escape reports, and CSS/JS parser vulnerability tracking.",
+    homepageUrl: "https://www.mozilla.org/en-US/security/advisories/",
+    icon: "🦊",
+    recordsIngested: 18900
+  },
+  {
+    id: "vendor_vmware",
+    name: "VMware & Broadcom Security Advisories (VMSA)",
+    category: "Vendor Security Disclosures",
+    scope: "ESXi Hypervisor, vCenter Server, NSX, Workstation & Fusion",
+    access: "Broadcom Support PSIRT Portal & RSS",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Enterprise virtualization advisories covering hypervisor breakouts, virtual machine escape vectors, and management plane vulnerabilities.",
+    homepageUrl: "https://www.vmware.com/security/advisories.html",
+    icon: "🟧",
+    recordsIngested: 14200
+  },
+  {
+    id: "vendor_cisco",
+    name: "Cisco PSIRT Security Advisories",
+    category: "Vendor Security Disclosures",
+    scope: "Cisco IOS-XE, NX-OS, ASA Firmware, Firepower & Secure Client",
+    access: "Cisco OpenVuln API / CSAF Provider",
+    status: "Realtime",
+    refreshRate: "Weekly & Breaking",
+    coverage: "Network infrastructure security advisories covering router firmware, hardware switch ASICs, VPN appliances, and firewall zero-days.",
+    homepageUrl: "https://sec.cloudapps.cisco.com/security/center/",
+    icon: "🌐",
+    recordsIngested: 48600
+  },
+  {
+    id: "vendor_oracle",
+    name: "Oracle Critical Patch Updates (CPU)",
+    category: "Vendor Security Disclosures",
+    scope: "Oracle Database, Java SE/JDK, WebLogic, Solaris & Enterprise Linux",
+    access: "Oracle Security Alerts & Advisory Feeds",
+    status: "Active",
+    refreshRate: "Quarterly & Emergency Bulletins",
+    coverage: "Enterprise software advisories covering Java SE runtimes, relational database engines, ERP middleware, and cloud infrastructure.",
+    homepageUrl: "https://www.oracle.com/security-alerts/",
+    icon: "🔴",
+    recordsIngested: 81200
+  },
+  {
+    id: "vendor_nodejs",
+    name: "Node.js Security Working Group",
+    category: "Vendor Security Disclosures",
+    scope: "Node.js Core Runtime, V8 Embeddings, Libuv & NPM Bundles",
+    access: "Node.js Vulnerability Blog & GitHub Advisory Sync",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Server-side JavaScript runtime security advisories, permission model bypasses, HTTP request smuggling fixes, and buffer overflow patches.",
+    homepageUrl: "https://nodejs.org/en/blog/vulnerability/",
+    icon: "🟢",
+    recordsIngested: 9600
+  },
+  {
+    id: "vendor_rustsec",
+    name: "RustSec Advisory Database (Rust Security WG)",
+    category: "Vendor Security Disclosures",
+    scope: "Rust Standard Library, Cargo Toolchain & Crates.io Advisory Database",
+    access: "Public Git / Raw TOML Database / API",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Community and core team advisories tracking soundness bugs, memory safety violations in unsafe blocks, and vulnerable Crates.io packages.",
+    homepageUrl: "https://rustsec.org/",
+    icon: "🦀",
+    recordsIngested: 14200
+  }
 ];
 
 export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [

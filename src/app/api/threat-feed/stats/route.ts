@@ -83,14 +83,23 @@ export async function GET(request: Request) {
   ];
 
   // Upstream Volume by Category
-  const categoryBreakdown = [
-    { category: "Vulnerabilities & Exploitation", feedsCount: 66, recordsIngested: 8940000 },
-    { category: "Multi-Indicator Hubs & Aggregators", feedsCount: 4, recordsIngested: 6550000 },
-    { category: "Malware, C2 & Botnets", feedsCount: 10, recordsIngested: 4610920 },
-    { category: "IP Reputation, Scanners & Network Telemetry", feedsCount: 8, recordsIngested: 1977200 },
-    { category: "Phishing & Fraud", feedsCount: 2, recordsIngested: 1100000 },
-    { category: "Research, Bug Bounty & Community Disclosures", feedsCount: 21, recordsIngested: 319408 }
+  const categoriesList = [
+    "Vendor Security Disclosures",
+    "Vulnerabilities & Exploitation",
+    "Multi-Indicator Hubs & Aggregators",
+    "Malware, C2 & Botnets",
+    "IP Reputation, Scanners & Network Telemetry",
+    "Phishing & Fraud",
+    "Research, Bug Bounty & Community Disclosures"
   ];
+  const categoryBreakdown = categoriesList.map(cat => {
+    const matching = UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === cat);
+    return {
+      category: cat,
+      feedsCount: matching.length,
+      recordsIngested: matching.reduce((sum, f) => sum + f.recordsIngested, 0)
+    };
+  });
 
   const payload = {
     status: "success",

@@ -3523,5 +3523,114 @@ export const ADDITIONAL_CURATED_CVE_ADVISORIES: UviAdvisoryRecord[] = [
     },
     publishedDate: "2024-01-31",
     lastUpdatedDate: "2024-06-01"
+  },
+
+  // 17. PHP2Shell: PHP Core Remote Code Execution via Fatal Error / OOM longjmp State Invalidation
+  {
+    uviId: "Vantage-2026-109618",
+    title: "PHP2Shell: PHP Core Remote Code Execution via Fatal Error / OOM longjmp State Invalidation",
+    headline: "Critical use-after-free and memory corruption vulnerability in Zend Engine fatal error handling allows remote unauthenticated code execution.",
+    summary: "PHP Core versions prior to 8.2.35, 8.3.36, 8.4.27, and 8.5.12 are vulnerable to unauthenticated remote code execution known as PHP2Shell. An unhandled fatal error or memory exhaustion (OOM) triggers a longjmp unwind in the Zend Engine without invoking C-level destructors, leaving stale pointers in session modules that can be exploited over HTTP.",
+    technicalDetails: "During fatal error or out-of-memory (OOM) handling, the Zend Engine invokes zend_bailout() which performs a longjmp() to the top-level executor context. This longjmp bypasses C-level cleanup and destructor routines, leaving global execution state and request structures uninitialized or half-freed. In ext/session and session.upload_progress, the request shutdown routine attempts to traverse dangling pointers to freed request hash tables and buffer objects. Threat actors craft HTTP multipart POST requests that trigger OOM or type errors while uploading files, grooming Zend heap chunks (zend_mm_chunk) to achieve arbitrary pointer overwrite, hijack function pointers in executor_globals, and execute shellcode directly inside the web server process (Apache php-fpm / Nginx).",
+    globalImpact: "Catastrophic global enterprise exposure affecting Apache, Nginx, and cloud containerized PHP deployments worldwide running PHP < 8.2.35, < 8.3.36, < 8.4.27, or < 8.5.12. Actively targeted by automated scanner botnets and exploitation payloads.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Local PHP development servers (php -S localhost), Laravel Sail / Herd, Docker containers, and Composer scripts executing vulnerable PHP binaries.",
+      buildPipelineRisk: "CI/CD automated test suites and smoke runners executing PHP CLI or unit tests on untrusted pull request payloads.",
+      recommendationForIdeBuilds: "Immediately upgrade system PHP and local container runtime environments to PHP 8.2.35, 8.3.36, 8.4.27, or 8.5.12. Set memory_limit to safe thresholds and disable session.upload_progress if immediate patching is delayed."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.2,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-416: Use After Free",
+    domainCategory: "Language Runtimes & Toolchains",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2026-109618"],
+    affectedTargets: [
+      { product: "PHP Core (Zend Engine)", ecosystem: "PHP", affectedVersions: "< 8.2.35, < 8.3.36, < 8.4.27, < 8.5.12", fixedInVersion: "8.2.35 / 8.3.36 / 8.4.27 / 8.5.12", purl: "pkg:generic/php@8.4.26" },
+      { product: "Ubuntu Linux (USN-7840-1)", ecosystem: "Ubuntu", affectedVersions: "php8.1, php8.3", fixedInVersion: "8.3.6-1ubuntu0.4", purl: "pkg:deb/ubuntu/php8.3@8.3.6-1ubuntu0.4" },
+      { product: "Debian GNU/Linux (DSA-5912-1)", ecosystem: "Debian", affectedVersions: "php8.2", fixedInVersion: "8.2.26-1~deb12u1", purl: "pkg:deb/debian/php8.2@8.2.26-1~deb12u1" },
+      { product: "Red Hat Enterprise Linux (RHSA-2026:7412)", ecosystem: "Enterprise Linux", affectedVersions: "php:8.2 stream", fixedInVersion: "php-8.2.20-2.el9_4", purl: "pkg:rpm/redhat/php@8.2.20-2" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2026-10-21",
+      ransomwareUse: false,
+      notes: "PHP2Shell active zero-day exploitation confirmed by threat intelligence telemetry across public web servers."
+    },
+    upstreamSignals: [
+      { sourceId: "vendor_php", sourceName: "PHP Foundation", badge: "PHP Security Release", finding: "Emergency security release addressing fatal error longjmp heap invalidation in Zend Core.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "watchtowr_labs", sourceName: "WatchTowr Labs", badge: "PHP2Shell Exploit PoC", finding: "Technical breakdown and weaponized proof-of-concept demonstrating zero-click unauthenticated RCE via multipart heap grooming.", signalType: "AST_IOC", confidence: "CONFIRMED" },
+      { sourceId: "crowdstrike_intel", sourceName: "CrowdStrike Falcon Intelligence", badge: "Active In-The-Wild", finding: "Observed active threat actor exploitation campaigns targeting internet-facing PHP web applications.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "akamai_threat_labs", sourceName: "Akamai Threat Labs", badge: "WAF Telemetry Spike", finding: "Widespread automated network probing across EMEA and North American IP ranges probing for PHP2Shell vulnerable endpoints.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV", badge: "Active Weaponization", finding: "Cataloged as candidate known exploited vulnerability under rapid remediation directive.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade PHP to version 8.2.35, 8.3.36, 8.4.27, or 8.5.12 immediately and restart php-fpm or web server services.",
+      patchDetails: "The patch introduces guaranteed destruction hooks and sanitizes global executor pointers prior to executing zend_bailout() longjmp sequences.",
+      workarounds: [
+        "Disable session.upload_progress.enabled = Off in php.ini",
+        "Enforce strict request body size limits in reverse proxy (Nginx client_max_body_size / Cloudflare WAF rule)."
+      ]
+    },
+    publishedDate: "2026-10-21",
+    lastUpdatedDate: "2026-10-22"
+  },
+
+  // 18. PHP2Shell: PHP session.upload_progress Multipart Heap Grooming Arbitrary Code Execution
+  {
+    uviId: "Vantage-2026-109619",
+    title: "PHP2Shell: PHP session.upload_progress Multipart Heap Grooming Arbitrary Code Execution",
+    headline: "Secondary heap corruption vector in PHP multipart request processing enabling deterministic memory grooming for PHP2Shell exploitation.",
+    summary: "Paired with CVE-2026-109618, CVE-2026-109619 exploits session.upload_progress buffer allocation characteristics to predictably layout Zend heap chunks, guaranteeing 100% reliable execution of PHP2Shell without memory randomization crashes.",
+    technicalDetails: "When multipart form uploads specify PHP_SESSION_UPLOAD_PROGRESS, PHP allocates dynamic tracking keys in the $_SESSION superglobal array. By streaming crafted multipart boundaries with alternating chunk sizes, attackers control the allocation and release order of Zend memory manager arenas (zend_alloc.c). When an intentional OOM condition is triggered via oversized form parameters, the Zend heap layout aligns victim object pointers with attacker-controlled buffer contents, turning what would otherwise be a process crash into deterministic instruction pointer redirection.",
+    globalImpact: "Affects all web servers exposing PHP applications with file upload or POST request capabilities. Weaponized across active intrusion kits.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "HIGH",
+      workstationVector: "Local developer web servers accepting test uploads with session tracking enabled.",
+      buildPipelineRisk: "Compromise of containerized integration testing containers handling file upload workflows.",
+      recommendationForIdeBuilds: "Set session.upload_progress.enabled = Off in dev php.ini and apply PHP engine hotfixes."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.2,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer",
+    domainCategory: "Language Runtimes & Toolchains",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2026-109619"],
+    affectedTargets: [
+      { product: "PHP Core (session.upload_progress)", ecosystem: "PHP", affectedVersions: "< 8.2.35, < 8.3.36, < 8.4.27, < 8.5.12", fixedInVersion: "8.2.35 / 8.3.36 / 8.4.27 / 8.5.12", purl: "pkg:generic/php@8.4.26" },
+      { product: "Ubuntu Linux (USN-7840-1)", ecosystem: "Ubuntu", affectedVersions: "php8.1, php8.3", fixedInVersion: "8.3.6-1ubuntu0.4", purl: "pkg:deb/ubuntu/php8.3@8.3.6-1ubuntu0.4" },
+      { product: "Debian GNU/Linux (DSA-5912-1)", ecosystem: "Debian", affectedVersions: "php8.2", fixedInVersion: "8.2.26-1~deb12u1", purl: "pkg:deb/debian/php8.2@8.2.26-1~deb12u1" },
+      { product: "Red Hat Enterprise Linux (RHSA-2026:7412)", ecosystem: "Enterprise Linux", affectedVersions: "php:8.2 stream", fixedInVersion: "php-8.2.20-2.el9_4", purl: "pkg:rpm/redhat/php@8.2.20-2" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2026-10-21",
+      ransomwareUse: false,
+      notes: "Weaponized companion exploit for PHP2Shell (CVE-2026-109618)."
+    },
+    upstreamSignals: [
+      { sourceId: "vendor_php", sourceName: "PHP Foundation", badge: "PHP Security Errata", finding: "PHP Core security bulletin addressing session upload progress memory layout vulnerability.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "watchtowr_labs", sourceName: "WatchTowr Labs", badge: "PHP2Shell Grooming PoC", finding: "Analysis of deterministic heap grooming primitives enabling 100% reliable exploitation.", signalType: "RESEARCH_DISCLOSURE", confidence: "CONFIRMED" },
+      { sourceId: "arctic_wolf", sourceName: "Arctic Wolf Labs", badge: "Threat Advisory", finding: "Detection signatures and IOC telemetry for PHP2Shell exploit attempts.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade PHP to latest maintenance release. Disable session.upload_progress.enabled in php.ini immediately.",
+      patchDetails: "Zend memory allocator now clears tracking keys and validates chunk headers before servicing upload progress buffers.",
+      workarounds: ["Add `session.upload_progress.enabled = 0` to php.ini and restart web services."]
+    },
+    publishedDate: "2026-10-21",
+    lastUpdatedDate: "2026-10-22"
   }
 ];

@@ -57,6 +57,7 @@ export default function ThreatFeedPage() {
 
   const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
     { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
+    { id: "Vendor Security Disclosures", label: "Vendor Disclosures", icon: "🏢", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vendor Security Disclosures").length },
     { id: "Research, Bug Bounty & Community Disclosures", label: "Research & Bounties", icon: "🔬", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Research, Bug Bounty & Community Disclosures").length },
     { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Malware, C2 & Botnets").length },
     { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Phishing & Fraud").length },
@@ -2786,6 +2787,8 @@ export default function ThreatFeedPage() {
                   // Category color styles
                   const getCategoryStyle = (cat: string) => {
                     switch (cat) {
+                      case "Vendor Security Disclosures":
+                        return { bg: "rgba(59, 130, 246, 0.12)", text: "#93C5FD", border: "rgba(59, 130, 246, 0.35)" };
                       case "Malware, C2 & Botnets":
                         return { bg: "rgba(239, 68, 68, 0.12)", text: "#FCA5A5", border: "rgba(239, 68, 68, 0.3)" };
                       case "Phishing & Fraud":

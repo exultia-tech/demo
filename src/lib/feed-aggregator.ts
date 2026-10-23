@@ -86,7 +86,7 @@ function classifyDomain(vendor: string, product: string, desc: string): DomainCa
   if (text.includes("cisco") || text.includes("fortinet") || text.includes("palo alto") || text.includes("openssl") || text.includes("openssh") || text.includes("vpn") || text.includes("router") || text.includes("firewall") || text.includes("sonicwall") || text.includes("f5") || text.includes("big-ip") || text.includes("dns") || text.includes("http") || text.includes("tls") || text.includes("ssh") || text.includes("curl")) {
     return "Networking, Protocols & Cryptography";
   }
-  if (text.includes("node") || text.includes("python") || text.includes("rust") || text.includes("golang") || text.includes("go ") || text.includes("ruby") || text.includes("compiler") || text.includes("runtime") || text.includes("npm") || text.includes("pypi") || text.includes("cargo") || text.includes("v8") || text.includes("chromium")) {
+  if (text.includes("node") || text.includes("python") || text.includes("rust") || text.includes("golang") || text.includes("go ") || text.includes("ruby") || text.includes("php") || text.includes("zend") || text.includes("compiler") || text.includes("runtime") || text.includes("npm") || text.includes("pypi") || text.includes("cargo") || text.includes("v8") || text.includes("chromium")) {
     return "Language Runtimes & Toolchains";
   }
   
@@ -505,6 +505,163 @@ function generateMultiFeedSignals(
       badge: "MISP Sharing Feed",
       finding: `European CIRCL MISP threat sharing cluster mapped campaign attributes across CERT incident response teams.`,
       signalType: "RESEARCH_DISCLOSURE",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22. Major Software Vendor Security Disclosures
+  // 22a. PHP Foundation Security Advisories (PHP Core & Zend Engine, PHP2Shell)
+  if (text.includes("php") || text.includes("zend") || text.includes("php2shell")) {
+    signals.push({
+      sourceId: "vendor_php",
+      sourceName: "PHP Foundation",
+      badge: "PHP Security Advisory",
+      finding: "Official PHP Foundation security disclosure tracking Zend Engine memory safety, fatal error unwinding, and runtime updates.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22b. Microsoft Security Response Center (MSRC)
+  if (text.includes("microsoft") || text.includes("windows") || text.includes("azure") || text.includes(".net") || text.includes("hyper-v") || text.includes("exchange")) {
+    signals.push({
+      sourceId: "vendor_msrc",
+      sourceName: "Microsoft MSRC",
+      badge: "MSRC Security Update",
+      finding: "Official Microsoft Security Response Center advisory detailing Windows OS, Azure, and developer ecosystem mitigations.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22c. Red Hat Product Security (RHSA)
+  if (text.includes("red hat") || text.includes("rhel") || text.includes("fedora") || text.includes("openshift") || text.includes("centos")) {
+    signals.push({
+      sourceId: "vendor_redhat",
+      sourceName: "Red Hat RHSA",
+      badge: "Red Hat Errata",
+      finding: "Official Red Hat Enterprise Linux security errata and CSAF 2.0 vulnerability assessment.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22d. Ubuntu / Canonical Security Notices (USN)
+  if (text.includes("ubuntu") || text.includes("canonical")) {
+    signals.push({
+      sourceId: "vendor_ubuntu",
+      sourceName: "Ubuntu USN",
+      badge: "Ubuntu Security Notice",
+      finding: "Canonical Security Team notice detailing security updates for Ubuntu LTS and container base images.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22e. Debian Security Tracker (DSA)
+  if (text.includes("debian")) {
+    signals.push({
+      sourceId: "vendor_debian",
+      sourceName: "Debian Security Tracker",
+      badge: "Debian DSA",
+      finding: "Debian Security Team vulnerability tracker confirming backported patches in stable package repositories.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22f. Apple Product Security (PSIRT)
+  if (text.includes("apple") || text.includes("macos") || text.includes("ios") || text.includes("safari") || text.includes("webkit") || text.includes("darwin")) {
+    signals.push({
+      sourceId: "vendor_apple",
+      sourceName: "Apple PSIRT",
+      badge: "Apple Security Release",
+      finding: "Official Apple security release addressing operating system vulnerabilities and active in-the-wild zero-days.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22g. Google & Android Security
+  if (text.includes("android") || text.includes("chromium") || text.includes("chrome") || text.includes("pixel") || text.includes("google")) {
+    signals.push({
+      sourceId: "vendor_google",
+      sourceName: "Google Security",
+      badge: "Android/Chrome Bulletin",
+      finding: "Google Product Security bulletin and threat intelligence attribution for browser and mobile runtime components.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22h. Apache Software Foundation
+  if (text.includes("apache") || text.includes("tomcat") || text.includes("kafka") || text.includes("struts") || text.includes("log4j")) {
+    signals.push({
+      sourceId: "vendor_apache",
+      sourceName: "Apache Security (ASF)",
+      badge: "ASF Advisory",
+      finding: "Official Apache Software Foundation coordinated security disclosure and patch release.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22i. OpenSSL Project
+  if (text.includes("openssl") || text.includes("libssl") || text.includes("tls") || text.includes("ssl")) {
+    signals.push({
+      sourceId: "vendor_openssl",
+      sourceName: "OpenSSL Project",
+      badge: "OpenSSL Advisory",
+      finding: "Cryptographic vulnerability disclosure from the core OpenSSL project team.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22j. Linux Kernel Organization
+  if (text.includes("kernel") || text.includes("bpf") || text.includes("netfilter") || text.includes("sys_") || text.includes("sock_")) {
+    signals.push({
+      sourceId: "vendor_linux_kernel",
+      sourceName: "Linux Kernel CNA",
+      badge: "Kernel Security Patch",
+      finding: "Upstream Linux kernel security advisory and subsystem fix commit.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22k. VMware & Broadcom
+  if (text.includes("vmware") || text.includes("esxi") || text.includes("vcenter") || text.includes("broadcom")) {
+    signals.push({
+      sourceId: "vendor_vmware",
+      sourceName: "VMware VMSA",
+      badge: "VMware Security Advisory",
+      finding: "Enterprise virtualization advisory detailing hypervisor breakout and management interface fixes.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22l. Cisco Systems
+  if (text.includes("cisco") || text.includes("ios-xe") || text.includes("nx-os") || text.includes("asa")) {
+    signals.push({
+      sourceId: "vendor_cisco",
+      sourceName: "Cisco PSIRT",
+      badge: "Cisco Advisory",
+      finding: "Official Cisco Product Security Incident Response Team advisory and software fix announcement.",
+      signalType: "CVE_RECORD",
+      confidence: "CONFIRMED"
+    });
+  }
+
+  // 22m. Oracle Corporation
+  if (text.includes("oracle") || text.includes("weblogic") || text.includes("java")) {
+    signals.push({
+      sourceId: "vendor_oracle",
+      sourceName: "Oracle CPU",
+      badge: "Oracle Security Alert",
+      finding: "Oracle Critical Patch Update security advisory and risk matrix evaluation.",
+      signalType: "CVE_RECORD",
       confidence: "CONFIRMED"
     });
   }

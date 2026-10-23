@@ -1,5 +1,5 @@
 import { client } from './index';
-import { UviAdvisoryRecord } from '../threat-feed-data';
+import { UviAdvisoryRecord, UVI_PUBLIC_FEED_SOURCES } from '../threat-feed-data';
 import { getAggregatedUviAdvisories, getGlobalRegistryMetrics } from '../feed-aggregator';
 import { syncUviThreatsToDb, getDbThreatMetrics } from './sync-threats';
 
@@ -70,24 +70,44 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
       const q = `%${params.query.toLowerCase()}%`;
       whereClauses.push(`(
         LOWER(uvi_id) LIKE ? OR 
+        LOWER(legacy_uvi_id) LIKE ? OR
         LOWER(title) LIKE ? OR 
         LOWER(headline) LIKE ? OR 
         LOWER(summary) LIKE ? OR 
         LOWER(technical_details) LIKE ? OR 
         LOWER(cve_list_json) LIKE ? OR 
         LOWER(domain_category) LIKE ? OR
-        LOWER(workstation_vector) LIKE ?
+        LOWER(workstation_vector) LIKE ? OR
+        LOWER(raw_record_json) LIKE ?
       )`);
-      args.push(q, q, q, q, q, q, q, q);
+      args.push(q, q, q, q, q, q, q, q, q, q);
     }
 
-    // 5. Severity Filter
+    // 5. Source Feed Filter
+    if (params.source && params.source.toUpperCase() !== 'ALL') {
+      whereClauses.push('raw_record_json LIKE ?');
+      args.push(`%"sourceId":"${params.source}"%`);
+    }
+
+    // 6. Category Filter
+    if (params.category && params.category.toUpperCase() !== 'ALL') {
+      const matchingFeeds = UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === params.category);
+      if (matchingFeeds.length > 0) {
+        const feedLikes = matchingFeeds.map(() => 'raw_record_json LIKE ?').join(' OR ');
+        whereClauses.push(`(${feedLikes})`);
+        for (const feed of matchingFeeds) {
+          args.push(`%"sourceId":"${feed.id}"%`);
+        }
+      }
+    }
+
+    // 7. Severity Filter
     if (params.severity && params.severity !== 'ALL') {
       whereClauses.push('UPPER(severity) = ?');
       args.push(params.severity.toUpperCase());
     }
 
-    // 6. Domain / Operational Filter
+    // 8. Domain / Operational Filter
     const targetDomain = params.domain || params.action;
     if (targetDomain && targetDomain.toUpperCase() !== 'ALL' && targetDomain.toLowerCase() !== 'all domains') {
       const dUpper = targetDomain.toUpperCase();
@@ -95,12 +115,12 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
       args.push(dUpper, dUpper, dUpper);
     }
 
-    // 7. KEV Only Filter
+    // 9. KEV Only Filter
     if (params.kevOnly) {
       whereClauses.push('is_known_exploited = 1');
     }
 
-    // 8. Stage & Horizon Filter
+    // 10. Stage & Horizon Filter
     if (params.stage && params.stage !== 'ALL') {
       whereClauses.push('UPPER(weaponization_stage) = ?');
       args.push(params.stage.toUpperCase());
@@ -175,7 +195,25 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
 
   if (params.query) {
     const q = params.query.toLowerCase();
-    filtered = filtered.filter(f => f.title.toLowerCase().includes(q) || f.summary.toLowerCase().includes(q) || f.uviId.toLowerCase().includes(q));
+    filtered = filtered.filter(f => 
+      f.title.toLowerCase().includes(q) || 
+      f.summary.toLowerCase().includes(q) || 
+      f.uviId.toLowerCase().includes(q) ||
+      (f.legacyUviId && f.legacyUviId.toLowerCase().includes(q)) ||
+      (f.headline && f.headline.toLowerCase().includes(q)) ||
+      (f.technicalDetails && f.technicalDetails.toLowerCase().includes(q)) ||
+      (f.cveList && f.cveList.some(c => c.toLowerCase().includes(q))) ||
+      (f.affectedTargets && f.affectedTargets.some(t => t.product.toLowerCase().includes(q) || t.ecosystem.toLowerCase().includes(q))) ||
+      (f.upstreamSignals && f.upstreamSignals.some(s => s.sourceName.toLowerCase().includes(q) || s.badge.toLowerCase().includes(q) || s.sourceId.toLowerCase().includes(q)))
+    );
+  }
+  if (params.source && params.source.toUpperCase() !== 'ALL') {
+    const s = params.source.toLowerCase();
+    filtered = filtered.filter(f => f.upstreamSignals && f.upstreamSignals.some(sig => sig.sourceId.toLowerCase() === s));
+  }
+  if (params.category && params.category.toUpperCase() !== 'ALL') {
+    const matchingFeedIds = new Set(UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === params.category).map(f => f.id.toLowerCase()));
+    filtered = filtered.filter(f => f.upstreamSignals && f.upstreamSignals.some(sig => matchingFeedIds.has(sig.sourceId.toLowerCase())));
   }
   if (params.scope === 'build-impact' || params.scope === 'dev') {
     filtered = filtered.filter(f => f.ideBuildImpact.hasDirectBuildImpact);
