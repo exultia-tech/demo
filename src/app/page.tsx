@@ -12,7 +12,6 @@ import {
 import { 
   ShieldCheck, 
   Zap, 
-  Radio, 
   Layers, 
   ArrowRight, 
   Lock, 
@@ -59,18 +58,6 @@ export default function HomePage() {
             Continuous threat intelligence from 127+ public feeds paired with authoritative OS vendor patch management, 
             autonomous zero-downtime hotpatching, CIS-hardened OS images, and offline-ready workstations.
           </p>
-
-          <div className="hero-cta-group">
-            <Link href="/app/uvi" className="hero-btn-primary">
-              <Radio size={16} />
-              <span>Explore Vantage Feeds</span>
-              <ArrowRight size={15} />
-            </Link>
-            <Link href="/app/praxis" className="hero-btn-secondary">
-              <Zap size={16} />
-              <span>Praxis Hotpatch Engine</span>
-            </Link>
-          </div>
         </section>
 
         {/* TIER 1: CORE SECURITY OPERATIONS LOOP (2-Column Hero Grid) */}

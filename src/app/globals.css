@@ -1841,7 +1841,7 @@ textarea.input-field {
 
 .exultia-hero-section {
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1922,55 +1922,7 @@ textarea.input-field {
   font-size: 0.88rem;
   line-height: 1.55;
   color: #94A3B8;
-  margin: 0 auto 1.5rem auto;
-}
-
-.hero-cta-group {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.hero-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--accent-primary, #00E5FF), #0284C7);
-  color: #000000;
-  font-weight: 800;
-  font-size: 0.84rem;
-  padding: 10px 20px;
-  border-radius: 9px;
-  text-decoration: none;
-  box-shadow: 0 4px 16px var(--accent-glow, rgba(0, 229, 255, 0.28));
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.hero-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 22px var(--accent-glow, rgba(0, 229, 255, 0.45));
-}
-
-.hero-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 0.84rem;
-  padding: 10px 20px;
-  border-radius: 9px;
-  text-decoration: none;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.hero-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  margin: 0 auto;
 }
 
 .section-label-header {
