@@ -323,21 +323,6 @@ export default function PraxisPage() {
             Autonomous remediation &amp; hardening engine
           </p>
         </div>
-        <Link
-          href="/account/subscription?product=praxis"
-          style={{
-            padding: '0.45rem 1rem',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            color: '#FBBF24',
-            border: '1px solid rgba(245, 158, 11, 0.4)',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          Plans
-        </Link>
       </div>
 
       {/* Mode switcher */}

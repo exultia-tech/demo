@@ -411,7 +411,8 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
 
     // 6. Category Filter
     if (params.category && params.category.toUpperCase() !== 'ALL') {
-      const matchingFeeds = UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === params.category);
+      const requestedCats = params.category.split('|');
+      const matchingFeeds = UVI_PUBLIC_FEED_SOURCES.filter(f => requestedCats.includes(f.category));
       if (matchingFeeds.length > 0) {
         const catClauses: string[] = [];
         for (const feed of matchingFeeds) {
@@ -533,7 +534,8 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
     filtered = filtered.filter(f => matchesSourceInMemory(f, params.source!));
   }
   if (params.category && params.category.toUpperCase() !== 'ALL') {
-    const matchingFeedIds = UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === params.category).map(f => f.id);
+    const requestedCats = params.category.split('|');
+    const matchingFeedIds = UVI_PUBLIC_FEED_SOURCES.filter(f => requestedCats.includes(f.category)).map(f => f.id);
     filtered = filtered.filter(f => matchingFeedIds.some(fid => matchesSourceInMemory(f, fid)));
   }
   if (params.scope === 'build-impact' || params.scope === 'dev') {

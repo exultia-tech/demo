@@ -26,8 +26,12 @@ import {
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
-  // Global Rating System Mode: "observational" (Behavioral Observational Ratings - Zero Numbers) vs "classic" (Classic CVSS v3.1 Scoring)
-  const [ratingMode, setRatingMode] = useState<"observational" | "classic">("observational");
+  // Feed type: threat intelligence, OS patch errata, or both
+  const VENDOR_CAT = "Vendor Security Disclosures";
+  const [streamMode, setStreamMode] = useState<"THREAT" | "PATCH" | "BOTH">("BOTH");
+  // CVSS score visibility toggle (scores always use classic CVSS rendering)
+  const [showScores, setShowScores] = useState(true);
+  const ratingMode = "classic" as "observational" | "classic";
 
   // Quad-Perspective Scope State: "ALL" (Universal Threats) vs "DEV_BUILD" (Developer Exposure) vs "NON_CVE" (Pure Non-CVE Malware) vs "INFORMATIONAL" (Informational Disclosures & Vector Research)
   const [feedScope, setFeedScope] = useState<"ALL" | "DEV_BUILD" | "NON_CVE" | "INFORMATIONAL">("ALL");
@@ -65,6 +69,25 @@ export default function ThreatFeedPage() {
     { id: "Vulnerabilities & Exploitation", label: "Vulnerabilities", icon: "🚨", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vulnerabilities & Exploitation").length },
     { id: "Multi-Indicator Hubs & Aggregators", label: "Threat Hubs", icon: "👽", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Multi-Indicator Hubs & Aggregators").length }
   ];
+
+  // Feed type filter (Threats / Patches / Both) drives sidebar + filter options
+  const modeFeeds = useMemo(() => alphabetizedFeeds.filter(f =>
+    streamMode === "BOTH" ? true : streamMode === "PATCH" ? f.category === VENDOR_CAT : f.category !== VENDOR_CAT
+  ), [alphabetizedFeeds, streamMode]);
+  const modeCategories = FEED_CATEGORIES.filter(c =>
+    c.id !== "ALL" && (streamMode === "BOTH" || (streamMode === "PATCH") === (c.id === VENDOR_CAT))
+  );
+  const changeStreamMode = (mode: "THREAT" | "PATCH" | "BOTH") => {
+    handleFilterChange(() => {
+      setStreamMode(mode);
+      setFeedDirectoryCategory("ALL");
+      setSelectedSourceFeed("ALL");
+      if (mode === "PATCH") {
+        setFeedScope("ALL");
+        setSelectedDomain("ALL");
+      }
+    });
+  };
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -137,15 +160,22 @@ export default function ThreatFeedPage() {
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
         if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
 
-        if (feedDirectoryCategory !== "ALL") {
-          params.set("category", feedDirectoryCategory);
+        const effectiveCategory = feedDirectoryCategory !== "ALL"
+          ? feedDirectoryCategory
+          : streamMode === "PATCH"
+            ? VENDOR_CAT
+            : streamMode === "THREAT"
+              ? FEED_CATEGORIES.filter(c => c.id !== "ALL" && c.id !== VENDOR_CAT).map(c => c.id).join("|")
+              : null;
+        if (effectiveCategory) {
+          params.set("category", effectiveCategory);
         }
 
         if (selectedDomain !== "ALL") {
           params.set("domain", selectedDomain);
           params.set("action", selectedDomain);
         }
-        if (ratingMode === "classic" && selectedSeverity !== "ALL") {
+        if (showScores && selectedSeverity !== "ALL") {
           params.set("severity", selectedSeverity);
         }
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
@@ -220,7 +250,7 @@ export default function ThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy, feedDirectoryCategory]);
+  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy, feedDirectoryCategory, streamMode, showScores]);
 
   // Check for initial URL query parameters on mount (e.g. ?category=Vendor+Security+Disclosures from Argent redirect or links)
   useEffect(() => {
@@ -228,7 +258,7 @@ export default function ThreatFeedPage() {
       const searchParams = new URLSearchParams(window.location.search);
       const catParam = searchParams.get("category");
       if (catParam) {
-        setFeedDirectoryCategory(catParam);
+        setFeedDirectoryCategory(catParam); if (catParam === VENDOR_CAT) { setStreamMode("PATCH"); setFeedDirectoryCategory("ALL"); }
       }
       const queryParam = searchParams.get("query") || searchParams.get("q");
       if (queryParam) {
@@ -343,21 +373,6 @@ export default function ThreatFeedPage() {
               Total Threats
             </div>
           </div>
-          <Link
-            href="/account/subscription?product=uvi"
-            style={{
-              padding: "0.45rem 1rem",
-              fontSize: "0.82rem",
-              fontWeight: 600,
-              color: "#93C5FD",
-              border: "1px solid rgba(59, 130, 246, 0.35)",
-              borderRadius: "8px",
-              textDecoration: "none",
-              whiteSpace: "nowrap"
-            }}
-          >
-            Plans
-          </Link>
         </div>
       </div>
       {/* Main Two-Column Layout: Threat Feeds Sidebar (Left) + Advisories Content (Right) */}
@@ -493,7 +508,7 @@ export default function ThreatFeedPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
                     <span style={{ fontSize: "1rem" }}>🌐</span>
                     <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "0.02em" }}>
-                      Threat Feeds
+                      {streamMode === "PATCH" ? "Patch Feeds" : streamMode === "THREAT" ? "Threat Feeds" : "All Feeds"}
                     </span>
                     <span style={{
                       fontSize: "0.68rem",
@@ -504,7 +519,7 @@ export default function ThreatFeedPage() {
                       color: "#34D399",
                       border: "1px solid rgba(16, 185, 129, 0.3)"
                     }}>
-                      {UVI_PUBLIC_FEED_SOURCES.length} Feeds
+                      {modeFeeds.length} Feeds
                     </span>
                   </div>
 
@@ -531,6 +546,31 @@ export default function ThreatFeedPage() {
 
                 <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
                   {((totalUpstreamRecords) / 1000000).toFixed(1)}M+ Synchronized Upstream Records
+                </div>
+              </div>
+
+              {/* Feed type toggle: Threats / Patches / Both */}
+              <div style={{ padding: "0.65rem 0.85rem", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <div style={{ display: "flex", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "9px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                  {([["THREAT", "Threats"], ["PATCH", "Patches"], ["BOTH", "Both"]] as const).map(([id, label]) => (
+                    <button
+                      key={id}
+                      onClick={() => changeStreamMode(id)}
+                      style={{
+                        flex: 1,
+                        padding: "0.4rem 0.3rem",
+                        borderRadius: "7px",
+                        border: "none",
+                        background: streamMode === id ? (id === "PATCH" ? "rgba(16, 185, 129, 0.25)" : id === "THREAT" ? "rgba(239, 68, 68, 0.22)" : "rgba(59, 130, 246, 0.25)") : "transparent",
+                        color: streamMode === id ? "#F8FAFC" : "#94A3B8",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -665,7 +705,7 @@ export default function ThreatFeedPage() {
                       justifyContent: "center",
                       lineHeight: 1
                     }}>🌐</span>
-                    <span>All Feeds Combined</span>
+                    <span>{streamMode === "PATCH" ? "All Patch Feeds" : streamMode === "THREAT" ? "All Threat Feeds" : "All Feeds Combined"}</span>
                   </div>
                   <span style={{
                     fontSize: "0.68rem",
@@ -677,7 +717,7 @@ export default function ThreatFeedPage() {
                 </button>
 
                 {/* Alphabetized Feeds List (A to Z) */}
-                {alphabetizedFeeds.map(feed => {
+                {modeFeeds.map(feed => {
                   const isSelected = selectedSourceFeed === feed.id;
                   const recFormatted = feed.recordsIngested >= 1000000 
                     ? `${(feed.recordsIngested / 1000000).toFixed(1)}M` 
@@ -788,40 +828,46 @@ export default function ThreatFeedPage() {
         <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
           {/* Triage toolbar */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", marginBottom: "0.9rem" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
-              <button
-                onClick={() => handleFilterChange(() => setRatingMode("observational"))}
-                style={{
-                  padding: "0.4rem 0.9rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: ratingMode === "observational" ? "rgba(59, 130, 246, 0.25)" : "transparent",
-                  color: ratingMode === "observational" ? "#93C5FD" : "#94A3B8",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  cursor: "pointer"
-                }}
-                title="Assess real-world threat weaponization: CISA KEV active exploitation, in-the-wild campaigns, botnet C2 nodes, scanner sprays, and public PoCs"
-              >
-                Exploitation Reality
-              </button>
-              <button
-                onClick={() => handleFilterChange(() => setRatingMode("classic"))}
-                style={{
-                  padding: "0.4rem 0.9rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
-                  color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  cursor: "pointer"
-                }}
-                title="Assess threats using conventional quantitative CVSS v3.1 base score, severity levels, and metric vectors"
-              >
-                CVSS 3.1
-              </button>
-            </div>
+            <button
+              onClick={() => setShowScores(prev => !prev)}
+              role="switch"
+              aria-checked={showScores}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                padding: "0.35rem 0.8rem 0.35rem 0.5rem",
+                borderRadius: "999px",
+                background: "rgba(10, 14, 23, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: showScores ? "#F8FAFC" : "#94A3B8",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+              title="Show or hide CVSS severity scores"
+            >
+              <span style={{
+                position: "relative",
+                width: "34px",
+                height: "18px",
+                borderRadius: "999px",
+                background: showScores ? "#3B82F6" : "rgba(255, 255, 255, 0.15)",
+                transition: "background 0.15s ease"
+              }}>
+                <span style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: showScores ? "18px" : "2px",
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "50%",
+                  background: "#FFFFFF",
+                  transition: "left 0.15s ease"
+                }} />
+              </span>
+              <span>Scores</span>
+            </button>
 
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <button
@@ -915,8 +961,8 @@ export default function ThreatFeedPage() {
                 width: "100%"
               }}
             >
-              <option value="ALL">🌐 All Intelligence Streams (Dual Engine)</option>
-              {FEED_CATEGORIES.filter(c => c.id !== "ALL").map(cat => (
+              <option value="ALL">🌐 {streamMode === "PATCH" ? "All Patch Streams" : streamMode === "THREAT" ? "All Threat Streams" : "All Streams (Threat + Patch)"}</option>
+              {modeCategories.map(cat => (
                 <option key={cat.id} value={cat.id}>
                   {cat.icon} {cat.label} ({cat.count} feeds)
                 </option>
@@ -944,8 +990,8 @@ export default function ThreatFeedPage() {
                 width: "100%"
               }}
             >
-              <option value="ALL">All Feeds ({UVI_PUBLIC_FEED_SOURCES.length} Sources)</option>
-              {alphabetizedFeeds.map(feed => (
+              <option value="ALL">All Feeds ({modeFeeds.length} Sources)</option>
+              {modeFeeds.map(feed => (
                 <option key={feed.id} value={feed.id}>
                   {feed.icon} {feed.name}
                 </option>
@@ -953,6 +999,7 @@ export default function ThreatFeedPage() {
             </select>
           </div>
 
+          {streamMode !== "PATCH" && (<>
           {/* Unified Operational Domain Dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "200px" }}>
             <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
@@ -1010,9 +1057,10 @@ export default function ThreatFeedPage() {
               <option value="INFORMATIONAL">📡 Informational Disclosures & Vector Research ({informationalDisclosuresCount.toLocaleString()})</option>
             </select>
           </div>
+          </>)}
 
           {/* Severity Dropdown (Only in Classic CVSS Mode) */}
-          {ratingMode === "classic" && (
+          {showScores && (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
               <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
                 Severity
@@ -1229,9 +1277,11 @@ export default function ThreatFeedPage() {
                       </span>
                     </div>
                   </th>
+                  {showScores && (
                   <th style={{ padding: "1.1rem 1.25rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", width: "195px", textAlign: "right" }}>
                     {ratingMode === "observational" ? "Exploitation Reality" : "Severity & Score"}
                   </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -1531,6 +1581,7 @@ export default function ThreatFeedPage() {
                         </td>
 
                         {/* Column 4: Exploitation Reality (or Severity & Score in classic mode) */}
+                        {showScores && (
                         <td style={{ padding: "1.1rem 1.25rem", width: "195px", verticalAlign: "top", textAlign: "right" }}>
                           <div style={{ display: "flex", justifyContent: "flex-end" }}>
                             {ratingMode === "observational" ? (
@@ -1575,6 +1626,7 @@ export default function ThreatFeedPage() {
                             )}
                           </div>
                         </td>
+                        )}
                       </tr>
                     );
                   })
@@ -1646,6 +1698,7 @@ export default function ThreatFeedPage() {
                         </button>
                       </div>
 
+                      {showScores && (<>
                       {ratingMode === "observational" ? (
                         (() => {
                           const reality = getExploitationRealityBadge(record);
@@ -1682,6 +1735,7 @@ export default function ThreatFeedPage() {
                           </span>
                         </div>
                       )}
+                      </>)}
                     </div>
 
                     {/* Title & Headline */}
