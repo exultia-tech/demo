@@ -24,14 +24,13 @@ import {
 import { 
   PureIdeIcon, 
   VantageIcon, 
-  KineticIcon, 
   PraxisIcon, 
   PureOsIcon, 
   AxiomIcon 
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
 
-type ProductKey = "pureide" | "uvi" | "kinetic" | "praxis" | "pureos" | "axiom" | "multipass";
+type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -47,7 +46,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "kinetic", "praxis", "pureos", "axiom", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -57,7 +56,7 @@ function SubscriptionContent() {
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
   
   const isMultiPass = selectedProduct === "multipass";
-  const isKinetic = selectedProduct === "kinetic";
+  const isPraxis = selectedProduct === "praxis";
 
   useEffect(() => {
     const prod = searchParams.get("product") as ProductKey;
@@ -163,19 +162,19 @@ function SubscriptionContent() {
         isPopular: false
       }
     ],
-    kinetic: [
+    praxis: [
       {
         tier: "free",
         name: "Community",
         priceMonthly: 0,
         priceAnnual: 0,
-        description: "Standard Vantage vulnerability sync, manual bash hotfix recipes, and local host validation.",
+        description: "Up to 2 active nodes free forever, standard Vantage CVE sync, manual hotfix recipes, and firewall exports.",
         features: [
           "Up to 2 Active Nodes Free Forever",
           "Standard Vantage CVE synchronization",
           "Manual hotfix inspection & verification",
           "Deterministic rollback recipes",
-          "Local-first execution model"
+          "Firewall & domain blocking generator (plain, JSON)"
         ],
         cta: "Current Free Tier",
         isPopular: false
@@ -185,14 +184,15 @@ function SubscriptionContent() {
         name: "Pro",
         priceMonthly: 49,
         priceAnnual: 39,
-        description: "Autonomous patch streaming daemon, zero-agent systemd runner, and sub-second deterministic rollback engine. Billed per active host ($49/host/mo).",
+        description: "Autonomous patch streaming daemon, sub-second deterministic rollback engine, pre-flight sentinels, and SIEM exports.",
         features: [
           "Everything in Community",
-          "$49/host/mo ($39/host/mo billed annually)",
           "Autonomous patch streaming daemon",
           "Deterministic sub-second rollback engine",
           "Automated pre & post-flight sentinels",
-          "Live canary health monitoring"
+          "Live canary health monitoring",
+          "Hardware firewall filters (Cisco, Palo Alto, Fortinet)",
+          "Automated bash/ansible patching payloads"
         ],
         cta: "Upgrade to Pro",
         isPopular: true
@@ -202,60 +202,14 @@ function SubscriptionContent() {
         name: "Enterprise Fleet",
         priceMonthly: 499,
         priceAnnual: 399,
-        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Ring 2), Ansible playbooks, and SLSA Level 3 signed manifests. Billed per fleet host ($499/host/mo).",
+        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Fleet), Ansible playbooks, SLSA Level 3 signed manifests, and fleet volume licenses.",
         features: [
           "Everything in Pro",
-          "$499/host/mo ($399/host/mo billed annually)",
           "Phased multi-ring deployment orchestrator",
           "Cosign OIDC SLSA Level 3 signed manifests",
           "Emergency fleet-wide rollback orchestrator",
-          "Self-hosted automated test harness"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    praxis: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Manual threat remediation guidelines for individual operators.",
-        features: [
-          "Single User Browser Access",
-          "Public CVE checklist",
-          "Standard manual remediation guides"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Automated bash and playbook generation with SIEM export formatting.",
-        features: [
-          "Everything in Community",
-          "Automated bash/ansible patching payloads",
-          "SIEM webhook export formats (Splunk, QRadar)",
-          "Automated compliance verification payload"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Fleet-wide operations scale and compliance tracking.",
-        features: [
-          "Everything in Pro",
           "Organization Volume Entitlements (Fleet licenses)",
-          "Custom internal compliance benchmarking",
-          "Automated fleet audit runner"
+          "Automated fleet audit runner & compliance matrix"
         ],
         cta: "Upgrade to Enterprise",
         isPopular: false
@@ -368,9 +322,8 @@ function SubscriptionContent() {
         description: "Bundled multi-product access! Get individual Pro-level access across all eligible Exultia products.",
         features: [
           "PureIDE Pro",
-          "Vantage Pro",
-          "Kinetic Pro (Autonomous per-host patch stream)",
-          "Praxis Pro",
+          "Vantage Pro (127 feeds & vendor errata)",
+          "Praxis Pro (Autonomous hotpatching & firewall engine)",
           "PureOS Pro",
           "Axiom Pro (Verifiable certs & export API)",
           "Huge Bundle Savings across the entire suite"
@@ -386,9 +339,8 @@ function SubscriptionContent() {
         description: "Organization-wide Enterprise-level access to the complete Exultia stack with self-hosted automation & 24/7 AI Support Agent.",
         features: [
           "PureIDE Enterprise",
-          "Vantage Enterprise",
-          "Kinetic Enterprise (Fleet-wide patch orchestrator)",
-          "Praxis Enterprise",
+          "Vantage Enterprise (Redistributable commercial feed)",
+          "Praxis Enterprise (Fleet-wide hotpatch orchestrator & hardware ACLs)",
           "PureOS Enterprise",
           "Axiom Enterprise LMS API",
           "Cosign SLSA Level 3 signed manifests",
@@ -416,16 +368,9 @@ function SubscriptionContent() {
       color: "#8B5CF6",
       bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
     },
-    kinetic: {
-      name: "Kinetic",
-      subtitle: "Autonomous zero-downtime patch stream & deterministic rollback engine",
-      icon: <KineticIcon size={18} glow={false} />,
-      color: "#06B6D4",
-      bgGradient: "linear-gradient(135deg, #06B6D4, #0891B2)"
-    },
     praxis: {
       name: "Praxis",
-      subtitle: "Surgical vulnerability remediation & automated patch payloads",
+      subtitle: "Autonomous zero-downtime hotpatching, canary rollouts & hardware firewall ACLs",
       icon: <PraxisIcon size={18} glow={false} />,
       color: "#F59E0B",
       bgGradient: "linear-gradient(135deg, #F59E0B, #D97706)"
@@ -781,10 +726,10 @@ function SubscriptionContent() {
                           : "1px solid rgba(56, 189, 248, 0.3)"
                     }}>
                       {isFree 
-                        ? (isKinetic ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
+                        ? (isPraxis ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
                         : isMultiPassPlan 
                           ? "✓ COMPLETE SUITE BUNDLE • 1 PRODUCT FREE" 
-                          : (isKinetic ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
+                          : (isPraxis ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
                     </div>
                   </div>
                 );
@@ -894,7 +839,7 @@ function SubscriptionContent() {
               <span>Autonomous &amp; Self-Verifying Software</span>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-              All software (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom) is engineered to be self-hosted and self-verifying. Built-in test harnesses and sub-second rollbacks eliminate fear of production downtime.
+              All software (Vantage, Praxis, PureIDE, PureOS, Axiom) is engineered to be self-hosted and self-verifying. Built-in test harnesses and sub-second rollbacks eliminate fear of production downtime.
             </p>
           </div>
 

@@ -7,9 +7,7 @@ import {
   VantageIcon, 
   PraxisIcon, 
   PureOsIcon, 
-  AxiomIcon, 
-  KineticIcon,
-  ArgentIcon 
+  AxiomIcon 
 } from "@/components/BrandIcons";
 import ProductSimulators from "@/components/research/ProductSimulators";
 import { 
@@ -74,270 +72,6 @@ interface ProductWiki {
 
 const WIKI_PRODUCTS: ProductWiki[] = [
   {
-    id: "kinetic",
-    name: "Kinetic",
-    tagline: "Autonomous Zero-Downtime Hotfix Stream & Sub-Second Deterministic Rollback",
-    icon: <KineticIcon size={36} />,
-    accentColor: "#06B6D4",
-    specDoc: "kinetic.md",
-    quickStart: {
-      title: "Deploying Kinetic in 60 Seconds",
-      description: "Kinetic provides both a standalone compiled binary and on-demand streamed POSIX shell hotfixes for zero-agent infrastructure.",
-      steps: [
-        {
-          label: "1. Download Multi-Arch Standalone Binary (Linux / POSIX)",
-          command: "curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o /usr/local/bin/kinetic\nchmod +x /usr/local/bin/kinetic",
-          codeLang: "bash",
-          details: "Self-contained universal executable with zero external runtime dependencies."
-        },
-        {
-          label: "2. Execute Self-Contained Validation Gate",
-          command: "kinetic test",
-          codeLang: "bash",
-          details: "Runs synthetic mutation, pre-image SHA-256 snapshotting, and verifies sub-second rollback (<50ms)."
-        },
-        {
-          label: "3. Apply Active Critical Hotfixes (Zero Reboot)",
-          command: "kinetic apply --severity critical",
-          codeLang: "bash",
-          details: "Applies sysctl kernel runtime parameters, sshd drop-ins, and verifies system integrity."
-        },
-        {
-          label: "4. Or Stream Direct POSIX Shell Remediation (.sh)",
-          command: "curl -fsSL \"https://exultia.tech/api/patches/feed?format=bash&os=ubuntu\" | sudo sh",
-          codeLang: "bash",
-          details: "Zero-binary mode for locked-down or ephemeral serverless container environments."
-        },
-        {
-          label: "5. Autonomous Fleet Daemon (Systemd)",
-          command: "kinetic daemon --interval 3600 --ring 0",
-          codeLang: "bash",
-          details: "Continuous background sync with automated canary health probing and instant fallback."
-        }
-      ]
-    },
-    productDetails: {
-      overview: "Exultia Kinetic eliminates emergency maintenance windows and costly infrastructure reboots by applying cryptographic Tier 1 hotfixes to active memory and runtime daemons.",
-      architectureTitle: "Three-Tier Autonomous Remediation",
-      architecturePoints: [
-        "Tier 1 Hot-Mitigations: Dynamic kernel sysctl, drop-in configs, systemctl reloads, and iptables filters with guaranteed zero downtime.",
-        "Tier 2 Atomic Package Upgrades: Distro-native package manager commands (APT, DNF, APK) for scheduled permanent reconciliation.",
-        "Tier 3 Fleet Automation: Pre-synthesized Ansible playbooks with 10% serialized canary progression.",
-        "Deterministic Pre-Image Engine: Automatically snapshots mutated files in ~/.kinetic/snapshots with SHA-256 integrity verification."
-      ],
-      capabilities: [
-        { title: "Sub-Second Rollback", desc: "Instantly reverts system state if canary health probes detect latency or error spikes." },
-        { title: "SLSA Level 3 Provenance", desc: "Every mitigation payload is cryptographically signed using Cosign keyless OIDC (security@exultia.tech)." },
-        { title: "Multi-Ring Rollouts", desc: "Supports Ring 0 (Canary probe), Ring 1 (Cautious staging), and Ring 2 (Broad fleet deployment)." }
-      ],
-      specifications: [
-        { label: "Supported Operating Systems", value: "Ubuntu, Debian, Rocky Linux, RHEL, Alpine, FreeBSD" },
-        { label: "Local Rollback Benchmark", value: "Sub-100ms atomic restore (typical)" },
-        { label: "Binary Formats", value: "Universal Linux Zipapp (x86_64), Windows PE32+ (kinetic.exe)" },
-        { label: "State Storage", value: "~/.kinetic (snapshots.json, audit.jsonl)" }
-      ]
-    },
-    apiEndpoints: [
-      {
-        method: "GET",
-        path: "/api/patches/feed",
-        summary: "Retrieve live zero-downtime hotfix feed in JSON or streamed POSIX shell script",
-        authRequired: false,
-        queryParams: [
-          { name: "format", type: "string", required: false, description: "Output format: 'json' (default) or 'bash'", example: "bash" },
-          { name: "os", type: "string", required: false, description: "Target OS filter (ubuntu, rocky, debian, rhel, alpine)", example: "ubuntu" },
-          { name: "severity", type: "string", required: false, description: "Filter by severity (critical, high, medium)", example: "critical" },
-          { name: "limit", type: "integer", required: false, description: "Maximum advisories to return (default: 50)", example: "10" }
-        ],
-        responses: [
-          {
-            status: 200,
-            description: "Active hotfix feed payload",
-            example: {
-              status: "ok",
-              feedVersion: "2.0.0",
-              totalActivePatches: 2,
-              patches: [
-                {
-                  id: "PAT-2024-3094",
-                  cveId: "CVE-2024-3094",
-                  severity: "CRITICAL",
-                  cvss: 10.0,
-                  cisaKev: true,
-                  remediationTier: {
-                    tier1_hotMitigation: {
-                      downtimeRequired: false,
-                      commands: ["apt-get install -y --allow-downgrades xz-utils=5.4.5*"],
-                      verificationCommand: "xz --version",
-                      rollbackCommand: "true"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        ],
-        curlExample: 'curl -s "https://exultia.tech/api/patches/feed?format=json&severity=critical"'
-      },
-      {
-        method: "GET",
-        path: "/api/kinetic/download",
-        summary: "Stream compiled standalone binaries or JSON platform download manifest",
-        authRequired: false,
-        queryParams: [
-          { name: "platform", type: "string", required: false, description: "'linux' (ELF), 'windows' (PE32+), 'all'", example: "linux" },
-          { name: "format", type: "string", required: false, description: "Set to 'json' to fetch the version/checksum manifest", example: "json" }
-        ],
-        responses: [
-          {
-            status: 200,
-            description: "Download manifest or binary stream",
-            example: {
-              name: "Exultia Kinetic Standalone Compiled Binary",
-              version: "2.4.0",
-              platforms: {
-                linux_amd64: { filename: "kinetic", url: "/api/kinetic/download?platform=linux", sizeBytes: 93240 },
-                windows_amd64: { filename: "kinetic.exe", url: "/api/kinetic/download?platform=windows", sizeBytes: 6842100 }
-              }
-            }
-          }
-        ],
-        curlExample: 'curl -fsSL "https://exultia.tech/api/kinetic/download?platform=linux" -o kinetic'
-      }
-    ]
-  },
-  {
-    id: "argent",
-    name: "Argent",
-    tagline: "Public Operating System Vendor Patch Feed Aggregator & Errata Telemetry Hub",
-    icon: <ArgentIcon size={36} />,
-    accentColor: "#38BDF8",
-    specDoc: "argent.md",
-    quickStart: {
-      title: "Query and Ingest Distro Patch Bundles in 60 Seconds",
-      description: "Argent aggregates official machine-readable security errata categorized by OS distribution (Ubuntu, Debian, Rocky/RHEL, Alpine, SUSE, Arch, Amazon Linux) with zero abstract CWE noise.",
-      steps: [
-        {
-          label: "Query Ubuntu Security Notices (USN) via cURL",
-          command: "curl -s \"https://exultia.tech/api/argent/feed?os=ubuntu&severity=critical\" | jq .",
-          codeLang: "bash",
-          details: "Returns structured patch bundles with package names, fixed versions, and native upgrade commands."
-        },
-        {
-          label: "Deploy Rocky Linux Errata via Kinetic CLI",
-          command: "kinetic upgrade --bundle RLSA-2024:4312 --os rocky",
-          codeLang: "bash",
-          details: "Atomically snapshots package states, executes DNF updates, verifies installation, and enables sub-second rollback."
-        },
-        {
-          label: "Stream Executable POSIX Shell Fixes Directly (Zero-Agent)",
-          command: "curl -sSL \"https://exultia.tech/api/argent/feed?os=debian&format=bash\" | sudo bash",
-          codeLang: "bash",
-          details: "Dynamically synthesizes native APT package upgrade commands directly from Debian Security Tracker."
-        }
-      ]
-    },
-    productDetails: {
-      overview: "Argent is a specialized derivative of the Vantage intelligence feed designed for SecOps and infrastructure engineers who require concrete package errata and vendor advisories rather than academic weakness taxonomies.",
-      architectureTitle: "Multi-Distro Public Feed Aggregation Architecture",
-      architecturePoints: [
-        "8 Major OS Ecosystems: Canonical USN (OSV/OVAL), Debian Security Tracker JSON, Rocky Linux Errata, Red Hat CSAF 2.0, Alpine SecDB, SUSE OVAL, Arch ASA, Amazon Linux ALAS.",
-        "Zero CWE Noise: Strips abstract vulnerability taxonomies to focus on atomic package bundles and native version deltas.",
-        "Deterministic Rollback & Verification: Supplies exact rollback transaction strings (e.g. dnf history undo, apt-get install =<prev>) and post-upgrade package query commands.",
-        "Direct Kinetic Pipeline: Feeds seamlessly into the Kinetic autonomous daemon for canary rollouts and zero-downtime micro-mitigations."
-      ],
-      capabilities: [
-        { title: "Categorized by OS Distribution", desc: "Filter by Ubuntu, Debian, Rocky/RHEL, Alpine, SUSE, Arch, Amazon Linux, and upstream Linux Kernel." },
-        { title: "Zero-Downtime & Reboot Flags", desc: "Instantly identifies whether an errata package requires a system reboot or seamless service restart." },
-        { title: "Executable Bash Streaming", desc: "Outputs ready-to-run shell scripts with pre-flight OS detection and verification checks." }
-      ],
-      specifications: [
-        { label: "Monitored Public Feeds", value: "9 authoritative distro feeds" },
-        { label: "Supported Package Managers", value: "APT, DNF, APK, Zypper, Pacman, kmod" },
-        { label: "Update Ingestion Cadence", value: "Real-time notice webhooks + sub-hourly polling" },
-        { label: "Output Formats", value: "JSON, POSIX Shell Script, Kinetic Feed Format" }
-      ]
-    },
-    apiEndpoints: [
-      {
-        method: "GET",
-        path: "/api/argent/feed",
-        summary: "Stream aggregated OS vendor patch bundles filtered by distro, severity, and keywords",
-        authRequired: false,
-        queryParams: [
-          { name: "os", type: "string", required: false, description: "Target OS filter (e.g. ubuntu, rocky, debian, alpine, suse, arch)", example: "rocky" },
-          { name: "severity", type: "string", required: false, description: "Vendor severity level (critical, important, moderate, low)", example: "critical" },
-          { name: "q", type: "string", required: false, description: "Keyword search matching package names or bundle IDs", example: "openssh" },
-          { name: "format", type: "string", required: false, description: "Output format: json, bash, or kinetic", example: "json" },
-          { name: "reboot", type: "boolean", required: false, description: "Filter by reboot requirement (true/false)", example: "false" }
-        ],
-        responses: [
-          {
-            status: 200,
-            description: "Filtered vendor patch bundles",
-            example: {
-              total: 1,
-              page: 1,
-              limit: 25,
-              totalPages: 1,
-              bundles: [
-                {
-                  id: "ARG-RLSA-2024-4312",
-                  bundleId: "RLSA-2024:4312",
-                  os: "rocky",
-                  title: "OpenSSH Remote Code Execution Signal Race Errata Bundle",
-                  vendorSeverity: "CRITICAL",
-                  packages: [{ name: "openssh-server", currentVersion: "8.7p1-38.el9_4", fixedVersion: "8.7p1-38.el9_4.1", packageManager: "dnf" }],
-                  commands: { nativeUpgrade: "dnf upgrade -y openssh openssh-server openssh-clients", verification: "rpm -q openssh-server" },
-                  impact: { rebootRequired: false, zeroDowntime: true }
-                }
-              ]
-            }
-          }
-        ],
-        curlExample: "curl -s \"https://exultia.tech/api/argent/feed?os=rocky&severity=critical\" | jq ."
-      },
-      {
-        method: "GET",
-        path: "/api/argent/stats",
-        summary: "Macro-level OS errata metrics, severity distributions, and public distro feed counts",
-        authRequired: false,
-        responses: [
-          {
-            status: 200,
-            description: "Argent telemetry summary",
-            example: {
-              totalBundles: 9,
-              totalPackagesUpdated: 19,
-              criticalCount: 6,
-              importantCount: 3,
-              zeroDowntimeCount: 7,
-              byOs: { ubuntu: 2, debian: 2, rocky: 2, alpine: 2, suse: 1, arch: 1, amazonLinux: 1, kernel: 1 }
-            }
-          }
-        ],
-        curlExample: "curl -s \"https://exultia.tech/api/argent/stats\" | jq ."
-      },
-      {
-        method: "GET",
-        path: "/api/argent/sources",
-        summary: "Directory of authoritative public Linux distribution security feeds monitored by Argent",
-        authRequired: false,
-        responses: [
-          {
-            status: 200,
-            description: "Public distro feeds list",
-            example: {
-              totalSources: 9,
-              sources: [{ name: "Canonical Ubuntu Security Notices (USN) & OVAL", format: "OSV", status: "active" }]
-            }
-          }
-        ],
-        curlExample: "curl -s \"https://exultia.tech/api/argent/sources\" | jq ."
-      }
-    ]
-  },
-  {
     id: "vantage",
     name: "Vantage",
     tagline: "Universal Threat Feed Aggregating 110+ Global Vulnerability Registries",
@@ -375,7 +109,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         "110+ Upstream Sources: CISA KEV, NIST NVD, GitHub Advisory Database, Debian, Red Hat, Ubuntu, Alpine, Arch.",
         "Sub-20ms In-Memory Cache: Fast queries even under massive enterprise query volumes.",
         "Automated Alias Harmonization: Unifies disparate vendor bulletin IDs with canonical CVE numbers.",
-        "Direct Kinetic Integration: Seamlessly pipes verified remediations directly into the Kinetic hotfix stream."
+        "Direct Praxis Integration: Seamlessly pipes verified remediations directly into the Praxis autonomous hotfix stream."
       ],
       capabilities: [
         { title: "Real-Time KEV Tracking", desc: "Prioritizes vulnerabilities actively weaponized in the wild." },
@@ -449,9 +183,9 @@ const WIKI_PRODUCTS: ProductWiki[] = [
             description: "Risk assessment and tactical directive",
             example: {
               status: "success",
-              analysis: "Immediate mitigation required on exposed SSH daemons. Deploy Kinetic hotfix.",
+              analysis: "Immediate mitigation required on exposed SSH daemons. Deploy Praxis hotfix.",
               riskRating: "CRITICAL",
-              recommendedAction: "APPLY_KINETIC_HOTFIX"
+              recommendedAction: "APPLY_PRAXIS_HOTFIX"
             }
           }
         ],
@@ -589,22 +323,34 @@ const WIKI_PRODUCTS: ProductWiki[] = [
   {
     id: "praxis",
     name: "Praxis",
-    tagline: "Tactical Adversary Emulation, Fleet Defense & Verified Remediation Playbooks",
+    tagline: "Autonomous Zero-Downtime Hotpatching, Canary Stream & Hardware ACL Compiler",
     icon: <PraxisIcon size={36} />,
-    accentColor: "#10B981",
+    accentColor: "#F59E0B",
     specDoc: "praxis.md",
     quickStart: {
-      title: "Synthesizing Automated Remediation Playbooks",
-      description: "Convert threat vectors identified in Vantage into deployable, verified Ansible playbooks.",
+      title: "Autonomous Fleet Hotpatching in 60 Seconds",
+      description: "Praxis transforms threat intelligence into automated operational response with Tier 1 live-memory hotfixes and hardware firewall ACLs.",
       steps: [
         {
-          label: "1. Fetch Tactical Remediation Feed",
-          command: "curl -s \"https://exultia.tech/api/praxis/feed?target=rocky\" | jq .",
+          label: "1. Download Multi-Arch Standalone Binary (Linux / POSIX)",
+          command: "curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o /usr/local/bin/praxis\nchmod +x /usr/local/bin/praxis",
           codeLang: "bash",
-          details: "Returns actionable tactical fixes indexed by target operating system."
+          details: "Self-contained universal executable with zero external runtime dependencies."
         },
         {
-          label: "2. Generate Serialized 10% Canary Playbook",
+          label: "2. Execute Self-Contained Validation Gate",
+          command: "praxis test",
+          codeLang: "bash",
+          details: "Runs synthetic mutation, pre-image SHA-256 snapshotting, and verifies sub-second rollback (<50ms)."
+        },
+        {
+          label: "3. Apply Active Critical Hotfixes (Zero Reboot)",
+          command: "praxis apply --severity critical",
+          codeLang: "bash",
+          details: "Applies sysctl kernel runtime parameters, sshd drop-ins, and verifies system integrity."
+        },
+        {
+          label: "4. Generate Serialized 10% Canary Playbook",
           command: "curl -X POST \"https://exultia.tech/api/praxis/generate\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"cveId\": \"CVE-2024-3094\", \"targetPlatform\": \"rocky\", \"canaryPercentage\": 10}' \\\n  | jq -r .playbookYaml > mitigate_xz.yml",
           codeLang: "bash",
           details: "Generates production-ready Ansible playbook with rolling canary controls."
@@ -612,41 +358,49 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       ]
     },
     productDetails: {
-      overview: "Praxis transforms threat intelligence into automated operational response, validating playbooks against multi-distro virtual test environments before dissemination.",
-      architectureTitle: "Simulation & Playbook Pipeline",
+      overview: "Praxis eliminates emergency maintenance windows and costly infrastructure reboots by applying cryptographic Tier 1 hotfixes to active memory and runtime daemons, combined with hardware firewall ACL generation.",
+      architectureTitle: "Autonomous Remediation & Hotpatching Engine",
       architecturePoints: [
-        "Dynamic Playbook Generation: Synthesizes Ansible YAML with strict serial controls (10% rolling canary batches).",
-        "Distro-Specific Syntax Optimization: Emits verified package manager and service commands for Debian and RHEL families.",
-        "Zero-Reboot Idempotency: All tasks verify current state before executing mutations."
+        "Tier 1 Hot-Mitigations: Dynamic kernel sysctl, drop-in configs, systemctl reloads, and iptables filters with guaranteed zero downtime.",
+        "Tier 2 Atomic Package Upgrades: Distro-native package manager commands (APT, DNF, APK) for scheduled permanent reconciliation.",
+        "Hardware Firewall ACLs: Compiles real-time blocklists for Cisco IOS, Palo Alto EDL, Fortinet, and Juniper SRX.",
+        "Deterministic Pre-Image Engine: Automatically snapshots mutated files in ~/.praxis/snapshots with SHA-256 integrity verification."
       ],
       capabilities: [
-        { title: "Canary Serialization", desc: "Safeguards against catastrophic fleet-wide failure." },
-        { title: "Dry-Run Simulation", desc: "Simulates playbook outcomes before production dispatch." },
-        { title: "Multi-Platform Synthesis", desc: "Generates tailored scripts for Ubuntu, Rocky, and Alpine." }
+        { title: "Sub-Second Rollback", desc: "Instantly reverts system state if canary health probes detect latency or error spikes." },
+        { title: "SLSA Level 3 Provenance", desc: "Every mitigation payload is cryptographically signed using Cosign keyless OIDC." },
+        { title: "Hardware Firewall Integration", desc: "Generates production ACL rules for enterprise edge devices." }
       ],
       specifications: [
-        { label: "Automation Engines", value: "Ansible, AWX, Terraform, Shell" },
-        { label: "Canary Support", value: "Configurable (1% to 25% initial slice)" }
+        { label: "Supported Operating Systems", value: "Ubuntu, Debian, Rocky Linux, RHEL, Alpine, FreeBSD, AIX, Solaris" },
+        { label: "Local Rollback Benchmark", value: "Sub-100ms atomic restore (typical)" },
+        { label: "Automation Engines", value: "Ansible, AWX, Terraform, Shell, Systemd" }
       ]
     },
     apiEndpoints: [
       {
         method: "GET",
-        path: "/api/praxis/feed",
-        summary: "Retrieve tactical fleet remediation feed",
+        path: "/api/patches/feed",
+        summary: "Stream authenticated machine-executable zero-downtime hotfixes",
         authRequired: false,
         queryParams: [
-          { name: "target", type: "string", required: false, description: "OS target ('ubuntu', 'rocky', 'alpine')", example: "rocky" }
+          { name: "severity", type: "string", required: false, description: "Filter by severity (critical, high, medium)", example: "critical" },
+          { name: "distro", type: "string", required: false, description: "Filter by distro (ubuntu, rocky, alpine, debian)", example: "ubuntu" },
+          { name: "format", type: "string", required: false, description: "Output format: 'json' or 'bash'", example: "json" }
         ],
         responses: [
-          { status: 200, description: "Tactical remediation items", example: { count: 5, mitigations: [] } }
+          {
+            status: 200,
+            description: "Active hotfix stream items",
+            example: { count: 3, items: [{ cveId: "CVE-2024-6387", affectedPackage: "openssh-server", cvssScore: 9.8, zeroDowntime: true }] }
+          }
         ],
-        curlExample: 'curl -s "https://exultia.tech/api/praxis/feed?target=rocky"'
+        curlExample: 'curl -s "https://exultia.tech/api/patches/feed?severity=critical&format=json"'
       },
       {
         method: "POST",
         path: "/api/praxis/generate",
-        summary: "Synthesize verified Ansible automation playbook",
+        summary: "Synthesize verified Ansible automation playbook or single-use script",
         authRequired: false,
         requestBody: {
           description: "Target advisory and canary serialization parameters",
@@ -656,36 +410,53 @@ const WIKI_PRODUCTS: ProductWiki[] = [
           { status: 200, description: "Synthesized Ansible playbook", example: { status: "success", playbookYaml: "---\n- hosts: all\n..." } }
         ],
         curlExample: 'curl -X POST "https://exultia.tech/api/praxis/generate" -H "Content-Type: application/json" -d \'{"cveId":"CVE-2024-3094","targetPlatform":"rocky"}\''
+      },
+      {
+        method: "GET",
+        path: "/api/kinetic/download",
+        summary: "Download standalone multi-architecture compiled binary",
+        authRequired: false,
+        queryParams: [
+          { name: "platform", type: "string", required: false, description: "Target platform ('linux', 'windows', 'universal')", example: "linux" }
+        ],
+        responses: [
+          {
+            status: 200,
+            description: "JSON release manifest with cryptographic SHA256 hashes",
+            example: { name: "Praxis Standalone Compiled Binary", version: "2.4.0" }
+          }
+        ],
+        curlExample: 'curl -fsSL "https://exultia.tech/api/kinetic/download?platform=linux" -o praxis'
       }
     ]
   },
   {
     id: "pureide",
-    name: "PureIDE & PureOS",
-    tagline: "Zero-Trust Developer Workstation & Pre-Hardened Container Catalogue",
+    name: "PureIDE",
+    tagline: "Zero-Trust Hermetic Developer Workstation & Certified Toolchain Builder",
     icon: <PureIdeIcon size={36} />,
     accentColor: "#3B82F6",
-    specDoc: "pureide-pureos.md",
+    specDoc: "pureide.md",
     quickStart: {
-      title: "Hermetic Builds & Hardened Container Deployment",
-      description: "Run reproducible compilations in an isolated, zero-egress sandbox.",
+      title: "Hermetic Builds & Toolchain Verification",
+      description: "Run reproducible compilations in an isolated, zero-egress sandbox with certified compilers.",
       steps: [
         {
-          label: "1. Pull Hardened PureOS Base Container",
-          command: "docker pull registry.exultia.tech/pureos/base:2026.1-hardened\ncosign verify --key https://exultia.tech/keys/cosign.pub registry.exultia.tech/pureos/base:2026.1-hardened",
-          codeLang: "bash",
-          details: "Minimal attack surface container base image signed with Cosign."
-        },
-        {
-          label: "2. Inspect Hermetic Toolchain Versions",
+          label: "1. Inspect Hermetic Toolchain Versions",
           command: "curl -s \"https://exultia.tech/api/pureide/versions\" | jq .",
           codeLang: "bash",
           details: "Verifies GCC, Clang, Rustc, and Go certified compiler versions."
+        },
+        {
+          label: "2. Trigger Local Hermetic Build Gate",
+          command: "pureide build --hermetic --verify-slsa",
+          codeLang: "bash",
+          details: "Executes air-gapped bit-for-bit reproducible compilation."
         }
       ]
     },
     productDetails: {
-      overview: "PureIDE and PureOS guarantee supply-chain integrity through hermetic compilation sandboxes, zero external telemetry leakage, and bit-for-bit reproducible artifact builds.",
+      overview: "PureIDE guarantees software supply-chain integrity through hermetic compilation sandboxes, zero external telemetry leakage, and bit-for-bit reproducible artifact builds.",
       architectureTitle: "Hermetic Sandbox Architecture",
       architecturePoints: [
         "Zero-Egress Policy: Network interfaces are isolated during build phases to prevent dependency poisoning.",
@@ -718,11 +489,76 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         curlExample: 'curl -s "https://exultia.tech/api/pureide/versions"'
       }
     ]
+  },
+  {
+    id: "pureos",
+    name: "PureOS",
+    tagline: "Zero-Trust CIS-Hardened Container OS & Immutable Base Distro",
+    icon: <PureOsIcon size={36} />,
+    accentColor: "#10B981",
+    specDoc: "pureos.md",
+    quickStart: {
+      title: "Hardened Container Deployment in 60 Seconds",
+      description: "Pull and verify minimal attack surface base images cryptographically signed with Cosign keyless signatures.",
+      steps: [
+        {
+          label: "1. Pull Hardened PureOS Base Container",
+          command: "docker pull registry.exultia.tech/pureos/base:2026.1-hardened",
+          codeLang: "bash",
+          details: "Distroless, stripped-down base image with zero shell, zero package manager vulnerabilities."
+        },
+        {
+          label: "2. Verify Cosign Cryptographic Signature",
+          command: "cosign verify --key https://exultia.tech/keys/cosign.pub registry.exultia.tech/pureos/base:2026.1-hardened",
+          codeLang: "bash",
+          details: "Validates SLSA Level 3 provenance and build transparency log."
+        }
+      ]
+    },
+    productDetails: {
+      overview: "PureOS provides pre-hardened container base images and immutable OS distributions built to satisfy CIS Benchmark Level 2, DISA STIG, and US Federal zero-trust guidelines.",
+      architectureTitle: "Immutable Zero-Trust OS Architecture",
+      architecturePoints: [
+        "CIS Benchmark Level 2: Pre-configured kernel sysctl, noexec mounts, and strict seccomp/AppArmor profiles.",
+        "Zero Attack Surface: Stripped of unused binaries, package managers, and debugging shells in production targets.",
+        "Automated Advisory Synchronization: Base images recompiled automatically when Vantage flags upstream kernel vulnerabilities."
+      ],
+      capabilities: [
+        { title: "Immutable Root Filesystem", desc: "Read-only container root prevents runtime binary tampering." },
+        { title: "Cryptographic Provenance", desc: "Every layer is signed with Cosign and attested with SLSA Level 3." },
+        { title: "Universal Orchestration", desc: "Native compatibility with Kubernetes, Docker, Nomad, and Podman." }
+      ],
+      specifications: [
+        { label: "Base Footprint", value: "< 12 MB compressed" },
+        { label: "Compliance Benchmark", value: "CIS Benchmark Level 2 & DISA STIG" },
+        { label: "Registry Endpoint", value: "registry.exultia.tech/pureos" }
+      ]
+    },
+    apiEndpoints: [
+      {
+        method: "GET",
+        path: "/api/pureos/images",
+        summary: "List verified hardened container images, tag manifests, and Cosign digests",
+        authRequired: false,
+        responses: [
+          {
+            status: 200,
+            description: "Hardened images catalog",
+            example: {
+              images: [
+                { name: "pureos/base", tag: "2026.1-hardened", sizeMb: 11.4, cisLevel: 2, cveCount: 0 }
+              ]
+            }
+          }
+        ],
+        curlExample: 'curl -s "https://exultia.tech/api/pureos/images"'
+      }
+    ]
   }
 ];
 
 export default function ResearchWikiPage() {
-  const [activeProductId, setActiveProductId] = useState<string>("kinetic");
+  const [activeProductId, setActiveProductId] = useState<string>("vantage");
   const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis">("simulator");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedText, setCopiedText] = useState<string | null>(null);

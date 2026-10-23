@@ -1,14 +1,19 @@
-"use client";
+'use client';
 
-import ArgentFeedPage from "@/app/app/argent/page";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-/**
- * Persistent Standalone Argent Patch Feed Page
- * 
- * Accessible at `/argent/standalone` and `/app/argent/standalone`
- * Renders the full Argent patch feed platform with isolated header and layout,
- * presenting the public distribution patch aggregator experience.
- */
-export default function StandaloneArgentFeedPage() {
-  return <ArgentFeedPage />;
+export default function AppArgentStandaloneLegacyRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/app/uvi?category=Vendor+Security+Disclosures');
+  }, [router]);
+
+  return (
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', color: '#94A3B8', fontFamily: 'var(--font-mono, monospace)' }}>
+      <div style={{ width: '24px', height: '24px', border: '2px solid #A855F7', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <div>Argent vendor errata has been absorbed into Vantage. Redirecting to Vantage...</div>
+    </div>
+  );
 }

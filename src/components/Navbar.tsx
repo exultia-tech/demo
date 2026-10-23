@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, KineticIcon, ArgentIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -23,7 +23,7 @@ export default function Navbar() {
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "kinetic">("pureide");
+  const [activeCheckoutProduct, setActiveCheckoutProduct] = useState<"pureide" | "uvi" | "praxis">("pureide");
   const [isOperator, setIsOperator] = useState(false);
 
   useEffect(() => {
@@ -89,18 +89,8 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
-  const isKineticContext = !isIsolated && (
-    pathname.startsWith("/app/patches") ||
-    pathname.startsWith("/products/kinetic")
-  );
-
-  const isArgentContext = !isIsolated && (
-    pathname.startsWith("/app/argent") ||
-    pathname.startsWith("/argent")
-  );
-
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -189,7 +179,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isArgentContext || isPraxisContext || isPureOsContext || isAxiomContext || isKineticContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -280,36 +270,7 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT: ARGENT (Public OS Distro Patch Aggregator) */}
-                    <Link 
-                      href="/argent" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isArgentContext ? "rgba(148, 163, 184, 0.2)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <ArgentIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Argent</span>
-                          <span style={{ fontSize: "0.65rem", background: "rgba(148, 163, 184, 0.2)", color: "#E2E8F0", border: "1px solid rgba(148, 163, 184, 0.4)", padding: "1px 5px", borderRadius: "4px", fontWeight: 700 }}>NEW</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Public OS vendor patch bundles categorized by distro</div>
-                      </div>
-                    </Link>
-
-
-                    {/* PRODUCT 4: praxis */}
+                    {/* PRODUCT 3: Praxis (Autonomous Remediation & Hotpatching Engine) */}
                     <Link 
                       href="/app/praxis" 
                       onClick={() => setIsProductsOpen(false)}
@@ -321,7 +282,7 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isPraxisContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
+                        background: isPraxisContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
@@ -330,35 +291,7 @@ export default function Navbar() {
                       </div>
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Targeted remediation payloads from Vantage</div>
-                      </div>
-                    </Link>
-
-                    {/* PRODUCT CONCEPT: Kinetic (Rapid Patch Feed) */}
-                    <Link 
-                      href="/app/patches" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: pathname.startsWith("/app/patches") ? "rgba(6, 182, 212, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <KineticIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Kinetic</span>
-                          <span style={{ fontSize: "0.65rem", background: "rgba(6, 182, 212, 0.2)", color: "#22D3EE", border: "1px solid rgba(6, 182, 212, 0.4)", padding: "1px 5px", borderRadius: "4px", fontWeight: 700 }}>NEW CONCEPT</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Rapid zero-downtime patch management feed</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous hotpatches, canary rollouts &amp; firewall ACLs</div>
                       </div>
                     </Link>
 
@@ -902,67 +835,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION: KINETIC SUBMENU */}
-          {isKineticContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE", borderColor: "rgba(6, 182, 212, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <KineticIcon size={16} glow={false} />
-                Kinetic
-              </span>
 
-              <Link 
-                href="/app/patches" 
-                className={`submenu-link ${pathname === "/app/patches" ? "active-cyan" : ""}`}>
-                Patch Stream &amp; Canary
-              </Link>
-              <Link 
-                href="/account/subscription?product=kinetic" 
-                className="submenu-link"
-                style={{ color: "#22D3EE", fontWeight: 700 }}>
-                Plans &amp; Pricing
-              </Link>
-              <Link 
-                href="/wiki?product=kinetic&tab=simulator" 
-                className="submenu-link">
-                Testing Rig
-              </Link>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION: ARGENT SUBMENU */}
-          {isArgentContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(148, 163, 184, 0.15)", color: "#F1F5F9", borderColor: "rgba(148, 163, 184, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <ArgentIcon size={16} glow={false} />
-                Argent
-              </span>
-
-              <Link 
-                href="/argent" 
-                className={`submenu-link ${pathname === "/argent" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Vendor Patch Bundles
-              </Link>
-              <Link 
-                href="/api/argent/feed" 
-                target="_blank"
-                className="submenu-link">
-                JSON Feed
-              </Link>
-              <Link 
-                href="/api/argent/feed?format=bash" 
-                target="_blank"
-                className="submenu-link">
-                Bash Script
-              </Link>
-              <Link 
-                href="/wiki#argent" 
-                className="submenu-link"
-                style={{ color: "#38BDF8", fontWeight: 700 }}>
-                Wiki &amp; API Docs
-              </Link>
-            </div>
-          )}
 
         </div>
       )}

@@ -489,9 +489,9 @@ impl PraxisK8sClient {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       
       {/* ─────────────────────────────────────────────────────────────
-          KINETIC SIMULATOR
+          PRAXIS / KINETIC HOTPATCH SIMULATOR
       ───────────────────────────────────────────────────────────── */}
-      {productId === "kinetic" && (
+      {(productId === "kinetic" || productId === "praxis") && (
         <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "2rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1068,9 +1068,9 @@ impl PraxisK8sClient {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          ARGENT SIMULATOR
+          VANTAGE / ARGENT VENDOR STREAM SIMULATOR
       ───────────────────────────────────────────────────────────── */}
-      {productId === "argent" && (
+      {(productId === "argent" || productId === "vantage") && (
         <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(148, 163, 184, 0.3)", padding: "2rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

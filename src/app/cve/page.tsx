@@ -8,7 +8,7 @@ import { ExultiaLogo } from '@/components/BrandIcons';
 export const metadata: Metadata = {
   title: 'CVE Remediation Directory & Zero-Downtime Hotfix Catalog | Exultia Praxis',
   description: 'Searchable directory of enterprise CVE remediations, zero-downtime hotfix scripts, CISA KEV alerts, and 10% canary Ansible playbooks compiled by Exultia Praxis.',
-  keywords: ['CVE remediation', 'CISA KEV', 'zero downtime hotfix', 'Ansible playbooks', 'Kinetic', 'Praxis', 'vulnerability mitigation'],
+  keywords: ['CVE remediation', 'CISA KEV', 'zero downtime hotfix', 'Ansible playbooks', 'Praxis', 'vulnerability mitigation'],
   openGraph: {
     title: 'Exultia Praxis - Public CVE Remediation & Hotfix Catalog',
     description: 'Instant, verified, zero-downtime hotfixes and automated Ansible playbooks for critical CVEs and CISA KEV threats.',

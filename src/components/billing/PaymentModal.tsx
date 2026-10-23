@@ -47,13 +47,13 @@ export default function PaymentModal() {
 
   const isMultiPass = paymentOptions.product === "multipass";
   const isAxiom = paymentOptions.product === "axiom";
-  const isKinetic = paymentOptions.product === "kinetic";
+  const isPraxis = paymentOptions.product === "praxis";
   const proThreshold = isMultiPass ? 196 : 49;
   const enterpriseThreshold = isMultiPass ? 595 : 399;
 
   const unlockedTier: "community" | "pro" | "enterprise" =
     paymentOptions.tier === "enterprise" || customPrice >= enterpriseThreshold
-      ? (paymentOptions.tier === "pro" && isKinetic ? "pro" : "enterprise")
+      ? (paymentOptions.tier === "pro" && isPraxis ? "pro" : "enterprise")
       : (paymentOptions.tier === "pro" || customPrice >= proThreshold)
       ? "pro"
       : "community";
@@ -276,8 +276,8 @@ export default function PaymentModal() {
                   <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
                     {isMultiPass 
                       ? "Thresholds: MultiPass Pro at $196 · MultiPass Enterprise at $595"
-                      : isKinetic
-                      ? "Thresholds: 2 Hosts Free · Pro at $49/host/mo · Fleet Enterprise at $499/host/mo"
+                      : isPraxis
+                      ? "Thresholds: Community at $0 · Pro at $49 · Fleet Enterprise at $499"
                       : isAxiom
                       ? "Thresholds: Community at $0 · Pro Exports at $49 · Institutional LMS Feed at $499"
                       : "Thresholds: Pro activates at $49 · Enterprise activates at $499"}
@@ -320,7 +320,7 @@ export default function PaymentModal() {
                   { label: "$350", value: 350, hint: "Team" },
                   { label: "$595", value: 595, hint: "MultiPass Enterprise" },
                   { label: "$800", value: 800, hint: "Fleet Sponsor" },
-                ] : isKinetic ? [
+                ] : isPraxis ? [
                   { label: "$49", value: 49, hint: "1 Pro Host" },
                   { label: "$98", value: 98, hint: "2 Pro Hosts" },
                   { label: "$245", value: 245, hint: "5 Pro Hosts" },

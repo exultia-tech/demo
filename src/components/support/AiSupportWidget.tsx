@@ -46,14 +46,14 @@ export default function AiSupportWidget() {
 
 Welcome! I am Exultia's **24/7 autonomous support agent**. Because Exultia is operated as an independent **solo-engineer security lab**, I handle routine technical questions, installation commands, host count calculations, and configuration troubleshooting instantly.
 
-- **Kinetic Pricing:** 1 host free forever, Pro is $49/host/mo, Enterprise is $149/host/mo.
+- **Praxis Pricing:** 1 host free forever, Pro is $49/mo, Enterprise is $499/mo.
 - **Zero Human SLAs:** All tools are self-service, deterministic, and self-hosted.
-- **Rollbacks:** Sub-second atomic recovery via \`sudo kinetic rollback\`.
+- **Rollbacks:** Sub-second atomic recovery via \`sudo praxis rollback\`.
 
 Click any suggested question below or ask me anything!`,
       suggestions: [
-        "How does Kinetic per-host pricing work?",
-        "What is the Kinetic daemon install command?",
+        "How does Praxis autonomous hotpatching work?",
+        "What is the Praxis daemon install command?",
         "How do I execute a deterministic rollback?",
         "Do you offer human 24/7 SLAs?"
       ]
@@ -118,7 +118,7 @@ Click any suggested question below or ask me anything!`,
         role: "assistant",
         text: "⚠️ I encountered an error connecting to the support engine. Please verify your connection or review our [Pricing & Plans page](/account/subscription) and [Systems Research Lab](/research).",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        suggestions: ["How does Kinetic per-host pricing work?", "Do you offer human 24/7 SLAs?"]
+        suggestions: ["How does Praxis autonomous hotpatching work?", "Do you offer human 24/7 SLAs?"]
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -648,7 +648,7 @@ Click any suggested question below or ask me anything!`,
             >
               <input
                 type="text"
-                placeholder="Ask about Kinetic pricing, rollbacks, installs..."
+                placeholder="Ask about Praxis hotpatching, rollbacks, installs..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 style={{

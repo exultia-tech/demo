@@ -3,6 +3,41 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { 
+  ShieldAlert, 
+  Zap, 
+  Terminal, 
+  CheckCircle2, 
+  Clock, 
+  Copy, 
+  Check, 
+  Server, 
+  Cpu, 
+  Layers, 
+  GitFork, 
+  Flame, 
+  ArrowRight, 
+  Lock, 
+  RotateCcw,
+  BookOpen,
+  AlertTriangle,
+  ShieldCheck,
+  Sparkles,
+  ExternalLink,
+  Code2,
+  FileCheck2,
+  Activity,
+  Search,
+  Filter,
+  Package,
+  Wrench,
+  Ban,
+  Radio,
+  Sliders,
+  Play
+} from 'lucide-react';
+import { PraxisIcon, VantageIcon } from '@/components/BrandIcons';
+import { SAMPLE_PATCH_FEED, type PatchFeedItem } from '@/lib/patch-data';
 
 const REMEDIATION_CLASSES = [
   {
@@ -54,8 +89,89 @@ const FIREWALL_FORMATS = [
   { value: 'juniper',  label: 'Juniper SRX filter' },
 ];
 
+type HotpatchConceptTab = 'velocity' | 'canary' | 'slsa' | 'matrix' | 'implement' | 'wiki';
+
 export default function PraxisPage() {
   const { user, openAuthModal } = useAuth();
+
+  // Top-Level Operational Mode: Hotpatch Stream vs. Firewall & Baseline Hardening
+  const [activeMode, setActiveMode] = useState<'hotpatch' | 'hardening'>('hotpatch');
+
+  // ── HOTPATCH MODE STATE (Consolidated from Kinetic) ──
+  const [activeConcept, setActiveConcept] = useState<HotpatchConceptTab>('velocity');
+  const [selectedPatch, setSelectedPatch] = useState<PatchFeedItem>(SAMPLE_PATCH_FEED[0]);
+  const [selectedPayloadTab, setSelectedPayloadTab] = useState<'tier1' | 'tier2' | 'tier3' | 'rawJson'>('tier1');
+  const [activeImplementTab, setActiveImplementTab] = useState<'systemd' | 'gitops' | 'ansible' | 'agent'>('systemd');
+  const [selectedDistro, setSelectedDistro] = useState<'all' | 'ubuntu' | 'rocky' | 'alpine'>('all');
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  // Simulation State
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simulationLogs, setSimulationLogs] = useState<string[]>([]);
+  const [simulationProgress, setSimulationProgress] = useState(0);
+  const [simulationDone, setSimulationDone] = useState(false);
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  const runSimulation = () => {
+    setIsSimulating(true);
+    setSimulationDone(false);
+    setSimulationProgress(5);
+    setSimulationLogs([
+      `[${new Date().toISOString()}] [INIT] Connecting to Praxis Hotpatch Stream: ${selectedPatch.id}...`,
+      `[TARGET] Vulnerability: ${selectedPatch.cveId} - ${selectedPatch.title}`,
+      `[FLEET] Target inventory: 640 hybrid hosts (240 Ubuntu 24.04, 200 Rocky 9, 200 Alpine Containers)`
+    ]);
+
+    const steps = [
+      {
+        delay: 800,
+        progress: 25,
+        log: `[RING 0 CANARY] Staging 12 canary nodes (2.0% slice). Deploying Tier 1 Hot-Mitigation...`
+      },
+      {
+        delay: 1600,
+        progress: 45,
+        log: `[APPLY] Executed: ${selectedPatch.remediationTier.tier1_hotMitigation.commands[0]}`
+      },
+      {
+        delay: 2400,
+        progress: 65,
+        log: `[SENTINEL TELEMETRY] Verification check: "${selectedPatch.remediationTier.tier1_hotMitigation.verificationCommand}" -> OK`
+      },
+      {
+        delay: 3200,
+        progress: 80,
+        log: `[SENTINEL TELEMETRY] Error rate: 0.00% | Latency delta: +0.1ms | Services: 100% HEALTHY. Promoting to Ring 1...`
+      },
+      {
+        delay: 4000,
+        progress: 100,
+        log: `[COMPLETED] Fleet synchronized in 4.2s. 640/640 hosts hardened. Zero reboots required.`
+      }
+    ];
+
+    steps.forEach((step, idx) => {
+      setTimeout(() => {
+        setSimulationLogs(prev => [...prev, step.log]);
+        setSimulationProgress(step.progress);
+        if (idx === steps.length - 1) {
+          setIsSimulating(false);
+          setSimulationDone(true);
+        }
+      }, step.delay);
+    });
+  };
+
+  const filteredPatches = selectedDistro === 'all' 
+    ? SAMPLE_PATCH_FEED 
+    : SAMPLE_PATCH_FEED.filter(p => p.affectedDistros.includes(selectedDistro as any));
+
+  // ── HARDENING / GENERATOR MODE STATE ──
   const [os, setOs] = useState('linux');
   const [cron, setCron] = useState(false);
   const [proxy, setProxy] = useState('');
@@ -78,7 +194,6 @@ export default function PraxisPage() {
   const [profileNameInput, setProfileNameInput] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  // Only mark ready after the client has hydrated
   useEffect(() => {
     setBaseUrl(window.location.origin);
     const loaded = localStorage.getItem('praxis_saved_profiles');
@@ -118,9 +233,9 @@ export default function PraxisPage() {
 
   const hasNetworkClass = selectedClasses.has('network') || selectedClasses.has('phishing');
 
-  // Fetch preview whenever config changes — but only once client is ready
+  // Fetch preview when generator settings change
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || activeMode !== 'hardening') return;
     let cancelled = false;
 
     const fetchPreview = async () => {
@@ -151,7 +266,7 @@ export default function PraxisPage() {
 
     fetchPreview();
     return () => { cancelled = true; };
-  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl]);
+  }, [ready, os, cron, proxy, selectedClasses, networkMode, firewallFormat, filenamePattern, customShebang, baseUrl, activeMode]);
 
   const handleGenerate = async () => {
     if (!user) {
@@ -186,354 +301,840 @@ export default function PraxisPage() {
     });
   };
 
-  const command = generatedId
+  const hardeningCommand = generatedId
     ? filenamePattern
       ? `curl -sL -O -J "${baseUrl}/api/praxis/download?id=${generatedId}"`
       : `curl -sL "${baseUrl}/api/praxis/download?id=${generatedId}" | sh`
     : '';
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2.5rem 3rem' }}>
-      {/* ── Page Header ──────────────────────────────────────────── */}
-      <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          <span style={{ fontSize: '2rem' }}>🔧</span>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-            Praxis
-          </h1>
-          <span style={{
-            fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem',
-            borderRadius: '999px', border: '1px solid rgba(59,130,246,0.4)',
-            color: 'var(--accent-primary)', backgroundColor: 'rgba(59,130,246,0.1)',
-            letterSpacing: '0.05em', textTransform: 'uppercase'
-          }}>
-            Beta
-          </span>
+    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '2rem 1.5rem', color: '#F8FAFC' }}>
+      
+      {/* ── TOP BREADCRUMB & ENTITLEMENTS ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link href="/" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '0.88rem' }}>Exultia Suite</Link>
+          <span style={{ color: '#64748B' }}>/</span>
+          <span style={{ color: '#F59E0B', fontSize: '0.88rem', fontWeight: 600 }}>Praxis Remediation &amp; Hotpatch Engine</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link
+            href="/account/subscription?product=praxis"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(245, 158, 11, 0.15)',
+              border: '1px solid rgba(245, 158, 11, 0.4)',
+              padding: '6px 14px',
+              borderRadius: '9999px',
+              color: '#FBBF24',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Sparkles size={14} />
+            <span>Manage Praxis Plans →</span>
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '6px 14px', borderRadius: '9999px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F59E0B', boxShadow: '0 0 10px #F59E0B' }} />
+            <span style={{ fontSize: '0.78rem', color: '#FBBF24', fontWeight: 600, letterSpacing: '0.04em' }}>UNIFIED REMEDIATION</span>
+          </div>
+        </div>
+      </div>
 
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <Link
-              href="/account/subscription?product=praxis"
-              style={{
-                padding: "0.45rem 0.9rem",
-                borderRadius: "8px",
-                background: "rgba(245, 158, 11, 0.15)",
-                border: "1px solid rgba(245, 158, 11, 0.35)",
-                color: "#FBBF24",
-                fontWeight: 700,
-                fontSize: "0.82rem",
-                textDecoration: "none",
-                whiteSpace: "nowrap"
-              }}
-            >
-              Plans & Pricing →
-            </Link>
+      {/* ── HERO BANNER ── */}
+      <div className="glass-card" style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        padding: '2.5rem', 
+        marginBottom: '2rem',
+        border: '1px solid rgba(245, 158, 11, 0.25)',
+        background: 'linear-gradient(135deg, rgba(20, 16, 8, 0.85) 0%, rgba(12, 16, 26, 0.95) 100%)'
+      }}>
+        <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.15, pointerEvents: 'none' }}>
+          <PraxisIcon size={340} glow={false} />
+        </div>
 
-            <div style={{ position: "relative" }}>
-              <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.8rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Profile:</span>
-              <select 
-                onChange={(e) => {
-                  if (e.target.value === '__new__') setIsSavingProfile(true);
-                  else if (e.target.value) loadProfile(e.target.value);
+        <div style={{ maxWidth: '880px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '1rem' }}>
+            <PraxisIcon size={44} glow={true} />
+            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #FFFFFF 0%, #FBBF24 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Praxis Remediation &amp; Hotpatching
+            </h1>
+            <span style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+              ENTERPRISE ENGINE
+            </span>
+          </div>
+
+          <p style={{ fontSize: '1.12rem', color: '#CBD5E1', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            Bridge the gap between threat intelligence and production enforcement. <strong>Praxis</strong> delivers automated zero-downtime hotpatches with canary ring safety, alongside hardware firewall ACL filters (Cisco, Palo Alto, Fortinet) and deep OS baseline hardening.
+          </p>
+
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Zap size={18} color="#FBBF24" />
+              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>&lt; 15 min</strong> Hot-Mitigation</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShieldAlert size={18} color="#10B981" />
+              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Zero-Downtime</strong> Live Kernel/Daemon</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Layers size={18} color="#38BDF8" />
+              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Canary Ring</strong> Rollout Safety</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShieldCheck size={18} color="#A855F7" />
+              <span style={{ fontSize: '0.9rem', color: '#94A3B8' }}><strong style={{ color: '#F8FAFC' }}>Hardware ACLs</strong> Cisco/Palo Alto/Fortinet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MODE SWITCHER (Hotpatch Stream vs. Firewall & Baseline Hardening) ── */}
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        padding: '6px',
+        background: 'rgba(15, 23, 42, 0.8)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '14px',
+        marginBottom: '2rem',
+        maxWidth: '720px'
+      }}>
+        <button
+          onClick={() => setActiveMode('hotpatch')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 18px',
+            borderRadius: '10px',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeMode === 'hotpatch' ? 'linear-gradient(135deg, #F59E0B, #D97706)' : 'transparent',
+            color: activeMode === 'hotpatch' ? '#000000' : '#94A3B8',
+            fontWeight: activeMode === 'hotpatch' ? 800 : 600,
+            fontSize: '0.9rem',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Zap size={18} />
+          <span>Autonomous Hotpatching &amp; Canary Stream</span>
+        </button>
+
+        <button
+          onClick={() => setActiveMode('hardening')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 18px',
+            borderRadius: '10px',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeMode === 'hardening' ? 'linear-gradient(135deg, #10B981, #059669)' : 'transparent',
+            color: activeMode === 'hardening' ? '#000000' : '#94A3B8',
+            fontWeight: activeMode === 'hardening' ? 800 : 600,
+            fontSize: '0.9rem',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Sliders size={18} />
+          <span>Firewall ACLs &amp; OS Baseline Hardening</span>
+        </button>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          MODE 1: AUTONOMOUS HOTPATCHING & CANARY STREAM
+          ═══════════════════════════════════════════════════════════════════ */}
+      {activeMode === 'hotpatch' && (
+        <div>
+          {/* CONCEPT SELECTION TABS */}
+          <div style={{ marginBottom: '2rem' }}>
+            <div style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', fontWeight: 700, marginBottom: '0.75rem' }}>
+              Autonomous Remediation Architecture
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+              
+              <button 
+                onClick={() => setActiveConcept('velocity')}
+                style={{
+                  padding: '1.2rem',
+                  borderRadius: '12px',
+                  border: activeConcept === 'velocity' ? '1px solid #F59E0B' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: activeConcept === 'velocity' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(15, 23, 42, 0.6)',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
                 }}
-                style={{ background: "transparent", border: "none", color: "white", outline: "none", cursor: "pointer", fontWeight: 600, fontSize: "0.85rem" }}
-                value=""
               >
-                <option value="" disabled>Load Profile...</option>
-                {Object.keys(savedProfiles).map(p => (
-                  <option key={p} value={p} style={{ color: "black" }}>{p}</option>
-                ))}
-                <option value="__new__" style={{ color: "black", fontWeight: "bold" }}>+ Save Current As...</option>
-              </select>
-            </div>
-            
-            {isSavingProfile && (
-              <div style={{ position: "absolute", top: "120%", right: 0, background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "1rem", borderRadius: "12px", zIndex: 100, display: "flex", gap: "0.5rem", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}>
-                <input 
-                  autoFocus
-                  type="text" 
-                  placeholder="Profile Name" 
-                  value={profileNameInput}
-                  onChange={e => setProfileNameInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && saveProfile()}
-                  style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.3)", color: "white" }}
-                />
-                <button onClick={saveProfile} style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "#3B82F6", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}>Save</button>
-                <button onClick={() => setIsSavingProfile(false)} style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", cursor: "pointer" }}>Cancel</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <p style={{ color: 'var(--text-muted)', maxWidth: '700px', lineHeight: 1.6, margin: 0 }}>
-          Compile and deploy targeted remediation clients directly from the Vantage threat registry.
-          Scripts are generated on-demand, transmitted exactly <strong style={{ color: 'var(--text-main)' }}>once</strong>, and immediately destroyed — no server-side retention.
-        </p>
-      </div>
-
-      {/* ── Stat Badges ──────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-        {[
-          { label: 'Threats Matched', value: threatCount > 0 ? threatCount.toString() : '—', color: 'var(--accent-primary)' },
-          { label: 'Classes Selected', value: selectedClasses.size.toString(), color: '#8B5CF6' },
-          { label: 'Transmission Policy', value: 'One-Time', color: '#10B981' },
-          { label: 'Zero Retention', value: '✓', color: '#10B981' },
-        ].map(stat => (
-          <div key={stat.label} style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border-color)',
-            borderRadius: '12px', padding: '0.75rem 1.25rem', backdropFilter: 'blur(12px)'
-          }}>
-            <div style={{ fontSize: '1.25rem', fontWeight: 700, color: stat.color }}>{stat.value}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Main Two-Column Layout ───────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '2rem', alignItems: 'start' }}>
-
-        {/* ── LEFT PANEL ──────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-          {/* Remediation Classes */}
-          <div className="glass-card" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-                Remediation Classes
-              </h2>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => setSelectedClasses(new Set(REMEDIATION_CLASSES.map(c => c.id)))}
-                  style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                  All
-                </button>
-                <button onClick={() => setSelectedClasses(new Set())}
-                  style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                  Clear
-                </button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {REMEDIATION_CLASSES.map(cls => {
-                const active = selectedClasses.has(cls.id);
-                return (
-                  <div key={cls.id} onClick={() => toggleClass(cls.id)} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
-                    padding: '0.875rem 1rem', borderRadius: '10px', cursor: 'pointer',
-                    border: `1px solid ${active ? 'rgba(59,130,246,0.4)' : 'var(--border-color)'}`,
-                    background: active ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)',
-                    transition: 'all 0.15s ease',
-                  }}>
-                    <span style={{ fontSize: '1.1rem', flexShrink: 0, marginTop: '0.1rem' }}>{cls.icon}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem', color: active ? 'var(--text-main)' : 'var(--text-muted)', marginBottom: '0.15rem' }}>
-                        {cls.title}
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{cls.description}</div>
-                    </div>
-                    <div style={{
-                      width: '16px', height: '16px', borderRadius: '4px', flexShrink: 0, marginTop: '2px',
-                      border: `2px solid ${active ? 'var(--accent-primary)' : 'rgba(255,255,255,0.2)'}`,
-                      background: active ? 'var(--accent-primary)' : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease'
-                    }}>
-                      {active && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Network Indicator Handling — only shown when relevant */}
-          {hasNetworkClass && (
-            <div className="glass-card" style={{ padding: '1.5rem', borderColor: 'rgba(59,130,246,0.25)' }}>
-              <h2 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-                Network Indicator Handling
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: networkMode === 'export' ? '1rem' : 0 }}>
-                {[
-                  { value: 'localhost', label: 'Apply directly on endpoint', desc: 'Runs iptables / ipf / genfilt commands on the local system.' },
-                  { value: 'export', label: 'Export for enterprise firewall', desc: 'Generates structured indicator data — no local changes.' },
-                ].map(opt => (
-                  <label key={opt.value} style={{
-                    display: 'flex', gap: '0.75rem', padding: '0.875rem 1rem',
-                    borderRadius: '10px', cursor: 'pointer',
-                    border: `1px solid ${networkMode === opt.value ? 'rgba(59,130,246,0.4)' : 'var(--border-color)'}`,
-                    background: networkMode === opt.value ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)',
-                    transition: 'all 0.15s ease',
-                  }}>
-                    <input type="radio" name="networkMode" value={opt.value}
-                      checked={networkMode === opt.value}
-                      onChange={() => setNetworkMode(opt.value as 'localhost' | 'export')}
-                      style={{ marginTop: '3px', accentColor: 'var(--accent-primary)' }} />
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-main)', marginBottom: '0.15rem' }}>{opt.label}</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{opt.desc}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-              {networkMode === 'export' && (
-                <select value={firewallFormat} onChange={e => setFirewallFormat(e.target.value)} style={{
-                  width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
-                  border: '1px solid rgba(59,130,246,0.35)', background: 'rgba(59,130,246,0.07)',
-                  color: 'var(--text-main)', fontSize: '0.875rem', cursor: 'pointer'
-                }}>
-                  {FIREWALL_FORMATS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-                </select>
-              )}
-            </div>
-          )}
-
-          {/* Client Settings */}
-          <div className="glass-card" style={{ padding: '1.5rem' }}>
-            <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              Client Settings
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Target OS</label>
-                <select value={os} onChange={e => setOs(e.target.value)} style={{
-                  width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
-                  border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
-                  color: 'var(--text-main)', fontSize: '0.875rem'
-                }}>
-                  {OS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Corporate Proxy (Optional)</label>
-                <input type="text" placeholder="http://proxy.corp.local:8080" value={proxy}
-                  onChange={e => setProxy(e.target.value)} style={{
-                    width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
-                    border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
-                    color: 'var(--text-main)', fontSize: '0.875rem'
-                  }} />
-              </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', padding: '0.75rem 1rem', borderRadius: '8px', border: `1px solid ${cron ? 'rgba(59,130,246,0.35)' : 'var(--border-color)'}`, background: cron ? 'rgba(59,130,246,0.06)' : 'transparent', transition: 'all 0.15s ease' }}>
-                <input type="checkbox" checked={cron} onChange={e => setCron(e.target.checked)}
-                  style={{ width: '1rem', height: '1rem', accentColor: 'var(--accent-primary)' }} />
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-main)' }}>Auto-deploy daily cron job</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Installs a frozen snapshot of this payload into crontab.</div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          {/* Advanced Configuration */}
-          <div className="glass-card" style={{ padding: '1.5rem', border: '1px solid rgba(245, 158, 11, 0.3)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(245, 158, 11, 0.1)', padding: '0.2rem 0.5rem', borderBottomLeftRadius: '8px', color: '#F59E0B', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>PREMIUM</div>
-            <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              Advanced Configuration
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Custom Shebang</label>
-                <input type="text" placeholder="#!/bin/sh" value={customShebang}
-                  onChange={e => setCustomShebang(e.target.value)} style={{
-                    width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
-                    border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
-                    color: 'var(--text-main)', fontSize: '0.875rem', fontFamily: 'monospace'
-                  }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Export Filename Pattern</label>
-                <input type="text" placeholder="praxis-praxis-export.sh" value={filenamePattern}
-                  onChange={e => setFilenamePattern(e.target.value)} style={{
-                    width: '100%', padding: '0.6rem 0.875rem', borderRadius: '8px',
-                    border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)',
-                    color: 'var(--text-main)', fontSize: '0.875rem', fontFamily: 'monospace'
-                  }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Generate Button */}
-          <button onClick={handleGenerate} disabled={generating || selectedClasses.size === 0} style={{
-            width: '100%', padding: '0.875rem', borderRadius: '10px', border: 'none',
-            background: selectedClasses.size === 0 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #3B82F6, #8B5CF6)',
-            color: selectedClasses.size === 0 ? 'var(--text-muted)' : 'white',
-            fontWeight: 700, fontSize: '0.95rem', cursor: selectedClasses.size === 0 ? 'not-allowed' : 'pointer',
-            boxShadow: selectedClasses.size > 0 ? '0 0 20px rgba(59,130,246,0.3)' : 'none',
-            transition: 'all 0.2s ease',
-          }}>
-            {generating ? '⏳ Compiling payload...' : !user ? '🔒 Sign In to Generate Payload (Free)' : '⚡ Generate One-Time Payload Link'}
-          </button>
-        </div>
-
-        {/* ── RIGHT PANEL ─────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-          {/* Script Preview */}
-          <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-color)',
-              background: 'rgba(255,255,255,0.02)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: previewLoading ? '#F59E0B' : '#10B981', boxShadow: `0 0 6px ${previewLoading ? '#F59E0B' : '#10B981'}` }} />
-                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                  {previewLoading ? 'Compiling...' : 'Live Script Preview'}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'rgba(255,95,87,0.7)' }} />
-                <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'rgba(255,189,46,0.7)' }} />
-                <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'rgba(39,201,63,0.7)' }} />
-              </div>
-            </div>
-            <pre style={{
-              padding: '1.5rem', margin: 0, minHeight: '420px', maxHeight: '600px',
-              overflowY: 'auto', fontSize: '0.78rem', lineHeight: 1.65,
-              color: '#a5b4fc', background: 'transparent', opacity: previewLoading ? 0.5 : 1,
-              transition: 'opacity 0.2s ease'
-            }}>
-              <code>{previewScript || (previewLoading ? '# Compiling from Vantage threat registry...' : '# Select remediation classes to see the compiled payload.')}</code>
-            </pre>
-          </div>
-
-          {/* Deployment Command */}
-          {generatedId && (
-            <div className="glass-card" style={{ padding: 0, overflow: 'hidden', borderColor: 'rgba(16,185,129,0.3)' }}>
-              <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '1rem 1.5rem', borderBottom: '1px solid rgba(16,185,129,0.2)',
-                background: 'rgba(16,185,129,0.04)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 6px #10B981' }} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#10B981', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                    One-Time Deployment Command
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'velocity' ? '#FBBF24' : '#F8FAFC' }}>
+                    1. Velocity Stream
                   </span>
+                  <Zap size={18} color={activeConcept === 'velocity' ? '#FBBF24' : '#64748B'} />
                 </div>
-                <button onClick={() => { navigator.clipboard.writeText(command); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                  style={{
-                    padding: '0.3rem 0.75rem', borderRadius: '6px', border: 'none',
-                    background: copied ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)',
-                    color: copied ? '#10B981' : 'var(--text-muted)', fontWeight: 600,
-                    fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.2s ease'
-                  }}>
-                  {copied ? '✓ Copied' : 'Copy'}
-                </button>
-              </div>
-              <pre style={{
-                padding: '1.25rem 1.5rem', margin: 0,
-                fontSize: '0.85rem', color: '#34d399', background: 'transparent',
-                wordBreak: 'break-all', whiteSpace: 'pre-wrap'
-              }}>
-                <code>{command}</code>
-              </pre>
-              <div style={{ padding: '0.75rem 1.5rem', borderTop: '1px solid rgba(16,185,129,0.15)', background: 'rgba(16,185,129,0.03)' }}>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                  ⚠ This link is single-use. Once the client fetches the script, it is permanently deleted from our servers.
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
+                  3-tier machine-executable payloads (hot-mitigation, package pin, GitOps playbook) delivered via API &amp; Webhook.
+                </span>
+              </button>
+
+              <button 
+                onClick={() => setActiveConcept('canary')}
+                style={{
+                  padding: '1.2rem',
+                  borderRadius: '12px',
+                  border: activeConcept === 'canary' ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: activeConcept === 'canary' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(15, 23, 42, 0.6)',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'canary' ? '#10B981' : '#F8FAFC' }}>
+                    2. Canary Ring Staging
+                  </span>
+                  <Activity size={18} color={activeConcept === 'canary' ? '#10B981' : '#64748B'} />
+                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
+                  Autonomous ring deployment (Ring 0 Canary 2% → Telemetry Sentinel → Ring 1 25%) with instant automated rollback.
+                </span>
+              </button>
+
+              <button 
+                onClick={() => setActiveConcept('slsa')}
+                style={{
+                  padding: '1.2rem',
+                  borderRadius: '12px',
+                  border: activeConcept === 'slsa' ? '1px solid #8B5CF6' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: activeConcept === 'slsa' ? 'rgba(139, 92, 246, 0.12)' : 'rgba(15, 23, 42, 0.6)',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'slsa' ? '#8B5CF6' : '#F8FAFC' }}>
+                    3. Zero-Trust Provenance
+                  </span>
+                  <Lock size={18} color={activeConcept === 'slsa' ? '#8B5CF6' : '#64748B'} />
+                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
+                  SLSA Level 3 signed manifests via Cosign OIDC, automated ephemeral VM test logs, and CycloneDX VEX statements.
+                </span>
+              </button>
+
+              <button 
+                onClick={() => setActiveConcept('implement')}
+                style={{
+                  padding: '1.2rem',
+                  borderRadius: '12px',
+                  border: activeConcept === 'implement' ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: activeConcept === 'implement' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(15, 23, 42, 0.6)',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: activeConcept === 'implement' ? '#38BDF8' : '#F8FAFC' }}>
+                    4. Fleet Implementation
+                  </span>
+                  <Terminal size={18} color={activeConcept === 'implement' ? '#38BDF8' : '#64748B'} />
+                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
+                  Ready-to-deploy setups: Zero-agent systemd timer, GitOps PR bot, Ansible Tower, or micro-daemon.
+                </span>
+              </button>
+
+            </div>
+          </div>
+
+          {/* INTERACTIVE CANARY SIMULATOR */}
+          <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '16px', border: '1px solid rgba(245, 158, 11, 0.25)', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Play size={18} color="#FBBF24" />
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
+                    Live Canary Rollout Simulator
+                  </h3>
+                </div>
+                <p style={{ fontSize: '0.82rem', color: '#94A3B8', margin: '4px 0 0 0' }}>
+                  Simulate deploying {selectedPatch.cveId} ({selectedPatch.title}) across a 640-host hybrid fleet.
                 </p>
               </div>
+
+              <button
+                onClick={runSimulation}
+                disabled={isSimulating}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: isSimulating ? 'rgba(245, 158, 11, 0.3)' : 'linear-gradient(135deg, #F59E0B, #D97706)',
+                  color: '#000000',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: isSimulating ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isSimulating ? <Activity size={16} className="spin" /> : <Play size={16} />}
+                <span>{isSimulating ? 'Simulating Rollout...' : simulationDone ? 'Re-Run Simulation' : 'Execute Ring 0 Canary'}</span>
+              </button>
             </div>
-          )}
+
+            {/* Progress Bar */}
+            <div style={{ width: '100%', height: '8px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
+              <div style={{ width: `${simulationProgress}%`, height: '100%', background: 'linear-gradient(90deg, #F59E0B, #10B981)', transition: 'width 0.3s ease' }} />
+            </div>
+
+            {/* Terminal Simulation Log Output */}
+            <div style={{
+              background: '#05070D',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '10px',
+              padding: '1rem 1.25rem',
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '0.78rem',
+              color: '#34D399',
+              minHeight: '120px',
+              maxHeight: '180px',
+              overflowY: 'auto',
+              lineHeight: 1.55
+            }}>
+              {simulationLogs.length === 0 ? (
+                <span style={{ color: '#64748B' }}>// Click "Execute Ring 0 Canary" above to trigger simulated fleet hot-patching.</span>
+              ) : (
+                simulationLogs.map((log, i) => (
+                  <div key={i}>{log}</div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* PATCH BROWSER & PAYLOAD INSPECTOR */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 420px) 1fr', gap: '1.5rem', alignItems: 'start' }}>
+            
+            {/* Left: Patch Feed Selector */}
+            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 700, color: '#FFFFFF' }}>Active Hotpatch Stream</h4>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {(['all', 'ubuntu', 'rocky', 'alpine'] as const).map(d => (
+                    <button
+                      key={d}
+                      onClick={() => setSelectedDistro(d)}
+                      style={{
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        border: selectedDistro === d ? '1px solid #F59E0B' : '1px solid rgba(255,255,255,0.06)',
+                        background: selectedDistro === d ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
+                        color: selectedDistro === d ? '#FBBF24' : '#94A3B8',
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {filteredPatches.map(patch => {
+                  const isSelected = selectedPatch.id === patch.id;
+                  return (
+                    <div
+                      key={patch.id}
+                      onClick={() => setSelectedPatch(patch)}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: isSelected ? '1px solid #F59E0B' : '1px solid rgba(255, 255, 255, 0.05)',
+                        background: isSelected ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#38BDF8' }}>{patch.cveId}</span>
+                        <span style={{
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          padding: '1px 5px',
+                          borderRadius: '3px',
+                          background: patch.severity === 'CRITICAL' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                          color: patch.severity === 'CRITICAL' ? '#F87171' : '#FBBF24',
+                          border: patch.severity === 'CRITICAL' ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)'
+                        }}>
+                          {patch.severity} {patch.cvss}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: '#E2E8F0', fontWeight: 600, marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {patch.title}
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px', fontSize: '0.65rem', color: '#94A3B8' }}>
+                        <span>Target: {patch.affectedPackages.join(', ')}</span>
+                        <span>&bull;</span>
+                        <span>SLSA L{patch.provenance.slsaLevel}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right: Selected Patch Payload Viewer */}
+            <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF' }}>{selectedPatch.cveId}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>({selectedPatch.affectedPackages.join(', ')})</span>
+                  </div>
+                  <div style={{ fontSize: '0.88rem', color: '#CBD5E1', fontWeight: 500 }}>{selectedPatch.title}</div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    onClick={() => setSelectedPayloadTab('tier1')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: selectedPayloadTab === 'tier1' ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
+                      background: selectedPayloadTab === 'tier1' ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                      color: selectedPayloadTab === 'tier1' ? '#34D399' : '#94A3B8',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Tier 1 (Hotfix)
+                  </button>
+                  <button
+                    onClick={() => setSelectedPayloadTab('tier2')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: selectedPayloadTab === 'tier2' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.08)',
+                      background: selectedPayloadTab === 'tier2' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+                      color: selectedPayloadTab === 'tier2' ? '#38BDF8' : '#94A3B8',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Tier 2 (Kernel Live)
+                  </button>
+                  <button
+                    onClick={() => setSelectedPayloadTab('tier3')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: selectedPayloadTab === 'tier3' ? '1px solid #A855F7' : '1px solid rgba(255,255,255,0.08)',
+                      background: selectedPayloadTab === 'tier3' ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
+                      color: selectedPayloadTab === 'tier3' ? '#C084FC' : '#94A3B8',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Tier 3 (Package)
+                  </button>
+                  <button
+                    onClick={() => setSelectedPayloadTab('rawJson')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: selectedPayloadTab === 'rawJson' ? '1px solid #F59E0B' : '1px solid rgba(255,255,255,0.08)',
+                      background: selectedPayloadTab === 'rawJson' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+                      color: selectedPayloadTab === 'rawJson' ? '#FBBF24' : '#94A3B8',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Raw JSON
+                  </button>
+                </div>
+              </div>
+
+              {/* Payload Content Area */}
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => {
+                    const text = selectedPayloadTab === 'tier1'
+                      ? selectedPatch.remediationTier.tier1_hotMitigation.commands.join('\n')
+                      : selectedPayloadTab === 'rawJson'
+                      ? JSON.stringify(selectedPatch, null, 2)
+                      : selectedPayloadTab === 'tier2'
+                      ? Object.entries(selectedPatch.remediationTier.tier2_packageUpgrade.distroCommands).map(([d, c]) => `# ${d.toUpperCase()}:\n${c}`).join('\n\n')
+                      : selectedPatch.remediationTier.tier3_fleetAutomation.ansiblePlaybook;
+                    copyToClipboard(text, 'payload');
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#CBD5E1',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  {copiedText === 'payload' ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
+                  <span>{copiedText === 'payload' ? 'Copied' : 'Copy'}</span>
+                </button>
+
+                <pre style={{
+                  background: '#05070D',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '10px',
+                  padding: '1.25rem',
+                  fontFamily: 'var(--font-mono, monospace)',
+                  fontSize: '0.8rem',
+                  color: selectedPayloadTab === 'tier1' ? '#34D399' : selectedPayloadTab === 'tier2' ? '#38BDF8' : '#FBBF24',
+                  overflowX: 'auto',
+                  lineHeight: 1.5,
+                  minHeight: '200px'
+                }}>
+                  {selectedPayloadTab === 'tier1' && (
+                    `# Tier 1 Zero-Downtime Hotfix for ${selectedPatch.cveId}\n# Summary: ${selectedPatch.remediationTier.tier1_hotMitigation.summary}\n\n${selectedPatch.remediationTier.tier1_hotMitigation.commands.join('\n')}\n\n# Verification:\n${selectedPatch.remediationTier.tier1_hotMitigation.verificationCommand}\n\n# Rollback (Sub-Second):\n${selectedPatch.remediationTier.tier1_hotMitigation.rollbackCommand}`
+                  )}
+                  {selectedPayloadTab === 'tier2' && (
+                    `# Tier 2 Distro Native Package Upgrades for ${selectedPatch.cveId}\n# Target Distros: ${selectedPatch.affectedDistros.join(', ')}\n\n${Object.entries(selectedPatch.remediationTier.tier2_packageUpgrade.distroCommands).map(([d, c]) => `# ${d.toUpperCase()}:\n${c}`).join('\n\n')}`
+                  )}
+                  {selectedPayloadTab === 'tier3' && (
+                    `# Tier 3 Fleet Automation Ansible Playbook for ${selectedPatch.cveId}\n\n${selectedPatch.remediationTier.tier3_fleetAutomation.ansiblePlaybook}`
+                  )}
+                  {selectedPayloadTab === 'rawJson' && (
+                    JSON.stringify(selectedPatch, null, 2)
+                  )}
+                </pre>
+              </div>
+
+              {/* Provenance Footer */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', fontSize: '0.74rem', color: '#94A3B8' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ShieldCheck size={14} color="#10B981" />
+                  <span>SLSA Level {selectedPatch.provenance.slsaLevel} Attested</span>
+                </div>
+                <span>Cosign Digest: {selectedPatch.provenance.cosignDigest.slice(0, 20)}...</span>
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          MODE 2: FIREWALL ACLs & BASELINE HARDENING COMPILER
+          ═══════════════════════════════════════════════════════════════════ */}
+      {activeMode === 'hardening' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: '2rem' }}>
+          
+          {/* LEFT: Configuration Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Profile Management Box */}
+            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#CBD5E1' }}>
+                  Saved Hardening Profiles
+                </span>
+                <button
+                  onClick={() => setIsSavingProfile(true)}
+                  style={{
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    border: '1px solid rgba(16, 185, 129, 0.35)',
+                    color: '#34D399',
+                    padding: '3px 9px',
+                    borderRadius: '5px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  + Save Current
+                </button>
+              </div>
+
+              {isSavingProfile && (
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '0.75rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Profile name (e.g. Edge DMZ Gateway)"
+                    value={profileNameInput}
+                    onChange={(e) => setProfileNameInput(e.target.value)}
+                    style={{ flex: 1, padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '0.82rem' }}
+                  />
+                  <button onClick={saveProfile} style={{ padding: '6px 12px', borderRadius: '6px', background: '#10B981', color: '#000', fontWeight: 700, fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}>Save</button>
+                  <button onClick={() => setIsSavingProfile(false)} style={{ padding: '6px 10px', borderRadius: '6px', background: 'transparent', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>Cancel</button>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {Object.keys(savedProfiles).length === 0 ? (
+                  <span style={{ fontSize: '0.76rem', color: '#64748B' }}>No saved profiles yet. Configure settings below and click "+ Save Current".</span>
+                ) : (
+                  Object.keys(savedProfiles).map(p => (
+                    <button
+                      key={p}
+                      onClick={() => loadProfile(p)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: '#CBD5E1',
+                        fontSize: '0.76rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {p}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Target OS & Distribution */}
+            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#CBD5E1', marginBottom: '0.75rem' }}>
+                Target OS Architecture
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                {OS_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setOs(opt.value)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: os === opt.value ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
+                      background: os === opt.value ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.02)',
+                      color: os === opt.value ? '#34D399' : '#CBD5E1',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textAlign: 'center'
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Remediation Modules */}
+            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#CBD5E1', marginBottom: '0.75rem' }}>
+                Active Remediation Modules
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {REMEDIATION_CLASSES.map(cls => {
+                  const isChecked = selectedClasses.has(cls.id);
+                  return (
+                    <div
+                      key={cls.id}
+                      onClick={() => toggleClass(cls.id)}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: isChecked ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
+                        background: isChecked ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.02)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px'
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem' }}>{cls.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isChecked ? '#34D399' : '#FFFFFF' }}>{cls.title}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '2px', lineHeight: 1.4 }}>{cls.description}</div>
+                      </div>
+                      <input type="checkbox" checked={isChecked} onChange={() => {}} style={{ accentColor: '#10B981', cursor: 'pointer', marginTop: '3px' }} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Hardware Firewall Exporters (if network class active) */}
+            {hasNetworkClass && (
+              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#CBD5E1', marginBottom: '0.75rem' }}>
+                  Hardware Firewall &amp; Export Format
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
+                  {FIREWALL_FORMATS.map(f => (
+                    <button
+                      key={f.value}
+                      onClick={() => setFirewallFormat(f.value)}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: firewallFormat === f.value ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.08)',
+                        background: firewallFormat === f.value ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255,255,255,0.02)',
+                        color: firewallFormat === f.value ? '#38BDF8' : '#CBD5E1',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textAlign: 'left'
+                      }}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cron & Automation */}
+            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#FFFFFF' }}>Install Hourly Cron Job</div>
+                <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Runs script periodically via /etc/cron.hourly for continuous hardening</div>
+              </div>
+              <input
+                type="checkbox"
+                checked={cron}
+                onChange={(e) => setCron(e.target.checked)}
+                style={{ width: '18px', height: '18px', accentColor: '#10B981', cursor: 'pointer' }}
+              />
+            </div>
+
+          </div>
+
+          {/* RIGHT: Live Script Preview & Single-Use Command */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Terminal size={18} color="#10B981" />
+                  <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#FFFFFF' }}>Hardening Script Preview</span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontFamily: 'var(--font-mono, monospace)' }}>
+                  {threatCount} Vantage Indicators Ingested
+                </div>
+              </div>
+
+              <div style={{ position: 'relative' }}>
+                <pre style={{
+                  background: '#05070D',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '10px',
+                  padding: '1.25rem',
+                  fontFamily: 'var(--font-mono, monospace)',
+                  fontSize: '0.78rem',
+                  color: '#34D399',
+                  maxHeight: '380px',
+                  overflowY: 'auto',
+                  lineHeight: 1.55
+                }}>
+                  {previewLoading ? '// Synthesizing baseline hardening script from Vantage...' : previewScript}
+                </pre>
+              </div>
+
+              <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <button
+                  onClick={handleGenerate}
+                  disabled={generating}
+                  style={{
+                    background: 'linear-gradient(135deg, #10B981, #059669)',
+                    color: '#000000',
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    padding: '11px 24px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: generating ? 'not-allowed' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <Zap size={16} />
+                  <span>{generating ? 'Generating Link...' : 'Generate Single-Use Deployment Link'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Generated Deployment Command */}
+            {generatedId && (
+              <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '14px', border: '1px solid rgba(16, 185, 129, 0.4)', background: 'rgba(16, 185, 129, 0.05)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981' }} />
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      One-Time Shell Execution Command
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(hardeningCommand); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '5px',
+                      border: 'none',
+                      background: copied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)',
+                      color: copied ? '#34D399' : '#FFFFFF',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+
+                <div style={{ background: '#05070D', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 14px', fontFamily: 'var(--font-mono, monospace)', fontSize: '0.82rem', color: '#38BDF8', wordBreak: 'break-all' }}>
+                  {hardeningCommand}
+                </div>
+
+                <p style={{ fontSize: '0.74rem', color: '#94A3B8', margin: '10px 0 0 0' }}>
+                  ⚠ Single-use security token. Once downloaded by the target host, this link is permanently deleted from the Exultia cache.
+                </p>
+              </div>
+            )}
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }

@@ -33,7 +33,7 @@ import {
   ShieldCheck,
   Check
 } from "lucide-react";
-import { PureIdeIcon, VantageIcon, KineticIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
@@ -66,10 +66,9 @@ type AccountTab =
   | "security" 
   | "pureide" 
   | "uvi" 
-  | "kinetic" 
-  | "axiom" 
   | "praxis" 
   | "pureos" 
+  | "axiom" 
   | "tokens" 
   | "workflows" 
   | "admin";
@@ -145,16 +144,17 @@ function AccountPageContent() {
         "security", 
         "pureide", 
         "uvi", 
-        "kinetic", 
-        "axiom", 
         "praxis", 
         "pureos", 
+        "axiom", 
         "tokens", 
         "workflows", 
         "admin"
       ];
       if (tabParam === "personas") {
         setActiveTab("overview");
+      } else if (tabParam === "kinetic") {
+        setActiveTab("praxis");
       } else if (validTabs.includes(tabParam as AccountTab)) {
         setActiveTab(tabParam as AccountTab);
       }
@@ -405,22 +405,10 @@ function AccountPageContent() {
       actionLabel: "Open Vantage Feed →",
       actionHref: "/app/uvi"
     },
-    kinetic: {
-      title: "Kinetic Autonomous Patching",
-      subtitle: "Zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.",
-      actionLabel: "Launch Kinetic Console →",
-      actionHref: "/app/kinetic"
-    },
-    axiom: {
-      title: "Axiom Certification & LMS",
-      subtitle: "15,000+ question cybersecurity certification simulator with LMS REST API endpoints.",
-      actionLabel: "Open Exam Simulator →",
-      actionHref: "/app/axiom"
-    },
     praxis: {
-      title: "Praxis Threat Remediation",
-      subtitle: "Deterministic automated CVE fix scripts, airgap patch recipes, and CLI client tools.",
-      actionLabel: "Launch Remediation →",
+      title: "Praxis Autonomous Remediation & Hotpatching",
+      subtitle: "Autonomous zero-downtime hotfix streaming, canary rollouts, deterministic CVE fix scripts, and hardware firewall ACL compiler.",
+      actionLabel: "Launch Praxis Console →",
       actionHref: "/app/praxis"
     },
     pureos: {
@@ -428,6 +416,12 @@ function AccountPageContent() {
       subtitle: "CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures.",
       actionLabel: "Browse Container Catalog →",
       actionHref: "/app/pureos"
+    },
+    axiom: {
+      title: "Axiom Certification & LMS",
+      subtitle: "15,000+ question cybersecurity certification simulator with LMS REST API endpoints.",
+      actionLabel: "Open Exam Simulator →",
+      actionHref: "/app/axiom"
     },
     tokens: {
       title: "API Access Tokens (PAT)",
@@ -574,38 +568,12 @@ function AccountPageContent() {
 
           <button 
             type="button"
-            className={`console-sidebar-item ${activeTab === "kinetic" ? "active" : ""}`}
-            onClick={() => setActiveTab("kinetic")}
-            title="Kinetic Autonomous Patch Stream"
-          >
-            <KineticIcon size={16} glow={false} />
-            {!sidebarCollapsed && <span>Kinetic Patch Stream</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("kinetic").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "axiom" ? "active" : ""}`}
-            onClick={() => setActiveTab("axiom")}
-            title="Axiom Accreditation"
-          >
-            <AxiomIcon size={16} />
-            {!sidebarCollapsed && <span>Axiom LMS Prep</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("axiom").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
             className={`console-sidebar-item ${activeTab === "praxis" ? "active" : ""}`}
             onClick={() => setActiveTab("praxis")}
-            title="Praxis Threat Remediation"
+            title="Praxis Autonomous Remediation & Hotpatching"
           >
             <PraxisIcon size={16} />
-            {!sidebarCollapsed && <span>Praxis Praxis</span>}
+            {!sidebarCollapsed && <span>Praxis Remediation</span>}
             {!sidebarCollapsed && (
               <span className="console-sidebar-badge">{getSubTier("praxis").toUpperCase()}</span>
             )}
@@ -621,6 +589,19 @@ function AccountPageContent() {
             {!sidebarCollapsed && <span>PureOS Containers</span>}
             {!sidebarCollapsed && (
               <span className="console-sidebar-badge">{getSubTier("pureos").toUpperCase()}</span>
+            )}
+          </button>
+
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "axiom" ? "active" : ""}`}
+            onClick={() => setActiveTab("axiom")}
+            title="Axiom Accreditation"
+          >
+            <AxiomIcon size={16} />
+            {!sidebarCollapsed && <span>Axiom LMS Prep</span>}
+            {!sidebarCollapsed && (
+              <span className="console-sidebar-badge">{getSubTier("axiom").toUpperCase()}</span>
             )}
           </button>
         </div>
@@ -1333,112 +1314,7 @@ function AccountPageContent() {
                 </div>
               </div>
 
-              {/* CARD 3: KINETIC */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("kinetic") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <KineticIcon size={32} glow={false} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Kinetic</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Autonomous Patch Stream</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("kinetic") !== "free" ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("kinetic") !== "free" ? "#67E8F9" : "#94A3B8",
-                    border: getSubTier("kinetic") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("kinetic")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Autonomous zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#67E8F9" />
-                    <span>
-                      {getSubTier("kinetic") === "enterprise" ? "Multi-Ring Phased Fleet Rollouts (Enterprise)" : (getSubTier("kinetic") === "pro" ? "Autonomous Patch Streaming Daemon (Pro)" : "Manual Node Recipes (Community)")}
-                    </span>
-                  </div>
-
-                  {getSubTier("kinetic") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=kinetic"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=kinetic"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("kinetic")}
-                        disabled={updatingSubProduct === "kinetic"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+              {/* CARD 3: PRAXIS (absorbed kinetic hotpatching) */}
 
               {/* CARD 4: AXIOM */}
               <div style={{
@@ -1842,21 +1718,21 @@ function AccountPageContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 7: KINETIC FLEET REMEDIATION */}
+        {/* VIEW 7: PRAXIS AUTONOMOUS REMEDIATION & HOTPATCHING */}
         {/* ========================================================================= */}
-        {activeTab === "kinetic" && (
-          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(6, 182, 212, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
-            <KineticIcon size={64} glow={true} className="mx-auto mb-4" />
-            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Kinetic Autonomous Patch Streaming</h2>
+        {activeTab === "praxis" && (
+          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
+            <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
+            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Praxis Autonomous Remediation & Hotpatching</h2>
             <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
-              Autonomous zero-downtime hotfix stream daemon, zero-agent runner, and sub-second deterministic rollbacks.
+              Autonomous zero-downtime hotfix stream daemon, canary rollouts, sub-second deterministic rollbacks, and hardware firewall ACL compiler.
             </p>
             <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/kinetic" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4, #0891B2)", fontWeight: 700 }}>
-                Launch Kinetic Console →
+              <Link href="/app/praxis" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
+                Launch Praxis Console →
               </Link>
-              <Link href="/account/subscription?product=kinetic" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
-                Manage Kinetic Tier
+              <Link href="/account/subscription?product=praxis" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+                Manage Praxis Tier
               </Link>
             </div>
           </div>
@@ -1878,27 +1754,6 @@ function AccountPageContent() {
               </Link>
               <Link href="/account/subscription?product=axiom" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
                 Manage Axiom Tier
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* VIEW 9: PRAXIS THREAT REMEDIATION */}
-        {/* ========================================================================= */}
-        {activeTab === "praxis" && (
-          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
-            <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
-            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Praxis Threat Remediation</h2>
-            <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
-              Surgical automated remediation payloads and fix scripts correlated to universal threat feed disclosures.
-            </p>
-            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/praxis" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
-                Launch Remediation Console →
-              </Link>
-              <Link href="/account/subscription?product=praxis" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
-                Manage Praxis Tier
               </Link>
             </div>
           </div>
@@ -2110,7 +1965,7 @@ function AccountPageContent() {
                         { scope: "read:stats", label: "Read Global CVSS Analytics" },
                         { scope: "ingest:telemetry", label: "Stream Ingestion Feeds" },
                         { scope: "builder:cli", label: "Trigger PureIDE Builds" },
-                        { scope: "kinetic:api", label: "Stream Kinetic Patch Manifests" },
+                        { scope: "praxis:hotpatch", label: "Stream Praxis Hotpatch Manifests" },
                       ].map(({ scope, label }) => (
                         <label key={scope} style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(255, 255, 255, 0.03)", padding: "7px 10px", borderRadius: "8px", cursor: "pointer", fontSize: "0.8rem", color: "#E2E8F0" }}>
                           <input 

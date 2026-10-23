@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${item.cveId} exploit fix`,
       ...item.affectedPackages,
       'Exultia Praxis',
-      'Kinetic zero-downtime patch',
+      'Praxis zero-downtime hotpatch',
     ],
     openGraph: {
       title,
@@ -158,11 +158,11 @@ export default async function CveDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* 1-Command Autonomous Kinetic Hot-Patching CTA */}
-        <div className="border border-[#06b6d4]/40 bg-[#06b6d4]/5 p-5 rounded-lg mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* 1-Command Autonomous Praxis Hot-Patching CTA */}
+        <div className="border border-[#F59E0B]/40 bg-[#F59E0B]/5 p-5 rounded-lg mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
-              <span className="text-[#38bdf8]">⚡ Autonomous Live Mitigation</span>
+              <span className="text-[#FBBF24]">⚡ Autonomous Live Mitigation</span>
               <span className="text-xs text-slate-400">(Zero-Downtime &bull; Sub-Second Rollback)</span>
             </div>
             <p className="text-xs text-slate-300">
@@ -170,8 +170,8 @@ export default async function CveDetailPage({ params }: Props) {
             </p>
           </div>
 
-          <div className="bg-[#050608] border border-[#1e293b] px-3 py-2 rounded text-xs text-[#38bdf8] font-bold select-all shrink-0">
-            sudo kinetic apply --cve={item.cveId}
+          <div className="bg-[#050608] border border-[#1e293b] px-3 py-2 rounded text-xs text-[#FBBF24] font-bold select-all shrink-0">
+            sudo praxis apply --cve={item.cveId}
           </div>
         </div>
 
