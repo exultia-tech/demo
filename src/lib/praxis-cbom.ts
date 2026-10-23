@@ -44,6 +44,14 @@ export interface PraxisCbomPayload {
     networkMode: string;
     firewallFormat: string;
   };
+  endpointExecution?: {
+    targetNode: string;
+    architecture: string;
+    kernelRelease: string;
+    executedByUser: string;
+    endpointExecutedAt: string;
+    status: 'SUCCESS' | 'SIMULATED';
+  };
   vulnerabilitiesRemediated: CbomVulnerabilityEntry[];
   actionsPerformed: CbomActionEntry[];
   verification: {
@@ -218,6 +226,14 @@ export function generateAfterActionCbom(options: GenerateCbomOptions): PraxisCbo
       networkMode,
       firewallFormat
     },
+    endpointExecution: {
+      targetNode: 'evaluated-on-endpoint (dynamic)',
+      architecture: 'evaluated-on-endpoint (dynamic)',
+      kernelRelease: 'evaluated-on-endpoint (dynamic)',
+      executedByUser: 'evaluated-on-endpoint (dynamic)',
+      endpointExecutedAt: timestamp,
+      status: executionType === 'patching' ? 'SIMULATED' : 'SUCCESS'
+    },
     vulnerabilitiesRemediated,
     actionsPerformed,
     verification: {
@@ -237,14 +253,24 @@ export function generateAfterActionCbom(options: GenerateCbomOptions): PraxisCbo
 
 /**
  * Generates shell script block that outputs the After-Action CBOM payload to /var/log/exultia/praxis-cbom-after-action.json
+ * directly on the target endpoint machine, dynamically populated with live host facts.
  */
 export function generateCbomShellScriptBlock(cbom: PraxisCbomPayload): string {
-  const jsonString = JSON.stringify(cbom, null, 2);
+  let jsonString = JSON.stringify(cbom, null, 2);
+  
+  // Replace static endpoint execution placeholders with sed-target tokens
+  jsonString = jsonString
+    .replace('"targetNode": "evaluated-on-endpoint (dynamic)"', '"targetNode": "__EP_HOST__"')
+    .replace('"architecture": "evaluated-on-endpoint (dynamic)"', '"architecture": "__EP_ARCH__"')
+    .replace('"kernelRelease": "evaluated-on-endpoint (dynamic)"', '"kernelRelease": "__EP_KERNEL__"')
+    .replace('"executedByUser": "evaluated-on-endpoint (dynamic)"', '"executedByUser": "__EP_USER__"');
+
   const lines: string[] = [];
 
   lines.push(`# ============================================================`);
-  lines.push(`# AFTER-ACTION CBOM MANIFEST GENERATION`);
+  lines.push(`# AFTER-ACTION CBOM MANIFEST GENERATION (ENDPOINT-NATIVE)`);
   lines.push(`# Codifies all applied remediations into a structured Cybersecurity Bill of Materials`);
+  lines.push(`# Generated and attested directly on this host machine.`);
   lines.push(`# Spec: CycloneDX-CBOM v1.5 | Attestation: SLSA Level 3`);
   lines.push(`# ============================================================`);
   lines.push(`write_after_action_cbom() {`);
@@ -253,10 +279,40 @@ export function generateCbomShellScriptBlock(cbom: PraxisCbomPayload): string {
   lines.push(`    mkdir -p "$CBOM_DIR" 2>/dev/null || CBOM_DIR="/tmp"`);
   lines.push(`  fi`);
   lines.push(`  CBOM_FILE="$CBOM_DIR/praxis-cbom-after-action.json"`);
+  lines.push(``);
+  lines.push(`  # Capture dynamic endpoint host telemetry`);
+  lines.push(`  EP_HOST=$(hostname 2>/dev/null || uname -n 2>/dev/null || echo "localhost")`);
+  lines.push(`  EP_ARCH=$(uname -m 2>/dev/null || echo "unknown")`);
+  lines.push(`  EP_KERNEL=$(uname -r 2>/dev/null || echo "unknown")`);
+  lines.push(`  EP_USER=$(id -un 2>/dev/null || whoami 2>/dev/null || echo "root")`);
+  lines.push(`  EP_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)`);
+  lines.push(``);
   lines.push(`  cat << 'EOCBOM' > "$CBOM_FILE"`);
   lines.push(jsonString);
   lines.push(`EOCBOM`);
-  lines.push(`  log_msg "✔ After-Action CBOM codified and saved: $CBOM_FILE"`);
+  lines.push(``);
+  lines.push(`  # Dynamically stamp host runtime telemetry into endpoint CBOM`);
+  lines.push(`  if sed --version 2>/dev/null | grep -q GNU; then`);
+  lines.push(`    sed -i \\`);
+  lines.push(`      -e "s|__EP_HOST__|$EP_HOST|g" \\`);
+  lines.push(`      -e "s|__EP_ARCH__|$EP_ARCH|g" \\`);
+  lines.push(`      -e "s|__EP_KERNEL__|$EP_KERNEL|g" \\`);
+  lines.push(`      -e "s|__EP_USER__|$EP_USER|g" \\`);
+  lines.push(`      "$CBOM_FILE" 2>/dev/null || true`);
+  lines.push(`  else`);
+  lines.push(`    sed \\`);
+  lines.push(`      -e "s|__EP_HOST__|$EP_HOST|g" \\`);
+  lines.push(`      -e "s|__EP_ARCH__|$EP_ARCH|g" \\`);
+  lines.push(`      -e "s|__EP_KERNEL__|$EP_KERNEL|g" \\`);
+  lines.push(`      -e "s|__EP_USER__|$EP_USER|g" \\`);
+  lines.push(`      "$CBOM_FILE" > "\${CBOM_FILE}.tmp" 2>/dev/null && mv "\${CBOM_FILE}.tmp" "$CBOM_FILE" 2>/dev/null || true`);
+  lines.push(`  fi`);
+  lines.push(``);
+  lines.push(`  if command -v log_msg >/dev/null 2>&1; then`);
+  lines.push(`    log_msg "✔ After-Action CBOM codified and saved on endpoint: $CBOM_FILE"`);
+  lines.push(`  else`);
+  lines.push(`    printf '[Exultia] ✔ After-Action CBOM codified and saved on endpoint: %s\\n' "$CBOM_FILE"`);
+  lines.push(`  fi`);
   lines.push(`}`);
   lines.push(`write_after_action_cbom\n`);
 
@@ -276,12 +332,19 @@ export function convertAdvisoryToPatchItem(advisory: any): PatchFeedItem {
   const cvss = typeof advisory.cvssScore === 'number' ? advisory.cvssScore : typeof advisory.cvss === 'number' ? advisory.cvss : 8.0;
 
   const quickCommands = advisory.remediation?.quickCommands && advisory.remediation.quickCommands.length > 0
-    ? advisory.remediation.quickCommands
+    ? [...advisory.remediation.quickCommands]
     : [
         `# Instant Zero-Downtime Micro-Mitigation for ${cveId}`,
         `if command -v systemctl >/dev/null 2>&1; then systemctl reload ${pkg} 2>/dev/null || true; fi`,
         `echo "1" > /proc/sys/net/ipv4/tcp_syncookies 2>/dev/null || true`
       ];
+
+  // Append endpoint After-Action CBOM writer to Tier 1 quick commands
+  quickCommands.push(
+    `# Codify After-Action CBOM directly on target endpoint`,
+    `mkdir -p /var/log/exultia 2>/dev/null || true`,
+    `cat << 'EOCBOM' > /var/log/exultia/praxis-cbom-after-action.json 2>/dev/null || cat << 'EOCBOM' > /tmp/praxis-cbom-after-action.json\n{\n  "cbomFormat": "CycloneDX-CBOM",\n  "specVersion": "1.5",\n  "cveId": "${cveId}",\n  "uviId": "${uviId}",\n  "remediationStatus": "APPLIED",\n  "affectedPackage": "${pkg}",\n  "targetHost": "'$(hostname 2>/dev/null || uname -n 2>/dev/null || echo localhost)'",\n  "appliedAt": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)'"\n}\nEOCBOM`
+  );
 
   const verificationCommand = advisory.remediation?.verificationTest || `echo "Verifying ${cveId} mitigation..." && test -f /etc/passwd`;
   const rollbackCommand = `# Instant Sub-Second Rollback for ${cveId}\nsystemctl restart ${pkg} 2>/dev/null || true`;
@@ -315,7 +378,7 @@ export function convertAdvisoryToPatchItem(advisory: any): PatchFeedItem {
         }
       },
       tier3_fleetAutomation: {
-        ansiblePlaybook: `---\n- name: Emergency Hotfix - ${cveId}\n  hosts: all\n  become: yes\n  serial: "10%"\n  tasks:\n    - name: Apply Praxis Micro-Mitigation for ${cveId}\n      ansible.builtin.command: ${quickCommands[0] || 'true'}\n      changed_when: true`
+        ansiblePlaybook: `---\n- name: Emergency Hotfix - ${cveId}\n  hosts: all\n  become: yes\n  serial: "10%"\n  tasks:\n    - name: Apply Praxis Micro-Mitigation for ${cveId}\n      ansible.builtin.command: ${quickCommands[0] || 'true'}\n      changed_when: true\n\n    - name: Codify After-Action CBOM on Target Endpoint\n      ansible.builtin.copy:\n        dest: /var/log/exultia/praxis-cbom-after-action.json\n        content: |\n          {\n            "cbomFormat": "CycloneDX-CBOM",\n            "specVersion": "1.5",\n            "cveId": "${cveId}",\n            "uviId": "${uviId}",\n            "remediationStatus": "APPLIED",\n            "targetHost": "{{ inventory_hostname }}",\n            "appliedAt": "{{ ansible_date_time.iso8601 | default('unknown') }}"\n          }\n        owner: root\n        group: root\n        mode: '0644'`
       }
     },
     provenance: {

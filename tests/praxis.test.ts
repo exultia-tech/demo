@@ -153,16 +153,40 @@ describe("praxis Compiler & Remediation Engine Tests", () => {
       expect(shellBlock).toContain('CBOM_DIR="/var/log/exultia"');
       expect(shellBlock).toContain('praxis-cbom-after-action.json');
       expect(shellBlock).toContain('"CycloneDX-CBOM"');
+      expect(shellBlock).toContain("EP_HOST=$(hostname");
+      expect(shellBlock).toContain("EP_KERNEL=$(uname -r");
+      expect(shellBlock).toContain("__EP_HOST__");
     });
 
-    it("should seamlessly convert arbitrary Vantage advisories into valid PatchFeedItems", () => {
+    it("should include endpointExecution metadata in the generated CBOM", () => {
+      const cbom = generateAfterActionCbom({
+        os: "linux",
+        executionType: "remediation",
+        advisories: [sampleNetworkAdvisory]
+      });
+
+      expect(cbom.endpointExecution).toBeDefined();
+      expect(cbom.endpointExecution?.targetNode).toBe("evaluated-on-endpoint (dynamic)");
+      expect(cbom.endpointExecution?.status).toBe("SUCCESS");
+    });
+
+    it("should seamlessly convert arbitrary Vantage advisories into valid PatchFeedItems with endpoint CBOM writers", () => {
       const patchItem = convertAdvisoryToPatchItem(sampleNetworkAdvisory);
 
       expect(patchItem.cveId).toBe("CVE-2026-9999");
       expect(patchItem.severity).toBe("HIGH");
       expect(patchItem.remediationTier.tier1_hotMitigation.commands.length).toBeGreaterThan(0);
-      expect(patchItem.remediationTier.tier3_fleetAutomation.ansiblePlaybook).toContain("Apply Praxis");
+      expect(patchItem.remediationTier.tier1_hotMitigation.commands.some(c => c.includes("praxis-cbom-after-action.json"))).toBe(true);
+      expect(patchItem.remediationTier.tier3_fleetAutomation.ansiblePlaybook).toContain("Codify After-Action CBOM on Target Endpoint");
+      expect(patchItem.remediationTier.tier3_fleetAutomation.ansiblePlaybook).toContain("/var/log/exultia/praxis-cbom-after-action.json");
       expect(patchItem.provenance.slsaLevel).toBe(3);
+    });
+
+    it("should ensure sample patch feed items write CBOM to target endpoint in Tier 1 and Tier 3", () => {
+      for (const patch of SAMPLE_PATCH_FEED) {
+        expect(patch.remediationTier.tier1_hotMitigation.commands.some(c => c.includes("praxis-cbom-after-action.json"))).toBe(true);
+        expect(patch.remediationTier.tier3_fleetAutomation.ansiblePlaybook).toContain("/var/log/exultia/praxis-cbom-after-action.json");
+      }
     });
   });
 });

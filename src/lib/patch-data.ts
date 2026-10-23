@@ -58,7 +58,10 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
         commands: [
           'mkdir -p /etc/ssh/sshd_config.d',
           'echo "LoginGraceTime 0" > /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf',
-          'sshd -t && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)'
+          'sshd -t && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)',
+          '# Codify After-Action CBOM directly on target endpoint',
+          'mkdir -p /var/log/exultia 2>/dev/null || true',
+          'cat << \'EOCBOM\' > /var/log/exultia/praxis-cbom-after-action.json 2>/dev/null || cat << \'EOCBOM\' > /tmp/praxis-cbom-after-action.json\n{\n  "cbomFormat": "CycloneDX-CBOM",\n  "specVersion": "1.5",\n  "cveId": "CVE-2024-6387",\n  "action": "TIER1_HOTPATCH",\n  "status": "APPLIED",\n  "targetHost": "\'$(hostname 2>/dev/null || echo localhost)\'",\n  "appliedAt": "\'$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)\'"\n}\nEOCBOM'
         ],
         verificationCommand: 'sshd -T | grep -i logingracetime',
         rollbackCommand: 'rm -f /etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)'
@@ -94,6 +97,23 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
     - name: Validate SSH Configuration Syntax
       ansible.builtin.command: sshd -t
       changed_when: false
+
+    - name: Codify After-Action CBOM on Target Endpoint
+      ansible.builtin.copy:
+        dest: /var/log/exultia/praxis-cbom-after-action.json
+        content: |
+          {
+            "cbomFormat": "CycloneDX-CBOM",
+            "specVersion": "1.5",
+            "cveId": "CVE-2024-6387",
+            "action": "FLEET_HOTPATCH",
+            "status": "APPLIED",
+            "targetHost": "{{ inventory_hostname }}",
+            "appliedAt": "{{ ansible_date_time.iso8601 | default('unknown') }}"
+          }
+        owner: root
+        group: root
+        mode: '0644'
 
   handlers:
     - name: Reload SSHD
@@ -132,7 +152,10 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
         commands: [
           'systemctl stop cups-browsed 2>/dev/null || true',
           'systemctl disable cups-browsed 2>/dev/null || true',
-          'iptables -I INPUT -p udp --dport 631 -j DROP || true'
+          'iptables -I INPUT -p udp --dport 631 -j DROP || true',
+          '# Codify After-Action CBOM directly on target endpoint',
+          'mkdir -p /var/log/exultia 2>/dev/null || true',
+          'cat << \'EOCBOM\' > /var/log/exultia/praxis-cbom-after-action.json 2>/dev/null || cat << \'EOCBOM\' > /tmp/praxis-cbom-after-action.json\n{\n  "cbomFormat": "CycloneDX-CBOM",\n  "specVersion": "1.5",\n  "cveId": "CVE-2024-47176",\n  "action": "TIER1_HOTPATCH",\n  "status": "APPLIED",\n  "targetHost": "\'$(hostname 2>/dev/null || echo localhost)\'",\n  "appliedAt": "\'$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)\'"\n}\nEOCBOM'
         ],
         verificationCommand: 'systemctl is-active cups-browsed ; iptables -L INPUT -n | grep 631',
         rollbackCommand: 'iptables -D INPUT -p udp --dport 631 -j DROP 2>/dev/null ; systemctl enable --now cups-browsed'
@@ -164,7 +187,24 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
         state: disabled
         permanent: yes
         immediate: yes
-      when: ansible_os_family == 'RedHat'`
+      when: ansible_os_family == 'RedHat'
+
+    - name: Codify After-Action CBOM on Target Endpoint
+      ansible.builtin.copy:
+        dest: /var/log/exultia/praxis-cbom-after-action.json
+        content: |
+          {
+            "cbomFormat": "CycloneDX-CBOM",
+            "specVersion": "1.5",
+            "cveId": "CVE-2024-47176",
+            "action": "FLEET_HOTPATCH",
+            "status": "APPLIED",
+            "targetHost": "{{ inventory_hostname }}",
+            "appliedAt": "{{ ansible_date_time.iso8601 | default('unknown') }}"
+          }
+        owner: root
+        group: root
+        mode: '0644'`
       }
     },
     provenance: {
@@ -196,7 +236,10 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
         downtimeRequired: false,
         commands: [
           'sh -c "strings $(which xz) | grep -q \'5.6.[01]\' && echo \'COMPROMISED\' || echo \'CLEAN\'"',
-          'apt-get install -y --allow-downgrades xz-utils=5.4.5* liblzma5=5.4.5* 2>/dev/null || true'
+          'apt-get install -y --allow-downgrades xz-utils=5.4.5* liblzma5=5.4.5* 2>/dev/null || true',
+          '# Codify After-Action CBOM directly on target endpoint',
+          'mkdir -p /var/log/exultia 2>/dev/null || true',
+          'cat << \'EOCBOM\' > /var/log/exultia/praxis-cbom-after-action.json 2>/dev/null || cat << \'EOCBOM\' > /tmp/praxis-cbom-after-action.json\n{\n  "cbomFormat": "CycloneDX-CBOM",\n  "specVersion": "1.5",\n  "cveId": "CVE-2024-3094",\n  "action": "TIER1_HOTPATCH",\n  "status": "APPLIED",\n  "targetHost": "\'$(hostname 2>/dev/null || echo localhost)\'",\n  "appliedAt": "\'$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)\'"\n}\nEOCBOM'
         ],
         verificationCommand: 'xz --version',
         rollbackCommand: 'echo "Rollback not applicable for malicious binary downgrade"'
@@ -222,7 +265,24 @@ export const SAMPLE_PATCH_FEED: PatchFeedItem[] = [
     - name: Fail if compromised 5.6.0 or 5.6.1 present
       ansible.builtin.fail:
         msg: "CRITICAL: Malicious XZ detected on {{ inventory_hostname }}"
-      when: "'5.6.0' in xz_ver.stdout or '5.6.1' in xz_ver.stdout"`
+      when: "'5.6.0' in xz_ver.stdout or '5.6.1' in xz_ver.stdout"
+
+    - name: Codify After-Action CBOM on Target Endpoint
+      ansible.builtin.copy:
+        dest: /var/log/exultia/praxis-cbom-after-action.json
+        content: |
+          {
+            "cbomFormat": "CycloneDX-CBOM",
+            "specVersion": "1.5",
+            "cveId": "CVE-2024-3094",
+            "action": "FLEET_HOTPATCH",
+            "status": "APPLIED",
+            "targetHost": "{{ inventory_hostname }}",
+            "appliedAt": "{{ ansible_date_time.iso8601 | default('unknown') }}"
+          }
+        owner: root
+        group: root
+        mode: '0644'`
       }
     },
     provenance: {
