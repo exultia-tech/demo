@@ -129,6 +129,9 @@ export default function PraxisPage() {
   const [cbomModalOpen, setCbomModalOpen] = useState(false);
   const [activeCbomPayload, setActiveCbomPayload] = useState<PraxisCbomPayload | null>(null);
 
+  // ── CRUCIBLE CHAOS INOCULATION BRIDGING STATE ──
+  const [isCrucibleActive, setIsCrucibleActive] = useState(false);
+
   // ── PATCHING MODE STATE ──
   const [patchSearchQuery, setPatchSearchQuery] = useState('');
   const [selectedDistro, setSelectedDistro] = useState<'all' | 'ubuntu' | 'rocky' | 'alpine' | 'debian' | 'rhel'>('all');
@@ -213,6 +216,14 @@ export default function PraxisPage() {
       setTargetedVantageEntries(entries);
       const convertedPatch = convertAdvisoryToPatchItem(entries[0]);
       setSelectedPatch(convertedPatch);
+    }
+
+    // Ingest Crucible Chaos Inoculation Remediation Flag
+    const crucibleParam = params.get('crucibleRemediate');
+    if (crucibleParam === 'true') {
+      setPraxisMode('both');
+      setSelectedClasses(new Set(['network', 'config', 'service', 'phishing', 'kev']));
+      setIsCrucibleActive(true);
     }
 
     setReady(true);
@@ -637,6 +648,70 @@ export default function PraxisPage() {
               }}
             >
               Clear All
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CRUCIBLE CHAOS INOCULATION COUNTERMEASURE BANNER */}
+      {isCrucibleActive && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.14), rgba(16, 185, 129, 0.12))',
+          border: '1px solid rgba(239, 68, 68, 0.45)',
+          borderRadius: '10px',
+          padding: '0.85rem 1.15rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '1.4rem' }}>🔥</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#F87171', letterSpacing: '0.04em' }}>
+                  CRUCIBLE TEST COUNTERMEASURE ACTIVE
+                </span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', padding: '1px 6px', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
+                  AUTOMATED REMEDIATION READY
+                </span>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#CBD5E1', marginTop: '3px' }}>
+                Praxis has auto-selected countermeasures targeting the vulnerabilities and unauthenticated listeners seeded by Crucible (SSH LoginGraceTime, port 4444/8080 drops, rogue accounts). Executing this remediation will write an endpoint After-Action CBOM confirming neutralization.
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Link
+              href="/app/crucible"
+              style={{
+                fontSize: '0.74rem',
+                color: '#FCA5A5',
+                textDecoration: 'none',
+                fontWeight: 700,
+                padding: '4px 8px',
+                borderRadius: '6px',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)'
+              }}
+            >
+              Back to Crucible &rarr;
+            </Link>
+            <button
+              onClick={() => setIsCrucibleActive(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94A3B8',
+                cursor: 'pointer',
+                fontSize: '0.78rem',
+                padding: '4px 6px'
+              }}
+            >
+              ✕ Dismiss
             </button>
           </div>
         </div>

@@ -37,6 +37,7 @@ __pycache__/
 tmp_orchestrator.ps1
 local.db
 local.db-journal
+scratch/
 
 # debug
 npm-debug.log*

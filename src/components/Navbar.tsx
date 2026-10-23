@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, CrucibleIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -33,23 +33,34 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // Axiom active tab state synchronized with URL search param
+  // Axiom and Crucible active tab state synchronized with URL search param
   const [axiomTab, setAxiomTab] = useState<string>("syllabus");
+  const [crucibleTab, setCrucibleTab] = useState<string>("inoculator");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
       const tab = search.get("tab");
-      if (tab) setAxiomTab(tab);
+      if (tab) {
+        if (pathname?.startsWith("/app/axiom")) setAxiomTab(tab);
+        if (pathname?.startsWith("/app/crucible")) setCrucibleTab(tab);
+      }
     }
   }, [pathname]);
 
   useEffect(() => {
-    const handleTab = (e: any) => {
+    const handleAxiomTab = (e: any) => {
       if (e.detail) setAxiomTab(e.detail);
     };
-    window.addEventListener("axiom-tab-change", handleTab);
-    return () => window.removeEventListener("axiom-tab-change", handleTab);
+    const handleCrucibleTab = (e: any) => {
+      if (e.detail) setCrucibleTab(e.detail);
+    };
+    window.addEventListener("axiom-tab-change", handleAxiomTab);
+    window.addEventListener("crucible-tab-change", handleCrucibleTab);
+    return () => {
+      window.removeEventListener("axiom-tab-change", handleAxiomTab);
+      window.removeEventListener("crucible-tab-change", handleCrucibleTab);
+    };
   }, []);
 
   // Determine isolation mode (Standalone / Isolated Threat Feed)
@@ -89,8 +100,12 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
+  const isCrucibleContext = !isIsolated && (
+    pathname.startsWith("/app/crucible")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isCrucibleContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -342,6 +357,34 @@ export default function Navbar() {
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Axiom</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 7: Crucible (Chaos Range & Intentional Vulnerability Lab) */}
+                    <Link 
+                      href="/app/crucible" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isCrucibleContext ? "rgba(239, 68, 68, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <CrucibleIcon size={32} glow={false} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Crucible
+                          <span style={{ fontSize: "0.6rem", background: "rgba(239, 68, 68, 0.2)", color: "#F87171", border: "1px solid rgba(239, 68, 68, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>LAB / RANGE</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Adversary emulation, intentional chaos &amp; vulnerable test containers</div>
                       </div>
                     </Link>
 
@@ -835,7 +878,52 @@ export default function Navbar() {
             </div>
           )}
 
+          {/* SUBMENU OPTION 7: CRUCIBLE SUBMENU */}
+          {isCrucibleContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(239, 68, 68, 0.15)", color: "#F87171", borderColor: "rgba(239, 68, 68, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <CrucibleIcon size={16} glow={false} />
+                Crucible Lab
+              </span>
 
+              <Link 
+                href="/app/crucible?tab=inoculator" 
+                onClick={() => {
+                  setCrucibleTab("inoculator");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "inoculator" }));
+                }}
+                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "inoculator" ? "active-red" : ""}`}
+                style={{ fontWeight: 600 }}>
+                🔥 Chaos Inoculator
+              </Link>
+              <Link 
+                href="/app/crucible?tab=containers" 
+                onClick={() => {
+                  setCrucibleTab("containers");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "containers" }));
+                }}
+                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "containers" ? "active-red" : ""}`}
+                style={{ fontWeight: 600 }}>
+                🐳 Vulnerable Containers
+              </Link>
+              <Link 
+                href="/app/crucible?tab=walkthrough" 
+                onClick={() => {
+                  setCrucibleTab("walkthrough");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "walkthrough" }));
+                }}
+                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "walkthrough" ? "active-red" : ""}`}
+                style={{ fontWeight: 600 }}>
+                📋 Validation Guide
+              </Link>
+              <Link 
+                href="/app/praxis?crucibleRemediate=true" 
+                className="submenu-link"
+                style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>⚡</span> Remediate in Praxis &rarr;
+              </Link>
+            </div>
+          )}
 
         </div>
       )}
