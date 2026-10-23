@@ -38,26 +38,9 @@ export default function HomePage() {
         {/* HERO SECTION */}
         <section className="exultia-hero-section">
           <div className="hero-emblem-wrap">
-            <ExultiaLogo size={210} variant="circle" glow={true} />
+            <ExultiaLogo size={360} variant="circle" glow={true} />
           </div>
-
-          <div className="hero-badge-pill">
-            <span className="hero-pulse-dot" />
-            <span>Autonomous Cyber Defense &amp; Hardened Infrastructure</span>
-          </div>
-
-          <h1 className="hero-headline">
-            EXULTIA TECHNOLOGIES
-          </h1>
-
-          <p className="hero-tagline">
-            Practical. Transparent. Secure.
-          </p>
-
-          <p className="hero-description">
-            Continuous threat intelligence from 127+ public feeds paired with authoritative OS vendor patch management, 
-            autonomous zero-downtime hotpatching, CIS-hardened OS images, and offline-ready workstations.
-          </p>
+          <h1 className="sr-only">Exultia Technologies | Practical. Transparent. Secure.</h1>
         </section>
 
         {/* TIER 1: CORE SECURITY OPERATIONS LOOP (2-Column Hero Grid) */}
