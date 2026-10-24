@@ -2379,10 +2379,77 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
     homepageUrl: "https://rustsec.org/",
     icon: "🦀",
     recordsIngested: 14200
+  },
+  {
+    id: "vendor_php",
+    name: "PHP Security Advisories & Foundation Bulletins",
+    category: "Vendor Security Disclosures",
+    scope: "PHP Core Runtime, CGI/FastCGI SAPI, Standard Extensions & Zend Engine",
+    access: "PHP Git Advisory Tracker / Mailing List / CVE Stream",
+    status: "Realtime",
+    refreshRate: "Continuous",
+    coverage: "Official security announcements from the PHP Group and PHP Foundation covering memory safety, CGI argument injection, and parser vulnerabilities across active PHP branches.",
+    homepageUrl: "https://www.php.net/security/",
+    icon: "🐘",
+    recordsIngested: 18400
   }
 ];
 
 export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
+  // 0. PHP-CGI Windows CommandLine Argument Injection (CVE-2024-4577)
+  {
+    uviId: "UVI-2024-4577",
+    title: "PHP-CGI Windows CommandLine Argument Injection Remote Code Execution",
+    headline: "Critical unauthenticated remote code execution in PHP-CGI on Windows via character encoding Best-Fit mapping injection.",
+    summary: "PHP versions 8.1.* before 8.1.29, 8.2.* before 8.2.20, and 8.3.* before 8.3.8 operating in CGI mode on Windows (including default XAMPP environments) fail to account for character encoding Best-Fit mapping. In Traditional Chinese, Simplified Chinese, and Japanese locales, soft-hyphen (0xAD) is converted into an ASCII dash (0x2D), enabling remote attackers to inject command-line arguments and achieve arbitrary code execution without authentication.",
+    technicalDetails: "When Apache or other web servers pass query strings to php-cgi.exe, characters such as %AD are translated by the Windows operating system into standard '-' characters prior to argument evaluation. Attackers supply %ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input, which the PHP binary interprets as '-d allow_url_include=1 -d auto_prepend_file=php://input'. This overrides php.ini configurations and causes PHP to execute arbitrary payload code sent in the HTTP POST body.",
+    globalImpact: "High-severity global impact across internet-facing Windows servers running PHP in CGI or FastCGI mode, including widespread automated scans and ransomware infections (such as TellYouThePass) observed within hours of public disclosure.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Developer workstations and local development servers running Windows XAMPP, WampServer, or local PHP-CGI test stacks exposed to local networks or remote testing ports.",
+      buildPipelineRisk: "Windows-hosted CI/CD test runners and automated integration environments using php-cgi to run legacy test suites.",
+      recommendationForIdeBuilds: "Upgrade PHP to version >= 8.3.8, 8.2.20, or 8.1.29 immediately. Disable CGI mode in favor of FastCGI (PHP-FPM) or apply Apache mod_rewrite rules blocking %AD query parameters."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.8,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-78: OS Command Injection",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2024-4577"],
+    ghsaId: "GHSA-vx92-74gv-f952",
+    affectedTargets: [
+      { product: "PHP Core", ecosystem: "PHP", affectedVersions: ">= 8.1.0, < 8.1.29 | >= 8.2.0, < 8.2.20 | >= 8.3.0, < 8.3.8", fixedInVersion: "8.3.8 / 8.2.20 / 8.1.29", purl: "pkg:generic/php@8.3.7" },
+      { product: "XAMPP for Windows", ecosystem: "Windows", affectedVersions: "< 8.2.12-0 / < 8.1.25-0", fixedInVersion: "8.2.12-1", purl: "pkg:generic/xampp-windows" }
+    ],
+    cisaKev: {
+      isKnownExploited: true,
+      dateAdded: "2024-06-12",
+      ransomwareUse: true,
+      notes: "Actively targeted in the wild by ransomware operators and automated coin-mining botnets."
+    },
+    upstreamSignals: [
+      { sourceId: "vendor_php", sourceName: "PHP Group Security Announcement", badge: "Vendor Patch", finding: "PHP core security release fixing character encoding conversion argument injection in Windows SAPI CGI.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV Catalog", badge: "Known Exploited", finding: "CVE-2024-4577 cataloged by CISA with mandatory federal remediation deadline due to active exploitation.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "devsecops_wire", sourceName: "DEVSECOPS WIRE / DEVCON", badge: "Threat Telemetry", finding: "Global automated scanning targeting exposed PHP-CGI query parameters.", signalType: "BEHAVIORAL_ALERT", confidence: "CONFIRMED" }
+    ],
+    remediation: {
+      recommendedAction: "Upgrade PHP to >= 8.3.8, 8.2.20, or 8.1.29. If immediate upgrade is not feasible, apply Apache mod_rewrite rules to reject %AD and -d query strings.",
+      patchDetails: "PHP engine now rejects argument parsing when Best-Fit character substitutions could alter command line switch flags.",
+      workarounds: [
+        "Add mod_rewrite rule: RewriteCond %{QUERY_STRING} ^(%AD|-d).* [NC] \\n RewriteRule .* - [F,L]",
+        "Migrate from CGI (Action application/x-httpd-php-cgi) to FastCGI (php-fpm)",
+        "In Apache httpd-xampp.conf, comment out the PHP-CGI handler configuration"
+      ]
+    },
+    publishedDate: "2024-06-06",
+    lastUpdatedDate: "2024-06-12"
+  },
   // 1. Apache Log4j JNDI Remote Code Execution (Log4Shell)
   {
     uviId: "UVI-2021-44228",

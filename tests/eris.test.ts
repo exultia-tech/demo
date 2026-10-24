@@ -83,13 +83,14 @@ describe("Eris: Controlled Vulnerability Proving Ground Tests (Goddess of Chaos 
 
   describe("Preconfigured Vulnerable Containers", () => {
     it("should provide Docker recipes for high-profile vulnerabilities", () => {
-      expect(VULNERABLE_CONTAINER_SCENARIOS.length).toBe(4);
+      expect(VULNERABLE_CONTAINER_SCENARIOS.length).toBeGreaterThanOrEqual(4);
 
       const cveIds = VULNERABLE_CONTAINER_SCENARIOS.map(s => s.cveId);
       expect(cveIds).toContain("CVE-2024-6387"); // RegreSSHion
       expect(cveIds).toContain("CVE-2024-47176"); // CUPS browsed
       expect(cveIds).toContain("CVE-2024-3094");  // XZ utils
       expect(cveIds).toContain("CVE-2021-44228"); // Log4Shell
+      expect(cveIds).toContain("CVE-2024-4577");  // PHP-CGI Argument Injection
 
       for (const scenario of VULNERABLE_CONTAINER_SCENARIOS) {
         expect(scenario.dockerRunCommand).toContain("docker run");

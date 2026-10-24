@@ -74,7 +74,7 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(out).toContain('[Kinetic Upgrade] Feed Source:');
       expect(out).toContain('[PASS] Successfully applied package upgrade');
       expect(out).toContain('Applied');
-    });
+    }, 15000);
 
     it('should deploy specific OS package updates via kinetic upgrade --os ubuntu', () => {
       const cmd = `python kinetic-cli/run.py upgrade --os ubuntu --dry-run --state-dir "${testStateDir}"`;

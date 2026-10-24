@@ -233,6 +233,30 @@ export function compileRemediationBlock(
     }
   }
 
+  // 6. Web Server & CGI Argument Injection (e.g. PHP-CGI CVE-2024-4577)
+  const isPhpCgiVuln = cveList?.includes('CVE-2024-4577') || title.toLowerCase().includes('php-cgi') || (advisory.cwe?.includes('CWE-78') && title.toLowerCase().includes('php'));
+  if (isPhpCgiVuln) {
+    lines.push(`log_msg "-> Applying specialized web server hotpatch for PHP-CGI argument injection (CVE-2024-4577)..."`);
+    lines.push(`# 1. Apache .htaccess / mod_rewrite filter rule (blocks soft-hyphen %AD and CLI switches)`);
+    lines.push(`if [ -d /etc/apache2 ] || [ -d /etc/httpd ]; then`);
+    lines.push(`  HTACCESS_DIR="/var/www/html"`);
+    lines.push(`  if [ -d "$HTACCESS_DIR" ]; then`);
+    lines.push(`    log_msg "  -> Injected mod_rewrite mitigation into $HTACCESS_DIR/.htaccess"`);
+    lines.push(`    cat << 'EORULE' >> "$HTACCESS_DIR/.htaccess"`);
+    lines.push(`# [Praxis Mitigation: CVE-2024-4577]`);
+    lines.push(`RewriteEngine On`);
+    lines.push(`RewriteCond %{QUERY_STRING} ^(%AD|-d).* [NC]`);
+    lines.push(`RewriteRule .* - [F,L]`);
+    lines.push(`EORULE`);
+    lines.push(`  fi`);
+    lines.push(`fi`);
+    lines.push(`# 2. Enforce FastCGI / disable legacy Action application/x-httpd-php-cgi`);
+    lines.push(`if [ -f /opt/lampp/etc/extra/httpd-xampp.conf ]; then`);
+    lines.push(`  sed -i 's/^\\s*Action application\\/x-httpd-php-cgi/# &/' /opt/lampp/etc/extra/httpd-xampp.conf 2>/dev/null || true`);
+    lines.push(`  log_msg "  -> Disabled vulnerable CGI handler in XAMPP configuration."`);
+    lines.push(`fi`);
+  }
+
   // Patch detail note
   if (remediation.patchDetails) {
     lines.push(`log_msg "-> Patch notes: ${remediation.patchDetails.replace(/"/g, "'")}"`);

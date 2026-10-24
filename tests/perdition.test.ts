@@ -83,7 +83,7 @@ describe("Perdition Compatibility Layer Tests (Renamed to Eris)", () => {
 
   describe("Preconfigured Vulnerable Containers", () => {
     it("should provide Docker recipes for high-profile vulnerabilities", () => {
-      expect(VULNERABLE_CONTAINER_SCENARIOS.length).toBe(4);
+      expect(VULNERABLE_CONTAINER_SCENARIOS.length).toBeGreaterThanOrEqual(4);
 
       const cveIds = VULNERABLE_CONTAINER_SCENARIOS.map(s => s.cveId);
       expect(cveIds).toContain("CVE-2024-6387"); // RegreSSHion

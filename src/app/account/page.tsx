@@ -33,7 +33,7 @@ import {
   ShieldCheck,
   Check
 } from "lucide-react";
-import { PureIdeIcon, VantageIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, AxiomIcon, PraxisIcon, PureOsIcon, ErisIcon, ValkyrieIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
 import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
 import UviCustomerTools from "@/components/account/UviCustomerTools";
@@ -69,6 +69,8 @@ type AccountTab =
   | "praxis" 
   | "pureos" 
   | "axiom" 
+  | "eris"
+  | "valkyrie"
   | "tokens" 
   | "workflows" 
   | "admin";
@@ -423,6 +425,18 @@ function AccountPageContent() {
       actionLabel: "Open Exam Simulator →",
       actionHref: "/app/axiom"
     },
+    eris: {
+      title: "Eris Controlled Proving Ground & Chaos Simulator",
+      subtitle: "Preconfigured intentionally non-compliant environments, vulnerable Docker containers, and failsafe watchdog timers.",
+      actionLabel: "Launch Eris Sandbox →",
+      actionHref: "/app/eris"
+    },
+    valkyrie: {
+      title: "Valkyrie On-Demand Pentesting & Exploit Verification",
+      subtitle: "Automated breach & attack simulation (BAS), safe non-destructive network probes, and HMAC-SHA256 posture attestations.",
+      actionLabel: "Launch Valkyrie Console →",
+      actionHref: "/app/valkyrie"
+    },
     tokens: {
       title: "API Access Tokens (PAT)",
       subtitle: "Programmatic bearer tokens for CLI compilers, automated ingest scripts, and REST endpoints.",
@@ -602,6 +616,32 @@ function AccountPageContent() {
             {!sidebarCollapsed && <span>Axiom LMS Prep</span>}
             {!sidebarCollapsed && (
               <span className="console-sidebar-badge">{getSubTier("axiom").toUpperCase()}</span>
+            )}
+          </button>
+
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "eris" ? "active" : ""}`}
+            onClick={() => setActiveTab("eris")}
+            title="Eris Proving Ground"
+          >
+            <ErisIcon size={16} glow={false} />
+            {!sidebarCollapsed && <span>Eris Chaos Lab</span>}
+            {!sidebarCollapsed && (
+              <span className="console-sidebar-badge">{getSubTier("eris").toUpperCase()}</span>
+            )}
+          </button>
+
+          <button 
+            type="button"
+            className={`console-sidebar-item ${activeTab === "valkyrie" ? "active" : ""}`}
+            onClick={() => setActiveTab("valkyrie")}
+            title="Valkyrie Pentest"
+          >
+            <ValkyrieIcon size={16} glow={false} />
+            {!sidebarCollapsed && <span>Valkyrie Pentest</span>}
+            {!sidebarCollapsed && (
+              <span className="console-sidebar-badge">{getSubTier("valkyrie").toUpperCase()}</span>
             )}
           </button>
         </div>
@@ -1641,6 +1681,224 @@ function AccountPageContent() {
                 </div>
               </div>
 
+              {/* CARD 7: ERIS */}
+              <div style={{
+                background: "rgba(15, 23, 42, 0.7)",
+                border: getSubTier("eris") !== "free" ? "1px solid rgba(234, 179, 8, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "16px",
+                padding: "1.5rem",
+                display: "flex",
+                flexDirection: "column"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <ErisIcon size={32} glow={false} />
+                    <div>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Eris Proving Ground</h3>
+                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Chaos & Adversary Sandbox</div>
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: "0.68rem",
+                    background: getSubTier("eris") !== "free" ? "rgba(234, 179, 8, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    color: getSubTier("eris") !== "free" ? "#FDE047" : "#94A3B8",
+                    border: getSubTier("eris") !== "free" ? "1px solid rgba(234, 179, 8, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                    fontWeight: 800,
+                    textTransform: "uppercase"
+                  }}>
+                    {getSubTier("eris")}
+                  </span>
+                </div>
+
+                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
+                  Controlled non-compliant configurations, intentional vulnerability injection, and automated rollback timers for validating defenses.
+                </p>
+
+                <div style={{ marginTop: "auto" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
+                    <CheckCircle2 size={13} color="#FBBF24" />
+                    <span>
+                      {getSubTier("eris") === "enterprise" ? "Full Docker Compose Range + Custom Inoculations" : (getSubTier("eris") === "pro" ? "All Vulnerability Containers + Watchdog Timers" : "Standard Chaos Modules (Community)")}
+                    </span>
+                  </div>
+
+                  {getSubTier("eris") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=eris"
+                      className="btn-primary"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center",
+                        background: "linear-gradient(135deg, #EAB308, #CA8A04)",
+                        color: "#000"
+                      }}
+                    >
+                      Upgrade Plan (Up to 50% Off Bundle) →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=eris"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("eris")}
+                        disabled={updatingSubProduct === "eris"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* CARD 8: VALKYRIE */}
+              <div style={{
+                background: "rgba(15, 23, 42, 0.7)",
+                border: getSubTier("valkyrie") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "16px",
+                padding: "1.5rem",
+                display: "flex",
+                flexDirection: "column"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <ValkyrieIcon size={32} glow={false} />
+                    <div>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Valkyrie Pentest</h3>
+                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>On-Demand BAS & Attestation</div>
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: "0.68rem",
+                    background: getSubTier("valkyrie") !== "free" ? "rgba(6, 182, 212, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    color: getSubTier("valkyrie") !== "free" ? "#67E8F9" : "#94A3B8",
+                    border: getSubTier("valkyrie") !== "free" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                    fontWeight: 800,
+                    textTransform: "uppercase"
+                  }}>
+                    {getSubTier("valkyrie")}
+                  </span>
+                </div>
+
+                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
+                  Safe non-destructive network probes, automated breach & attack simulation, and cryptographically signed SHA-256 HMAC posture attestations.
+                </p>
+
+                <div style={{ marginTop: "auto" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
+                    <CheckCircle2 size={13} color="#06B6D4" />
+                    <span>
+                      {getSubTier("valkyrie") === "enterprise" ? "Unlimited Probes + Signed Attestation Tokens + Executive Audit Reports" : (getSubTier("valkyrie") === "pro" ? "Full Probe Catalog + Praxis Virtual Patch Verification" : "Basic Web Probes (Community)")}
+                    </span>
+                  </div>
+
+                  {getSubTier("valkyrie") === "free" ? (
+                    <Link
+                      href="/account/subscription?product=valkyrie"
+                      className="btn-primary"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 12px",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        textDecoration: "none",
+                        borderRadius: "8px",
+                        width: "100%",
+                        textAlign: "center",
+                        background: "linear-gradient(135deg, #06B6D4, #0284C7)",
+                        color: "#000"
+                      }}
+                    >
+                      Upgrade Plan (Up to 50% Off Bundle) →
+                    </Link>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                      <Link
+                        href="/account/subscription?product=valkyrie"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px 10px",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          borderRadius: "8px",
+                          color: "#FFFFFF",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          textAlign: "center"
+                        }}
+                      >
+                        Manage Plan
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDowngradeToFree("valkyrie")}
+                        disabled={updatingSubProduct === "valkyrie"}
+                        style={{
+                          padding: "8px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "8px",
+                          color: "#FCA5A5",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textAlign: "center"
+                        }}
+                      >
+                        Downgrade
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
         )}
@@ -1775,6 +2033,48 @@ function AccountPageContent() {
               </Link>
               <Link href="/account/subscription?product=pureos" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
                 Manage PureOS Tier
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW: ERIS PROVING GROUND */}
+        {/* ========================================================================= */}
+        {activeTab === "eris" && (
+          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(234, 179, 8, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
+            <ErisIcon size={64} glow={true} className="mx-auto mb-4" />
+            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Eris Controlled Proving Ground & Chaos Inoculation</h2>
+            <p style={{ color: "#94A3B8", maxWidth: "620px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
+              Validate defensive rules, intrusion canaries, and Praxis After-Action CBOM generation on intentionally vulnerable containers with automatic watchdog rollback timers.
+            </p>
+            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <Link href="/app/eris" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #EAB308, #CA8A04)", color: "#000", fontWeight: 800 }}>
+                Launch Eris Proving Ground →
+              </Link>
+              <Link href="/account/subscription?product=eris" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+                Manage Eris Plan
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW: VALKYRIE ON-DEMAND PENTEST */}
+        {/* ========================================================================= */}
+        {activeTab === "valkyrie" && (
+          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(6, 182, 212, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
+            <ValkyrieIcon size={64} glow={true} className="mx-auto mb-4" />
+            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Valkyrie On-Demand Pentesting & BAS Engine</h2>
+            <p style={{ color: "#94A3B8", maxWidth: "620px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
+              Instant breach & attack simulation (BAS) mapped against Vantage threat disclosures. Generates safe non-destructive probes with cryptographically signed SHA-256 HMAC attestation tokens.
+            </p>
+            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <Link href="/app/valkyrie" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #06B6D4, #0284C7)", color: "#000", fontWeight: 800 }}>
+                Launch Valkyrie Console →
+              </Link>
+              <Link href="/account/subscription?product=valkyrie" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
+                Manage Valkyrie Plan
               </Link>
             </div>
           </div>

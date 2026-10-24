@@ -198,10 +198,51 @@ export const ERIS_MODULES: ErisModule[] = [
     teardownCommands: [
       'userdel -r eris_tester 2>/dev/null || true'
     ]
+  },
+  {
+    id: 'php_cgi_query_injection',
+    title: 'PHP-CGI Windows Best-Fit Query Injection Mock (CVE-2024-4577)',
+    category: 'SERVICES',
+    severity: 'CRITICAL',
+    cvss: 9.8,
+    cveRef: 'CVE-2024-4577',
+    description: 'Deploys a mock PHP-CGI HTTP listener on port 8088 that accepts soft-hyphen (%AD) parameters, triggering Praxis CGI sanitization and mod_rewrite rules.',
+    injectedMisconfig: 'Mock PHP-CGI endpoint exposed without URI query filter rules on port 8088.',
+    praxisDetectionMechanism: 'Flagged via Valkyrie probe probe-php-cgi and Praxis web baseline scanner.',
+    praxisRemediationClass: 'config',
+    defaultEnabled: true,
+    setupCommands: [
+      'mkdir -p /var/log/eris/php_test',
+      'echo "<?php echo \\"[ERIS_CVE_2024_4577_VULNERABLE_CGI]\\"; ?>" > /var/log/eris/php_test/index.php',
+      'nohup python3 -c "import http.server, socketserver; handler = http.server.SimpleHTTPRequestHandler; httpd = socketserver.TCPServer((\'0.0.0.0\', 8088), handler); httpd.serve_forever()" >/dev/null 2>&1 & echo $! > /tmp/eris_php_8088.pid || true'
+    ],
+    teardownCommands: [
+      'if [ -f /tmp/eris_php_8088.pid ]; then kill -9 $(cat /tmp/eris_php_8088.pid) 2>/dev/null || true; rm -f /tmp/eris_php_8088.pid; fi',
+      'rm -rf /var/log/eris/php_test 2>/dev/null || true'
+    ]
   }
 ];
 
 export const VULNERABLE_CONTAINER_SCENARIOS: VulnerableContainerScenario[] = [
+  {
+    id: 'php-cgi-argument-injection-target',
+    name: 'PHP-CGI Windows / CGI Argument Injection Lab (CVE-2024-4577)',
+    cveId: 'CVE-2024-4577',
+    severity: 'CRITICAL',
+    cvss: 9.8,
+    category: 'CGI Argument Injection / Remote Code Execution',
+    description: 'Preconfigured Apache web server running PHP-CGI with vulnerable query parameter mapping, demonstrating soft-hyphen character conversion exploitation.',
+    dockerRunCommand: 'docker run -d --name eris-php-cgi -p 8088:80 ghcr.io/exultia/eris-php-cgi:latest',
+    verificationCommand: 'curl -I "http://localhost:8088/index.php?%ADd+allow_url_include%3d0"',
+    dockerfile: `FROM php:8.2-apache
+RUN a2enmod rewrite
+COPY <<'EOF' /var/www/html/index.php
+<?php echo "PHP-CGI Test Target - Version: " . phpversion(); ?>
+EOF
+EXPOSE 80
+CMD ["apache2-foreground"]`,
+    praxisRemediationTier: 'tier1_hotMitigation (Injects Apache mod_rewrite rule blocking %AD and overrides php.ini options)'
+  },
   {
     id: 'regresshion-sshd-target',
     name: 'OpenSSH 9.2p1 RegreSSHion Sandbox Container',
@@ -348,6 +389,18 @@ services:
     command: >
       sh -c "echo 'Log4Shell Target Active on 8080' &&
              nc -lk -p 8080 -e echo -e 'HTTP/1.1 200 OK\\r\\n\\r\\nLog4j Lab Active'"
+
+  php-cgi-target:
+    image: php:8.2-apache
+    container_name: eris-php-cgi
+    networks:
+      - eris-range
+    ports:
+      - "8088:80"
+    command: >
+      bash -c "a2enmod rewrite &&
+               echo '<?php echo \"[ERIS_PHP_CGI_CVE_2024_4577_ACTIVE]\"; ?>' > /var/www/html/index.php &&
+               apache2-foreground"
 `;
 
 export interface CompileErisOptions {
