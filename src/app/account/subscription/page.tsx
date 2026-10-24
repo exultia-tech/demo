@@ -683,6 +683,29 @@ function SubscriptionContent() {
             </tbody>
           </table>
         </div>
+
+        {/* LINK TO DEDICATED FAQ */}
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          <Link
+            href="/faq"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "#67E8F9",
+              fontSize: "0.9rem",
+              fontFamily: "var(--font-mono, monospace)",
+              textDecoration: "none",
+              background: "rgba(0, 229, 255, 0.06)",
+              border: "1px solid rgba(0, 229, 255, 0.25)",
+              padding: "10px 22px",
+              borderRadius: "8px",
+              transition: "all 0.15s ease"
+            }}
+          >
+            <span>Have architectural questions or skepticism? Read our full FAQ &rarr;</span>
+          </Link>
+        </div>
       </div>
 
       {/* PAYMENT MODAL */}

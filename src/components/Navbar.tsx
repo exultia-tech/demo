@@ -474,6 +474,22 @@ export default function Navbar() {
             >
               Wiki
             </Link>
+
+            {/* FAQ */}
+            <Link 
+              href="/faq"
+              className={`nav-link ${pathname === "/faq" ? "active" : ""}`}
+              style={{
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                color: pathname === "/faq" ? "var(--accent-primary)" : undefined
+              }}
+            >
+              FAQ
+            </Link>
           </nav>
         )}
 

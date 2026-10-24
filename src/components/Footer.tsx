@@ -61,6 +61,9 @@ export default function Footer() {
         fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
         marginTop: "4px"
       }}>
+        <a href="/faq" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
+          FAQ
+        </a>
         <a href="/wiki" style={{ color: "var(--accent-primary, #00E5FF)", textDecoration: "none", fontWeight: 700 }}>
           Research Wiki
         </a>
