@@ -115,45 +115,45 @@ function SubscriptionContent() {
     <div style={{ minHeight: "90vh", padding: "3rem 1.5rem", maxWidth: "1280px", margin: "0 auto" }}>
       
       {/* HERO SECTION */}
-      <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
         <div style={{ 
           display: "inline-flex", 
           alignItems: "center", 
           gap: "8px", 
           background: "linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12))", 
           border: "1px solid rgba(6, 182, 212, 0.35)", 
-          padding: "6px 16px", 
+          padding: "5px 14px", 
           borderRadius: "999px", 
-          marginBottom: "1.25rem",
+          marginBottom: "1rem",
           boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)"
         }}>
-          <Sparkles size={16} color="#67E8F9" />
-          <span style={{ fontSize: "0.82rem", fontWeight: 800, color: "#A5F3FC", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Unification Update • Closed-Loop Cyber Sovereignty
+          <Sparkles size={14} color="#67E8F9" />
+          <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#A5F3FC", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Unified Platform Pricing
           </span>
         </div>
 
         <h1 style={{ 
-          fontSize: "clamp(2.2rem, 4vw, 3.4rem)", 
+          fontSize: "clamp(2.2rem, 3.8vw, 3.2rem)", 
           fontWeight: 900, 
           color: "#FFFFFF", 
           letterSpacing: "-0.03em", 
-          marginBottom: "1rem",
+          marginBottom: "0.75rem",
           lineHeight: 1.15
         }}>
-          One Platform. Seven Sovereign Engines.
+          One Platform.
           <span style={{ 
             display: "block", 
             background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #8B5CF6 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent"
           }}>
-            Zero Fragmented Security Blind Spots.
+            All Seven Engines.
           </span>
         </h1>
 
-        <p style={{ color: "#94A3B8", fontSize: "1.12rem", maxWidth: "820px", margin: "0 auto", lineHeight: 1.6 }}>
-          Eliminate fragmented point solutions and unverified patch blind spots. Exultia unites universal threat intelligence, adversary emulation, live pentesting, autonomous hotpatching, and cryptographic attestation into a single, closed-loop sovereign platform.
+        <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "580px", margin: "0 auto", lineHeight: 1.5 }}>
+          Full access to the sovereign defense ecosystem. Zero add-ons, no hidden fees.
         </p>
 
         {/* CURRENT TIER BADGE */}
