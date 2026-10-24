@@ -255,48 +255,6 @@ export default function HomeCommandDeck() {
   return (
     <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1.5rem 1rem 5rem 1rem" }}>
       
-      {/* ── TOP OPERATIONAL TELEMETRY RIBBON ─────────────────────────────────── */}
-      <div className="telemetry-ribbon">
-        <div className="telemetry-item">
-          <span className="telemetry-pulse" />
-          <span>AUTONOMOUS ENGINE: <strong style={{ color: "#34D399" }}>CONTINUOUS ARMORED</strong></span>
-        </div>
-
-        <div className="telemetry-item">
-          <span>THREAT FEEDS: <strong>110+ REGISTRIES (6,391 INGESTED)</strong></span>
-        </div>
-
-        <div className="telemetry-item">
-          <span>IN-MEMORY HOTPATCH: <strong style={{ color: "#FBBF24" }}>&lt; 40ms ZERO-DOWNTIME</strong></span>
-        </div>
-
-        <div className="telemetry-item">
-          <span>DETERMINISTIC ROLLBACK: <strong style={{ color: "#00E5FF" }}>14ms ATOMIC</strong></span>
-        </div>
-
-        <Link
-          href="/account/subscription"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "rgba(0, 229, 255, 0.12)",
-            border: "1px solid rgba(0, 229, 255, 0.35)",
-            color: "#67E8F9",
-            padding: "5px 12px",
-            borderRadius: "6px",
-            fontSize: "0.74rem",
-            fontWeight: 800,
-            fontFamily: "var(--font-mono, monospace)",
-            textDecoration: "none",
-            textTransform: "uppercase"
-          }}
-        >
-          <span>Platform Plans ($59/mo)</span>
-          <ArrowRight size={12} />
-        </Link>
-      </div>
-
       {/* ── HERO HEADLINE & CONFIDENT MISSION ─────────────────────────────────── */}
       <section style={{ textAlign: "center", marginBottom: "3.5rem" }}>
         <div style={{
