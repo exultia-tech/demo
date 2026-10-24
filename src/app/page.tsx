@@ -8,6 +8,7 @@ import {
   PraxisIcon, 
   AxiomIcon, 
   ErisIcon,
+  ValkyrieIcon,
   ExultiaLogo 
 } from "@/components/BrandIcons";
 import { ArrowRight } from "lucide-react";
@@ -197,6 +198,30 @@ export default function HomePage() {
             </p>
             <div className="platform-card-link">
               <span>Enter Chaos Range</span>
+              <ArrowRight size={13} />
+            </div>
+          </Link>
+
+          {/* 7. Valkyrie (On-Demand Pentest & Exploit Verification) */}
+          <Link 
+            href="/app/valkyrie"
+            className="platform-card platform-card-valkyrie"
+            style={{
+              // @ts-ignore
+              "--card-accent": "#06B6D4",
+              "--card-glow": "rgba(6, 182, 212, 0.4)",
+            }}
+          >
+            <div className="platform-icon-wrap">
+              <ValkyrieIcon size={48} glow={true} />
+            </div>
+            <h3 className="platform-card-title">Valkyrie</h3>
+            <div className="platform-card-sub">On-Demand Pentest &amp; BAS</div>
+            <p className="platform-card-desc">
+              Precision breach &amp; attack simulation against live Vantage CVEs. Test non-destructive canaries before exploit exposure.
+            </p>
+            <div className="platform-card-link">
+              <span>Launch Exploit Prober</span>
               <ArrowRight size={13} />
             </div>
           </Link>

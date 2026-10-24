@@ -226,6 +226,26 @@ export default function PraxisPage() {
       setIsErisActive(true);
     }
 
+    // Ingest Valkyrie On-Demand Pentest Remediation
+    const cveParam = params.get('cve') || params.get('valkyrieRemediate');
+    if (cveParam) {
+      if (!entries.some(e => e.cveId === cveParam || e.uviId === cveParam)) {
+        entries.push({
+          uviId: cveParam,
+          cveId: cveParam,
+          title: `Valkyrie Pentest Finding: ${cveParam}`,
+          severity: 'CRITICAL',
+          cvssScore: 9.8,
+          affectedPackages: ['targeted-service'],
+          affectedDistros: ['ubuntu', 'debian', 'rocky', 'alpine'],
+          remediation: { recommendedAction: `Deploy Immediate Praxis eBPF / Virtual Hotpatch for ${cveParam}` }
+        });
+      }
+      setTargetedVantageEntries(entries);
+      const convertedPatch = convertAdvisoryToPatchItem(entries[entries.length - 1]);
+      setSelectedPatch(convertedPatch);
+    }
+
     setReady(true);
   }, []);
 

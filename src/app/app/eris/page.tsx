@@ -29,7 +29,7 @@ import {
   ArrowRight,
   Sparkles
 } from 'lucide-react';
-import { ErisIcon, PraxisIcon, VantageIcon } from '@/components/BrandIcons';
+import { ErisIcon, PraxisIcon, VantageIcon, ValkyrieIcon } from '@/components/BrandIcons';
 import { 
   ERIS_MODULES, 
   VULNERABLE_CONTAINER_SCENARIOS, 
@@ -279,6 +279,26 @@ export default function ErisPage() {
               >
                 <Sparkles size={16} />
                 <span>Pricing &amp; Bundles</span>
+              </Link>
+              <Link 
+                href="/app/valkyrie"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 18px",
+                  borderRadius: "10px",
+                  background: "rgba(6, 182, 212, 0.12)",
+                  border: "1px solid rgba(6, 182, 212, 0.35)",
+                  color: "#67E8F9",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  textDecoration: "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <ValkyrieIcon size={16} glow={false} />
+                <span>Pentest in Valkyrie</span>
               </Link>
               <Link 
                 href="/app/praxis?erisRemediate=true"

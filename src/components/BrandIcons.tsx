@@ -835,5 +835,146 @@ export function ErisIcon({ size = 32, className = "", glow = true }: IconProps) 
 export const PerditionIcon = ErisIcon;
 export const CrucibleIcon = ErisIcon;
 
+/**
+ * Valkyrie Product Icon
+ * On-Demand Exploit Validation & Pentest Engine
+ * Cybernetic winged spearhead flanked by swept Nordic shields & energy targeting core.
+ */
+export function ValkyrieIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow
+    ? "drop-shadow(0 0 10px rgba(6, 182, 212, 0.7)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.4))"
+    : "none";
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: glowFilter }}
+    >
+      <defs>
+        {/* Core Electric Aura */}
+        <radialGradient id="valk-aura" cx="24" cy="22" r="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#0891B2" stopOpacity="0.45" />
+          <stop offset="65%" stopColor="#4C1D95" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#030712" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Spearhead Silver-Cyan Gradient */}
+        <linearGradient id="valk-spear" x1="24" y1="4" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="25%" stopColor="#A5F3FC" />
+          <stop offset="65%" stopColor="#06B6D4" />
+          <stop offset="100%" stopColor="#0284C7" />
+        </linearGradient>
+
+        {/* Left Wing Gradient */}
+        <linearGradient id="valk-wing-l" x1="6" y1="8" x2="22" y2="38" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#38BDF8" />
+          <stop offset="50%" stopColor="#0284C7" />
+          <stop offset="100%" stopColor="#1E1B4B" />
+        </linearGradient>
+
+        {/* Right Wing Gradient */}
+        <linearGradient id="valk-wing-r" x1="42" y1="8" x2="26" y2="38" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#C084FC" />
+          <stop offset="50%" stopColor="#7C3AED" />
+          <stop offset="100%" stopColor="#1E1B4B" />
+        </linearGradient>
+
+        {/* Target Reticle Core */}
+        <radialGradient id="valk-core" cx="24" cy="20" r="7" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#67E8F9" />
+          <stop offset="85%" stopColor="#06B6D4" />
+          <stop offset="100%" stopColor="#0369A1" />
+        </radialGradient>
+      </defs>
+
+      {/* Aura background */}
+      <circle cx="24" cy="24" r="22" fill="url(#valk-aura)" />
+
+      {/* Nordic Chevron Shield Base / Outer Wing Feathers */}
+      {/* Outer Left Wing Primary */}
+      <path
+        d="M 24 16 L 8 10 C 6 18, 9 28, 17 35 L 24 30 Z"
+        fill="url(#valk-wing-l)"
+        stroke="#38BDF8"
+        strokeWidth="0.8"
+        strokeLinejoin="round"
+        opacity="0.85"
+      />
+      {/* Outer Left Wing Blade 2 */}
+      <path
+        d="M 24 20 L 12 18 C 11 25, 14 31, 20 37 L 24 33 Z"
+        fill="rgba(6, 182, 212, 0.4)"
+        stroke="#67E8F9"
+        strokeWidth="0.6"
+        strokeLinejoin="round"
+      />
+
+      {/* Outer Right Wing Primary */}
+      <path
+        d="M 24 16 L 40 10 C 42 18, 39 28, 31 35 L 24 30 Z"
+        fill="url(#valk-wing-r)"
+        stroke="#C084FC"
+        strokeWidth="0.8"
+        strokeLinejoin="round"
+        opacity="0.85"
+      />
+      {/* Outer Right Wing Blade 2 */}
+      <path
+        d="M 24 20 L 36 18 C 37 25, 34 31, 28 37 L 24 33 Z"
+        fill="rgba(147, 51, 234, 0.4)"
+        stroke="#E9D5FF"
+        strokeWidth="0.6"
+        strokeLinejoin="round"
+      />
+
+      {/* Central Cybernetic Valkyrie Spearhead */}
+      <path
+        d="M 24 3 L 28.5 17 L 25.5 17 L 25.5 45 L 22.5 45 L 22.5 17 L 19.5 17 Z"
+        fill="url(#valk-spear)"
+        stroke="#FFFFFF"
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+
+      {/* Spearhead Fluting / Diamond Facet */}
+      <polygon
+        points="24,5 27,16 24,19 21,16"
+        fill="#FFFFFF"
+        opacity="0.9"
+      />
+
+      {/* Aegis Diamond Collar */}
+      <polygon
+        points="24,14 31,21 24,28 17,21"
+        fill="rgba(8, 20, 35, 0.9)"
+        stroke="#67E8F9"
+        strokeWidth="1.2"
+      />
+
+      {/* Core Targeting Optics / Pulse Center */}
+      <circle cx="24" cy="21" r="4.5" fill="url(#valk-core)" stroke="#FFFFFF" strokeWidth="0.8" />
+      <circle cx="24" cy="21" r="1.5" fill="#FFFFFF" />
+
+      {/* Targeting Reticle Crossbars */}
+      <line x1="24" y1="11" x2="24" y2="15" stroke="#67E8F9" strokeWidth="1" strokeLinecap="round" />
+      <line x1="24" y1="27" x2="24" y2="31" stroke="#67E8F9" strokeWidth="1" strokeLinecap="round" />
+      <line x1="14" y1="21" x2="18" y2="21" stroke="#67E8F9" strokeWidth="1" strokeLinecap="round" />
+      <line x1="30" y1="21" x2="34" y2="21" stroke="#67E8F9" strokeWidth="1" strokeLinecap="round" />
+
+      {/* High-Velocity Precision Accents */}
+      <circle cx="7" cy="11" r="1.2" fill="#38BDF8" opacity="0.9" />
+      <circle cx="41" cy="11" r="1.2" fill="#C084FC" opacity="0.9" />
+      <circle cx="24" cy="46" r="1" fill="#67E8F9" />
+    </svg>
+  );
+}
+
 
 
