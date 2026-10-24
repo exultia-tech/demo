@@ -666,51 +666,65 @@ export function KineticIcon({ size = 32, className = "", glow = true }: IconProp
 }
 
 /**
- * Perdition Product Icon
- * Controlled vulnerability range and adversary simulation lab symbol.
- * Features an incandescent crucible forge with containment breach vents.
+ * Eris Product Icon
+ * Goddess of Chaos and Strife — Intentional vulnerability range & adversary simulation lab.
+ * Features an incandescent golden apple of discord enclosed in chaos flames and breach vents.
  */
-export function PerditionIcon({ size = 32, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(239, 68, 68, 0.55))" : "none";
+export function ErisIcon({ size = 32, className = "", glow = true }: IconProps) {
+  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.6)) drop-shadow(0 0 18px rgba(239, 68, 68, 0.4))" : "none";
 
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
       <defs>
-        <linearGradient id="perdition-grad-flame" x1="12" y1="6" x2="36" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFA07A" />
-          <stop offset="35%" stopColor="#F43F5E" />
+        <linearGradient id="eris-grad-flame" x1="12" y1="4" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDE047" />
+          <stop offset="35%" stopColor="#F97316" />
+          <stop offset="70%" stopColor="#EF4444" />
           <stop offset="100%" stopColor="#991B1B" />
         </linearGradient>
-        <linearGradient id="perdition-grad-vessel" x1="8" y1="18" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#334155" />
+        <linearGradient id="eris-grad-vessel" x1="8" y1="18" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#2E1065" />
+          <stop offset="50%" stopColor="#1E1B4B" />
           <stop offset="100%" stopColor="#0F172A" />
         </linearGradient>
-        <linearGradient id="perdition-grad-hazard" x1="18" y1="26" x2="30" y2="38" gradientUnits="userSpaceOnUse">
+        <linearGradient id="eris-grad-apple" x1="16" y1="20" x2="32" y2="38" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FEF08A" />
+          <stop offset="40%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#B45309" />
+        </linearGradient>
+        <linearGradient id="eris-grad-chaos" x1="18" y1="26" x2="30" y2="38" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FDE047" />
-          <stop offset="100%" stopColor="#EAB308" />
+          <stop offset="100%" stopColor="#EF4444" />
         </linearGradient>
       </defs>
 
-      {/* Perdition Anvil / Furnace Base */}
-      <path d="M12 20 H36 L32 40 H16 L12 20 Z" fill="url(#perdition-grad-vessel)" stroke="#EF4444" strokeWidth="2" strokeLinejoin="round" />
-      <line x1="8" y1="20" x2="40" y2="20" stroke="#F87171" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Eris Crucible / Altar of Discord */}
+      <path d="M12 22 H36 L32 41 H16 L12 22 Z" fill="url(#eris-grad-vessel)" stroke="#F59E0B" strokeWidth="1.8" strokeLinejoin="round" />
+      <line x1="8" y1="22" x2="40" y2="22" stroke="#FBBF24" strokeWidth="2.5" strokeLinecap="round" />
 
-      {/* Internal Incandescent Flame / Plasma Eruption */}
-      <path d="M24 6 C28 11 31 15 28 19 C25 21 21 17 24 13 C21 16 19 20 22 23 C20 21 18 17 21 12 C23 9 22 7 24 6 Z" fill="url(#perdition-grad-flame)" />
+      {/* Dancing Strife Flames */}
+      <path d="M24 5 C29 11 32 15 29 19 C26 21 21 17 24 13 C21 16 19 20 22 23 C20 21 18 17 21 11 C23 8 22 6 24 5 Z" fill="url(#eris-grad-flame)" />
 
-      {/* Biohazard / Breach Warning Center Icon */}
-      <circle cx="24" cy="30" r="3.5" fill="none" stroke="url(#perdition-grad-hazard)" strokeWidth="1.5" />
-      <path d="M24 23 V26 M19 32 L22 30 M29 32 L26 30" stroke="url(#perdition-grad-hazard)" strokeWidth="1.5" strokeLinecap="round" />
+      {/* The Golden Apple of Discord (Kallisti / To The Fairest) */}
+      <circle cx="24" cy="31" r="5.5" fill="url(#eris-grad-apple)" stroke="#FEF08A" strokeWidth="1" />
+      {/* Apple stem & chaos leaf */}
+      <path d="M24 25.5 C25 24 26 23.5 28 24" stroke="#84CC16" strokeWidth="1.5" strokeLinecap="round" />
 
-      {/* Caution Radiation Sparks */}
-      <circle cx="16" cy="12" r="1.5" fill="#F87171" />
-      <circle cx="32" cy="11" r="1.5" fill="#F87171" />
-      <circle cx="28" cy="8" r="1" fill="#FEF08A" />
+      {/* Chaos Star / 8-pointed rays of strife */}
+      <path d="M24 20 V22 M24 40 V42 M14 31 H16 M32 31 H34" stroke="url(#eris-grad-chaos)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M17 24 L18.5 25.5 M29.5 36.5 L31 38 M17 38 L18.5 36.5 M29.5 25.5 L31 24" stroke="url(#eris-grad-chaos)" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* Golden Sparks of Discord */}
+      <circle cx="15" cy="12" r="1.5" fill="#FBBF24" />
+      <circle cx="33" cy="11" r="1.5" fill="#FBBF24" />
+      <circle cx="28" cy="7" r="1" fill="#FEF08A" />
+      <circle cx="20" cy="8" r="1" fill="#FEF08A" />
     </svg>
   );
 }
 
-// Backward-compatibility alias
-export const CrucibleIcon = PerditionIcon;
+// Backward-compatibility aliases
+export const PerditionIcon = ErisIcon;
+export const CrucibleIcon = ErisIcon;
 
 

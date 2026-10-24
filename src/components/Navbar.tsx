@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, PerditionIcon, CrucibleIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -33,9 +33,9 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // Axiom and Perdition active tab state synchronized with URL search param
+  // Axiom and Eris active tab state synchronized with URL search param
   const [axiomTab, setAxiomTab] = useState<string>("syllabus");
-  const [perditionTab, setPerditionTab] = useState<string>("inoculator");
+  const [erisTab, setErisTab] = useState<string>("inoculator");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,7 +43,7 @@ export default function Navbar() {
       const tab = search.get("tab");
       if (tab) {
         if (pathname?.startsWith("/app/axiom")) setAxiomTab(tab);
-        if (pathname?.startsWith("/app/perdition") || pathname?.startsWith("/app/crucible")) setPerditionTab(tab);
+        if (pathname?.startsWith("/app/eris") || pathname?.startsWith("/app/perdition") || pathname?.startsWith("/app/crucible")) setErisTab(tab);
       }
     }
   }, [pathname]);
@@ -52,16 +52,18 @@ export default function Navbar() {
     const handleAxiomTab = (e: any) => {
       if (e.detail) setAxiomTab(e.detail);
     };
-    const handlePerditionTab = (e: any) => {
-      if (e.detail) setPerditionTab(e.detail);
+    const handleErisTab = (e: any) => {
+      if (e.detail) setErisTab(e.detail);
     };
     window.addEventListener("axiom-tab-change", handleAxiomTab);
-    window.addEventListener("perdition-tab-change", handlePerditionTab);
-    window.addEventListener("crucible-tab-change", handlePerditionTab);
+    window.addEventListener("eris-tab-change", handleErisTab);
+    window.addEventListener("perdition-tab-change", handleErisTab);
+    window.addEventListener("crucible-tab-change", handleErisTab);
     return () => {
       window.removeEventListener("axiom-tab-change", handleAxiomTab);
-      window.removeEventListener("perdition-tab-change", handlePerditionTab);
-      window.removeEventListener("crucible-tab-change", handlePerditionTab);
+      window.removeEventListener("eris-tab-change", handleErisTab);
+      window.removeEventListener("perdition-tab-change", handleErisTab);
+      window.removeEventListener("crucible-tab-change", handleErisTab);
     };
   }, []);
 
@@ -102,13 +104,14 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
-  const isPerditionContext = !isIsolated && (
+  const isErisContext = !isIsolated && (
+    pathname.startsWith("/app/eris") ||
     pathname.startsWith("/app/perdition") ||
     pathname.startsWith("/app/crucible")
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isPerditionContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -363,9 +366,9 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 7: Perdition (Chaos Range & Intentional Vulnerability Lab) */}
+                    {/* PRODUCT 7: Eris (Chaos Range & Intentional Vulnerability Lab) */}
                     <Link 
-                      href="/app/perdition" 
+                      href="/app/eris" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -375,19 +378,19 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isPerditionContext ? "rgba(239, 68, 68, 0.15)" : "transparent"
+                        background: isErisContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <PerditionIcon size={32} glow={false} />
+                        <ErisIcon size={32} glow={false} />
                       </div>
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Perdition
-                          <span style={{ fontSize: "0.6rem", background: "rgba(239, 68, 68, 0.2)", color: "#F87171", border: "1px solid rgba(239, 68, 68, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>LAB / RANGE</span>
+                          Eris
+                          <span style={{ fontSize: "0.6rem", background: "rgba(245, 158, 11, 0.2)", color: "#FBBF24", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>CHAOS LAB / RANGE</span>
                         </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Adversary emulation, intentional chaos &amp; vulnerable test containers</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Goddess of chaos &amp; strife: adversary emulation, intentional vulnerabilities &amp; test containers</div>
                       </div>
                     </Link>
 
@@ -881,46 +884,46 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 7: PERDITION SUBMENU */}
-          {isPerditionContext && (
+          {/* SUBMENU OPTION 7: ERIS SUBMENU */}
+          {isErisContext && (
             <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(239, 68, 68, 0.15)", color: "#F87171", borderColor: "rgba(239, 68, 68, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <PerditionIcon size={16} glow={false} />
-                Perdition Lab
+              <span className="product-context-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24", borderColor: "rgba(245, 158, 11, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <ErisIcon size={16} glow={false} />
+                Eris Lab
               </span>
 
               <Link 
-                href="/app/perdition?tab=inoculator" 
+                href="/app/eris?tab=inoculator" 
                 onClick={() => {
-                  setPerditionTab("inoculator");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "inoculator" }));
+                  setErisTab("inoculator");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "inoculator" }));
                 }}
-                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "inoculator" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "inoculator" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 🔥 Chaos Inoculator
               </Link>
               <Link 
-                href="/app/perdition?tab=containers" 
+                href="/app/eris?tab=containers" 
                 onClick={() => {
-                  setPerditionTab("containers");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "containers" }));
+                  setErisTab("containers");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "containers" }));
                 }}
-                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "containers" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "containers" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 🐳 Vulnerable Containers
               </Link>
               <Link 
-                href="/app/perdition?tab=walkthrough" 
+                href="/app/eris?tab=walkthrough" 
                 onClick={() => {
-                  setPerditionTab("walkthrough");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "walkthrough" }));
+                  setErisTab("walkthrough");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "walkthrough" }));
                 }}
-                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "walkthrough" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "walkthrough" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 📋 Validation Guide
               </Link>
               <Link 
-                href="/app/praxis?perditionRemediate=true" 
+                href="/app/praxis?erisRemediate=true" 
                 className="submenu-link"
                 style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
                 <span>⚡</span> Remediate in Praxis &rarr;

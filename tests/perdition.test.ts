@@ -7,18 +7,18 @@ import {
   compilePerditionChaosScript
 } from "@/lib/perdition-data";
 
-describe("Perdition: Controlled Vulnerability Proving Ground Tests", () => {
+describe("Perdition Compatibility Layer Tests (Renamed to Eris)", () => {
 
-  describe("Safety & Legal Disclaimers", () => {
+  describe("Safety & Legal Disclaimers Re-export", () => {
     it("should export mandatory disclaimer with strict non-production warnings", () => {
       expect(PERDITION_MANDATORY_DISCLAIMER.title).toContain("MANDATORY TESTING NOTICE");
       expect(PERDITION_MANDATORY_DISCLAIMER.shortWarning).toContain("RESTRICTED TO ISOLATED TESTING");
       expect(PERDITION_MANDATORY_DISCLAIMER.bodyText).toContain("DO NOT EXECUTE THESE SCRIPTS ON PRODUCTION SYSTEMS");
-      expect(PERDITION_MANDATORY_DISCLAIMER.termsCheckboxText).toContain("I acknowledge that Perdition intentionally breaks security baselines");
+      expect(PERDITION_MANDATORY_DISCLAIMER.termsCheckboxText).toContain("breaks security baselines");
     });
   });
 
-  describe("Perdition Modules Catalog", () => {
+  describe("Perdition Modules Catalog Re-export", () => {
     it("should define critical vulnerability and misconfiguration modules", () => {
       expect(PERDITION_MODULES.length).toBeGreaterThanOrEqual(7);
 
@@ -42,16 +42,16 @@ describe("Perdition: Controlled Vulnerability Proving Ground Tests", () => {
     });
   });
 
-  describe("Chaos Inoculation Script Compiler", () => {
+  describe("Chaos Inoculation Script Compiler Alias", () => {
     it("should compile a valid bash script with shebang, safety checks, and rollback", () => {
       const { script, activeModules, rollbackCommand } = compilePerditionChaosScript("ubuntu");
 
       expect(script).toContain("#!/usr/bin/env bash");
       expect(script).toContain("MANDATORY TESTING DISCLAIMER");
-      expect(script).toContain("perdition_rollback() {");
+      expect(script).toContain("eris_rollback() {");
       expect(script).toContain('if [ "$1" = "--rollback" ]');
-      expect(script).toContain('"$PERDITION_DIR/perdition-manifest.json"');
-      expect(rollbackCommand).toBe("/var/log/perdition/perdition-setup.sh --rollback");
+      expect(script).toContain('"$ERIS_DIR/eris-manifest.json"');
+      expect(rollbackCommand).toBe("/var/log/eris/eris-setup.sh --rollback");
       expect(activeModules.length).toBeGreaterThan(0);
     });
 
@@ -60,18 +60,18 @@ describe("Perdition: Controlled Vulnerability Proving Ground Tests", () => {
       const { script, activeModules } = compilePerditionChaosScript("debian", selected, 15);
 
       expect(activeModules.map(m => m.id)).toEqual(selected);
-      expect(script).toContain("99-perdition-vulnerable-sshd.conf");
+      expect(script).toContain("99-eris-vulnerable-sshd.conf");
       expect(script).toContain("4444");
       expect(script).toContain("at now + 15 minutes");
       // Should not contain unselected modules
-      expect(script).not.toContain("perdition_tester");
+      expect(script).not.toContain("eris_tester");
     });
 
     it("should include clean teardown commands in the rollback function", () => {
       const { script } = compilePerditionChaosScript("ubuntu", ["ssh_permissive_regresshion", "backdoor_tester_account"]);
 
-      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-perdition-vulnerable-sshd.conf");
-      expect(script).toContain("userdel -r perdition_tester");
+      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-eris-vulnerable-sshd.conf");
+      expect(script).toContain("userdel -r eris_tester");
       expect(script).toContain("Host restored to clean baseline state");
     });
 
@@ -101,11 +101,11 @@ describe("Perdition: Controlled Vulnerability Proving Ground Tests", () => {
 
     it("should export a complete docker-compose.yml testing range", () => {
       expect(PERDITION_COMPOSE_MANIFEST).toContain("version: '3.8'");
-      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: perdition-regresshion");
-      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: perdition-cups");
-      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: perdition-xz");
-      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: perdition-log4shell");
-      expect(PERDITION_COMPOSE_MANIFEST).toContain("perdition-range:");
+      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: eris-regresshion");
+      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: eris-cups");
+      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: eris-xz");
+      expect(PERDITION_COMPOSE_MANIFEST).toContain("container_name: eris-log4shell");
+      expect(PERDITION_COMPOSE_MANIFEST).toContain("eris-range:");
     });
   });
 

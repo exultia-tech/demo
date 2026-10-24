@@ -7,7 +7,7 @@ import {
   compileCrucibleChaosScript
 } from "@/lib/crucible-data";
 
-describe("Crucible Compatibility Layer Tests (Renamed to Perdition)", () => {
+describe("Crucible Compatibility Layer Tests (Renamed to Eris)", () => {
 
   describe("Safety & Legal Disclaimers Re-export", () => {
     it("should export mandatory disclaimer with strict non-production warnings", () => {
@@ -48,10 +48,10 @@ describe("Crucible Compatibility Layer Tests (Renamed to Perdition)", () => {
 
       expect(script).toContain("#!/usr/bin/env bash");
       expect(script).toContain("MANDATORY TESTING DISCLAIMER");
-      expect(script).toContain("perdition_rollback() {");
+      expect(script).toContain("eris_rollback() {");
       expect(script).toContain('if [ "$1" = "--rollback" ]');
-      expect(script).toContain('"$PERDITION_DIR/perdition-manifest.json"');
-      expect(rollbackCommand).toBe("/var/log/perdition/perdition-setup.sh --rollback");
+      expect(script).toContain('"$ERIS_DIR/eris-manifest.json"');
+      expect(rollbackCommand).toBe("/var/log/eris/eris-setup.sh --rollback");
       expect(activeModules.length).toBeGreaterThan(0);
     });
 
@@ -60,18 +60,18 @@ describe("Crucible Compatibility Layer Tests (Renamed to Perdition)", () => {
       const { script, activeModules } = compileCrucibleChaosScript("debian", selected, 15);
 
       expect(activeModules.map(m => m.id)).toEqual(selected);
-      expect(script).toContain("99-perdition-vulnerable-sshd.conf");
+      expect(script).toContain("99-eris-vulnerable-sshd.conf");
       expect(script).toContain("4444");
       expect(script).toContain("at now + 15 minutes");
       // Should not contain unselected modules
-      expect(script).not.toContain("perdition_tester");
+      expect(script).not.toContain("eris_tester");
     });
 
     it("should include clean teardown commands in the rollback function", () => {
       const { script } = compileCrucibleChaosScript("ubuntu", ["ssh_permissive_regresshion", "backdoor_tester_account"]);
 
-      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-perdition-vulnerable-sshd.conf");
-      expect(script).toContain("userdel -r perdition_tester");
+      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-eris-vulnerable-sshd.conf");
+      expect(script).toContain("userdel -r eris_tester");
       expect(script).toContain("Host restored to clean baseline state");
     });
 
@@ -101,11 +101,11 @@ describe("Crucible Compatibility Layer Tests (Renamed to Perdition)", () => {
 
     it("should export a complete docker-compose.yml testing range", () => {
       expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("version: '3.8'");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-regresshion");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-cups");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-xz");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-log4shell");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("perdition-range:");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: eris-regresshion");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: eris-cups");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: eris-xz");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: eris-log4shell");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("eris-range:");
     });
   });
 
