@@ -129,8 +129,8 @@ export default function PraxisPage() {
   const [cbomModalOpen, setCbomModalOpen] = useState(false);
   const [activeCbomPayload, setActiveCbomPayload] = useState<PraxisCbomPayload | null>(null);
 
-  // ── CRUCIBLE CHAOS INOCULATION BRIDGING STATE ──
-  const [isCrucibleActive, setIsCrucibleActive] = useState(false);
+  // ── PERDITION CHAOS INOCULATION BRIDGING STATE ──
+  const [isPerditionActive, setIsPerditionActive] = useState(false);
 
   // ── PATCHING MODE STATE ──
   const [patchSearchQuery, setPatchSearchQuery] = useState('');
@@ -218,12 +218,12 @@ export default function PraxisPage() {
       setSelectedPatch(convertedPatch);
     }
 
-    // Ingest Crucible Chaos Inoculation Remediation Flag
-    const crucibleParam = params.get('crucibleRemediate');
-    if (crucibleParam === 'true') {
+    // Ingest Perdition / Crucible Chaos Inoculation Remediation Flag
+    const perditionParam = params.get('perditionRemediate') || params.get('crucibleRemediate');
+    if (perditionParam === 'true') {
       setPraxisMode('both');
       setSelectedClasses(new Set(['network', 'config', 'service', 'phishing', 'kev']));
-      setIsCrucibleActive(true);
+      setIsPerditionActive(true);
     }
 
     setReady(true);
@@ -653,8 +653,8 @@ export default function PraxisPage() {
         </div>
       )}
 
-      {/* CRUCIBLE CHAOS INOCULATION COUNTERMEASURE BANNER */}
-      {isCrucibleActive && (
+      {/* PERDITION CHAOS INOCULATION COUNTERMEASURE BANNER */}
+      {isPerditionActive && (
         <div style={{
           background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.14), rgba(16, 185, 129, 0.12))',
           border: '1px solid rgba(239, 68, 68, 0.45)',
@@ -673,20 +673,20 @@ export default function PraxisPage() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#F87171', letterSpacing: '0.04em' }}>
-                  CRUCIBLE TEST COUNTERMEASURE ACTIVE
+                  PERDITION TEST COUNTERMEASURE ACTIVE
                 </span>
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', padding: '1px 6px', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
                   AUTOMATED REMEDIATION READY
                 </span>
               </div>
               <div style={{ fontSize: '0.78rem', color: '#CBD5E1', marginTop: '3px' }}>
-                Praxis has auto-selected countermeasures targeting the vulnerabilities and unauthenticated listeners seeded by Crucible (SSH LoginGraceTime, port 4444/8080 drops, rogue accounts). Executing this remediation will write an endpoint After-Action CBOM confirming neutralization.
+                Praxis has auto-selected countermeasures targeting the vulnerabilities and unauthenticated listeners seeded by Perdition (SSH LoginGraceTime, port 4444/8080 drops, rogue accounts). Executing this remediation will write an endpoint After-Action CBOM confirming neutralization.
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Link
-              href="/app/crucible"
+              href="/app/perdition"
               style={{
                 fontSize: '0.74rem',
                 color: '#FCA5A5',
@@ -698,10 +698,10 @@ export default function PraxisPage() {
                 border: '1px solid rgba(239, 68, 68, 0.3)'
               }}
             >
-              Back to Crucible &rarr;
+              Back to Perdition &rarr;
             </Link>
             <button
-              onClick={() => setIsCrucibleActive(false)}
+              onClick={() => setIsPerditionActive(false)}
               style={{
                 background: 'transparent',
                 border: 'none',

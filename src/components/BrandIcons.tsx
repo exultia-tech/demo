@@ -666,41 +666,41 @@ export function KineticIcon({ size = 32, className = "", glow = true }: IconProp
 }
 
 /**
- * Crucible Product Icon
+ * Perdition Product Icon
  * Controlled vulnerability range and adversary simulation lab symbol.
  * Features an incandescent crucible forge with containment breach vents.
  */
-export function CrucibleIcon({ size = 32, className = "", glow = true }: IconProps) {
+export function PerditionIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(239, 68, 68, 0.55))" : "none";
 
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
       <defs>
-        <linearGradient id="crucible-grad-flame" x1="12" y1="6" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+        <linearGradient id="perdition-grad-flame" x1="12" y1="6" x2="36" y2="40" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FFA07A" />
           <stop offset="35%" stopColor="#F43F5E" />
           <stop offset="100%" stopColor="#991B1B" />
         </linearGradient>
-        <linearGradient id="crucible-grad-vessel" x1="8" y1="18" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+        <linearGradient id="perdition-grad-vessel" x1="8" y1="18" x2="40" y2="44" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#334155" />
           <stop offset="100%" stopColor="#0F172A" />
         </linearGradient>
-        <linearGradient id="crucible-grad-hazard" x1="18" y1="26" x2="30" y2="38" gradientUnits="userSpaceOnUse">
+        <linearGradient id="perdition-grad-hazard" x1="18" y1="26" x2="30" y2="38" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FDE047" />
           <stop offset="100%" stopColor="#EAB308" />
         </linearGradient>
       </defs>
 
-      {/* Crucible Anvil / Furnace Base */}
-      <path d="M12 20 H36 L32 40 H16 L12 20 Z" fill="url(#crucible-grad-vessel)" stroke="#EF4444" strokeWidth="2" strokeLinejoin="round" />
+      {/* Perdition Anvil / Furnace Base */}
+      <path d="M12 20 H36 L32 40 H16 L12 20 Z" fill="url(#perdition-grad-vessel)" stroke="#EF4444" strokeWidth="2" strokeLinejoin="round" />
       <line x1="8" y1="20" x2="40" y2="20" stroke="#F87171" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* Internal Incandescent Flame / Plasma Eruption */}
-      <path d="M24 6 C28 11 31 15 28 19 C25 21 21 17 24 13 C21 16 19 20 22 23 C20 21 18 17 21 12 C23 9 22 7 24 6 Z" fill="url(#crucible-grad-flame)" />
+      <path d="M24 6 C28 11 31 15 28 19 C25 21 21 17 24 13 C21 16 19 20 22 23 C20 21 18 17 21 12 C23 9 22 7 24 6 Z" fill="url(#perdition-grad-flame)" />
 
       {/* Biohazard / Breach Warning Center Icon */}
-      <circle cx="24" cy="30" r="3.5" fill="none" stroke="url(#crucible-grad-hazard)" strokeWidth="1.5" />
-      <path d="M24 23 V26 M19 32 L22 30 M29 32 L26 30" stroke="url(#crucible-grad-hazard)" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="24" cy="30" r="3.5" fill="none" stroke="url(#perdition-grad-hazard)" strokeWidth="1.5" />
+      <path d="M24 23 V26 M19 32 L22 30 M29 32 L26 30" stroke="url(#perdition-grad-hazard)" strokeWidth="1.5" strokeLinecap="round" />
 
       {/* Caution Radiation Sparks */}
       <circle cx="16" cy="12" r="1.5" fill="#F87171" />
@@ -709,4 +709,8 @@ export function CrucibleIcon({ size = 32, className = "", glow = true }: IconPro
     </svg>
   );
 }
+
+// Backward-compatibility alias
+export const CrucibleIcon = PerditionIcon;
+
 

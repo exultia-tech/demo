@@ -7,19 +7,19 @@ import {
   compileCrucibleChaosScript
 } from "@/lib/crucible-data";
 
-describe("Crucible: Controlled Vulnerability Proving Ground Tests", () => {
+describe("Crucible Compatibility Layer Tests (Renamed to Perdition)", () => {
 
-  describe("Safety & Legal Disclaimers", () => {
+  describe("Safety & Legal Disclaimers Re-export", () => {
     it("should export mandatory disclaimer with strict non-production warnings", () => {
       expect(CRUCIBLE_MANDATORY_DISCLAIMER.title).toContain("MANDATORY TESTING NOTICE");
       expect(CRUCIBLE_MANDATORY_DISCLAIMER.shortWarning).toContain("RESTRICTED TO ISOLATED TESTING");
       expect(CRUCIBLE_MANDATORY_DISCLAIMER.bodyText).toContain("DO NOT EXECUTE THESE SCRIPTS ON PRODUCTION SYSTEMS");
-      expect(CRUCIBLE_MANDATORY_DISCLAIMER.termsCheckboxText).toContain("I acknowledge that Crucible intentionally breaks security baselines");
+      expect(CRUCIBLE_MANDATORY_DISCLAIMER.termsCheckboxText).toContain("breaks security baselines");
     });
   });
 
-  describe("Crucible Modules Catalog", () => {
-    it("should define critical vulnerability and misconfiguration modules", () => {
+  describe("Crucible Modules Catalog Re-export", () => {
+    it("should define critical vulnerability and misconfiguration modules via alias", () => {
       expect(CRUCIBLE_MODULES.length).toBeGreaterThanOrEqual(7);
 
       const moduleIds = CRUCIBLE_MODULES.map(m => m.id);
@@ -42,16 +42,16 @@ describe("Crucible: Controlled Vulnerability Proving Ground Tests", () => {
     });
   });
 
-  describe("Chaos Inoculation Script Compiler", () => {
+  describe("Chaos Inoculation Script Compiler Alias", () => {
     it("should compile a valid bash script with shebang, safety checks, and rollback", () => {
       const { script, activeModules, rollbackCommand } = compileCrucibleChaosScript("ubuntu");
 
       expect(script).toContain("#!/usr/bin/env bash");
       expect(script).toContain("MANDATORY TESTING DISCLAIMER");
-      expect(script).toContain("crucible_rollback() {");
+      expect(script).toContain("perdition_rollback() {");
       expect(script).toContain('if [ "$1" = "--rollback" ]');
-      expect(script).toContain('"$CRUCIBLE_DIR/crucible-manifest.json"');
-      expect(rollbackCommand).toBe("/var/log/crucible/crucible-setup.sh --rollback");
+      expect(script).toContain('"$PERDITION_DIR/perdition-manifest.json"');
+      expect(rollbackCommand).toBe("/var/log/perdition/perdition-setup.sh --rollback");
       expect(activeModules.length).toBeGreaterThan(0);
     });
 
@@ -60,18 +60,18 @@ describe("Crucible: Controlled Vulnerability Proving Ground Tests", () => {
       const { script, activeModules } = compileCrucibleChaosScript("debian", selected, 15);
 
       expect(activeModules.map(m => m.id)).toEqual(selected);
-      expect(script).toContain("99-crucible-vulnerable-sshd.conf");
+      expect(script).toContain("99-perdition-vulnerable-sshd.conf");
       expect(script).toContain("4444");
       expect(script).toContain("at now + 15 minutes");
       // Should not contain unselected modules
-      expect(script).not.toContain("crucible_tester");
+      expect(script).not.toContain("perdition_tester");
     });
 
     it("should include clean teardown commands in the rollback function", () => {
       const { script } = compileCrucibleChaosScript("ubuntu", ["ssh_permissive_regresshion", "backdoor_tester_account"]);
 
-      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-crucible-vulnerable-sshd.conf");
-      expect(script).toContain("userdel -r crucible_tester");
+      expect(script).toContain("rm -f /etc/ssh/sshd_config.d/99-perdition-vulnerable-sshd.conf");
+      expect(script).toContain("userdel -r perdition_tester");
       expect(script).toContain("Host restored to clean baseline state");
     });
 
@@ -101,11 +101,11 @@ describe("Crucible: Controlled Vulnerability Proving Ground Tests", () => {
 
     it("should export a complete docker-compose.yml testing range", () => {
       expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("version: '3.8'");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: crucible-regresshion");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: crucible-cups");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: crucible-xz");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: crucible-log4shell");
-      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("crucible-range:");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-regresshion");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-cups");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-xz");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("container_name: perdition-log4shell");
+      expect(CRUCIBLE_COMPOSE_MANIFEST).toContain("perdition-range:");
     });
   });
 

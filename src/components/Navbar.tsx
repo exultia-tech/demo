@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, CrucibleIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, PerditionIcon, CrucibleIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -33,9 +33,9 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // Axiom and Crucible active tab state synchronized with URL search param
+  // Axiom and Perdition active tab state synchronized with URL search param
   const [axiomTab, setAxiomTab] = useState<string>("syllabus");
-  const [crucibleTab, setCrucibleTab] = useState<string>("inoculator");
+  const [perditionTab, setPerditionTab] = useState<string>("inoculator");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,7 +43,7 @@ export default function Navbar() {
       const tab = search.get("tab");
       if (tab) {
         if (pathname?.startsWith("/app/axiom")) setAxiomTab(tab);
-        if (pathname?.startsWith("/app/crucible")) setCrucibleTab(tab);
+        if (pathname?.startsWith("/app/perdition") || pathname?.startsWith("/app/crucible")) setPerditionTab(tab);
       }
     }
   }, [pathname]);
@@ -52,14 +52,16 @@ export default function Navbar() {
     const handleAxiomTab = (e: any) => {
       if (e.detail) setAxiomTab(e.detail);
     };
-    const handleCrucibleTab = (e: any) => {
-      if (e.detail) setCrucibleTab(e.detail);
+    const handlePerditionTab = (e: any) => {
+      if (e.detail) setPerditionTab(e.detail);
     };
     window.addEventListener("axiom-tab-change", handleAxiomTab);
-    window.addEventListener("crucible-tab-change", handleCrucibleTab);
+    window.addEventListener("perdition-tab-change", handlePerditionTab);
+    window.addEventListener("crucible-tab-change", handlePerditionTab);
     return () => {
       window.removeEventListener("axiom-tab-change", handleAxiomTab);
-      window.removeEventListener("crucible-tab-change", handleCrucibleTab);
+      window.removeEventListener("perdition-tab-change", handlePerditionTab);
+      window.removeEventListener("crucible-tab-change", handlePerditionTab);
     };
   }, []);
 
@@ -100,12 +102,13 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
-  const isCrucibleContext = !isIsolated && (
+  const isPerditionContext = !isIsolated && (
+    pathname.startsWith("/app/perdition") ||
     pathname.startsWith("/app/crucible")
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isCrucibleContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isPerditionContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -360,9 +363,9 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 7: Crucible (Chaos Range & Intentional Vulnerability Lab) */}
+                    {/* PRODUCT 7: Perdition (Chaos Range & Intentional Vulnerability Lab) */}
                     <Link 
-                      href="/app/crucible" 
+                      href="/app/perdition" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -372,16 +375,16 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isCrucibleContext ? "rgba(239, 68, 68, 0.15)" : "transparent"
+                        background: isPerditionContext ? "rgba(239, 68, 68, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <CrucibleIcon size={32} glow={false} />
+                        <PerditionIcon size={32} glow={false} />
                       </div>
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Crucible
+                          Perdition
                           <span style={{ fontSize: "0.6rem", background: "rgba(239, 68, 68, 0.2)", color: "#F87171", border: "1px solid rgba(239, 68, 68, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>LAB / RANGE</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Adversary emulation, intentional chaos &amp; vulnerable test containers</div>
@@ -878,46 +881,46 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 7: CRUCIBLE SUBMENU */}
-          {isCrucibleContext && (
+          {/* SUBMENU OPTION 7: PERDITION SUBMENU */}
+          {isPerditionContext && (
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(239, 68, 68, 0.15)", color: "#F87171", borderColor: "rgba(239, 68, 68, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <CrucibleIcon size={16} glow={false} />
-                Crucible Lab
+                <PerditionIcon size={16} glow={false} />
+                Perdition Lab
               </span>
 
               <Link 
-                href="/app/crucible?tab=inoculator" 
+                href="/app/perdition?tab=inoculator" 
                 onClick={() => {
-                  setCrucibleTab("inoculator");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "inoculator" }));
+                  setPerditionTab("inoculator");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "inoculator" }));
                 }}
-                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "inoculator" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "inoculator" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 🔥 Chaos Inoculator
               </Link>
               <Link 
-                href="/app/crucible?tab=containers" 
+                href="/app/perdition?tab=containers" 
                 onClick={() => {
-                  setCrucibleTab("containers");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "containers" }));
+                  setPerditionTab("containers");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "containers" }));
                 }}
-                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "containers" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "containers" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 🐳 Vulnerable Containers
               </Link>
               <Link 
-                href="/app/crucible?tab=walkthrough" 
+                href="/app/perdition?tab=walkthrough" 
                 onClick={() => {
-                  setCrucibleTab("walkthrough");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("crucible-tab-change", { detail: "walkthrough" }));
+                  setPerditionTab("walkthrough");
+                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("perdition-tab-change", { detail: "walkthrough" }));
                 }}
-                className={`submenu-link ${pathname === "/app/crucible" && crucibleTab === "walkthrough" ? "active-red" : ""}`}
+                className={`submenu-link ${(pathname === "/app/perdition" || pathname === "/app/crucible") && perditionTab === "walkthrough" ? "active-red" : ""}`}
                 style={{ fontWeight: 600 }}>
                 📋 Validation Guide
               </Link>
               <Link 
-                href="/app/praxis?crucibleRemediate=true" 
+                href="/app/praxis?perditionRemediate=true" 
                 className="submenu-link"
                 style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
                 <span>⚡</span> Remediate in Praxis &rarr;
