@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     });
 
     // Ensure all flagship products in the suite are represented
-    const products = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris'];
+    const products = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris', 'valkyrie'];
     const enriched = products.map(prod => {
       const match = subs.find(s => s.product === prod);
       return {

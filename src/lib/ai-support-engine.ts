@@ -54,7 +54,7 @@ export class AiSupportEngine {
 
 Because of this lean, focused engineering model:
 - ❌ **No Human SLAs or 24/7 Pagers:** We do not offer contractual human uptime SLAs, 24/7 on-call incident engineers, or phone support.
-- ✅ **Deterministic, Automated Software:** All Exultia products (Kinetic, PureIDE, Vantage, Praxis, PureOS, Axiom) are engineered to be completely **autonomous, self-hosted, and self-verifying**.
+- ✅ **Deterministic, Automated Software:** All Exultia products (PureIDE, Vantage, Praxis, PureOS, Axiom, Eris, Valkyrie) are engineered to be completely **autonomous, self-hosted, and self-verifying**.
 - ✅ **100% Automated Test Suite:** Every hotfix, patch script, and container image undergoes exhaustive automated pre-flight testing and regression sentinels prior to publication.
 - ✅ **Sub-Second Deterministic Rollbacks:** If any hotfix causes an unexpected state, Kinetic includes instant local rollback commands (\`sudo kinetic rollback --cve=...\`) that restore the previous binary state in milliseconds.
 - 🤖 **24/7 AI Sentinel:** This AI Support Agent is online around the clock to assist you with installation commands, host capacity calculations, configuration syntax, and troubleshooting.
@@ -268,20 +268,24 @@ Unlocks Pro-level access across all core tools:
 - **Praxis Pro:** Automated bash/Ansible hotfix generation & SIEM webhook payload exporters.
 - **PureOS Pro:** CIS hardened container images & cryptographic provenance.
 - **Axiom Pro:** Cybersecurity certification prep platform with 15,000+ question bank & exports.
+- **Eris Pro:** Adversary simulation lab, all 7+ CVE inoculation scenarios & 5-container attack range.
+- **Valkyrie Pro:** Unlimited on-demand pentesting scans, BAS canary vectors & Vantage exploitability verification.
 
 #### 2. MultiPass Enterprise ($595/mo or $495/mo annual)
 - Unlocks **all Enterprise features** across the stack.
 - Adds **Axiom Enterprise LMS API** (certification testing platform).
+- Adds **Eris Enterprise** (multi-node adversary orchestration & custom zero-day studio).
+- Adds **Valkyrie Enterprise** (multi-target fleet pentest orchestrator & zero-day payload vectors).
 - Phased multi-ring deployment orchestrator for Kinetic.
 - SLSA Level 3 signed manifests with Cosign OIDC.
 - 24/7 AI Support Agent & automated self-hosted test suites.
 
 You can activate MultiPass with preset plan options on the [Pricing & Plans page](/account/subscription?product=multipass).`,
         suggestions: [
-          'How does Kinetic per-host pricing work?',
-          'Do you offer human SLAs?',
-          'What is the Kinetic daemon install command?',
-          'How do I generate an API token?'
+          'How does the Sovereignty discount bundle work?',
+          'What is included in Valkyrie Pro?',
+          'How do I execute a deterministic rollback?',
+          'Where do I generate an API token?'
         ]
       };
     }
@@ -318,9 +322,9 @@ curl -fsSL https://exultia.io/install/kinetic.sh | sudo -E bash
 #### 3. Air-Gapped / Offline Environments
 For air-gapped data centers, Enterprise subscribers can generate offline cryptographic license keys signed with Cosign SLSA Level 3 keys from the portal.`,
         suggestions: [
-          'How do I install the Kinetic daemon?',
-          'How does Kinetic per-host pricing work?',
           'What is included in MultiPass?',
+          'Tell me about Valkyrie pentesting',
+          'How does the Sovereignty discount bundle work?',
           'Do you offer human SLAs?'
         ]
       };
@@ -336,7 +340,9 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       q.includes('praxis') ||
       q.includes('pureos') ||
       q.includes('axiom') ||
-      q.includes('argent')
+      q.includes('argent') ||
+      q.includes('eris') ||
+      q.includes('valkyrie')
     ) {
       return {
         topic: 'products',
@@ -349,13 +355,15 @@ Exultia provides security engineering tools designed for solo operators, securit
 2. **[Vantage (UVI)](/app/uvi):** Universal vulnerability feed synchronizing 110+ global registries (CISA KEV, NVD, GitHub Security Lab, historical UNIX CVEs).
 3. **[Kinetic](/account/subscription?product=kinetic):** Autonomous zero-downtime hotfix stream and sub-second deterministic rollback engine ($49/host/mo Pro, 1 host free forever).
 4. **[Argent](/argent):** Multi-distro vendor patch bundle stream and errata feed with native package manager automation.
-5. **[Praxis](/app/praxis):** Surgical CVE remediation compiler translating raw advisories into hardened bash scripts and Ansible playbooks.
-6. **[PureOS](/products/pureos):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
-7. **[Axiom](/products/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
-8. **[Research Wiki](/wiki):** Interactive documentation, API references, and full ecosystem simulators.`,
+5. **[Praxis](/app/praxis):** Autonomous zero-downtime hotpatching daemon, rolling canary engine & hardware firewall ACL generator.
+6. **[PureOS](/products/pure-os):** Pre-hardened CIS Docker/OCI container images continuously synchronized with active CVE feeds.
+7. **[Axiom](/app/axiom):** Cybersecurity certification prep platform (Security+, CEH, CISSP) with Enterprise LMS REST API.
+8. **[Eris](/app/eris):** Goddess of chaos & strife — adversary emulation, intentional vulnerability proving ground & 5-container test range. Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts.
+9. **[Valkyrie](/app/valkyrie):** On-demand penetration testing & exploitability verification bridge correlated directly with Vantage CVE feeds and Praxis hotpatching. Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts.
+10. **[Research Wiki](/wiki):** Interactive documentation, API references, and full ecosystem simulators.`,
         suggestions: [
-          'How does Kinetic per-host pricing work?',
-          'What is the Kinetic daemon install command?',
+          'How does the Sovereignty bundle discount work?',
+          'What is Valkyrie on-demand pentesting?',
           'What is included in MultiPass?',
           'Do you offer human SLAs?'
         ]
@@ -371,20 +379,21 @@ Exultia provides security engineering tools designed for solo operators, securit
 Hello! I am Exultia's autonomous technical support agent. Because Exultia is run as a focused **solo-operator engineering project**, I am here 24/7 to provide instant answers without putting our solo maintainer on the hook for routine inquiries.
 
 Here is what I can help you with immediately:
-- **Kinetic Per-Host Licensing:** 1 host free forever, Pro is $49/host/mo, Enterprise is $149/host/mo. (Ask me to calculate your fleet size!)
-- **Kinetic Daemon Installation:** Step-by-step \`curl\` bootstrap, systemd configuration, and distro support.
+- **Sovereignty Bundle Discounts:** 30% for 1 companion, 40% for 2 companions, and 50% if you buy all three (Vantage, Praxis, Eris, Valkyrie).
+- **Valkyrie Pentest On-Demand:** Trigger non-destructive BAS scans, verify Vantage CVE exploitability, and generate signed attestations.
+- **Eris Chaos Inoculation:** Compile reversible bash attack payloads with timed failsafe rollbacks.
 - **Deterministic Rollbacks:** \`sudo kinetic rollback --cve=...\` instructions and atomic snapshot mechanics.
 - **No Human SLAs Policy:** Transparent details on our automated self-hosted software model.
-- **Exultia Product Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Argent, and MultiPass bundles.
+- **Exultia Product Suite Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Eris, Valkyrie, and MultiPass bundles.
 - **API Tokens & Licensing:** Generating service keys and air-gapped licensing.
 
 What would you like assistance with?`,
-      suggestions: [
-        'How does Kinetic per-host pricing work?',
-        'What is the Kinetic daemon install command?',
-        'How do I execute a deterministic rollback?',
-        'Do you offer human 24/7 SLAs?'
-      ]
+        suggestions: [
+          'How does the Sovereignty discount bundle work?',
+          'Tell me about Valkyrie on-demand pentesting',
+          'How do I execute a deterministic rollback?',
+          'Do you offer human 24/7 SLAs?'
+        ]
     };
   }
 }

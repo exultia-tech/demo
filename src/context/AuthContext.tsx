@@ -18,7 +18,7 @@ export interface User {
   subscriptions: SubscribedProduct[];
 }
 
-export type ProductId = "pureide" | "uvi" | "axiom" | "praxis" | "pureos" | "kinetic" | "argent" | "eris";
+export type ProductId = "pureide" | "uvi" | "axiom" | "praxis" | "pureos" | "kinetic" | "argent" | "eris" | "valkyrie";
 
 export interface PaymentModalOptions {
   product: ProductId | string;

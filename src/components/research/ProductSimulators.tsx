@@ -28,7 +28,9 @@ import {
   PraxisIcon,
   PureOsIcon,
   AxiomIcon,
-  ArgentIcon
+  ArgentIcon,
+  ErisIcon,
+  ValkyrieIcon
 } from "@/components/BrandIcons";
 
 interface ProductSimulatorsProps {
@@ -1153,6 +1155,182 @@ impl PraxisK8sClient {
                 {log}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          ERIS CHAOS INOCULATOR SIMULATOR
+      ───────────────────────────────────────────────────────────── */}
+      {productId === "eris" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(245, 158, 11, 0.4)", padding: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <ErisIcon size={32} glow={false} />
+              <div>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#FBBF24" }}>
+                  Eris Intentional Vulnerability Inoculation &amp; Chaos Range
+                </h3>
+                <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
+                  Adversary emulation proving ground. Safely compile reproducible bash attack payloads with timed failsafe auto-rollback.
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "8px" }}>
+              <span style={{ background: "rgba(245, 158, 11, 0.15)", color: "#FDE047", border: "1px solid rgba(245, 158, 11, 0.3)", padding: "4px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                7+ CVE Scenarios
+              </span>
+              <span style={{ background: "rgba(34, 197, 94, 0.15)", color: "#86EFAC", border: "1px solid rgba(34, 197, 94, 0.3)", padding: "4px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                100% Reversible
+              </span>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(0, 0, 0, 0.4)", borderRadius: "12px", padding: "1.25rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.85rem", color: "#CBD5E1" }}>
+                Active Target: <strong style={{ color: "#FBBF24" }}>CVE-2024-6387 (SSH RegreSSHion)</strong>
+              </span>
+              <span style={{ fontSize: "0.85rem", color: "#94A3B8" }}>•</span>
+              <span style={{ fontSize: "0.85rem", color: "#CBD5E1" }}>
+                Failsafe Auto-Rollback: <strong style={{ color: "#34D399" }}>30 Minutes</strong>
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <Link
+                href="/app/eris"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "linear-gradient(135deg, #F59E0B, #DC2626)",
+                  color: "#FFFFFF",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  fontSize: "0.84rem",
+                  fontWeight: 700,
+                  textDecoration: "none"
+                }}
+              >
+                <span>🔥</span> Open Full Eris Chaos Lab
+              </Link>
+              <Link
+                href="/app/praxis?erisRemediate=true"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "rgba(34, 197, 94, 0.2)",
+                  border: "1px solid rgba(34, 197, 94, 0.4)",
+                  color: "#86EFAC",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  fontSize: "0.84rem",
+                  fontWeight: 700,
+                  textDecoration: "none"
+                }}
+              >
+                <span>⚡</span> Praxis Hotpatch Verification &rarr;
+              </Link>
+            </div>
+          </div>
+
+          <div style={{ background: "#020617", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "1.25rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem" }}>
+            <div style={{ color: "#94A3B8", marginBottom: "6px" }}># Eris Ephemeral Attack Range Compilation</div>
+            <div style={{ color: "#38BDF8", marginBottom: "4px" }}>$ curl -X POST https://exultia.tech/api/eris/generate -d &#39;&#123;&quot;cveId&quot;:&quot;CVE-2024-6387&quot;,&quot;failsafeMinutes&quot;:30&#125;&#39;</div>
+            <div style={{ color: "#34D399", marginBottom: "4px" }}>[OK] Synthesized non-destructive bash payload (SHA-256: e8b91a0c4f...)</div>
+            <div style={{ color: "#FBBF24", marginBottom: "4px" }}>[CHAOS] Injected artificial latency probe to test sshd race window (Safe simulation)</div>
+            <div style={{ color: "#86EFAC" }}>[FAILSAFE] Registered watchdog rollback timer at /etc/cron.d/eris_rollback (Reverts in 30m)</div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          VALKYRIE ON-DEMAND PENTEST SIMULATOR
+      ───────────────────────────────────────────────────────────── */}
+      {productId === "valkyrie" && (
+        <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(6, 182, 212, 0.4)", padding: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <ValkyrieIcon size={32} glow={false} />
+              <div>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#38BDF8" }}>
+                  Valkyrie On-Demand Pentest &amp; Exploitability Probes
+                </h3>
+                <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
+                  Breach &amp; attack simulation (BAS) mapped directly to Vantage CVE advisories with cryptographic attestation tokens.
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "8px" }}>
+              <span style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "4px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                Safe BAS Probes
+              </span>
+              <span style={{ background: "rgba(34, 197, 94, 0.15)", color: "#86EFAC", border: "1px solid rgba(34, 197, 94, 0.3)", padding: "4px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                SHA-256 Attested
+              </span>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(0, 0, 0, 0.4)", borderRadius: "12px", padding: "1.25rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.85rem", color: "#CBD5E1" }}>
+                Target Probe: <strong style={{ color: "#38BDF8" }}>VALK-SSH-01 (Insecure Handshake)</strong>
+              </span>
+              <span style={{ fontSize: "0.85rem", color: "#94A3B8" }}>•</span>
+              <span style={{ fontSize: "0.85rem", color: "#CBD5E1" }}>
+                Vantage Sync: <strong style={{ color: "#A855F7" }}>CVE-2024-6387 (CVSS 9.8)</strong>
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <Link
+                href="/app/valkyrie"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "linear-gradient(135deg, #06B6D4, #0284C7)",
+                  color: "#FFFFFF",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  fontSize: "0.84rem",
+                  fontWeight: 700,
+                  textDecoration: "none"
+                }}
+              >
+                <span>🎯</span> Launch Pentest Console
+              </Link>
+              <Link
+                href="/account/subscription?product=valkyrie"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "rgba(6, 182, 212, 0.15)",
+                  border: "1px solid rgba(6, 182, 212, 0.4)",
+                  color: "#67E8F9",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  fontSize: "0.84rem",
+                  fontWeight: 700,
+                  textDecoration: "none"
+                }}
+              >
+                <span>✨</span> Bundle Discount (30-50% Off)
+              </Link>
+            </div>
+          </div>
+
+          <div style={{ background: "#020617", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "1.25rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem" }}>
+            <div style={{ color: "#94A3B8", marginBottom: "6px" }}># Valkyrie Live BAS Probe Execution</div>
+            <div style={{ color: "#38BDF8", marginBottom: "4px" }}>$ curl -X POST https://exultia.tech/api/valkyrie/probe -d &#39;&#123;&quot;vectorId&quot;:&quot;VALK-SSH-01&quot;,&quot;targetUrl&quot;:&quot;https://localhost:22&quot;&#125;&#39;</div>
+            <div style={{ color: "#34D399", marginBottom: "4px" }}>[PROBE] Sent non-destructive SSH version handshake to localhost:22</div>
+            <div style={{ color: "#67E8F9", marginBottom: "4px" }}>[RESULT] Banner: OpenSSH_9.6p1 • Exploit vector mitigated by drop-in config</div>
+            <div style={{ color: "#86EFAC" }}>[ATTESTATION] Signed token: VALK-20261024-PASS (HMAC-SHA256 verified)</div>
           </div>
         </div>
       )}

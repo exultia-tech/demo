@@ -7,7 +7,9 @@ import {
   VantageIcon, 
   PraxisIcon, 
   PureOsIcon, 
-  AxiomIcon 
+  AxiomIcon,
+  ErisIcon,
+  ValkyrieIcon
 } from "@/components/BrandIcons";
 import ProductSimulators from "@/components/research/ProductSimulators";
 import { 
@@ -552,6 +554,178 @@ const WIKI_PRODUCTS: ProductWiki[] = [
           }
         ],
         curlExample: 'curl -s "https://exultia.tech/api/pureos/images"'
+      }
+    ]
+  },
+  {
+    id: "eris",
+    name: "Eris",
+    tagline: "Adversary Emulation, Intentional Vulnerability Proving Ground & Chaos Inoculation Lab",
+    icon: <ErisIcon size={36} glow={false} />,
+    accentColor: "#F59E0B",
+    specDoc: "eris.md",
+    quickStart: {
+      title: "Simulating Real-World Attack Vectors & Stress Testing",
+      description: "Generate self-contained reproducible bash/curl attack payloads with automated timed failsafe rollbacks.",
+      steps: [
+        {
+          label: "1. Query Eris Inoculation Catalog",
+          command: "curl -s \"https://exultia.tech/api/eris/inoculate\" | jq .",
+          codeLang: "bash",
+          details: "Inspect active CVE chaos scenarios (SSH RegreSSHion, XZ Backdoor, CUPS RCE, Log4Shell)."
+        },
+        {
+          label: "2. Compile Safe Verification Script",
+          command: "curl -X POST \"https://exultia.tech/api/eris/generate\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"cveId\": \"CVE-2024-6387\", \"intensity\": \"moderate\", \"failsafeMinutes\": 30}' \\\n  | jq -r .scriptContent > test_cve.sh",
+          codeLang: "bash",
+          details: "Generates idempotent, non-destructive test script with built-in rollback."
+        },
+        {
+          label: "3. Run Isolated Docker Compose Attack Range",
+          command: "docker compose -f range/docker-compose.yml up -d",
+          codeLang: "bash",
+          details: "Spins up 5-container attack simulation range for SOC/SIEM alert verification."
+        }
+      ]
+    },
+    productDetails: {
+      overview: "Named after the goddess of chaos and strife, Eris safely introduces deterministic real-world vulnerability scenarios into isolated test ranges to verify endpoint defenses, SIEM alerts, and Praxis autonomous remediation routines.",
+      architectureTitle: "Deterministic Chaos & Inoculation Engine",
+      architecturePoints: [
+        "7+ Canonical CVE Scenarios: SSH RegreSSHion (CVE-2024-6387), XZ Utils Backdoor (CVE-2024-3094), CUPS Remote Code Execution (CVE-2024-47176), Log4Shell (CVE-2021-44228), and more.",
+        "Guaranteed Reversibility: Every chaos inoculation script compiles with a cryptographically paired rollback routine and configurable failsafe auto-revert timer.",
+        "Multi-Container Docker Range: Ephemeral 5-container topology spanning target hosts, canary proxies, and mock C2 logging nodes.",
+        "Praxis Closed-Loop Bridge: Seamlessly trigger Praxis hotpatching to verify real-time mitigation against active attack vectors."
+      ],
+      capabilities: [
+        { title: "Failsafe Timed Auto-Rollback", desc: "Automated cron/systemd watchdog reverts mutations after test window (10m, 30m, 60m)." },
+        { title: "Raw Bash & Container Payloads", desc: "Download self-contained shell scripts or run in isolated Docker Compose attack ranges." },
+        { title: "Vantage Live Sync", desc: "Inoculation vectors stay synchronized with the latest Vantage KEV and high-severity feeds." }
+      ],
+      specifications: [
+        { label: "Chaos Scenarios", value: "7+ active CVE modules & multi-container compose ranges" },
+        { label: "Rollback Guarantee", value: "100% deterministic SHA-256 pre-image snapshots" },
+        { label: "Bundle Eligibility", value: "30% (1 companion), 40% (2 companions), 50% (all three)" }
+      ]
+    },
+    apiEndpoints: [
+      {
+        method: "GET",
+        path: "/api/eris/inoculate",
+        summary: "Catalog of all registered intentional vulnerability inoculation modules",
+        authRequired: false,
+        responses: [
+          {
+            status: 200,
+            description: "Active inoculation vectors",
+            example: { count: 7, modules: [{ cveId: "CVE-2024-6387", name: "RegreSSHion Ingress Race Condition", severity: "CRITICAL" }] }
+          }
+        ],
+        curlExample: 'curl -s "https://exultia.tech/api/eris/inoculate"'
+      },
+      {
+        method: "POST",
+        path: "/api/eris/generate",
+        summary: "Synthesize executable bash inoculation payload with failsafe rollback timer",
+        authRequired: false,
+        requestBody: {
+          description: "Target CVE ID and rollback configuration",
+          schema: { cveId: "string", intensity: "string", failsafeMinutes: 30 }
+        },
+        responses: [
+          {
+            status: 200,
+            description: "Generated verification script",
+            example: { status: "success", scriptContent: "#!/usr/bin/env bash\n# Eris Inoculator..." }
+          }
+        ],
+        curlExample: 'curl -X POST "https://exultia.tech/api/eris/generate" -H "Content-Type: application/json" -d \'{"cveId":"CVE-2024-6387","intensity":"moderate"}\''
+      }
+    ]
+  },
+  {
+    id: "valkyrie",
+    name: "Valkyrie",
+    tagline: "On-Demand Breach & Attack Simulation, Vantage CVE Probes & Exploitability Verification",
+    icon: <ValkyrieIcon size={36} glow={false} />,
+    accentColor: "#06B6D4",
+    specDoc: "valkyrie.md",
+    quickStart: {
+      title: "On-Demand Penetration Testing in 60 Seconds",
+      description: "Trigger non-destructive BAS pentest probes mapped directly to Vantage CVE advisories, generating cryptographic attestation signatures and instant Praxis hotpatch recommendations.",
+      steps: [
+        {
+          label: "1. List Active Pentest Vectors",
+          command: "curl -s \"https://exultia.tech/api/valkyrie/probe\" | jq .",
+          codeLang: "bash",
+          details: "Inspect available attack vector modules (SSH handshake, HTTP header injection, TLS weak ciphers)."
+        },
+        {
+          label: "2. Execute On-Demand Host Probe",
+          command: "curl -X POST \"https://exultia.tech/api/valkyrie/probe\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"vectorId\": \"VALK-SSH-01\", \"targetUrl\": \"https://localhost:22\", \"intensity\": \"safe\"}'",
+          codeLang: "bash",
+          details: "Runs safe non-destructive verification check against specified endpoint."
+        },
+        {
+          label: "3. Export Cryptographic Attestation Token",
+          command: "curl -s \"https://exultia.tech/api/valkyrie/attestation?scanId=VALK-20261024-A1B2C3\" | jq .",
+          codeLang: "bash",
+          details: "Produces signed SHA-256 pentest attestation record for compliance audits."
+        }
+      ]
+    },
+    productDetails: {
+      overview: "Valkyrie is an enterprise on-demand breach and attack simulation (BAS) module that verifies whether vulnerabilities detected in your Vantage threat feed are truly exploitable in your active network and workload environments.",
+      architectureTitle: "Exploitability Verification & Attestation Architecture",
+      architecturePoints: [
+        "Safe Canary Probes: Non-destructive banner, protocol handshake, and fuzzing checks that verify exploit paths without causing service downtime.",
+        "Direct Vantage Correlation: Binds target CVE intelligence directly to real-time endpoint attack surface telemetry.",
+        "Bi-Directional Praxis Bridge: One click generates verified Praxis hotpatches to seal verified exploitable vectors.",
+        "Eris Attack Reproduction: Instant bridge to spin up isolated Eris chaos test containers replicating the exact vulnerable state."
+      ],
+      capabilities: [
+        { title: "On-Demand Pentest Engine", desc: "Perform immediate targeted security scans against specific CVEs across hosts, containers, and web endpoints." },
+        { title: "Cryptographic Attestation", desc: "Every scan outputs a SHA-256 signed attestation token for audit readiness (SOC 2, ISO 27001)." },
+        { title: "Sovereignty Bundle Member", desc: "Unlocks 30%, 40%, or 50% discount savings when bundled with Vantage, Praxis, and Eris." }
+      ],
+      specifications: [
+        { label: "Supported Attack Vectors", value: "SSH, HTTP/REST, TLS/SSL, DNS, Docker Socket, Kubernetes API" },
+        { label: "Attestation Algorithm", value: "HMAC-SHA256 with timestamped cryptographic nonce" },
+        { label: "Bundle Tier", value: "30% (1 companion), 40% (2 companions), 50% (all three)" }
+      ]
+    },
+    apiEndpoints: [
+      {
+        method: "GET",
+        path: "/api/valkyrie/probe",
+        summary: "Query available pentest vectors and recent verification scan records",
+        authRequired: false,
+        responses: [
+          {
+            status: 200,
+            description: "Vectors catalog and scan history",
+            example: { count: 5, vectors: [{ id: "VALK-SSH-01", name: "SSH Insecure Banner & Protocol Handshake", severity: "HIGH" }] }
+          }
+        ],
+        curlExample: 'curl -s "https://exultia.tech/api/valkyrie/probe"'
+      },
+      {
+        method: "POST",
+        path: "/api/valkyrie/probe",
+        summary: "Execute simulated breach and attack verification scan against a target endpoint",
+        authRequired: false,
+        requestBody: {
+          description: "Target probe vector and endpoint configuration",
+          schema: { vectorId: "string", targetUrl: "string", intensity: "safe" }
+        },
+        responses: [
+          {
+            status: 200,
+            description: "Verification scan results",
+            example: { status: "success", scanId: "VALK-20261024-A1B2C3", targetUrl: "https://localhost:22", result: "PASSED_HARDENED" }
+          }
+        ],
+        curlExample: 'curl -X POST "https://exultia.tech/api/valkyrie/probe" -H "Content-Type: application/json" -d \'{"vectorId":"VALK-SSH-01","targetUrl":"https://localhost:22","intensity":"safe"}\''
       }
     ]
   }

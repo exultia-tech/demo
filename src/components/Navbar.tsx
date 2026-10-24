@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -110,8 +110,13 @@ export default function Navbar() {
     pathname.startsWith("/app/crucible")
   );
 
+  const isValkyrieContext = !isIsolated && (
+    pathname.startsWith("/app/valkyrie") ||
+    pathname.startsWith("/products/valkyrie")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -200,7 +205,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext ? "active" : ""}`}
+                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -391,6 +396,34 @@ export default function Navbar() {
                           <span style={{ fontSize: "0.6rem", background: "rgba(245, 158, 11, 0.2)", color: "#FBBF24", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>CHAOS LAB / RANGE</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Goddess of chaos &amp; strife: adversary emulation, intentional vulnerabilities &amp; test containers</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 8: Valkyrie (On-Demand Pentest & Exploitability Verification) */}
+                    <Link 
+                      href="/app/valkyrie" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isValkyrieContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <ValkyrieIcon size={32} glow={false} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Valkyrie
+                          <span style={{ fontSize: "0.6rem", background: "rgba(6, 182, 212, 0.2)", color: "#67E8F9", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>PENTEST ON-DEMAND</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>On-demand breach &amp; attack simulation, Vantage CVE probes &amp; verification</div>
                       </div>
                     </Link>
 
@@ -927,6 +960,41 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
                 <span>⚡</span> Remediate in Praxis &rarr;
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 8: VALKYRIE SUBMENU */}
+          {isValkyrieContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <ValkyrieIcon size={16} glow={false} />
+                Valkyrie Pentest
+              </span>
+
+              <Link 
+                href="/app/valkyrie" 
+                className={`submenu-link ${pathname === "/app/valkyrie" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                🎯 Pentest Console
+              </Link>
+              <Link 
+                href="/app/praxis?valkyrieVerify=true" 
+                className="submenu-link"
+                style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>⚡</span> Hotpatch in Praxis &rarr;
+              </Link>
+              <Link 
+                href="/app/eris" 
+                className="submenu-link"
+                style={{ color: "#FBBF24", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>🔥</span> Inoculate in Eris &rarr;
+              </Link>
+              <Link 
+                href="/account/subscription?product=valkyrie" 
+                className="submenu-link"
+                style={{ color: "#67E8F9", fontWeight: 700 }}>
+                Bundle Plans (30-50% Off)
               </Link>
             </div>
           )}

@@ -77,33 +77,60 @@ export interface ErisDiscountResolution {
   qualifyingProducts: string[];
   hasVantage: boolean;
   hasPraxis: boolean;
+  hasValkyrie?: boolean;
 }
 
 /**
- * Calculates the exact discount percentage for Eris based on existing ownership.
- * - 20% discount if the user already has Vantage.
- * - 40% discount if the user has Vantage AND Praxis.
+ * Calculates the exact discount percentage for Eris/Valkyrie based on existing companion ownership:
+ * - 30% discount if customer has 1 companion product (e.g. Vantage)
+ * - 40% discount if customer has 2 companion products (e.g. Vantage + Praxis)
+ * - 50% discount if customer has all 3 companion products (Vantage + Praxis + Valkyrie)
  */
-export function calculateErisDiscount(hasVantage: boolean, hasPraxis: boolean): ErisDiscountResolution {
-  if (hasVantage && hasPraxis) {
+export function calculateErisDiscount(
+  hasVantage: boolean, 
+  hasPraxis: boolean, 
+  hasValkyrie: boolean = false
+): ErisDiscountResolution {
+  const qualifying: string[] = [];
+  if (hasVantage) qualifying.push("Vantage");
+  if (hasPraxis) qualifying.push("Praxis");
+  if (hasValkyrie) qualifying.push("Valkyrie");
+
+  const count = qualifying.length;
+
+  if (count >= 3) {
     return {
-      discountPercent: 40,
-      discountMultiplier: 0.6,
-      discountLabel: "40% Sovereignty Trinity Bundle Discount (Vantage + Praxis + Eris)",
-      qualifyingProducts: ["Vantage", "Praxis"],
-      hasVantage: true,
-      hasPraxis: true
+      discountPercent: 50,
+      discountMultiplier: 0.5,
+      discountLabel: "50% Complete Sovereignty Quad Bundle Discount (All 3 Companions Active)",
+      qualifyingProducts: qualifying,
+      hasVantage,
+      hasPraxis,
+      hasValkyrie
     };
   }
 
-  if (hasVantage) {
+  if (count === 2) {
     return {
-      discountPercent: 20,
-      discountMultiplier: 0.8,
-      discountLabel: "20% Threat Intelligence Bundle Discount (Vantage + Eris)",
-      qualifyingProducts: ["Vantage"],
-      hasVantage: true,
-      hasPraxis: false
+      discountPercent: 40,
+      discountMultiplier: 0.6,
+      discountLabel: `40% Sovereignty Trinity Bundle Discount (${qualifying.join(" + ")})`,
+      qualifyingProducts: qualifying,
+      hasVantage,
+      hasPraxis,
+      hasValkyrie
+    };
+  }
+
+  if (count === 1) {
+    return {
+      discountPercent: 30,
+      discountMultiplier: 0.7,
+      discountLabel: `30% Threat Defense Bundle Discount (${qualifying[0]} + Eris)`,
+      qualifyingProducts: qualifying,
+      hasVantage,
+      hasPraxis,
+      hasValkyrie
     };
   }
 
@@ -113,7 +140,8 @@ export function calculateErisDiscount(hasVantage: boolean, hasPraxis: boolean): 
     discountLabel: "Standard Rate",
     qualifyingProducts: [],
     hasVantage: false,
-    hasPraxis: hasPraxis
+    hasPraxis: false,
+    hasValkyrie: false
   };
 }
 
@@ -126,13 +154,14 @@ export interface CalculatedPrice {
 }
 
 /**
- * Computes the final price for an Eris tier after applying Vantage/Praxis bundle discounts.
+ * Computes the final price for an Eris tier after applying bundle discounts.
  */
 export function getErisPrice(
   tier: "community" | "pro" | "enterprise",
   cycle: "monthly" | "annual",
   hasVantage: boolean,
-  hasPraxis: boolean
+  hasPraxis: boolean,
+  hasValkyrie: boolean = false
 ): CalculatedPrice {
   const tierConfig = ERIS_BASE_TIERS.find(t => t.tier === tier);
   if (!tierConfig || tier === "community") {
@@ -146,7 +175,7 @@ export function getErisPrice(
   }
 
   const basePrice = cycle === "annual" ? tierConfig.baseAnnual : tierConfig.baseMonthly;
-  const { discountPercent, discountMultiplier } = calculateErisDiscount(hasVantage, hasPraxis);
+  const { discountPercent, discountMultiplier } = calculateErisDiscount(hasVantage, hasPraxis, hasValkyrie);
 
   if (discountPercent === 0) {
     return {
@@ -171,3 +200,4 @@ export function getErisPrice(
     isDiscounted: true
   };
 }
+
