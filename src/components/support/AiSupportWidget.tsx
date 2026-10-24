@@ -42,20 +42,23 @@ export default function AiSupportWidget() {
       id: "msg-welcome",
       role: "assistant",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      text: `### 🤖 Exultia Autonomous AI Sentinel
+      text: `### 🛡️ Exultia Autonomous Cyber Sentinel
 
-Welcome! I am Exultia's **24/7 autonomous support agent**. Because Exultia is operated as an independent **solo-engineer security lab**, I handle routine technical questions, installation commands, host count calculations, and configuration troubleshooting instantly.
+Welcome! I am Exultia's **24/7 technical intelligence sentinel**. I provide instant architectural answers, CLI commands, hotpatching verification, pricing calculations, and deep-dive technical skepticism responses for the **7-engine unified cyber sovereignty platform**.
 
-- **Praxis Pricing:** 1 host free forever, Pro is $49/mo, Enterprise is $499/mo.
-- **Zero Human SLAs:** All tools are self-service, deterministic, and self-hosted.
-- **Rollbacks:** Sub-second atomic recovery via \`sudo praxis rollback\`.
+- **Unified Platform Pricing:** $0 Community (1 host), $59/mo Pro (all 7 engines, 10 hosts), $399/mo Enterprise (unlimited air-gap nodes).
+- **Zero Telemetry:** Strict outbound silence with zero vendor beacons or phone-home telemetry.
+- **Closed-Loop OODA:** Autonomous detection to deterministic eBPF hotpatching in <250ms.
+- **Instant Rollbacks:** 14ms atomic rollbacks via \`sudo kinetic rollback --latest\`.
 
-Click any suggested question below or ask me anything!`,
+Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me below or inspect our [**Interactive FAQ Directory**](/faq)!`,
       suggestions: [
-        "How does Praxis autonomous hotpatching work?",
-        "What is the Praxis daemon install command?",
-        "How do I execute a deterministic rollback?",
-        "Do you offer human 24/7 SLAs?"
+        "How does the closed-loop defense work?",
+        "Is in-memory hotpatching safe?",
+        "What is included in the $59/mo platform plan?",
+        "How do I execute a 14ms rollback?",
+        "Why zero outbound telemetry?",
+        "Where is the full FAQ directory?"
       ]
     }
   ]);
@@ -116,9 +119,9 @@ Click any suggested question below or ask me anything!`,
       const errorMsg: ChatMessage = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        text: "⚠️ I encountered an error connecting to the support engine. Please verify your connection or review our [Pricing & Plans page](/account/subscription) and [Systems Research Lab](/research).",
+        text: "⚠️ I encountered an error connecting to the support engine. Please verify your connection or review our [Pricing & Plans page](/account/subscription), [Interactive FAQ](/faq), and [Systems Research Lab](/research).",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        suggestions: ["How does Praxis autonomous hotpatching work?", "Do you offer human 24/7 SLAs?"]
+        suggestions: ["How does the closed-loop defense work?", "Where is the full FAQ directory?"]
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -424,7 +427,7 @@ Click any suggested question below or ask me anything!`,
                 </span>
               </div>
               <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
-                Solo-operator instant technical answers
+                7-Engine Technical Defense Intel
               </div>
             </div>
           </button>
@@ -486,7 +489,7 @@ Click any suggested question below or ask me anything!`,
                   }} />
                 </div>
                 <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
-                  Autonomous Solo-Operator Support (No Human SLAs)
+                  Autonomous Technical Intel & FAQ Sentinel
                 </div>
               </div>
             </div>
@@ -648,7 +651,7 @@ Click any suggested question below or ask me anything!`,
             >
               <input
                 type="text"
-                placeholder="Ask about Praxis hotpatching, rollbacks, installs..."
+                placeholder="Ask about 7 engines, closed-loop OODA, hotpatch safety, FAQ..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 style={{
@@ -689,14 +692,24 @@ Click any suggested question below or ask me anything!`,
               fontSize: "0.68rem",
               color: "#64748B"
             }}>
-              <span>Solo-operator tooling • Provided as-is</span>
-              <Link 
-                href="/account/subscription" 
-                onClick={() => setIsOpen(false)}
-                style={{ color: "#38BDF8", textDecoration: "none", display: "flex", alignItems: "center", gap: "3px" }}
-              >
-                View Plans <ExternalLink size={9} />
-              </Link>
+              <span>Air-gapped • Zero telemetry</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Link 
+                  href="/faq" 
+                  onClick={() => setIsOpen(false)}
+                  style={{ color: "#38BDF8", textDecoration: "none", display: "flex", alignItems: "center", gap: "3px" }}
+                >
+                  FAQ <ExternalLink size={9} />
+                </Link>
+                <span>•</span>
+                <Link 
+                  href="/account/subscription" 
+                  onClick={() => setIsOpen(false)}
+                  style={{ color: "#38BDF8", textDecoration: "none", display: "flex", alignItems: "center", gap: "3px" }}
+                >
+                  Plans <ExternalLink size={9} />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

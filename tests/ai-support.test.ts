@@ -164,4 +164,58 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
       expect(data.error).toBeDefined();
     });
   });
+
+  describe('9. Technical Skepticism & Safety Assurance', () => {
+    it('should answer in-memory hotpatching safety queries with verified engineering proofs', () => {
+      const res = AiSupportEngine.processQuery('Is in-memory hotpatching safe for production?');
+      expect(res.topic).toBe('skepticism');
+      expect(res.reply).toMatch(/trampoline|atomic swap|eBPF/i);
+      expect(res.reply).toContain('14ms');
+      expect(res.reply).toContain('/faq');
+      expect(res.suggestions.length).toBeGreaterThan(0);
+    });
+
+    it('should refute accusations of being a mere iptables wrapper', () => {
+      const res = AiSupportEngine.processQuery('Are you just an iptables or nftables wrapper?');
+      expect(res.topic).toBe('skepticism');
+      expect(res.reply).toMatch(/XDP|eBPF|kernel|layer 7/i);
+      expect(res.reply).toContain('/faq');
+    });
+
+    it('should address skepticism regarding the $59/mo price reality', () => {
+      const res = AiSupportEngine.processQuery('How can all 7 engines only cost $59/mo? Is it a toy?');
+      expect(res.topic).toBe('skepticism');
+      expect(res.reply).toMatch(/solo security researcher|automated|enterprise/i);
+      expect(res.reply).toContain('$59');
+    });
+  });
+
+  describe('10. Zero Telemetry & Privacy Guarantees', () => {
+    it('should explain zero outbound telemetry architecture and air-gap support', () => {
+      const res = AiSupportEngine.processQuery('How does zero outbound telemetry work?');
+      expect(res.topic).toBe('zero-telemetry');
+      expect(res.reply).toMatch(/zero outbound telemetry|air-gapped/i);
+      expect(res.reply).toMatch(/pull-only|inbound/i);
+      expect(res.reply).toContain('/faq');
+    });
+  });
+
+  describe('11. Closed-Loop Autonomous OODA Defense', () => {
+    it('should detail the 4-stage closed-loop defense cycle in <250ms', () => {
+      const res = AiSupportEngine.processQuery('Explain how closed-loop defense works');
+      expect(res.topic).toBe('closed-loop');
+      expect(res.reply).toMatch(/Observe.*Orient.*Decide.*Act/is);
+      expect(res.reply).toContain('250ms');
+      expect(res.reply).toContain('/faq');
+    });
+  });
+
+  describe('12. Interactive FAQ Navigation', () => {
+    it('should direct users to the comprehensive 16-question FAQ page', () => {
+      const res = AiSupportEngine.processQuery('Where is the full FAQ directory?');
+      expect(res.topic).toBe('faq');
+      expect(res.reply).toContain('/faq');
+      expect(res.reply).toMatch(/16|skepticism|architecture/i);
+    });
+  });
 });

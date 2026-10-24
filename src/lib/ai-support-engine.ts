@@ -15,7 +15,7 @@ export interface SupportChatMessage {
 export interface SupportResponse {
   reply: string;
   suggestions: string[];
-  topic: 'sla' | 'kinetic-pricing' | 'installation' | 'rollback' | 'products' | 'multipass' | 'tokens' | 'general';
+  topic: 'sla' | 'kinetic-pricing' | 'installation' | 'rollback' | 'products' | 'multipass' | 'tokens' | 'general' | 'skepticism' | 'zero-telemetry' | 'closed-loop' | 'faq';
   timestamp: string;
 }
 
@@ -330,7 +330,151 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       };
     }
 
-    // 7. General Products Overview
+    // 7. Technical Skepticism & Safety Doubts
+    if (
+      q.includes('safe') ||
+      q.includes('safety') ||
+      q.includes('corrupt') ||
+      q.includes('wrapper') ||
+      q.includes('iptables') ||
+      q.includes('nftables') ||
+      q.includes('trivy') ||
+      q.includes('suricata') ||
+      q.includes('clamav') ||
+      q.includes('why so cheap') ||
+      q.includes('suspicious') ||
+      q.includes('toy') ||
+      q.includes('cost $59') ||
+      q.includes('$59') ||
+      q.includes('why trust') ||
+      q.includes('trust exultia') ||
+      q.includes('custom logic') ||
+      q.includes('break application') ||
+      q.includes('in-memory') ||
+      q.includes('hotpatch safe') ||
+      q.includes('memory safety') ||
+      q.includes('skeptic')
+    ) {
+      return {
+        topic: 'skepticism',
+        timestamp: now,
+        reply: `### 🛡️ Direct Answers to Technical Skepticism
+
+We welcome critical engineering scrutiny. Here is how our architecture guarantees safety:
+
+#### 1. In-Memory Hotpatch Safety (Zero Memory Corruption)
+Praxis does not execute arbitrary byte overwrites. It compiles deterministic trampoline micro-hooks targeting solely the vulnerable logic (such as input sanitizers or URI argument decoders). Before injection, a mandatory atomic snapshot is recorded in \`/var/lib/kinetic/snapshots/\`. If any process fault occurs, an automatic 14ms rollback restores baseline state instantly.
+
+#### 2. Not an Open-Source or iptables Wrapper
+While Vantage ingests public registries (CISA KEV, NIST NVD), our kinetic remediation stack is 100% proprietary systems code. Praxis compiles in-memory trampolines with eBPF & XDP kernel hooks at Layer 7 rather than simple packet-dropping iptables or nftables wrappers. Valkyrie executes non-destructive HMAC-signed canary handshakes; Eris provisions isolated 5-container Docker ranges with 10-minute auto-destruct watchdogs; and PureIDE provides an air-gapped hermetic compiler. Open-source scanners only alert you; Exultia autonomously remediates.
+
+#### 3. Why $59/mo Is Real and Not a Toy
+Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. You pay for pure systems security engineering.
+
+Read full technical proofs on our [Frequently Asked Questions & Skepticism page](/faq).`,
+        suggestions: [
+          'How does the closed-loop defense work?',
+          'Why zero outbound telemetry?',
+          'What is the deterministic rollback command?',
+          'View FAQ & Skepticism Deep-Dive'
+        ]
+      };
+    }
+
+    // 8. Zero Telemetry & Airgap Privacy
+    if (
+      q.includes('telemetry') ||
+      q.includes('phone home') ||
+      q.includes('exfiltrat') ||
+      q.includes('privacy') ||
+      q.includes('offline') ||
+      q.includes('airgap') ||
+      q.includes('air-gap')
+    ) {
+      return {
+        topic: 'zero-telemetry',
+        timestamp: now,
+        reply: `### 🔒 Exultia Unidirectional "Zero Telemetry" Architecture
+
+Exultia is engineered for strict sovereign privacy:
+- ❌ **Zero Outbound Data Exfiltration:** Your proprietary source code, internal host IP addresses, system topology, and diagnostic logs never leave your network. Zero outbound telemetry.
+- 📡 **Unidirectional HTTPS Pull-only:** Daemons update threat definitions by pulling static, cryptographically signed JSON manifests over public CDNs (identical to \`apt update\`). Pull-only inbound synchronization, zero beaconing.
+- 🛡️ **Air-Gapped Operation:** In classified or SCIF environments, offline \`.bundle\` files can be transferred across data diodes with offline Cosign signature verification.
+- 💻 **PureIDE Workstation Isolation:** Network egress is blocked at the kernel cgroup boundary during compilation tasks.
+
+Learn more on our [FAQ & Skepticism page](/faq).`,
+        suggestions: [
+          'Can Exultia run in an air-gapped SCIF?',
+          'How does the closed-loop defense work?',
+          'Is in-memory hotpatching safe?',
+          'What is included in the $59/mo platform plan?'
+        ]
+      };
+    }
+
+    // 9. Closed-Loop OODA Defense Model
+    if (
+      q.includes('closed loop') ||
+      q.includes('closed-loop') ||
+      q.includes('ooda') ||
+      q.includes('how it works') ||
+      q.includes('how does it work') ||
+      q.includes('4 stages') ||
+      q.includes('proving ground') ||
+      q.includes('defense cycle')
+    ) {
+      return {
+        topic: 'closed-loop',
+        timestamp: now,
+        reply: `### ⚡ The Exultia Closed-Loop Defense Engine (OODA)
+
+Traditional tools separate detection, testing, and remediation into disconnected silos. Exultia unifies them into an autonomous closed loop in under 250ms:
+
+1. **Stage 1 (Observe - Vantage):** Ingests zero-day threat advisories from 110+ authoritative registries (CISA KEV, NIST, Linux vendor errata).
+2. **Stage 2 (Orient - Eris):** Programmatically provisions an isolated 5-container Docker Compose range replicating adversary vulnerability conditions with a 10m auto-kill timer.
+3. **Stage 3 (Decide - Valkyrie):** Injects a safe, non-destructive canary probe containing signed HMAC-SHA256 tokens to prove exploitability without crashing services.
+4. **Stage 4 (Act - Praxis):** Synthesizes and applies an in-memory bytecode hotpatch in <40ms with zero daemon restart and 14ms atomic rollback.
+
+Complete Observe, Orient, Decide, and Act OODA cycle executes in <250ms. Test this live on the [Homepage Mission Deck](/) or read the [Architecture FAQ](/faq).`,
+        suggestions: [
+          'Is in-memory hotpatching safe?',
+          'How does Valkyrie prove exploitability safely?',
+          'What is the deterministic rollback command?',
+          'What is included in the $59/mo plan?'
+        ]
+      };
+    }
+
+    // 10. Dedicated FAQ Page Reference
+    if (
+      q.includes('faq') ||
+      q.includes('frequently asked') ||
+      q.includes('questions')
+    ) {
+      return {
+        topic: 'faq',
+        timestamp: now,
+        reply: `### 📚 Exultia Architecture & Skepticism FAQ (16 Verified Answers)
+
+We have a dedicated, searchable knowledge base answering all technical, architectural, and operational skepticism:
+
+- **In-Memory Safety:** How trampoline hooks and atomic register snapshots guarantee 14ms rollback.
+- **Proprietary Engineering:** Why Exultia is not a wrapper around Trivy, Suricata, or iptables.
+- **Fair Pricing:** Why our lean systems architecture enables $59/mo platform pricing.
+- **Air-Gap & Offline Support:** Data diode transfer protocols and Cosign signature verification.
+- **The 7 Sovereign Engines:** Complete breakdown of Vantage, Praxis, Eris, Valkyrie, PureIDE, PureOS, and Axiom.
+
+Explore the complete [Frequently Asked Questions & Skepticism page](/faq).`,
+        suggestions: [
+          'How does the closed-loop defense work?',
+          'Is in-memory hotpatching safe?',
+          'Why zero telemetry?',
+          'What is included in the $59/mo plan?'
+        ]
+      };
+    }
+
+    // 11. General Products Overview
     if (
       q.includes('product') ||
       q.includes('what do you do') ||
@@ -376,24 +520,23 @@ Exultia provides security engineering tools designed for solo operators, securit
       timestamp: now,
       reply: `### 🤖 Exultia Technical AI Support Sentinel
 
-Hello! I am Exultia's autonomous technical support agent. Because Exultia is run as a focused **solo-operator engineering project**, I am here 24/7 to provide instant answers without putting our solo maintainer on the hook for routine inquiries.
+Hello! I am Exultia's autonomous technical support agent. Because Exultia is run as a focused **solo-operator engineering project**, I am online 24/7 to provide instant answers without putting our solo maintainer on the hook for routine inquiries.
 
 Here is what I can help you with immediately:
-- **Sovereignty Bundle Discounts:** 30% for 1 companion, 40% for 2 companions, and 50% if you buy all three (Vantage, Praxis, Eris, Valkyrie).
-- **Valkyrie Pentest On-Demand:** Trigger non-destructive BAS scans, verify Vantage CVE exploitability, and generate signed attestations.
-- **Eris Chaos Inoculation:** Compile reversible bash attack payloads with timed failsafe rollbacks.
-- **Deterministic Rollbacks:** \`sudo kinetic rollback --cve=...\` instructions and atomic snapshot mechanics.
-- **No Human SLAs Policy:** Transparent details on our automated self-hosted software model.
-- **Exultia Product Suite Guidance:** PureIDE, Vantage, Praxis, PureOS, Axiom, Eris, Valkyrie, and MultiPass bundles.
-- **API Tokens & Licensing:** Generating service keys and air-gapped licensing.
+- **Unified Cyber Sovereignty Platform ($59/mo):** All 7 engines unlocked under one subscription with zero add-on fees.
+- **Closed-Loop Autonomous Defense:** Detect, emulate, verify, and hotpatch zero-days in under 40 milliseconds.
+- **Technical Skepticism & Safety:** Honest breakdowns of in-memory hotpatching, zero-telemetry architecture, and 14ms atomic rollbacks.
+- **Deterministic Rollback:** \`sudo kinetic rollback --cve=...\` instructions and snapshot mechanics.
+- **Self-Hosted Air-Gap Deployment:** Running offline daemons and Cosign SLSA Level 3 signed manifests.
+- **Knowledge Base & FAQ:** Explore our comprehensive [FAQ & Skepticism page](/faq).
 
 What would you like assistance with?`,
-        suggestions: [
-          'How does the Sovereignty discount bundle work?',
-          'Tell me about Valkyrie on-demand pentesting',
-          'How do I execute a deterministic rollback?',
-          'Do you offer human 24/7 SLAs?'
-        ]
+      suggestions: [
+        'How does the closed-loop defense work?',
+        'Is in-memory hotpatching safe?',
+        'What is included in the $59/mo platform plan?',
+        'How do I execute a deterministic rollback?'
+      ]
     };
   }
 }
