@@ -251,40 +251,40 @@ ansible-playbook -i inventory/hosts.ini kinetic-fleet-rollback.yml --extra-vars 
       q.includes('bundle') ||
       q.includes('all products') ||
       q.includes('suite') ||
+      q.includes('platform') ||
+      q.includes('unified') ||
+      q.includes('pricing') ||
+      q.includes('plans') ||
+      q.includes('tier') ||
       q.includes('everything')
     ) {
       return {
         topic: 'multipass',
         timestamp: now,
-        reply: `### ✨ Leeloo Dallas MultiPass: The All-Inclusive Suite
+        reply: `### 🛡️ Exultia Cyber Sovereignty Platform: Unified Pricing & 7-Engine Synergy
 
-MultiPass is the comprehensive bundle giving you access across the entire Exultia product ecosystem:
+Exultia has consolidated from piecemeal point products into a **singular, unified cyber defense platform**. One subscription unlocks all 7 interconnected engines with zero fragmented add-ons:
 
-#### 1. MultiPass Pro ($196/mo or $156/mo annual)
-Unlocks Pro-level access across all core tools:
-- **PureIDE Pro:** Isolated cloud compiler pipelines, egress firewall & automated CycloneDX SBOMs.
-- **Vantage Pro:** Workstation threat alerts, zero-day early warnings & 300 req/min API quota.
-- **Kinetic Pro:** Autonomous patch stream daemon & sub-second deterministic rollbacks.
-- **Praxis Pro:** Automated bash/Ansible hotfix generation & SIEM webhook payload exporters.
-- **PureOS Pro:** CIS hardened container images & cryptographic provenance.
-- **Axiom Pro:** Cybersecurity certification prep platform with 15,000+ question bank & exports.
-- **Eris Pro:** Adversary simulation lab, all 7+ CVE inoculation scenarios & 5-container attack range.
-- **Valkyrie Pro:** Unlimited on-demand pentesting scans, BAS canary vectors & Vantage exploitability verification.
+| Tier | Price (Annual) | Price (Monthly) | Core Value & Scope |
+| :--- | :--- | :--- | :--- |
+| **Community Sovereign** | **$0 / Free** | **$0** | Open-source threat feed (Vantage), 5 BAS canary probes (Valkyrie), 5 chaos modules (Eris), manual hotpatches (Praxis), local hermetic compiler (PureIDE), CIS base containers (PureOS), and full exam banks (Axiom). |
+| **Professional Operator** | **$59 / mo** ($708/yr) | **$79 / mo** | **Full Closed Loop:** Real-time threat feeds, autonomous hotpatch streaming daemon with sub-second rollbacks, complete 7+ CVE chaos lab & 5-container attack range, 10+ CVE pentest probes with SHA-256 attestations, cloud compiler runners, and verifiable certs. |
+| **Enterprise Fleet** | **$399 / mo** ($4,788/yr) | **$499 / mo** | **Fleet Scale & Compliance:** Multi-node fleet orchestration, commercial threat feeds, SIEM webhooks (Splunk/Sentinel/QRadar), Cosign SLSA Level 3 signed manifests, institutional LMS embedding (Canvas/Blackboard/Moodle) with SCORM/LTI, executive compliance reports, and priority SLA. |
 
-#### 2. MultiPass Enterprise ($595/mo or $495/mo annual)
-- Unlocks **all Enterprise features** across the stack.
-- Adds **Axiom Enterprise LMS API** (certification testing platform).
-- Adds **Eris Enterprise** (multi-node adversary orchestration & custom zero-day studio).
-- Adds **Valkyrie Enterprise** (multi-target fleet pentest orchestrator & zero-day payload vectors).
-- Phased multi-ring deployment orchestrator for Kinetic.
-- SLSA Level 3 signed manifests with Cosign OIDC.
-- 24/7 AI Support Agent & automated self-hosted test suites.
+#### The 7 Interconnected Engines:
+1. **Vantage:** Universal threat feed aggregating 110+ authoritative registries.
+2. **Praxis:** Autonomous zero-downtime hotpatching, canary rollouts, and hardware firewall ACLs.
+3. **Eris:** Adversary emulation, intentional vulnerability labs, and Docker test ranges.
+4. **Valkyrie:** On-demand penetration testing, safe BAS probes, and cryptographic attestation tokens.
+5. **PureIDE:** Hermetic compiler sandbox and workstation egress firewall.
+6. **PureOS:** CIS-hardened container images with automated CycloneDX SBOMs.
+7. **Axiom:** Operational cybersecurity certification simulator and institutional LMS API.
 
-You can activate MultiPass with preset plan options on the [Pricing & Plans page](/account/subscription?product=multipass).`,
+You can select your unified platform plan directly on the [Pricing & Plans page](/account/subscription).`,
         suggestions: [
-          'How does the Sovereignty discount bundle work?',
-          'What is included in Valkyrie Pro?',
-          'How do I execute a deterministic rollback?',
+          'What is included in Professional Operator?',
+          'How does the closed-loop defense work?',
+          'What is the deterministic rollback command?',
           'Where do I generate an API token?'
         ]
       };

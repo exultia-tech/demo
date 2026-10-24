@@ -90,14 +90,14 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
   });
 
   describe('5. MultiPass & Product Inquiries', () => {
-    it('should describe MultiPass Pro ($196) and MultiPass Enterprise ($595)', () => {
+    it('should describe unified platform tiers (Professional Operator and Enterprise Fleet)', () => {
       const res = AiSupportEngine.processQuery('What is included in MultiPass?');
       expect(res.topic).toBe('multipass');
-      expect(res.reply).toContain('$196');
-      expect(res.reply).toContain('$595');
+      expect(res.reply).toContain('$79');
+      expect(res.reply).toContain('$499');
       expect(res.reply).toContain('PureIDE');
       expect(res.reply).toContain('Vantage');
-      expect(res.reply).toContain('Kinetic');
+      expect(res.reply).toContain('Praxis');
     });
 
     it('should describe the complete product suite when asked for an overview', () => {

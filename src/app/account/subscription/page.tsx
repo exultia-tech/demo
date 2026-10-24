@@ -11,16 +11,23 @@ import {
   ArrowRight, 
   Zap, 
   Lock, 
-  Download, 
-  FileText, 
-  Activity, 
   HelpCircle,
   CreditCard,
   Building2,
   Cpu,
   CheckCircle2,
   Users,
-  RotateCcw
+  RotateCcw,
+  Terminal,
+  Layers,
+  Globe,
+  Shield,
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  FileCode2,
+  Crosshair,
+  Server
 } from "lucide-react";
 import { 
   PureIdeIcon, 
@@ -29,1354 +36,734 @@ import {
   PureOsIcon, 
   AxiomIcon,
   ErisIcon,
-  ValkyrieIcon
+  ValkyrieIcon,
+  ExultiaLogo
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
-import { calculateErisDiscount, getErisPrice } from "@/lib/eris-pricing";
-import { calculateBundleDiscount, getDiscountedProductPrice } from "@/lib/bundle-pricing";
-
-type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "eris" | "valkyrie" | "multipass";
-
-interface PlanItem {
-  tier: string;
-  name: string;
-  priceMonthly: number;
-  priceAnnual: number;
-  description: string;
-  features: string[];
-  cta: string;
-  isPopular: boolean;
-}
+import { EXULTIA_PLATFORM_TIERS, PlatformPricingTier, PlatformTierId } from "@/lib/bundle-pricing";
 
 function SubscriptionContent() {
   const searchParams = useSearchParams();
-  const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "eris", "valkyrie", "multipass"];
-  
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
-  const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
-    validProducts.includes(initialProduct) ? initialProduct : "pureide"
-  );
+  
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
-  
-  const isMultiPass = selectedProduct === "multipass";
-  const isPraxis = selectedProduct === "praxis";
-  const isEris = selectedProduct === "eris";
-  const isValkyrie = selectedProduct === "valkyrie";
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-  // Ownership detection for bundle discounts (Vantage = 'uvi', Praxis = 'praxis', Eris = 'eris', Valkyrie = 'valkyrie', MultiPass = all)
-  const hasVantageActual = getUserTier("uvi") !== "free" || getUserTier("multipass") !== "free";
-  const hasPraxisActual = getUserTier("praxis") !== "free" || getUserTier("multipass") !== "free";
-  const hasErisActual = getUserTier("eris") !== "free" || getUserTier("multipass") !== "free";
-  const hasValkyrieActual = getUserTier("valkyrie") !== "free" || getUserTier("multipass") !== "free";
-
-  const [previewVantage, setPreviewVantage] = useState<boolean | null>(null);
-  const [previewPraxis, setPreviewPraxis] = useState<boolean | null>(null);
-  const [previewEris, setPreviewEris] = useState<boolean | null>(null);
-  const [previewValkyrie, setPreviewValkyrie] = useState<boolean | null>(null);
-
-  const hasVantage = previewVantage !== null ? previewVantage : hasVantageActual;
-  const hasPraxis = previewPraxis !== null ? previewPraxis : hasPraxisActual;
-  const hasEris = previewEris !== null ? previewEris : hasErisActual;
-  const hasValkyrie = previewValkyrie !== null ? previewValkyrie : hasValkyrieActual;
-
-  const bundleTargetProduct = isValkyrie ? "valkyrie" : "eris";
-  const bundleDiscountInfo = calculateBundleDiscount(bundleTargetProduct, {
-    hasVantage,
-    hasPraxis,
-    hasEris,
-    hasValkyrie
-  });
-
-  useEffect(() => {
-    const prod = searchParams.get("product") as ProductKey;
-    if (prod && validProducts.includes(prod)) {
-      setSelectedProduct(prod);
-    }
-  }, [searchParams]);
-
-  const plans: Record<ProductKey, PlanItem[]> = {
-    pureide: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Zero-telemetry open-source workstation compiler for individual security researchers.",
-        features: [
-          "Single Local Developer Seat",
-          "Standard sandbox compiler triggers",
-          "Telemetry stripping engine",
-          "Local extension verification"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Priority compiler engine, dedicated build runner, and real-time egress firewall for single developers.",
-        features: [
-          "Everything in Community",
-          "Isolated cloud pipeline builds",
-          "Network egress sandboxing",
-          "Environment token isolation",
-          "Automated CycloneDX SBOMs"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Strict airgap signing, offline cryptographic cosign, and organization-wide volume entitlements.",
-        features: [
-          "Everything in Pro",
-          "Code-signing & EDR integrity",
-          "Custom enterprise role blueprints",
-          "Immutable binary encapsulation",
-          "Automated enterprise cloud build runners"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    uvi: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Web catalog access to vulnerability feeds with basic search.",
-        features: [
-          "Single User Browser Access",
-          "Web portal vulnerability search",
-          "CISA KEV & NVD CVE browsing",
-          "Standard CVSS score breakdowns"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Real-time threat feed streams, zero-day early warnings, and workstation risk vectors for individual analysts.",
-        features: [
-          "Everything in Community",
-          "Workstation & IDE specific exploit warnings",
-          "API rate limit: 300 requests/min"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise Commercial Feed",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Commercial redistributable feed, high-frequency webhook ingest, and raw STIX/TAXII/JSON feeds.",
-        features: [
-          "Everything in Pro",
-          "Commercial Redistributable Threat & Patch Feeds",
-          "Real-time Enterprise SIEM Webhooks (Splunk, Sentinel, QRadar)",
-          "Automated CISO Briefing Generator & Report Portal",
-          "Unlimited unmetered API quotas"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    praxis: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Up to 2 active nodes free forever, standard Vantage CVE sync, manual hotfix recipes, and firewall exports.",
-        features: [
-          "Up to 2 Active Nodes Free Forever",
-          "Standard Vantage CVE synchronization",
-          "Manual hotfix inspection & verification",
-          "Deterministic rollback recipes",
-          "Firewall & domain blocking generator (plain, JSON)"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Autonomous patch streaming daemon, sub-second deterministic rollback engine, pre-flight sentinels, and SIEM exports.",
-        features: [
-          "Everything in Community",
-          "Autonomous patch streaming daemon",
-          "Deterministic sub-second rollback engine",
-          "Automated pre & post-flight sentinels",
-          "Live canary health monitoring",
-          "Hardware firewall filters (Cisco, Palo Alto, Fortinet)",
-          "Automated bash/ansible patching payloads"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise Fleet",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Phased multi-ring deployment (Ring 0 -> Ring 1 -> Fleet), Ansible playbooks, SLSA Level 3 signed manifests, and fleet volume licenses.",
-        features: [
-          "Everything in Pro",
-          "Phased multi-ring deployment orchestrator",
-          "Cosign OIDC SLSA Level 3 signed manifests",
-          "Emergency fleet-wide rollback orchestrator",
-          "Organization Volume Entitlements (Fleet licenses)",
-          "Automated fleet audit runner & compliance matrix"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    pureos: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Standard CIS baselines and vulnerability scanning.",
-        features: [
-          "Single Developer Config Generation",
-          "Standard CIS baseline images",
-          "Public CVE vulnerability scans"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Zero-trust environments and cryptographic SBOM generation.",
-        features: [
-          "Everything in Community",
-          "Zero-trust hardened OS variants",
-          "Automated SBOM recipes",
-          "Advanced CI/CD integration templates"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Air-gapped compatibility and full compliance infrastructure.",
-        features: [
-          "Everything in Pro",
-          "Organization Volume Entitlements",
-          "Air-gapped deployment compatibility",
-          "Signed cryptographic provenance"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    axiom: [
-      {
-        tier: "free",
-        name: "Community",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Zero-cost cybersecurity certification exam simulator for individual self-study.",
-        features: [
-          "Single Student License",
-          "Standard exam question banks (Security+, CySA+, CC)",
-          "In-browser instant score feedback",
-          "Basic practice mode & domain review"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Student transcript export engine, verifiable certificates, and automated score sync API.",
-        features: [
-          "Everything in Community",
-          "Export Course History & Transcripts (CSV & JSON)",
-          "Printable Verifiable SHA-256 Certificates",
-          "Complete Score Transcripts & Objective Analytics",
-          "Programmatic Export REST API Query Access",
-          "No question bank limits or cooldown timers"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Institutional LMS",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Live LMS simulator embedding feed for colleges, universities, bootcamps, and defense academies.",
-        features: [
-          "Everything in Pro",
-          "Live LMS Simulator Embedding Feed (Canvas, Blackboard, Moodle)",
-          "SCORM 1.2 / 2004 & LTI 1.3 Deep Linking Feed API",
-          "Institutional Multi-Seat Licensing (Up to 250 students)",
-          "Automated Real-Time Gradebook Passback API",
-          "SSO SAML 2.0 & Institutional Exam Proctoring Mode",
-          "Curriculum Mapping Matrix & Accreditation Alignment Documentation"
-        ],
-        cta: "Upgrade to Institutional LMS",
-        isPopular: false
-      }
-    ],
-    eris: [
-      {
-        tier: "free",
-        name: "Community Inoculation",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Zero-cost baseline vulnerability inoculation for local testing and initial validation.",
-        features: [
-          "5 Default Chaos Inoculation Modules",
-          "SSH RegreSSHion & Ingress Socket Scenarios",
-          "Self-contained bash script generation",
-          "Manual endpoint rollback scripts",
-          "Single ephemeral test container recipe"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro Chaos Lab",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Complete vulnerability catalog, timed automated rollbacks, and full 5-container Docker Compose range.",
-        features: [
-          "Everything in Community",
-          "Full Eris Chaos Catalog (All 7+ CVE Scenarios)",
-          "Automated Script Compilation API (/api/eris/generate & raw)",
-          "Custom Timed Failsafe Rollbacks (10m, 30m, 60m)",
-          "Full 5-Container Docker Compose Attack Range",
-          "Log4Shell, XZ Backdoor & CUPS Browsed Sandbox Environments",
-          "Direct Bridge to Praxis Autonomous Remediation",
-          "Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise Chaos Range",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Multi-node fleet adversary orchestration, custom zero-day builder, and continuous red/blue verification.",
-        features: [
-          "Everything in Pro",
-          "Multi-Node Fleet Chaos Orchestrator (Ansible & Terraform)",
-          "Custom CVE & Zero-Day Adversary Inoculator Studio",
-          "Dedicated Cloud Sandbox Attack Range Runner",
-          "Automated After-Action CBOM Attestation Probes",
-          "Continuous Red-Team / Blue-Team Canary Verification Pipelines",
-          "Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts",
-          "Organization Volume Entitlements & Custom SLA"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    valkyrie: [
-      {
-        tier: "free",
-        name: "Community BAS",
-        priceMonthly: 0,
-        priceAnnual: 0,
-        description: "Safe non-destructive vulnerability canaries for local developer workstations and single hosts.",
-        features: [
-          "5 Standard BAS Pentest Vectors",
-          "Safe banner & protocol handshake probes",
-          "Standalone bash/cURL script generation",
-          "Local workstation probe execution",
-          "Instant in-browser simulation sandbox"
-        ],
-        cta: "Current Free Tier",
-        isPopular: false
-      },
-      {
-        tier: "pro",
-        name: "Pro Pentest Suite",
-        priceMonthly: 49,
-        priceAnnual: 39,
-        description: "Complete Vantage CVE catalog, Docker cluster range probing, and automated attestation reports.",
-        features: [
-          "Everything in Community",
-          "Full 10+ Vantage CVE Probe Catalog",
-          "Remote Endpoint & Docker Container Network Probing",
-          "1-Click Bridge to Praxis Hotpatch Generation",
-          "1-Click Bridge to Eris Chaos Lab Reproduction",
-          "Cryptographic SHA-256 Pentest Attestation Signatures",
-          "Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts"
-        ],
-        cta: "Upgrade to Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "Enterprise Fleet BAS",
-        priceMonthly: 499,
-        priceAnnual: 399,
-        description: "Continuous automated perimeter scanning, custom CVE exploit builder, and organization volume licensing.",
-        features: [
-          "Everything in Pro",
-          "Continuous CI/CD & Cloud Attack Surface Probing",
-          "Custom Exploit Vector & Zero-Day Canary Builder",
-          "Programmatic REST API Execution (/api/valkyrie/probe)",
-          "Executive PDF/Markdown Compliance Attestation Reports",
-          "Eligible for 30%, 40%, or 50% Sovereignty Bundle Discounts",
-          "Dedicated Enterprise SLA & Audit Logging"
-        ],
-        cta: "Upgrade to Enterprise",
-        isPopular: false
-      }
-    ],
-    multipass: [
-      {
-        tier: "pro",
-        name: "MultiPass Pro",
-        priceMonthly: 196,
-        priceAnnual: 156,
-        description: "Bundled multi-product access! Get individual Pro-level access across all eligible Exultia products.",
-        features: [
-          "PureIDE Pro",
-          "Vantage Pro (127 feeds & vendor errata)",
-          "Praxis Pro (Autonomous hotpatching & firewall engine)",
-          "PureOS Pro",
-          "Axiom Pro (Verifiable certs & export API)",
-          "Eris Pro (Adversary simulation & chaos proving ground)",
-          "Valkyrie Pro (On-demand pentesting & exploit verification)",
-          "Huge Bundle Savings across the entire suite"
-        ],
-        cta: "Unlock MultiPass Pro",
-        isPopular: true
-      },
-      {
-        tier: "enterprise",
-        name: "MultiPass Enterprise",
-        priceMonthly: 745,
-        priceAnnual: 595,
-        description: "Organization-wide Enterprise-level access to the complete Exultia stack with self-hosted automation & 24/7 AI Support Agent.",
-        features: [
-          "PureIDE Enterprise",
-          "Vantage Enterprise (Redistributable commercial feed)",
-          "Praxis Enterprise (Fleet-wide hotpatch orchestrator & hardware ACLs)",
-          "PureOS Enterprise",
-          "Axiom Enterprise LMS API",
-          "Eris Enterprise (Multi-node adversary orchestration & custom zero-days)",
-          "Valkyrie Enterprise (Fleet pentest orchestrator & zero-day payload studio)",
-          "Cosign SLSA Level 3 signed manifests",
-          "24/7 AI Support Agent & automated self-hosted test suites",
-          "Massive MultiPass Enterprise Bundle Savings"
-        ],
-        cta: "Unlock MultiPass Enterprise",
-        isPopular: false
-      }
-    ]
-  };
-
-  const productMeta: Record<ProductKey, { name: string; subtitle: string; icon: React.ReactNode; color: string; bgGradient: string }> = {
-    pureide: {
-      name: "PureIDE",
-      subtitle: "Zero-telemetry developer environment compiler & egress firewall",
-      icon: <PureIdeIcon size={18} glow={false} />,
-      color: "#3B82F6",
-      bgGradient: "linear-gradient(135deg, #3B82F6, #2563EB)"
-    },
-    uvi: {
-      name: "Vantage",
-      subtitle: "Universal vulnerability feed aggregating 110+ threat sources",
-      icon: <VantageIcon size={18} glow={false} />,
-      color: "#8B5CF6",
-      bgGradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)"
-    },
-    praxis: {
-      name: "Praxis",
-      subtitle: "Autonomous zero-downtime hotpatching, canary rollouts & hardware firewall ACLs",
-      icon: <PraxisIcon size={18} glow={false} />,
-      color: "#F59E0B",
-      bgGradient: "linear-gradient(135deg, #F59E0B, #D97706)"
-    },
-    pureos: {
-      name: "PureOS",
-      subtitle: "Pre-hardened CIS container images synchronized to Vantage",
-      icon: <PureOsIcon size={18} glow={false} />,
-      color: "#10B981",
-      bgGradient: "linear-gradient(135deg, #10B981, #059669)"
-    },
-    axiom: {
-      name: "Axiom",
-      subtitle: "Cybersecurity certification prep & enterprise LMS API engine",
-      icon: <AxiomIcon size={18} glow={false} />,
-      color: "#F43F5E",
-      bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
-    },
-    eris: {
-      name: "Eris",
-      subtitle: "Adversary simulation & intentional vulnerability proving ground",
-      icon: <ErisIcon size={18} glow={false} />,
-      color: "#F59E0B",
-      bgGradient: "linear-gradient(135deg, #F59E0B, #DC2626)"
-    },
-    valkyrie: {
-      name: "Valkyrie",
-      subtitle: "On-demand penetration testing & exploitability verification bridge",
-      icon: <ValkyrieIcon size={18} glow={false} />,
-      color: "#06B6D4",
-      bgGradient: "linear-gradient(135deg, #06B6D4, #0284C7)"
-    },
-    multipass: {
-      name: "MultiPass",
-      subtitle: "Leeloo Dallas MultiPass! The ultimate bundled suite.",
-      icon: <Sparkles size={18} />,
-      color: "#EC4899",
-      bgGradient: "linear-gradient(135deg, #EC4899, #BE185D)"
-    }
-  };
-
-  const currentTier = getUserTier(selectedProduct);
-
-  const handlePlanSelect = async (tier: string, planName: string, price: number) => {
-    if (tier === currentTier) return;
+  // Compute current overarching platform tier
+  const currentPlatformTier: PlatformTierId = (() => {
+    if (!user) return "community";
+    const directPlatformTier = getUserTier("platform");
+    if (directPlatformTier === "enterprise") return "enterprise";
+    if (directPlatformTier === "pro") return "pro";
     
-    if (price === 0) {
+    const multiTier = getUserTier("multipass");
+    if (multiTier === "enterprise") return "enterprise";
+    if (multiTier === "pro") return "pro";
+
+    const engines = ["pureide", "uvi", "praxis", "pureos", "axiom", "eris", "valkyrie"];
+    const engineTiers = engines.map(e => getUserTier(e));
+    if (engineTiers.includes("enterprise")) return "enterprise";
+    if (engineTiers.includes("pro") || engineTiers.includes("legal")) return "pro";
+    return "community";
+  })();
+
+  const handleSelectTier = async (tier: PlatformTierId, planName: string) => {
+    if (tier === currentPlatformTier) return;
+
+    if (tier === "community") {
       setIsSwitchingFree(true);
       try {
         const res = await fetch("/api/user/subscription", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: selectedProduct, tier: "free", billingCycle }),
+          body: JSON.stringify({ product: "platform", tier: "free", billingCycle }),
         });
         if (res.ok) {
           await refreshUser();
         }
       } catch (e) {
-        console.error("Free plan activation error:", e);
+        console.error("Community plan activation error:", e);
       } finally {
         setIsSwitchingFree(false);
       }
       return;
     }
 
+    const tierConfig = EXULTIA_PLATFORM_TIERS.find(t => t.id === tier);
+    if (!tierConfig) return;
+
+    const price = billingCycle === "annual" ? tierConfig.priceAnnual : tierConfig.priceMonthly;
+
     openPaymentModal({
-      product: selectedProduct,
-      tier: tier as any,
+      product: "platform",
+      tier: tier,
       price,
       billingCycle,
-      planName: `${selectedProduct.toUpperCase()} - ${planName}`,
+      planName: `Exultia Platform - ${tierConfig.name}`,
     });
   };
+
+  const enginesList = [
+    { id: "vantage", name: "Vantage", category: "Threat Intelligence", desc: "110+ global registries & early zero-day feeds", icon: VantageIcon, color: "#8B5CF6" },
+    { id: "praxis", name: "Praxis", category: "Autonomous Remediation", desc: "Sub-second hotpatching & hardware firewall ACLs", icon: PraxisIcon, color: "#F59E0B" },
+    { id: "eris", name: "Eris", category: "Adversary Emulation", desc: "Intentional vulnerability labs & Docker attack ranges", icon: ErisIcon, color: "#EF4444" },
+    { id: "valkyrie", name: "Valkyrie", category: "On-Demand Pentest", desc: "Non-destructive BAS probes & SHA-256 attestations", icon: ValkyrieIcon, color: "#06B6D4" },
+    { id: "pureide", name: "PureIDE", category: "Hermetic Compiler", desc: "Zero-telemetry developer environment & egress gate", icon: PureIdeIcon, color: "#3B82F6" },
+    { id: "pureos", name: "PureOS", category: "Hardened OCI", desc: "CIS-benchmarked base container images & SBOMs", icon: PureOsIcon, color: "#10B981" },
+    { id: "axiom", name: "Axiom", category: "LMS Exam Simulator", desc: "Security certification simulator & SCORM/LTI API", icon: AxiomIcon, color: "#F43F5E" },
+  ];
+
+  const faqs = [
+    {
+      q: "Why did Exultia unify from 7 separate products into a single platform?",
+      a: "Piecemeal cybersecurity tools create fragmented blind spots and maintenance overhead. By uniting threat detection (Vantage), adversary emulation (Eris), pentest probing (Valkyrie), autonomous hotpatching (Praxis), hermetic build safety (PureIDE), hardened containers (PureOS), and certification testing (Axiom) into one sovereign platform, you get a continuous closed loop that detects, tests, patches, and proves remediation automatically."
+    },
+    {
+      q: "Do I get full access to all 7 platform engines with a single subscription?",
+      a: "Yes. An active Professional or Enterprise Platform subscription immediately unlocks Pro or Enterprise tier entitlements across every engine in the Exultia ecosystem with zero additional add-ons or hidden charges."
+    },
+    {
+      q: "Can I run the engines in air-gapped or self-hosted environments?",
+      a: "Absolutely. All Exultia daemons, container ranges (Eris), hotpatch compilers (Praxis), and build runners (PureIDE) are engineered to run completely self-contained and offline. Enterprise tier adds Cosign OIDC SLSA Level 3 signed manifests and private registry proxying."
+    },
+    {
+      q: "What payment methods and billing cycles are supported?",
+      a: "We support secure card payments and PayPal. Annual billing includes up to a 25% discount (giving you 2 months free equivalent) with instant invoice and cryptographic receipt generation."
+    },
+    {
+      q: "What happens if a patch causes an issue?",
+      a: "Every hotpatch generated by Praxis and executed via Kinetic includes a mandatory pre-flight atomic snapshot. You can trigger an instant, deterministic rollback in under 500ms using 'sudo kinetic rollback --latest' with zero residual state."
+    }
+  ];
 
   return (
     <div style={{ minHeight: "90vh", padding: "3rem 1.5rem", maxWidth: "1280px", margin: "0 auto" }}>
       
-      {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+      {/* HERO SECTION */}
+      <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
         <div style={{ 
           display: "inline-flex", 
           alignItems: "center", 
           gap: "8px", 
-          background: "rgba(59, 130, 246, 0.15)", 
-          border: "1px solid rgba(59, 130, 246, 0.3)", 
-          padding: "4px 14px", 
+          background: "linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12))", 
+          border: "1px solid rgba(6, 182, 212, 0.35)", 
+          padding: "6px 16px", 
           borderRadius: "999px", 
-          marginBottom: "1rem" 
+          marginBottom: "1.25rem",
+          boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)"
         }}>
-          <Sparkles size={14} color="#60A5FA" />
-          <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#93C5FD", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Full Exultia Product Suite Subscriptions
+          <Sparkles size={16} color="#67E8F9" />
+          <span style={{ fontSize: "0.82rem", fontWeight: 800, color: "#A5F3FC", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Unification Update • Closed-Loop Cyber Sovereignty
           </span>
         </div>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em", marginBottom: "0.75rem" }}>
-          Manage Plans & Feature Entitlements
+
+        <h1 style={{ 
+          fontSize: "clamp(2.2rem, 4vw, 3.4rem)", 
+          fontWeight: 900, 
+          color: "#FFFFFF", 
+          letterSpacing: "-0.03em", 
+          marginBottom: "1rem",
+          lineHeight: 1.15
+        }}>
+          One Platform. Seven Sovereign Engines.
+          <span style={{ 
+            display: "block", 
+            background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #8B5CF6 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          }}>
+            Zero Fragmented Security Blind Spots.
+          </span>
         </h1>
-        <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "760px", margin: "0 auto" }}>
-          Seamlessly scale your developer workstation security, global threat intelligence feeds, automated patch remediation, hardened OS images, and certification simulators.
+
+        <p style={{ color: "#94A3B8", fontSize: "1.12rem", maxWidth: "820px", margin: "0 auto", lineHeight: 1.6 }}>
+          Eliminate fragmented point solutions and unverified patch blind spots. Exultia unites universal threat intelligence, adversary emulation, live pentesting, autonomous hotpatching, and cryptographic attestation into a single, closed-loop sovereign platform.
         </p>
 
-        {/* Product Selector Tabs (All 6 products) */}
-        <div style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          background: "rgba(15, 23, 42, 0.8)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
-          borderRadius: "16px",
-          padding: "6px",
-          marginTop: "2rem",
-          gap: "6px",
-          maxWidth: "1050px",
-          marginLeft: "auto",
-          marginRight: "auto"
-        }}>
-          {(Object.keys(plans) as ProductKey[]).map((prodKey) => {
-            const meta = productMeta[prodKey];
-            const isSelected = selectedProduct === prodKey;
-            const activeUserTier = getUserTier(prodKey);
+        {/* CURRENT TIER BADGE */}
+        {user && (
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "10px",
+            marginTop: "1.75rem",
+            background: "rgba(15, 23, 42, 0.8)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "12px",
+            padding: "8px 18px",
+            fontSize: "0.88rem"
+          }}>
+            <span style={{ color: "#94A3B8" }}>Your Current Platform Status:</span>
+            <span style={{ 
+              fontWeight: 800, 
+              color: currentPlatformTier === "enterprise" ? "#F59E0B" : currentPlatformTier === "pro" ? "#38BDF8" : "#10B981",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}>
+              <CheckCircle2 size={16} />
+              {currentPlatformTier === "enterprise" ? "Enterprise Fleet" : currentPlatformTier === "pro" ? "Professional Operator" : "Community Sovereign (Free Forever)"}
+            </span>
+          </div>
+        )}
 
-            return (
-              <button
-                key={prodKey}
-                onClick={() => setSelectedProduct(prodKey)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 16px",
-                  background: isSelected ? meta.bgGradient : "transparent",
-                  border: isSelected ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                  borderRadius: "12px",
-                  color: isSelected ? "#FFFFFF" : "#94A3B8",
-                  fontSize: "0.86rem",
-                  fontWeight: isSelected ? 800 : 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  position: "relative"
-                }}
-              >
-                {meta.icon}
-                <span>{meta.name}</span>
-                {activeUserTier !== "free" && (
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: "rgba(255, 255, 255, 0.2)",
-                    color: "#FFFFFF",
-                    padding: "1px 5px",
-                    borderRadius: "4px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {activeUserTier}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-
-        {/* Current Product Descriptor Banner */}
-        <div style={{ marginTop: "1.25rem", color: "#64748B", fontSize: "0.9rem" }}>
-          Selected Product: <strong style={{ color: productMeta[selectedProduct].color }}>{productMeta[selectedProduct].name}</strong> — {productMeta[selectedProduct].subtitle}
-        </div>
-
-        {/* Billing Cycle Toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginTop: "1.5rem" }}>
-          <span style={{ fontSize: "0.85rem", color: billingCycle === "monthly" ? "#FFFFFF" : "#64748B", fontWeight: 600 }}>
-            Monthly Billed
-          </span>
+        {/* BILLING TOGGLE */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginTop: "2.25rem" }}>
           <button
-            onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
-            aria-label="Toggle billing cycle"
+            onClick={() => setBillingCycle("monthly")}
             style={{
-              width: "48px",
-              height: "26px",
-              background: billingCycle === "annual" ? productMeta[selectedProduct].color : "rgba(255, 255, 255, 0.15)",
-              borderRadius: "999px",
-              border: "none",
-              padding: "3px",
+              background: billingCycle === "monthly" ? "rgba(255, 255, 255, 0.12)" : "transparent",
+              color: billingCycle === "monthly" ? "#FFFFFF" : "#64748B",
+              border: billingCycle === "monthly" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+              padding: "8px 20px",
+              borderRadius: "8px",
+              fontWeight: 700,
+              fontSize: "0.95rem",
               cursor: "pointer",
-              position: "relative",
-              transition: "background 0.2s ease"
+              transition: "all 0.2s ease"
             }}
           >
-            <div style={{
-              width: "20px",
-              height: "20px",
-              background: "white",
-              borderRadius: "50%",
-              transform: billingCycle === "annual" ? "translateX(22px)" : "translateX(0)",
-              transition: "transform 0.2s ease"
-            }} />
+            Monthly Billing
           </button>
-          <span style={{ fontSize: "0.85rem", color: billingCycle === "annual" ? "#FFFFFF" : "#64748B", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
-            Annual Billed
-            <span style={{ fontSize: "0.7rem", background: "rgba(34, 197, 94, 0.2)", color: "#86EFAC", border: "1px solid rgba(34, 197, 94, 0.4)", padding: "1px 6px", borderRadius: "999px", fontWeight: 800 }}>
-              SAVE ~20%
+          
+          <button
+            onClick={() => setBillingCycle("annual")}
+            style={{
+              background: billingCycle === "annual" ? "linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.2))" : "transparent",
+              color: billingCycle === "annual" ? "#FFFFFF" : "#64748B",
+              border: billingCycle === "annual" ? "1px solid rgba(6, 182, 212, 0.5)" : "1px solid transparent",
+              padding: "8px 20px",
+              borderRadius: "8px",
+              fontWeight: 700,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>Annual Billing</span>
+            <span style={{
+              background: "linear-gradient(135deg, #10B981, #059669)",
+              color: "#FFFFFF",
+              fontSize: "0.72rem",
+              padding: "2px 8px",
+              borderRadius: "999px",
+              fontWeight: 800,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase"
+            }}>
+              Save up to 25% (2 Months Free)
             </span>
-          </span>
+          </button>
         </div>
       </div>
 
-      {/* Sovereignty Dynamic Bundle Discount Calculator & Entitlement Banner (Eris & Valkyrie) */}
-      {(isEris || isValkyrie) && (
-        <div style={{
-          background: "linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          border: bundleDiscountInfo.discountPercent > 0 
-            ? (bundleDiscountInfo.discountPercent === 50 ? "1px solid rgba(34, 197, 94, 0.6)" : "1px solid rgba(6, 182, 212, 0.5)") 
-            : "1px solid rgba(255, 255, 255, 0.12)",
-          boxShadow: bundleDiscountInfo.discountPercent > 0
-            ? (bundleDiscountInfo.discountPercent === 50 ? "0 0 25px rgba(34, 197, 94, 0.2)" : "0 0 25px rgba(6, 182, 212, 0.15)")
-            : "none",
-          borderRadius: "16px",
-          padding: "1.5rem",
-          marginBottom: "2.5rem",
-          maxWidth: "1050px",
-          marginLeft: "auto",
-          marginRight: "auto"
-        }}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: isValkyrie
-                  ? "linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(2, 132, 199, 0.2))"
-                  : "linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(220, 38, 38, 0.2))",
-                border: isValkyrie ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid rgba(245, 158, 11, 0.4)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                {isValkyrie ? <ValkyrieIcon size={24} glow={false} /> : <ErisIcon size={24} glow={false} />}
-              </div>
-              <div>
-                <h2 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
-                  {isValkyrie ? "Valkyrie" : "Eris"} Bundle Pricing &amp; Sovereignty Discounts
-                </h2>
-                <p style={{ color: "#94A3B8", fontSize: "0.82rem", margin: "2px 0 0 0" }}>
-                  Automatic discounts unlock based on companion products in your stack: 30% for 1 companion, 40% for 2 companions, and 50% if you buy all three!
-                </p>
-              </div>
-            </div>
-
-            {/* Active Discount Badge */}
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "6px 14px",
-              borderRadius: "999px",
-              background: bundleDiscountInfo.discountPercent === 50
-                ? "rgba(34, 197, 94, 0.25)"
-                : bundleDiscountInfo.discountPercent === 40
-                  ? "rgba(245, 158, 11, 0.2)"
-                  : bundleDiscountInfo.discountPercent === 30
-                    ? "rgba(139, 92, 246, 0.2)"
-                    : "rgba(255, 255, 255, 0.08)",
-              border: bundleDiscountInfo.discountPercent === 50
-                ? "1px solid rgba(34, 197, 94, 0.6)"
-                : bundleDiscountInfo.discountPercent === 40
-                  ? "1px solid rgba(245, 158, 11, 0.5)"
-                  : bundleDiscountInfo.discountPercent === 30
-                    ? "1px solid rgba(139, 92, 246, 0.5)"
-                    : "1px solid rgba(255, 255, 255, 0.15)",
-            }}>
-              <Sparkles size={14} color={
-                bundleDiscountInfo.discountPercent === 50 ? "#86EFAC" :
-                bundleDiscountInfo.discountPercent === 40 ? "#FDE047" :
-                bundleDiscountInfo.discountPercent === 30 ? "#C4B5FD" : "#94A3B8"
-              } />
-              <span style={{
-                fontSize: "0.8rem",
-                fontWeight: 800,
-                color: bundleDiscountInfo.discountPercent === 50 ? "#86EFAC" :
-                  bundleDiscountInfo.discountPercent === 40 ? "#FDE047" :
-                  bundleDiscountInfo.discountPercent === 30 ? "#C4B5FD" : "#CBD5E1",
-                textTransform: "uppercase",
-                letterSpacing: "0.04em"
-              }}>
-                {bundleDiscountInfo.discountPercent === 50 
-                  ? "50% OFF (ALL THREE COMPANIONS ACTIVE!)"
-                  : bundleDiscountInfo.discountPercent > 0 
-                    ? `${bundleDiscountInfo.discountPercent}% OFF APPLIED`
-                    : "Standard Rate (0% Off)"}
-              </span>
-            </div>
-          </div>
-
-          {/* Interactive Bundle Matrix Cards (3 Companions) */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
-            
-            {/* Companion 1: Vantage */}
-            <div style={{
-              background: hasVantage ? "rgba(139, 92, 246, 0.14)" : "rgba(15, 23, 42, 0.6)",
-              border: hasVantage ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "1rem",
-              position: "relative"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <VantageIcon size={20} glow={false} />
-                  <span style={{ fontWeight: 700, color: "#FFFFFF", fontSize: "0.92rem" }}>Vantage Feed</span>
-                </div>
-                <span style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 800,
-                  color: "#C4B5FD",
-                  background: "rgba(139, 92, 246, 0.2)",
-                  padding: "2px 8px",
-                  borderRadius: "6px"
-                }}>
-                  30% TIER
-                </span>
-              </div>
-              <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4, margin: "0 0 0.75rem 0" }}>
-                Active Vantage feed integration provides live CVE intelligence to power automated testing vectors.
-              </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <span style={{ fontSize: "0.72rem", color: hasVantageActual ? "#86EFAC" : "#94A3B8", fontWeight: 600 }}>
-                  {hasVantageActual ? "✓ Account Entitled" : "Not Active on Account"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setPreviewVantage(hasVantage ? false : true)}
-                  style={{
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    background: hasVantage ? "rgba(139, 92, 246, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    border: hasVantage ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.15)",
-                    color: hasVantage ? "#C4B5FD" : "#94A3B8",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  {hasVantage ? "✓ Vantage Included" : "+ Test Vantage"}
-                </button>
-              </div>
-            </div>
-
-            {/* Companion 2: Praxis */}
-            <div style={{
-              background: hasPraxis ? "rgba(245, 158, 11, 0.14)" : "rgba(15, 23, 42, 0.6)",
-              border: hasPraxis ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "1rem",
-              position: "relative"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <PraxisIcon size={20} glow={false} />
-                  <span style={{ fontWeight: 700, color: "#FFFFFF", fontSize: "0.92rem" }}>Praxis Hotpatch</span>
-                </div>
-                <span style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 800,
-                  color: "#FDE047",
-                  background: "rgba(245, 158, 11, 0.2)",
-                  padding: "2px 8px",
-                  borderRadius: "6px"
-                }}>
-                  40% TIER
-                </span>
-              </div>
-              <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4, margin: "0 0 0.75rem 0" }}>
-                Autonomous remediation &amp; hotpatching daemon. Pairs directly for instant closed-loop verification.
-              </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <span style={{ fontSize: "0.72rem", color: hasPraxisActual ? "#86EFAC" : "#94A3B8", fontWeight: 600 }}>
-                  {hasPraxisActual ? "✓ Account Entitled" : "Not Active on Account"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setPreviewPraxis(hasPraxis ? false : true)}
-                  style={{
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    background: hasPraxis ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    border: hasPraxis ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.15)",
-                    color: hasPraxis ? "#FDE047" : "#94A3B8",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  {hasPraxis ? "✓ Praxis Included" : "+ Test Praxis"}
-                </button>
-              </div>
-            </div>
-
-            {/* Companion 3: Valkyrie (for Eris) OR Eris (for Valkyrie) */}
-            <div style={{
-              background: (isEris ? hasValkyrie : hasEris) ? "rgba(34, 197, 94, 0.14)" : "rgba(15, 23, 42, 0.6)",
-              border: (isEris ? hasValkyrie : hasEris) ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "1rem",
-              position: "relative"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  {isEris ? <ValkyrieIcon size={20} glow={false} /> : <ErisIcon size={20} glow={false} />}
-                  <span style={{ fontWeight: 700, color: "#FFFFFF", fontSize: "0.92rem" }}>
-                    {isEris ? "Valkyrie Pentest" : "Eris Chaos Range"}
-                  </span>
-                </div>
-                <span style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 800,
-                  color: "#86EFAC",
-                  background: "rgba(34, 197, 94, 0.2)",
-                  padding: "2px 8px",
-                  borderRadius: "6px"
-                }}>
-                  50% ALL THREE
-                </span>
-              </div>
-              <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4, margin: "0 0 0.75rem 0" }}>
-                {isEris 
-                  ? "Add Valkyrie on-demand pentesting for the complete 50% discount when you buy all three companions!"
-                  : "Add Eris chaos emulation lab for the complete 50% discount when you buy all three companions!"}
-              </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <span style={{ fontSize: "0.72rem", color: (isEris ? hasValkyrieActual : hasErisActual) ? "#86EFAC" : "#94A3B8", fontWeight: 600 }}>
-                  {(isEris ? hasValkyrieActual : hasErisActual) ? "✓ Account Entitled" : "Not Active on Account"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isEris) {
-                      setPreviewValkyrie(hasValkyrie ? false : true);
-                    } else {
-                      setPreviewEris(hasEris ? false : true);
-                    }
-                  }}
-                  style={{
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    background: (isEris ? hasValkyrie : hasEris) ? "rgba(34, 197, 94, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    border: (isEris ? hasValkyrie : hasEris) ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.15)",
-                    color: (isEris ? hasValkyrie : hasEris) ? "#86EFAC" : "#94A3B8",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  {(isEris ? hasValkyrie : hasEris) 
-                    ? `✓ ${isEris ? "Valkyrie" : "Eris"} Included` 
-                    : `+ Test ${isEris ? "Valkyrie" : "Eris"} (50% Off)`}
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Reset simulation if active */}
-          {(previewVantage !== null || previewPraxis !== null || previewEris !== null || previewValkyrie !== null) && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: "0.75rem" }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setPreviewVantage(null);
-                  setPreviewPraxis(null);
-                  setPreviewEris(null);
-                  setPreviewValkyrie(null);
-                }}
-                style={{
-                  fontSize: "0.72rem",
-                  color: "#94A3B8",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px"
-                }}
-              >
-                <RotateCcw size={12} />
-                <span>Reset simulation to actual account entitlements</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Pricing Cards Grid */}
+      {/* 3-TIER PRICING GRID */}
       <div style={{ 
         display: "grid", 
-        gridTemplateColumns: plans[selectedProduct].length === 2 ? "repeat(auto-fit, minmax(320px, 420px))" : "repeat(auto-fit, minmax(310px, 1fr))", 
-        justifyContent: "center",
-        gap: "2rem", 
-        marginBottom: "3rem",
-        maxWidth: plans[selectedProduct].length === 2 ? "900px" : undefined,
-        marginLeft: "auto",
-        marginRight: "auto"
+        gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))", 
+        gap: "2rem",
+        marginBottom: "4.5rem",
+        alignItems: "stretch"
       }}>
-        {plans[selectedProduct].map((plan) => {
-          const isCurrent = currentTier === plan.tier;
-          const price = billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly;
-          const accentColor = productMeta[selectedProduct].color;
+        {EXULTIA_PLATFORM_TIERS.map((tier) => {
+          const isCurrent = currentPlatformTier === tier.id;
+          const displayPrice = billingCycle === "annual" ? tier.priceAnnual : tier.priceMonthly;
+          const isPro = tier.id === "pro";
+          const isEnterprise = tier.id === "enterprise";
 
           return (
-            <div
-              key={plan.tier}
+            <div 
+              key={tier.id}
               style={{
-                background: "linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.98) 100%)",
-                border: isCurrent 
-                  ? `2px solid ${accentColor}` 
-                  : plan.isPopular 
-                    ? `1px solid ${accentColor}88` 
-                    : "1px solid rgba(255, 255, 255, 0.1)",
+                position: "relative",
+                background: isPro 
+                  ? "linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%)" 
+                  : "rgba(10, 15, 26, 0.85)",
+                backdropFilter: "blur(16px)",
+                border: isPro 
+                  ? "2px solid #06B6D4" 
+                  : isEnterprise
+                  ? "1px solid rgba(139, 92, 246, 0.35)"
+                  : "1px solid rgba(255, 255, 255, 0.12)",
                 borderRadius: "20px",
-                padding: "2rem",
+                padding: "2.25rem 2rem",
                 display: "flex",
                 flexDirection: "column",
-                position: "relative",
-                boxShadow: plan.isPopular ? `0 20px 40px -15px ${accentColor}33` : "none"
+                boxShadow: isPro 
+                  ? "0 25px 50px -12px rgba(6, 182, 212, 0.25), 0 0 30px rgba(6, 182, 212, 0.15)" 
+                  : "0 10px 30px rgba(0, 0, 0, 0.5)",
+                transform: isPro ? "scale(1.02)" : "none",
+                transition: "transform 0.2s ease, border-color 0.2s ease"
               }}
             >
-              {plan.isPopular && (
+              {/* BADGE */}
+              {tier.badge && (
                 <div style={{
                   position: "absolute",
-                  top: "-12px",
+                  top: "-13px",
                   left: "50%",
                   transform: "translateX(-50%)",
-                  background: productMeta[selectedProduct].bgGradient,
-                  color: "white",
+                  background: isPro 
+                    ? "linear-gradient(135deg, #06B6D4, #3B82F6)" 
+                    : "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                  color: "#FFFFFF",
                   fontSize: "0.72rem",
-                  fontWeight: 800,
-                  padding: "3px 12px",
+                  fontWeight: 900,
+                  letterSpacing: "0.1em",
+                  padding: "4px 16px",
                   borderRadius: "999px",
                   textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  boxShadow: `0 0 15px ${accentColor}55`
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
+                  whiteSpace: "nowrap"
                 }}>
-                  Most Popular
+                  {tier.badge}
                 </div>
               )}
 
-              {isCurrent && (
-                <div style={{
-                  position: "absolute",
-                  top: "1.25rem",
-                  right: "1.25rem",
-                  background: `${accentColor}25`,
-                  color: accentColor,
-                  border: `1px solid ${accentColor}55`,
-                  fontSize: "0.7rem",
+              {/* TIER TITLE & TAGLINE */}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <h3 style={{ fontSize: "1.6rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.35rem" }}>
+                  {tier.name}
+                </h3>
+                <p style={{ color: "#94A3B8", fontSize: "0.88rem", minHeight: "40px", lineHeight: 1.45 }}>
+                  {tier.tagline}
+                </p>
+              </div>
+
+              {/* PRICE */}
+              <div style={{ marginBottom: "1.75rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                  <span style={{ fontSize: "3rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
+                    ${displayPrice}
+                  </span>
+                  <span style={{ color: "#64748B", fontSize: "1rem", fontWeight: 600 }}>
+                    / month
+                  </span>
+                </div>
+                <div style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "4px" }}>
+                  {tier.priceMonthly === 0 ? (
+                    <span style={{ color: "#10B981", fontWeight: 700 }}>Free forever • Zero credit card required</span>
+                  ) : billingCycle === "annual" ? (
+                    <span>Billed annually (${tier.annualBilledTotal}/yr)</span>
+                  ) : (
+                    <span>Billed monthly • Cancel anytime</span>
+                  )}
+                </div>
+              </div>
+
+              {/* CTA BUTTON */}
+              <button
+                disabled={isCurrent || isSwitchingFree}
+                onClick={() => handleSelectTier(tier.id, tier.name)}
+                style={{
+                  width: "100%",
+                  padding: "14px 20px",
+                  borderRadius: "12px",
                   fontWeight: 800,
-                  padding: "2px 8px",
-                  borderRadius: "6px",
-                  textTransform: "uppercase"
+                  fontSize: "1rem",
+                  cursor: isCurrent ? "default" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  marginBottom: "2rem",
+                  transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                  border: isCurrent 
+                    ? "1px solid rgba(255, 255, 255, 0.15)" 
+                    : isPro 
+                    ? "none" 
+                    : "1px solid rgba(255, 255, 255, 0.2)",
+                  background: isCurrent 
+                    ? "rgba(255, 255, 255, 0.06)" 
+                    : isPro 
+                    ? "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" 
+                    : "rgba(255, 255, 255, 0.1)",
+                  color: isCurrent ? "#94A3B8" : "#FFFFFF",
+                  boxShadow: !isCurrent && isPro ? "0 4px 20px rgba(6, 182, 212, 0.4)" : "none"
+                }}
+              >
+                {isCurrent ? (
+                  <>
+                    <CheckCircle2 size={18} color="#10B981" />
+                    <span>Current Active Plan</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{tier.ctaLabel}</span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
+
+              {/* ALL 7 ENGINES UNLOCK SUMMARY */}
+              <div style={{ marginBottom: "1.75rem" }}>
+                <div style={{ 
+                  fontSize: "0.74rem", 
+                  fontWeight: 800, 
+                  color: "#94A3B8", 
+                  textTransform: "uppercase", 
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.85rem" 
                 }}>
-                  Active Plan
+                  Included Platform Engines
                 </div>
-              )}
-
-              <h3 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
-                {plan.name}
-              </h3>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1.5rem 0", minHeight: "42px" }}>
-                {plan.description}
-              </p>
-
-              {/* Price */}
-              {(() => {
-                const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const basePrice = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
-
-                // MultiPass Bundle Savings:
-                const isMultiPassPlan = isMultiPass && !isFree;
-                const singleProductRate = plan.tier === "pro" 
-                  ? (billingCycle === "annual" ? 39 : 49) 
-                  : (billingCycle === "annual" ? 399 : 499);
-                const bundleSavings = isMultiPassPlan ? singleProductRate : 0;
-                const unbundledPrice = basePrice + bundleSavings;
-
-                // Sovereignty Dynamic Bundle Discount (Eris & Valkyrie):
-                const isBundleTarget = (isEris || isValkyrie) && !isFree;
-                const bundleCalc = isBundleTarget
-                  ? getDiscountedProductPrice(plan.tier as any, billingCycle, isValkyrie ? "valkyrie" : "eris", {
-                      hasVantage,
-                      hasPraxis,
-                      hasEris,
-                      hasValkyrie
-                    })
-                  : null;
-                const isBundleDiscounted = bundleCalc?.isDiscounted ?? false;
-                const effectivePrice = bundleCalc ? bundleCalc.finalPrice : basePrice;
-
-                return (
-                  <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
-                      {isMultiPassPlan && (
-                        <span style={{
-                          fontSize: "1.4rem",
-                          fontWeight: 700,
-                          color: "#64748B",
-                          textDecoration: "line-through",
-                          marginRight: "2px"
-                        }}>
-                          ${unbundledPrice}
-                        </span>
-                      )}
-                      {isBundleDiscounted && (
-                        <span style={{
-                          fontSize: "1.4rem",
-                          fontWeight: 700,
-                          color: "#64748B",
-                          textDecoration: "line-through",
-                          marginRight: "2px"
-                        }}>
-                          ${basePrice}
-                        </span>
-                      )}
-                      <span style={{ 
-                        fontSize: "2.5rem", 
-                        fontWeight: 900, 
-                        color: isBundleDiscounted 
-                          ? (bundleCalc?.discountPercent === 50 ? "#86EFAC" : (isValkyrie ? "#38BDF8" : "#FBBF24")) 
-                          : "#FFFFFF" 
-                      }}>
-                        ${effectivePrice}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {enginesList.map(eng => {
+                    const Icon = eng.icon;
+                    return (
+                      <span 
+                        key={eng.id}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          background: "rgba(255, 255, 255, 0.04)",
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          borderRadius: "6px",
+                          padding: "3px 8px",
+                          fontSize: "0.75rem",
+                          color: "#E2E8F0"
+                        }}
+                      >
+                        <Icon size={12} />
+                        <span>{eng.name}</span>
                       </span>
-                      <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
-                        {isFree ? "forever" : "/mo"}
-                      </span>
-                      {!isFree && billingCycle === "annual" && (
-                        <span style={{ fontSize: "0.72rem", color: "#86EFAC", marginLeft: "4px", fontWeight: 600 }}>
-                          billed annually
-                        </span>
-                      )}
-                    </div>
-
-                    {/* MultiPass 1-Product-Free Savings Badge */}
-                    {isMultiPassPlan && (
-                      <div style={{
-                        marginTop: "6px",
-                        background: "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(168, 85, 247, 0.2) 100%)",
-                        border: "1px solid rgba(236, 72, 153, 0.4)",
-                        borderRadius: "8px",
-                        padding: "6px 10px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px"
-                      }}>
-                        <Sparkles size={14} color="#F472B6" style={{ flexShrink: 0 }} />
-                        <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#F472B6" }}>
-                          Save ${bundleSavings}/mo (1 Product Free!)
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Sovereignty Dynamic Bundle Savings Badge */}
-                    {isBundleDiscounted && bundleCalc && (
-                      <div style={{
-                        marginTop: "6px",
-                        background: bundleCalc.discountPercent === 50
-                          ? "linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)"
-                          : bundleCalc.discountPercent === 40
-                            ? "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)"
-                            : "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)",
-                        border: bundleCalc.discountPercent === 50
-                          ? "1px solid rgba(34, 197, 94, 0.5)"
-                          : bundleCalc.discountPercent === 40
-                            ? "1px solid rgba(245, 158, 11, 0.4)"
-                            : "1px solid rgba(139, 92, 246, 0.4)",
-                        borderRadius: "8px",
-                        padding: "6px 10px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px"
-                      }}>
-                        <Sparkles size={14} color={bundleCalc.discountPercent === 50 ? "#86EFAC" : bundleCalc.discountPercent === 40 ? "#FDE047" : "#C4B5FD"} style={{ flexShrink: 0 }} />
-                        <span style={{ 
-                          fontSize: "0.78rem", 
-                          fontWeight: 800, 
-                          color: bundleCalc.discountPercent === 50 ? "#86EFAC" : bundleCalc.discountPercent === 40 ? "#FDE047" : "#C4B5FD" 
-                        }}>
-                          Save ${bundleCalc.discountSavings}/mo ({bundleCalc.discountPercent}% Sovereignty Bundle Discount applied!)
-                        </span>
-                      </div>
-                    )}
-
-                    <div style={{
-                      fontSize: "0.72rem",
-                      marginTop: "6px",
-                      padding: "4px 8px",
-                      borderRadius: "6px",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontWeight: 700,
-                      background: isFree 
-                        ? "rgba(16, 185, 129, 0.15)" 
-                        : isMultiPassPlan 
-                          ? "rgba(236, 72, 153, 0.15)" 
-                          : isBundleDiscounted
-                            ? (bundleCalc?.discountPercent === 50 ? "rgba(34, 197, 94, 0.2)" : "rgba(6, 182, 212, 0.15)")
-                            : "rgba(56, 189, 248, 0.15)",
-                      color: isFree 
-                        ? "#34D399" 
-                        : isMultiPassPlan 
-                          ? "#F472B6" 
-                          : isBundleDiscounted
-                            ? (bundleCalc?.discountPercent === 50 ? "#86EFAC" : "#38BDF8")
-                            : "#38BDF8",
-                      border: isFree 
-                        ? "1px solid rgba(16, 185, 129, 0.3)" 
-                        : isMultiPassPlan 
-                          ? "1px solid rgba(236, 72, 153, 0.35)" 
-                          : isBundleDiscounted
-                            ? (bundleCalc?.discountPercent === 50 ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid rgba(6, 182, 212, 0.35)")
-                            : "1px solid rgba(56, 189, 248, 0.3)"
-                    }}>
-                      {isFree 
-                        ? (isPraxis ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
-                        : isMultiPassPlan 
-                          ? "✓ COMPLETE SUITE BUNDLE • 1 PRODUCT FREE" 
-                          : isBundleDiscounted
-                            ? `✓ BUNDLE DISCOUNT • ${bundleCalc?.discountPercent}% OFF APPLIED`
-                            : (isPraxis ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Features List */}
-              <div style={{ marginBottom: "2rem", flex: 1 }}>
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#CBD5E1", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>
-                  What's Included:
+                    );
+                  })}
                 </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                  {plan.features.map(feat => (
-                    <li key={feat} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "0.84rem", color: "#E2E8F0", lineHeight: 1.4 }}>
-                      <Check size={15} color="#34D399" style={{ flexShrink: 0, marginTop: "2px" }} />
-                      <span>{feat}</span>
+              </div>
+
+              {/* CORE HIGHLIGHTS */}
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: "0.74rem", 
+                  fontWeight: 800, 
+                  color: "#94A3B8", 
+                  textTransform: "uppercase", 
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.85rem" 
+                }}>
+                  Key Capabilities
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {tier.highlights.map((h, i) => (
+                    <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.88rem", color: "#CBD5E1", lineHeight: 1.45 }}>
+                      <Check size={16} color={isPro ? "#06B6D4" : isEnterprise ? "#A78BFA" : "#10B981"} style={{ flexShrink: 0, marginTop: "3px" }} />
+                      <span>{h}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-
-              {/* Action Button */}
-              {(() => {
-                const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const basePrice = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
-                const isBundleTarget = (isEris || isValkyrie) && !isFree;
-                const bundleCalc = isBundleTarget
-                  ? getDiscountedProductPrice(plan.tier as any, billingCycle, isValkyrie ? "valkyrie" : "eris", {
-                      hasVantage,
-                      hasPraxis,
-                      hasEris,
-                      hasValkyrie
-                    })
-                  : null;
-                const effectivePrice = bundleCalc ? bundleCalc.finalPrice : basePrice;
-                const planLabel = plan.name;
-
-                return (
-                  <button
-                    disabled={isCurrent || isSwitchingFree}
-                    onClick={() => handlePlanSelect(plan.tier, planLabel, effectivePrice)}
-                    className={isCurrent ? "" : "btn-primary"}
-                    style={{
-                      width: "100%",
-                      padding: "0.85rem",
-                      fontSize: "0.92rem",
-                      fontWeight: 700,
-                      background: isCurrent 
-                        ? "rgba(255, 255, 255, 0.05)" 
-                        : plan.isPopular 
-                          ? productMeta[selectedProduct].bgGradient
-                          : undefined,
-                      border: isCurrent ? "1px solid rgba(255, 255, 255, 0.1)" : undefined,
-                      color: isCurrent ? "#64748B" : "#FFFFFF",
-                      cursor: isCurrent ? "default" : "pointer",
-                      transition: "all 0.2s ease"
-                    }}
-                  >
-                    {isCurrent 
-                      ? "Current Plan" 
-                      : isFree 
-                        ? "Select Free Tier" 
-                        : `${plan.cta} →`}
-                  </button>
-                );
-              })()}
             </div>
           );
         })}
       </div>
 
-      {/* Support model & SLA language lives on the Terms of Service page */}
-      <p style={{ margin: "2.5rem 0", textAlign: "center", color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.6 }}>
-        Our support model, service levels, and other terms are described in our{" "}
-        <Link href="/terms#support" style={{ color: "#93C5FD", textDecoration: "none", fontWeight: 600 }}>
-          Terms of Service
-        </Link>
-        .
-      </p>
-
-      {/* Enterprise Custom Assistance Banner */}
+      {/* CLOSED-LOOP SOVEREIGNTY ARCHITECTURE VISUALIZATION */}
       <div style={{
-        background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%)",
-        border: "1px solid rgba(59, 130, 246, 0.3)",
+        background: "rgba(10, 15, 26, 0.9)",
+        border: "1px solid rgba(6, 182, 212, 0.25)",
         borderRadius: "20px",
-        padding: "2rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "1.5rem",
-        flexWrap: "wrap"
+        padding: "3rem 2rem",
+        marginBottom: "4.5rem",
+        boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.6)"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-          <div style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "14px",
-            background: "rgba(59, 130, 246, 0.15)",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
-            display: "grid",
-            placeItems: "center",
-            color: "#60A5FA"
+        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+          <div style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            gap: "8px", 
+            color: "#67E8F9", 
+            fontSize: "0.8rem", 
+            fontWeight: 800, 
+            letterSpacing: "0.1em", 
+            textTransform: "uppercase", 
+            marginBottom: "0.5rem" 
           }}>
-            <Building2 size={28} />
+            <RotateCcw size={16} />
+            The Closed-Loop Ecosystem
           </div>
-          <div>
-            <h4 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.25rem 0" }}>
-              Need Custom Airgap Deployments, Enclave Licensing, or Corporate Purchase Orders?
-            </h4>
-            <p style={{ color: "#94A3B8", fontSize: "0.88rem", margin: 0 }}>
-              We support SAML 2.0 SSO, offline hardware enclave licensing, customized legal precedent suites, and Net-30 enterprise invoicing.
+          <h2 style={{ fontSize: "2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
+            How the 7 Engines Work in Concert
+          </h2>
+          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0.5rem auto 0" }}>
+            Unlike standalone point tools, Exultia links threat intelligence directly to adversary simulation, proof probes, autonomous hotpatching, and attestation.
+          </p>
+        </div>
+
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
+          gap: "1.25rem" 
+        }}>
+          {/* Step 1 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(139, 92, 246, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <VantageIcon size={24} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#C084FC", fontWeight: 800, textTransform: "uppercase" }}>Stage 1 • Ingestion</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Vantage Intel</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Ingests 110+ threat feeds, CISA KEV, and early-warning zero-days with CVSS scoring and affected package telemetry.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(239, 68, 68, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <ErisIcon size={24} glow={false} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#F87171", fontWeight: 800, textTransform: "uppercase" }}>Stage 2 • Emulation</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Eris Chaos Lab</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Replicates the exact CVE vulnerability in an isolated, timed test container sandbox with automatic watchdog rollback timers.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(6, 182, 212, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <ValkyrieIcon size={24} glow={false} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#67E8F9", fontWeight: 800, textTransform: "uppercase" }}>Stage 3 • Verification</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Valkyrie BAS</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Executes safe, non-destructive network probes against your cluster or target endpoint to prove actual exploitability.
+            </p>
+          </div>
+
+          {/* Step 4 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <PraxisIcon size={24} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#FDE68A", fontWeight: 800, textTransform: "uppercase" }}>Stage 4 • Hotpatch</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Remediation</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Synthesizes zero-downtime hotfixes, Ansible plays, and hardware ACLs with mandatory sub-second deterministic rollbacks.
+            </p>
+          </div>
+
+          {/* Step 5 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(59, 130, 246, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <PureIdeIcon size={24} glow={false} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#93C5FD", fontWeight: 800, textTransform: "uppercase" }}>Stage 5 • Hardened Build</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>PureIDE & PureOS</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Hermetic compilation, airgapped binary cosigning, CIS-benchmarked containers, and automated CycloneDX SBOMs.
+            </p>
+          </div>
+
+          {/* Step 6 */}
+          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(244, 63, 94, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <AxiomIcon size={24} />
+              <div>
+                <span style={{ fontSize: "0.7rem", color: "#FDA4AF", fontWeight: 800, textTransform: "uppercase" }}>Stage 6 • Skill Attestation</span>
+                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom Platform</h4>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
+              Hands-on exam simulations and SCORM/LTI API integration for continuous operator certification and training.
             </p>
           </div>
         </div>
-
-        <Link
-          href="/account?tab=overview"
-          style={{
-            background: "rgba(255, 255, 255, 0.08)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
-            borderRadius: "10px",
-            padding: "10px 20px",
-            color: "#FFFFFF",
-            fontSize: "0.88rem",
-            fontWeight: 700,
-            textDecoration: "none"
-          }}
-        >
-          Return to Customer Portal →
-        </Link>
       </div>
 
+      {/* COMPREHENSIVE ENGINE COMPARISON TABLE */}
+      <div style={{ marginBottom: "4.5rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <h2 style={{ fontSize: "2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
+            Platform Engine Capability Matrix
+          </h2>
+          <p style={{ color: "#94A3B8", fontSize: "1rem" }}>
+            Compare full capabilities across Community, Professional, and Enterprise tiers.
+          </p>
+        </div>
+
+        <div style={{ 
+          background: "rgba(10, 15, 26, 0.85)", 
+          border: "1px solid rgba(255, 255, 255, 0.1)", 
+          borderRadius: "16px", 
+          overflow: "hidden" 
+        }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
+            <thead>
+              <tr style={{ background: "rgba(255, 255, 255, 0.04)", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                <th style={{ padding: "1.25rem 1.5rem", color: "#E2E8F0", fontWeight: 800, width: "35%" }}>Engine & Feature</th>
+                <th style={{ padding: "1.25rem 1.5rem", color: "#94A3B8", fontWeight: 800, width: "20%" }}>Community ($0)</th>
+                <th style={{ padding: "1.25rem 1.5rem", color: "#38BDF8", fontWeight: 800, width: "22%" }}>Professional ($59/mo)</th>
+                <th style={{ padding: "1.25rem 1.5rem", color: "#A78BFA", fontWeight: 800, width: "23%" }}>Enterprise ($399/mo)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Vantage */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <VantageIcon size={16} />
+                    <span>Vantage Threat Feed</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Web portal & CISA KEV</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Real-time stream & 300 req/m API</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Commercial feed & SIEM webhooks</td>
+              </tr>
+
+              {/* Praxis */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <PraxisIcon size={16} />
+                    <span>Praxis Hotpatching & Rollbacks</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Manual recipes & local inspection</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Autonomous stream & sub-sec rollbacks</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Multi-ring fleet & SLSA L3 cosign</td>
+              </tr>
+
+              {/* Eris */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <ErisIcon size={16} glow={false} />
+                    <span>Eris Adversary Emulation</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>5 core chaos modules</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Full 7+ CVE catalog & 5-container range</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Multi-node fleet chaos & 0-day studio</td>
+              </tr>
+
+              {/* Valkyrie */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <ValkyrieIcon size={16} glow={false} />
+                    <span>Valkyrie Pentest & Attestation</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>5 non-destructive canary probes</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Full 10+ CVE probes & HMAC tokens</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Continuous CI/CD & executive reports</td>
+              </tr>
+
+              {/* PureIDE */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <PureIdeIcon size={16} glow={false} />
+                    <span>PureIDE Workstation Compiler</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Single developer local sandbox</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Cloud build runners & egress firewall</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Airgap cosign & enterprise blueprints</td>
+              </tr>
+
+              {/* PureOS */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <PureOsIcon size={16} glow={false} />
+                    <span>PureOS Hardened Containers</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Standard CIS baseline images</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Zero-trust images & CycloneDX SBOMs</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Cryptographic airgap provenance</td>
+              </tr>
+
+              {/* Axiom */}
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <AxiomIcon size={16} />
+                    <span>Axiom LMS Exam Simulator</span>
+                  </div>
+                </td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Full question practice banks</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>SHA-256 certs & transcript exports</td>
+                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>SCORM/LTI API & institutional LMS sync</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* FREQUENTLY ASKED QUESTIONS */}
+      <div style={{ maxWidth: "860px", margin: "0 auto 4rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, color: "#FFFFFF" }}>
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {faqs.map((faq, index) => {
+            const isOpen = activeFaq === index;
+            return (
+              <div 
+                key={index}
+                style={{
+                  background: "rgba(10, 15, 26, 0.75)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "12px",
+                  overflow: "hidden"
+                }}
+              >
+                <button
+                  onClick={() => setActiveFaq(isOpen ? null : index)}
+                  style={{
+                    width: "100%",
+                    padding: "1.25rem 1.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "transparent",
+                    border: "none",
+                    color: "#FFFFFF",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    textAlign: "left",
+                    cursor: "pointer"
+                  }}
+                >
+                  <span>{faq.q}</span>
+                  {isOpen ? <ChevronUp size={18} color="#94A3B8" /> : <ChevronDown size={18} color="#94A3B8" />}
+                </button>
+                {isOpen && (
+                  <div style={{ padding: "0 1.5rem 1.25rem", color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6 }}>
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* PAYMENT MODAL */}
       <PaymentModal />
     </div>
   );
@@ -1384,11 +771,7 @@ function SubscriptionContent() {
 
 export default function SubscriptionPage() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "80vh", display: "grid", placeItems: "center", color: "#94A3B8" }}>
-        Loading subscription suites...
-      </div>
-    }>
+    <Suspense fallback={<div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#94A3B8" }}>Loading Platform Subscription Console...</div>}>
       <SubscriptionContent />
     </Suspense>
   );

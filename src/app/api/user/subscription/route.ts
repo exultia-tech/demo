@@ -20,16 +20,30 @@ export async function GET(req: Request) {
       where: eq(subscriptions.userId, sessionUser.id),
     });
 
-    // Ensure all flagship products in the suite are represented
-    const products = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris', 'valkyrie'];
+    // Check if user has an overarching platform subscription
+    const platformSub = subs.find(s => (s.product === 'platform' || s.product === 'multipass') && s.status === 'active');
+    const platformTier = platformSub?.tier?.toLowerCase();
+
+    // Ensure all flagship engines in the suite are represented
+    const products = ['platform', 'pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris', 'valkyrie'];
     const enriched = products.map(prod => {
       const match = subs.find(s => s.product === prod);
+      let effectiveTier = match?.tier || 'free';
+
+      if (prod !== 'platform' && platformTier) {
+        if (platformTier === 'enterprise') {
+          effectiveTier = 'enterprise';
+        } else if (platformTier === 'pro' && effectiveTier === 'free') {
+          effectiveTier = 'pro';
+        }
+      }
+
       return {
         product: prod,
         id: match?.id || `sub_${prod}_${sessionUser.id}`,
-        tier: match?.tier || 'free',
-        status: match?.status || 'active',
-        currentPeriodEnd: match?.currentPeriodEnd || null,
+        tier: effectiveTier,
+        status: match?.status || (prod !== 'platform' && platformSub ? 'active' : 'active'),
+        currentPeriodEnd: match?.currentPeriodEnd || (platformSub ? platformSub.currentPeriodEnd : null),
         createdAt: match?.createdAt || null,
       };
     });
@@ -97,6 +111,38 @@ export async function POST(req: Request) {
         currentPeriodEnd: expiresAt,
         createdAt: new Date(),
       });
+    }
+
+    // If upgrading platform or multipass, also elevate all flagship engines
+    if (product === 'platform' || product === 'multipass') {
+      const engines = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris', 'valkyrie'];
+      for (const eng of engines) {
+        const engSub = await db.query.subscriptions.findFirst({
+          where: and(
+            eq(subscriptions.userId, sessionUser.id),
+            eq(subscriptions.product, eng)
+          )
+        });
+        if (engSub) {
+          await db.update(subscriptions)
+            .set({
+              tier: normalizedTier,
+              status: 'active',
+              currentPeriodEnd: expiresAt,
+            })
+            .where(eq(subscriptions.id, engSub.id));
+        } else {
+          await db.insert(subscriptions).values({
+            id: `sub_${eng}_${sessionUser.id}`,
+            userId: sessionUser.id,
+            product: eng,
+            tier: normalizedTier,
+            status: 'active',
+            currentPeriodEnd: expiresAt,
+            createdAt: new Date(),
+          });
+        }
+      }
     }
 
     return NextResponse.json({

@@ -216,7 +216,7 @@ export default function Navbar() {
                 }}
                 onClick={() => setIsProductsOpen(!isProductsOpen)}
               >
-                Products
+                Platform Engines
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}>
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
@@ -239,13 +239,25 @@ export default function Navbar() {
                     backdropFilter: "blur(16px)",
                     border: "1px solid rgba(255, 255, 255, 0.12)",
                     borderRadius: "14px",
-                    padding: "6px",
-                    minWidth: "300px",
-                    boxShadow: "0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px rgba(59, 130, 246, 0.15)",
+                    padding: "8px 6px",
+                    minWidth: "320px",
+                    boxShadow: "0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px rgba(6, 182, 212, 0.15)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "2px"
                   }}>
+                    <div style={{
+                      padding: "6px 12px 8px",
+                      borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                      marginBottom: "4px"
+                    }}>
+                      <div style={{ fontSize: "0.72rem", fontWeight: 800, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        Closed-Loop Ecosystem
+                      </div>
+                      <div style={{ fontSize: "0.78rem", color: "#94A3B8" }}>
+                        7 interconnected sovereign defense engines
+                      </div>
+                    </div>
                     {/* PRODUCT 1: PUREIDE */}
                     <Link 
                       href="/products/pure-ide" 

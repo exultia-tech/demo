@@ -211,8 +211,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getUserTier = (product: ProductId | string): string => {
     if (!user) return "free";
-    const sub = user.subscriptions?.find(s => s.product === product && s.status === "active");
-    return sub ? sub.tier : "free";
+    // Check if user has an active overarching platform subscription
+    const platformSub = user.subscriptions?.find(
+      s => (s.product === "platform" || s.product === "multipass") && s.status === "active"
+    );
+    const specificSub = user.subscriptions?.find(s => s.product === product && s.status === "active");
+
+    const platformTier = platformSub?.tier?.toLowerCase();
+    const specificTier = specificSub?.tier?.toLowerCase();
+
+    if (platformTier === "enterprise" || specificTier === "enterprise") {
+      return "enterprise";
+    }
+    if (platformTier === "pro" || specificTier === "pro" || specificTier === "legal") {
+      return specificTier === "enterprise" ? "enterprise" : "pro";
+    }
+    return specificTier || "free";
   };
 
   const isImpersonating = !!user?.isImpersonating;

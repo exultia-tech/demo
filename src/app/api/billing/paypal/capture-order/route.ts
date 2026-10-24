@@ -89,6 +89,37 @@ export async function POST(req: Request) {
       });
     }
 
+    if (finalProduct === 'platform' || finalProduct === 'multipass') {
+      const engines = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris', 'valkyrie'];
+      for (const eng of engines) {
+        const engSub = await db.query.subscriptions.findFirst({
+          where: and(
+            eq(subscriptions.userId, user.id),
+            eq(subscriptions.product, eng)
+          )
+        });
+        if (engSub) {
+          await db.update(subscriptions)
+            .set({
+              tier: finalTier,
+              status: 'active',
+              currentPeriodEnd: expiresAt,
+            })
+            .where(eq(subscriptions.id, engSub.id));
+        } else {
+          await db.insert(subscriptions).values({
+            id: `sub_${eng}_${user.id}`,
+            userId: user.id,
+            product: eng,
+            tier: finalTier,
+            status: 'active',
+            currentPeriodEnd: expiresAt,
+            createdAt: new Date(),
+          });
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: `Successfully processed PayPal payment! ${finalProduct.toUpperCase()} upgraded to ${finalTier.toUpperCase()}.`,

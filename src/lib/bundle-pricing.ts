@@ -23,6 +23,130 @@ export interface BundlePricingTier {
   isPopular: boolean;
 }
 
+export type PlatformTierId = "community" | "pro" | "enterprise";
+
+export interface PlatformPricingTier {
+  id: PlatformTierId;
+  name: string;
+  tagline: string;
+  badge?: string;
+  priceMonthly: number;
+  priceAnnual: number; // Effective monthly rate when billed annually
+  annualBilledTotal: number;
+  description: string;
+  highlights: string[];
+  engineCapabilities: {
+    vantage: string;
+    praxis: string;
+    eris: string;
+    valkyrie: string;
+    pureide: string;
+    pureos: string;
+    axiom: string;
+  };
+  ctaLabel: string;
+  isPopular: boolean;
+}
+
+export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
+  {
+    id: "community",
+    name: "Community Sovereign",
+    tagline: "Open-source foundational cyber defense for researchers & solo developers",
+    priceMonthly: 0,
+    priceAnnual: 0,
+    annualBilledTotal: 0,
+    description: "Zero-cost baseline security telemetry, safe vulnerability probes, and local hermetic compiler.",
+    highlights: [
+      "Open access to 110+ vulnerability registries in Vantage",
+      "Safe non-destructive BAS banner probes in Valkyrie",
+      "5 default chaos inoculation modules in Eris",
+      "Manual hotpatch inspection & verified rollback scripts in Praxis",
+      "Zero-telemetry hermetic workstation compiler in PureIDE",
+      "CIS-hardened baseline OCI container recipes in PureOS",
+      "Full CompTIA Security+, CySA+, CC exam prep banks in Axiom"
+    ],
+    engineCapabilities: {
+      vantage: "Public CVE search, CISA KEV feeds, and CVSS score breakdowns",
+      praxis: "Manual hotpatch verification and plain/JSON firewall block generators",
+      eris: "5 single-container chaos scenarios (Log4Shell, RegreSSHion, query injection)",
+      valkyrie: "5 safe non-destructive banner & protocol handshake canary probes",
+      pureide: "Single local developer seat with hermetic compiler and telemetry stripping",
+      pureos: "Standard CIS baseline container images and public vulnerability scanners",
+      axiom: "Complete exam question banks with instant in-browser score feedback"
+    },
+    ctaLabel: "Get Started Free",
+    isPopular: false
+  },
+  {
+    id: "pro",
+    name: "Professional Operator",
+    tagline: "Full closed-loop cyber sovereignty for solo security engineers & operators",
+    badge: "MOST POPULAR",
+    priceMonthly: 79,
+    priceAnnual: 59,
+    annualBilledTotal: 708,
+    description: "Unlock all 7 engines in unison: automated threat detection, adversary emulation, proof probing, hotpatch remediation, and cryptographic attestation.",
+    highlights: [
+      "Real-time Vantage threat streams, zero-day warnings & 300 req/min API",
+      "Autonomous Praxis patch streaming daemon & sub-second rollbacks",
+      "Full 7+ CVE Eris chaos catalog & 5-container Docker attack range",
+      "Full 10+ Vantage CVE Valkyrie probes with SHA-256 attestation tokens",
+      "Isolated PureIDE cloud build runners & automated CycloneDX SBOMs",
+      "Zero-trust hardened PureOS variants with cryptographic provenance",
+      "Axiom verifiable SHA-256 certificates & CSV/JSON student transcript exports",
+      "Over $340/month in individual product value consolidated into one plan"
+    ],
+    engineCapabilities: {
+      vantage: "Real-time threat feed streams, zero-day early warnings, and 300 req/min API quota",
+      praxis: "Autonomous patch streaming daemon, sub-second rollback engine, sentinels, and hardware firewall filters",
+      eris: "Full 7+ CVE chaos catalog, custom timed failsafe rollbacks (10m, 30m, 60m), and 5-container Docker Compose range",
+      valkyrie: "Remote endpoint & Docker cluster network probing with cryptographic SHA-256 pentest attestation signatures",
+      pureide: "Isolated cloud pipeline builds, network egress sandboxing, and automated CycloneDX SBOMs",
+      pureos: "Zero-trust hardened OS variants, automated SBOM recipes, and advanced CI/CD templates",
+      axiom: "Verifiable SHA-256 certificates, course history transcripts (CSV/JSON), and score sync API"
+    },
+    ctaLabel: "Unlock Professional",
+    isPopular: true
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise Fleet",
+    tagline: "Fleet-wide multi-node orchestration, compliance attestation & institutional LMS",
+    badge: "FLEET & COMPLIANCE",
+    priceMonthly: 499,
+    priceAnnual: 399,
+    annualBilledTotal: 4788,
+    description: "Multi-node fleet adversary orchestration, air-gapped CI/CD, SLSA Level 3 signed manifests, compliance reports, and deep LMS integrations.",
+    highlights: [
+      "Commercial redistributable Vantage feeds & real-time SIEM webhooks",
+      "Phased multi-ring Praxis rollout (Ring 0 -> Ring 1 -> Fleet) & Cosign SLSA L3",
+      "Multi-node fleet chaos orchestrator & custom zero-day adversary studio",
+      "Continuous CI/CD Valkyrie perimeter scanning & executive PDF/Markdown reports",
+      "Strict airgap signing, offline cryptographic cosign & enterprise build runners",
+      "Institutional Axiom LMS embedding (Canvas, Blackboard, Moodle) with SCORM/LTI",
+      "Organization volume entitlements, priority SLA, and audit logging exports"
+    ],
+    engineCapabilities: {
+      vantage: "Commercial redistributable feed, real-time enterprise SIEM webhooks (Splunk/Sentinel/QRadar), and automated CISO briefing generator",
+      praxis: "Phased multi-ring deployment orchestrator, Cosign OIDC SLSA Level 3 signed manifests, and fleet-wide emergency rollback",
+      eris: "Multi-node fleet chaos orchestrator (Ansible/Terraform), custom zero-day studio, and continuous red/blue verification",
+      valkyrie: "Continuous CI/CD perimeter probing, custom exploit canary builder, programmatic REST API, and executive compliance reports",
+      pureide: "Strict airgap signing, offline cryptographic cosign, immutable binary encapsulation, and enterprise build runners",
+      pureos: "Air-gapped deployment compatibility, signed cryptographic provenance, and organization fleet distribution",
+      axiom: "Live LMS simulator embedding (Canvas, Blackboard, Moodle), SCORM 1.2/2004 & LTI 1.3, multi-seat licensing, and gradebook passback"
+    },
+    ctaLabel: "Deploy Enterprise Fleet",
+    isPopular: false
+  }
+];
+
+export function getPlatformTier(id: PlatformTierId): PlatformPricingTier {
+  const match = EXULTIA_PLATFORM_TIERS.find(t => t.id === id);
+  return match || EXULTIA_PLATFORM_TIERS[0];
+}
+
+
 export const VALKYRIE_BASE_TIERS: BundlePricingTier[] = [
   {
     tier: "community",

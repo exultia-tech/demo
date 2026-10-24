@@ -45,11 +45,12 @@ export default function PaymentModal() {
 
   if (!isPaymentModalOpen || !paymentOptions) return null;
 
-  const isMultiPass = paymentOptions.product === "multipass";
+  const isPlatform = paymentOptions.product === "platform" || paymentOptions.product === "multipass";
+  const isMultiPass = isPlatform;
   const isAxiom = paymentOptions.product === "axiom";
   const isPraxis = paymentOptions.product === "praxis";
-  const proThreshold = isMultiPass ? 196 : 49;
-  const enterpriseThreshold = isMultiPass ? 595 : 399;
+  const proThreshold = isPlatform ? 59 : 49;
+  const enterpriseThreshold = isPlatform ? 399 : 399;
 
   const unlockedTier: "community" | "pro" | "enterprise" =
     paymentOptions.tier === "enterprise" || customPrice >= enterpriseThreshold

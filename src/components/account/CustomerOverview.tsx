@@ -43,17 +43,21 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   const erisTier = getUserTier("eris");
   const valkyrieTier = getUserTier("valkyrie");
 
+  // Compute unified platform tier
+  const platformTier = (() => {
+    const p = getUserTier("platform");
+    if (p === "enterprise" || p === "pro") return p;
+    const m = getUserTier("multipass");
+    if (m === "enterprise" || m === "pro") return m;
+    const pTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier, erisTier, valkyrieTier];
+    if (pTiers.includes("enterprise")) return "enterprise";
+    if (pTiers.includes("pro") || pTiers.includes("legal")) return "pro";
+    return "community";
+  })();
+
   // Calculate unlocked capabilities percentage across the full 7-product ecosystem
   const productTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier, erisTier, valkyrieTier];
-  let unlockedScore = 0;
-  productTiers.forEach(tier => {
-    if (tier === "enterprise") unlockedScore += 14.28;
-    else if (tier === "pro" || tier === "legal") unlockedScore += 10.5;
-    else unlockedScore += 4;
-  });
-  unlockedScore = Math.min(100, Math.round(unlockedScore));
-
-  const activePaidSubs = productTiers.filter(t => t !== "free").length;
+  let unlockedScore = platformTier === "enterprise" ? 100 : platformTier === "pro" ? 85 : 35;
 
   const quickLaunchers = [
     { id: "pureide", name: "PureIDE", desc: "Airgap Compiler", icon: PureIdeIcon, url: "/app/pureide", color: "#3B82F6", tier: pureIdeTier },
@@ -212,7 +216,11 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               <span>Unified Customer Identity & Security Posture</span>
             </div>
             <h2 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-              {activePaidSubs > 0 ? `${activePaidSubs} Active Licensed Workspaces` : "Community Free Tier Active"}
+              {platformTier === "enterprise"
+                ? "Enterprise Fleet Sovereign • All 7 Engines Unlocked"
+                : platformTier === "pro"
+                ? "Professional Operator • Full Closed-Loop Unlocked"
+                : "Community Sovereign • Baseline Defense Active"}
             </h2>
           </div>
 
