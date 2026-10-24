@@ -2584,6 +2584,242 @@ textarea.input-field {
   box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
 }
 
+/* ==========================================================================
+   SOVEREIGN CYBER COMMAND COCKPIT & ARCHITECTURAL BLUEPRINT
+   ========================================================================== */
+
+/* Telemetry Ribbon */
+.telemetry-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: rgba(10, 15, 26, 0.9);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 12px;
+  padding: 10px 18px;
+  margin-bottom: 2.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.05);
+}
+
+.telemetry-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #94A3B8;
+}
+
+.telemetry-item strong {
+  color: #E2E8F0;
+  font-weight: 700;
+}
+
+.telemetry-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulse-beacon 2s infinite ease-in-out;
+}
+
+@keyframes pulse-beacon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Dual-Pane Cockpit */
+.cyber-cockpit {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(10, 15, 26, 0.99) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 20px;
+  padding: 1.75rem;
+  margin-bottom: 4rem;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 229, 255, 0.1);
+  position: relative;
+}
+
+@media (max-width: 960px) {
+  .cyber-cockpit {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* OODA Kinetic Circuit Pipeline */
+.ooda-circuit {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+  position: relative;
+}
+
+@media (max-width: 960px) {
+  .ooda-circuit {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .ooda-circuit {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ooda-node {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ooda-node:hover {
+  transform: translateY(-4px);
+  border-color: var(--node-accent, #00E5FF);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 25px var(--node-glow, rgba(0, 229, 255, 0.25));
+}
+
+.ooda-node::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--node-accent, #00E5FF);
+  opacity: 0.6;
+}
+
+/* Foundational Stack (3 Columns) */
+.foundation-stack {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 960px) {
+  .foundation-stack {
+    grid-template-columns: 1fr;
+  }
+}
+
+.foundation-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.foundation-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--card-accent, #3B82F6);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 25px var(--card-glow, rgba(59, 130, 246, 0.25));
+}
+
+/* Comparison Matrix Table */
+.comparison-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: rgba(10, 15, 26, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 4rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.comparison-table th {
+  padding: 1rem 1.25rem;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comparison-table td {
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.sovereign-col {
+  background: rgba(0, 229, 255, 0.06);
+  color: #E2F8FF;
+  font-weight: 700;
+}
+
+/* Sovereign Dock */
+.sovereign-dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10, 15, 26, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 16px;
+  padding: 12px 20px;
+  margin: 3.5rem auto 1rem auto;
+  max-width: 900px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 229, 255, 0.15);
+}
+
+.dock-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  text-decoration: none;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.dock-item:hover {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: #00E5FF;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+}
+
 @keyframes vantage-loading {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(250%); }
