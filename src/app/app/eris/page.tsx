@@ -202,8 +202,8 @@ export default function ErisPage() {
       
       {/* ── HERO BANNER ─────────────────────────────────────────── */}
       <section style={{ 
-        background: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(239, 68, 68, 0.18), rgba(6, 10, 19, 0))",
-        borderBottom: "1px solid rgba(239, 68, 68, 0.2)",
+        background: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.22), rgba(239, 68, 68, 0.1), rgba(6, 10, 19, 0))",
+        borderBottom: "1px solid rgba(245, 158, 11, 0.25)",
         padding: "48px 24px 32px 24px"
       }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
@@ -211,15 +211,18 @@ export default function ErisPage() {
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
             
             {/* Title & Brand */}
-            <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               <div style={{ 
-                padding: "14px", 
-                borderRadius: "16px", 
-                background: "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.1))",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
-                boxShadow: "0 0 30px rgba(239, 68, 68, 0.25)"
+                padding: "12px", 
+                borderRadius: "20px", 
+                background: "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(124, 45, 18, 0.35), rgba(15, 23, 42, 0.8))",
+                border: "1px solid rgba(245, 158, 11, 0.5)",
+                boxShadow: "0 0 35px rgba(245, 158, 11, 0.35), inset 0 0 15px rgba(245, 158, 11, 0.15)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}>
-                <ErisIcon size={48} />
+                <ErisIcon size={56} />
               </div>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -228,7 +231,7 @@ export default function ErisPage() {
                     fontSize: "2.4rem", 
                     fontWeight: 900, 
                     letterSpacing: "0.08em",
-                    background: "linear-gradient(90deg, #FFFFFF 30%, #FCA5A5 100%)",
+                    background: "linear-gradient(90deg, #FFFFFF 15%, #FEF08A 55%, #F59E0B 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     margin: 0
@@ -238,14 +241,14 @@ export default function ErisPage() {
                   <span style={{ 
                     fontSize: "0.72rem", 
                     fontWeight: 800, 
-                    background: "rgba(239, 68, 68, 0.2)", 
-                    color: "#F87171", 
-                    border: "1px solid rgba(239, 68, 68, 0.4)", 
+                    background: "rgba(245, 158, 11, 0.2)", 
+                    color: "#FBBF24", 
+                    border: "1px solid rgba(245, 158, 11, 0.45)", 
                     padding: "3px 9px", 
                     borderRadius: "6px",
                     letterSpacing: "0.08em"
                   }}>
-                    CHAOS RANGE &amp; LAB
+                    CHAOS &amp; STRIFE LAB
                   </span>
                 </div>
                 <p style={{ margin: "6px 0 0 0", color: "#94A3B8", fontSize: "1.02rem", maxWidth: "680px" }}>

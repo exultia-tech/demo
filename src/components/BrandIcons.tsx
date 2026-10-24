@@ -667,58 +667,166 @@ export function KineticIcon({ size = 32, className = "", glow = true }: IconProp
 
 /**
  * Eris Product Icon
- * Goddess of Chaos and Strife — Intentional vulnerability range & adversary simulation lab.
- * Features an incandescent golden apple of discord enclosed in chaos flames and breach vents.
+ * Goddess of Chaos & Strife — The Golden Apple of Discord (Kallisti)
+ * crowned with the 8-pointed star of entropy and planetary strife ring.
  */
 export function ErisIcon({ size = 32, className = "", glow = true }: IconProps) {
-  const glowFilter = glow ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.6)) drop-shadow(0 0 18px rgba(239, 68, 68, 0.4))" : "none";
+  const glowFilter = glow
+    ? "drop-shadow(0 0 10px rgba(245, 158, 11, 0.65)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.35))"
+    : "none";
 
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ filter: glowFilter }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: glowFilter }}
+    >
       <defs>
-        <linearGradient id="eris-grad-flame" x1="12" y1="4" x2="36" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FDE047" />
-          <stop offset="35%" stopColor="#F97316" />
-          <stop offset="70%" stopColor="#EF4444" />
+        {/* Deep Cosmic Obsidian & Amber Glow */}
+        <radialGradient id="eris-bg-aura" cx="24" cy="25" r="23" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#7C2D12" stopOpacity="0.5" />
+          <stop offset="65%" stopColor="#450A0A" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#0F172A" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Chaos Rays / Arrow Gradient */}
+        <linearGradient id="eris-chaos-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FEF08A" />
+          <stop offset="35%" stopColor="#F59E0B" />
+          <stop offset="70%" stopColor="#DC2626" />
           <stop offset="100%" stopColor="#991B1B" />
         </linearGradient>
-        <linearGradient id="eris-grad-vessel" x1="8" y1="18" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#2E1065" />
-          <stop offset="50%" stopColor="#1E1B4B" />
-          <stop offset="100%" stopColor="#0F172A" />
+
+        {/* Golden Apple Specular Body Gradient */}
+        <radialGradient id="eris-apple-sphere" cx="21" cy="22" r="14" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFBEB" />
+          <stop offset="25%" stopColor="#FDE047" />
+          <stop offset="60%" stopColor="#F59E0B" />
+          <stop offset="85%" stopColor="#D97706" />
+          <stop offset="100%" stopColor="#78350F" />
+        </radialGradient>
+
+        {/* Apple Leaf Gradient */}
+        <linearGradient id="eris-leaf-grad" x1="26" y1="11" x2="33" y2="17" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FACC15" />
+          <stop offset="50%" stopColor="#84CC16" />
+          <stop offset="100%" stopColor="#4D7C0F" />
         </linearGradient>
-        <linearGradient id="eris-grad-apple" x1="16" y1="20" x2="32" y2="38" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FEF08A" />
-          <stop offset="40%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#B45309" />
-        </linearGradient>
-        <linearGradient id="eris-grad-chaos" x1="18" y1="26" x2="30" y2="38" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FDE047" />
-          <stop offset="100%" stopColor="#EF4444" />
+
+        {/* Dynamic Halo Ring Gradient */}
+        <linearGradient id="eris-ring-grad" x1="6" y1="20" x2="42" y2="30" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDE047" stopOpacity="0.85" />
+          <stop offset="50%" stopColor="#F59E0B" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#EF4444" stopOpacity="0.85" />
         </linearGradient>
       </defs>
 
-      {/* Eris Crucible / Altar of Discord */}
-      <path d="M12 22 H36 L32 41 H16 L12 22 Z" fill="url(#eris-grad-vessel)" stroke="#F59E0B" strokeWidth="1.8" strokeLinejoin="round" />
-      <line x1="8" y1="22" x2="40" y2="22" stroke="#FBBF24" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Ambient Chaos Aura */}
+      <circle cx="24" cy="25" r="21" fill="url(#eris-bg-aura)" />
 
-      {/* Dancing Strife Flames */}
-      <path d="M24 5 C29 11 32 15 29 19 C26 21 21 17 24 13 C21 16 19 20 22 23 C20 21 18 17 21 11 C23 8 22 6 24 5 Z" fill="url(#eris-grad-flame)" />
+      {/* ── 8-POINTED CHAOS STAR (The Emblem of Strife & Entropy) ── */}
+      {/* Outer Orbit Ring connecting ray bases */}
+      <circle cx="24" cy="25" r="17.5" stroke="url(#eris-ring-grad)" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
 
-      {/* The Golden Apple of Discord (Kallisti / To The Fairest) */}
-      <circle cx="24" cy="31" r="5.5" fill="url(#eris-grad-apple)" stroke="#FEF08A" strokeWidth="1" />
-      {/* Apple stem & chaos leaf */}
-      <path d="M24 25.5 C25 24 26 23.5 28 24" stroke="#84CC16" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Cardinal Arrows: North, South, East, West */}
+      {/* North Arrow */}
+      <path d="M 24 2.5 L 26.8 8 L 24.9 7.4 V 13.5 H 23.1 V 7.4 L 21.2 8 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      {/* South Arrow */}
+      <path d="M 24 45.5 L 21.2 40 L 23.1 40.6 V 34.5 H 24.9 V 40.6 L 26.8 40 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      {/* East Arrow */}
+      <path d="M 45.5 25 L 40 22.2 L 40.6 24.1 H 34.5 V 25.9 H 40.6 L 40 27.8 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      {/* West Arrow */}
+      <path d="M 2.5 25 L 8 27.8 L 7.4 25.9 H 13.5 V 24.1 H 7.4 L 8 22.2 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
 
-      {/* Chaos Star / 8-pointed rays of strife */}
-      <path d="M24 20 V22 M24 40 V42 M14 31 H16 M32 31 H34" stroke="url(#eris-grad-chaos)" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M17 24 L18.5 25.5 M29.5 36.5 L31 38 M17 38 L18.5 36.5 M29.5 25.5 L31 24" stroke="url(#eris-grad-chaos)" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Diagonal Arrows: NE, SE, SW, NW */}
+      {/* North-East Arrow (45 deg) */}
+      <g transform="rotate(45 24 25)">
+        <path d="M 24 3.5 L 26.5 8.5 L 24.8 8 V 13.5 H 23.2 V 8 L 21.5 8.5 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      </g>
+      {/* South-East Arrow (135 deg) */}
+      <g transform="rotate(135 24 25)">
+        <path d="M 24 3.5 L 26.5 8.5 L 24.8 8 V 13.5 H 23.2 V 8 L 21.5 8.5 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      </g>
+      {/* South-West Arrow (225 deg) */}
+      <g transform="rotate(225 24 25)">
+        <path d="M 24 3.5 L 26.5 8.5 L 24.8 8 V 13.5 H 23.2 V 8 L 21.5 8.5 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      </g>
+      {/* North-West Arrow (315 deg) */}
+      <g transform="rotate(315 24 25)">
+        <path d="M 24 3.5 L 26.5 8.5 L 24.8 8 V 13.5 H 23.2 V 8 L 21.5 8.5 Z" fill="url(#eris-chaos-grad)" stroke="#FEF08A" strokeWidth="0.5" />
+      </g>
 
-      {/* Golden Sparks of Discord */}
-      <circle cx="15" cy="12" r="1.5" fill="#FBBF24" />
-      <circle cx="33" cy="11" r="1.5" fill="#FBBF24" />
-      <circle cx="28" cy="7" r="1" fill="#FEF08A" />
-      <circle cx="20" cy="8" r="1" fill="#FEF08A" />
+      {/* Dynamic Planetary Ring of Discord */}
+      <ellipse cx="24" cy="25" rx="18.5" ry="6" transform="rotate(-18 24 25)" stroke="url(#eris-ring-grad)" strokeWidth="1.2" fill="none" opacity="0.75" />
+
+      {/* ── THE GOLDEN APPLE OF DISCORD (Kallisti) ── */}
+      {/* Apple Silhouette Base */}
+      <path
+        d="M 24 18.5 C 21.5 15, 14 15, 12.8 21.5 C 11.5 28.5, 16.5 36.5, 21.8 37 C 23.2 37.1, 23.8 35.8, 24 35.8 C 24.2 35.8, 24.8 37.1, 26.2 37 C 31.5 36.5, 36.5 28.5, 35.2 21.5 C 34 15, 26.5 15, 24 18.5 Z"
+        fill="url(#eris-apple-sphere)"
+        stroke="#FEF08A"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+
+      {/* Specular 3D Gloss Curve on Upper Left Cleft */}
+      <path
+        d="M 15 21.5 C 15.5 18, 19.5 17, 22.5 18 C 20 18.5, 16.5 20, 16 23 Z"
+        fill="#FFFFFF"
+        opacity="0.65"
+      />
+
+      {/* Gilded Apple Stem */}
+      <path
+        d="M 24 18.5 C 23.8 13.5, 26.5 10.5, 28.5 9"
+        stroke="#78350F"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 24 18.5 C 23.8 13.5, 26.5 10.5, 28.5 9"
+        stroke="#FBBF24"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+
+      {/* Golden Laurel / Strife Leaf */}
+      <path
+        d="M 26 13 C 29.5 10.8, 33.5 11.5, 35 9.5 C 33.8 14, 29 15.5, 26 13 Z"
+        fill="url(#eris-leaf-grad)"
+        stroke="#FEF08A"
+        strokeWidth="0.8"
+        strokeLinejoin="round"
+      />
+
+      {/* ── CHISELED "Κ" (KALLISTI - "TO THE FAIREST") INSCRIPTION ── */}
+      {/* 3D Shadow/Bevel */}
+      <path
+        d="M 21.5 22 V 30.5 M 26.5 22.5 L 21.8 26.5 L 27 30.5"
+        stroke="#451A03"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.9"
+      />
+      {/* Bright Golden Inscription Face */}
+      <path
+        d="M 21 21.5 V 30 M 26 22 L 21.3 26 L 26.5 30"
+        stroke="#FEF08A"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Divine Chaos Sparks of Discord */}
+      <circle cx="11" cy="11" r="1.2" fill="#FEF08A" opacity="0.9" />
+      <circle cx="37" cy="10" r="1.4" fill="#FDE047" opacity="0.9" />
+      <circle cx="41" cy="34" r="1.1" fill="#F59E0B" opacity="0.8" />
+      <circle cx="8" cy="36" r="1.1" fill="#EF4444" opacity="0.8" />
     </svg>
   );
 }
@@ -726,5 +834,6 @@ export function ErisIcon({ size = 32, className = "", glow = true }: IconProps) 
 // Backward-compatibility aliases
 export const PerditionIcon = ErisIcon;
 export const CrucibleIcon = ErisIcon;
+
 
 
