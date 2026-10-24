@@ -19,18 +19,21 @@ import {
   Building2,
   Cpu,
   CheckCircle2,
-  Users
+  Users,
+  RotateCcw
 } from "lucide-react";
 import { 
   PureIdeIcon, 
   VantageIcon, 
   PraxisIcon, 
   PureOsIcon, 
-  AxiomIcon 
+  AxiomIcon,
+  ErisIcon
 } from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
+import { calculateErisDiscount, getErisPrice } from "@/lib/eris-pricing";
 
-type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "multipass";
+type ProductKey = "pureide" | "uvi" | "praxis" | "pureos" | "axiom" | "eris" | "multipass";
 
 interface PlanItem {
   tier: string;
@@ -46,7 +49,7 @@ interface PlanItem {
 function SubscriptionContent() {
   const searchParams = useSearchParams();
   const initialProduct = (searchParams.get("product") as ProductKey) || "pureide";
-  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "multipass"];
+  const validProducts: ProductKey[] = ["pureide", "uvi", "praxis", "pureos", "axiom", "eris", "multipass"];
   
   const { user, openPaymentModal, getUserTier, refreshUser } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<ProductKey>(
@@ -57,6 +60,16 @@ function SubscriptionContent() {
   
   const isMultiPass = selectedProduct === "multipass";
   const isPraxis = selectedProduct === "praxis";
+  const isEris = selectedProduct === "eris";
+
+  // Ownership detection for bundle discounts (Vantage = 'uvi', Praxis = 'praxis', MultiPass = all)
+  const hasVantageActual = getUserTier("uvi") !== "free" || getUserTier("multipass") !== "free";
+  const hasPraxisActual = getUserTier("praxis") !== "free" || getUserTier("multipass") !== "free";
+  const [previewVantage, setPreviewVantage] = useState<boolean | null>(null);
+  const [previewPraxis, setPreviewPraxis] = useState<boolean | null>(null);
+  const hasVantage = previewVantage !== null ? previewVantage : hasVantageActual;
+  const hasPraxis = previewPraxis !== null ? previewPraxis : hasPraxisActual;
+  const erisDiscountInfo = calculateErisDiscount(hasVantage, hasPraxis);
 
   useEffect(() => {
     const prod = searchParams.get("product") as ProductKey;
@@ -313,6 +326,62 @@ function SubscriptionContent() {
         isPopular: false
       }
     ],
+    eris: [
+      {
+        tier: "free",
+        name: "Community Inoculation",
+        priceMonthly: 0,
+        priceAnnual: 0,
+        description: "Zero-cost baseline vulnerability inoculation for local testing and initial validation.",
+        features: [
+          "5 Default Chaos Inoculation Modules",
+          "SSH RegreSSHion & Ingress Socket Scenarios",
+          "Self-contained bash script generation",
+          "Manual endpoint rollback scripts",
+          "Single ephemeral test container recipe"
+        ],
+        cta: "Current Free Tier",
+        isPopular: false
+      },
+      {
+        tier: "pro",
+        name: "Pro Chaos Lab",
+        priceMonthly: 49,
+        priceAnnual: 39,
+        description: "Complete vulnerability catalog, timed automated rollbacks, and full 5-container Docker Compose range.",
+        features: [
+          "Everything in Community",
+          "Full Eris Chaos Catalog (All 7+ CVE Scenarios)",
+          "Automated Script Compilation API (/api/eris/generate & raw)",
+          "Custom Timed Failsafe Rollbacks (10m, 30m, 60m)",
+          "Full 5-Container Docker Compose Attack Range",
+          "Log4Shell, XZ Backdoor & CUPS Browsed Sandbox Environments",
+          "Direct Bridge to Praxis Autonomous Remediation",
+          "Eligible for 20% (Vantage) or 40% (Vantage+Praxis) Bundle Discounts"
+        ],
+        cta: "Upgrade to Pro",
+        isPopular: true
+      },
+      {
+        tier: "enterprise",
+        name: "Enterprise Chaos Range",
+        priceMonthly: 499,
+        priceAnnual: 399,
+        description: "Multi-node fleet adversary orchestration, custom zero-day builder, and continuous red/blue verification.",
+        features: [
+          "Everything in Pro",
+          "Multi-Node Fleet Chaos Orchestrator (Ansible & Terraform)",
+          "Custom CVE & Zero-Day Adversary Inoculator Studio",
+          "Dedicated Cloud Sandbox Attack Range Runner",
+          "Automated After-Action CBOM Attestation Probes",
+          "Continuous Red-Team / Blue-Team Canary Verification Pipelines",
+          "Eligible for 20% (Vantage) or 40% (Vantage+Praxis) Bundle Discounts",
+          "Organization Volume Entitlements & Custom SLA"
+        ],
+        cta: "Upgrade to Enterprise",
+        isPopular: false
+      }
+    ],
     multipass: [
       {
         tier: "pro",
@@ -326,6 +395,7 @@ function SubscriptionContent() {
           "Praxis Pro (Autonomous hotpatching & firewall engine)",
           "PureOS Pro",
           "Axiom Pro (Verifiable certs & export API)",
+          "Eris Pro (Adversary simulation & chaos proving ground)",
           "Huge Bundle Savings across the entire suite"
         ],
         cta: "Unlock MultiPass Pro",
@@ -343,6 +413,7 @@ function SubscriptionContent() {
           "Praxis Enterprise (Fleet-wide hotpatch orchestrator & hardware ACLs)",
           "PureOS Enterprise",
           "Axiom Enterprise LMS API",
+          "Eris Enterprise (Multi-node adversary orchestration & custom zero-days)",
           "Cosign SLSA Level 3 signed manifests",
           "24/7 AI Support Agent & automated self-hosted test suites",
           "Massive MultiPass Enterprise Bundle Savings"
@@ -388,6 +459,13 @@ function SubscriptionContent() {
       icon: <AxiomIcon size={18} glow={false} />,
       color: "#F43F5E",
       bgGradient: "linear-gradient(135deg, #F43F5E, #E11D48)"
+    },
+    eris: {
+      name: "Eris",
+      subtitle: "Adversary simulation & intentional vulnerability proving ground",
+      icon: <ErisIcon size={18} glow={false} />,
+      color: "#F59E0B",
+      bgGradient: "linear-gradient(135deg, #F59E0B, #DC2626)"
     },
     multipass: {
       name: "MultiPass",
@@ -562,6 +640,212 @@ function SubscriptionContent() {
         </div>
       </div>
 
+      {/* Eris Dynamic Bundle Discount Calculator & Entitlement Banner */}
+      {isEris && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          border: erisDiscountInfo.discountPercent > 0 
+            ? "1px solid rgba(245, 158, 11, 0.5)" 
+            : "1px solid rgba(255, 255, 255, 0.12)",
+          boxShadow: erisDiscountInfo.discountPercent > 0
+            ? "0 0 25px rgba(245, 158, 11, 0.15)"
+            : "none",
+          borderRadius: "16px",
+          padding: "1.5rem",
+          marginBottom: "2.5rem",
+          maxWidth: "1050px",
+          marginLeft: "auto",
+          marginRight: "auto"
+        }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(220, 38, 38, 0.2))",
+                border: "1px solid rgba(245, 158, 11, 0.4)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <ErisIcon size={24} glow={false} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                  Eris Bundle Pricing &amp; Sovereignty Discounts
+                </h2>
+                <p style={{ color: "#94A3B8", fontSize: "0.82rem", margin: "2px 0 0 0" }}>
+                  Autonomous adversary range discounts automatically unlock based on existing products in your stack.
+                </p>
+              </div>
+            </div>
+
+            {/* Active Discount Badge */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 14px",
+              borderRadius: "999px",
+              background: erisDiscountInfo.discountPercent === 40
+                ? "rgba(34, 197, 94, 0.2)"
+                : erisDiscountInfo.discountPercent === 20
+                  ? "rgba(139, 92, 246, 0.2)"
+                  : "rgba(255, 255, 255, 0.08)",
+              border: erisDiscountInfo.discountPercent === 40
+                ? "1px solid rgba(34, 197, 94, 0.5)"
+                : erisDiscountInfo.discountPercent === 20
+                  ? "1px solid rgba(139, 92, 246, 0.5)"
+                  : "1px solid rgba(255, 255, 255, 0.15)",
+            }}>
+              <Sparkles size={14} color={erisDiscountInfo.discountPercent === 40 ? "#86EFAC" : erisDiscountInfo.discountPercent === 20 ? "#C4B5FD" : "#94A3B8"} />
+              <span style={{
+                fontSize: "0.8rem",
+                fontWeight: 800,
+                color: erisDiscountInfo.discountPercent === 40 ? "#86EFAC" : erisDiscountInfo.discountPercent === 20 ? "#C4B5FD" : "#CBD5E1",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em"
+              }}>
+                {erisDiscountInfo.discountPercent > 0 
+                  ? `${erisDiscountInfo.discountPercent}% OFF APPLIED`
+                  : "Standard Rate (0% Off)"}
+              </span>
+            </div>
+          </div>
+
+          {/* Interactive Bundle Matrix Cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+            
+            {/* Card 1: Vantage (20% Off) */}
+            <div style={{
+              background: hasVantage ? "rgba(139, 92, 246, 0.12)" : "rgba(15, 23, 42, 0.6)",
+              border: hasVantage ? "1px solid rgba(139, 92, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              padding: "1rem",
+              position: "relative"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <VantageIcon size={20} glow={false} />
+                  <span style={{ fontWeight: 700, color: "#FFFFFF", fontSize: "0.92rem" }}>Vantage Bundle</span>
+                </div>
+                <span style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: "#C4B5FD",
+                  background: "rgba(139, 92, 246, 0.2)",
+                  padding: "2px 8px",
+                  borderRadius: "6px"
+                }}>
+                  20% OFF
+                </span>
+              </div>
+              <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4, margin: "0 0 0.75rem 0" }}>
+                Active Vantage subscription unlocks 20% off Eris. Real-time threat feed inoculation.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <span style={{ fontSize: "0.72rem", color: hasVantageActual ? "#86EFAC" : "#94A3B8", fontWeight: 600 }}>
+                  {hasVantageActual ? "✓ Account Entitled" : "Not Active on Account"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPreviewVantage(hasVantage ? false : true)}
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    padding: "3px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    background: hasVantage ? "rgba(139, 92, 246, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    border: hasVantage ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.15)",
+                    color: hasVantage ? "#C4B5FD" : "#94A3B8",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  {hasVantage ? "✓ Vantage Included" : "+ Test Vantage (20% Off)"}
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2: Praxis (With Vantage -> 40% Off) */}
+            <div style={{
+              background: (hasVantage && hasPraxis) ? "rgba(34, 197, 94, 0.12)" : "rgba(15, 23, 42, 0.6)",
+              border: (hasVantage && hasPraxis) ? "1px solid rgba(34, 197, 94, 0.4)" : "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              padding: "1rem",
+              position: "relative"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <PraxisIcon size={20} glow={false} />
+                  <span style={{ fontWeight: 700, color: "#FFFFFF", fontSize: "0.92rem" }}>Sovereignty Trinity</span>
+                </div>
+                <span style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: (hasVantage && hasPraxis) ? "#86EFAC" : "#FBBF24",
+                  background: (hasVantage && hasPraxis) ? "rgba(34, 197, 94, 0.2)" : "rgba(245, 158, 11, 0.2)",
+                  padding: "2px 8px",
+                  borderRadius: "6px"
+                }}>
+                  40% OFF
+                </span>
+              </div>
+              <p style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4, margin: "0 0 0.75rem 0" }}>
+                Have both Vantage + Praxis? Unlock the 40% maximum discount for the complete threat-to-remediation loop.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <span style={{ fontSize: "0.72rem", color: hasPraxisActual ? "#86EFAC" : "#94A3B8", fontWeight: 600 }}>
+                  {hasPraxisActual ? "✓ Account Entitled" : "Not Active on Account"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPraxis(hasPraxis ? false : true)}
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    padding: "3px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    background: hasPraxis ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
+                    border: hasPraxis ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.15)",
+                    color: hasPraxis ? "#FDE047" : "#94A3B8",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  {hasPraxis ? "✓ Praxis Included" : "+ Test Praxis (Requires Vantage)"}
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Reset simulation if active */}
+          {(previewVantage !== null || previewPraxis !== null) && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: "0.75rem" }}>
+              <button
+                type="button"
+                onClick={() => { setPreviewVantage(null); setPreviewPraxis(null); }}
+                style={{
+                  fontSize: "0.72rem",
+                  color: "#94A3B8",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+              >
+                <RotateCcw size={12} />
+                <span>Reset simulation to actual account entitlements</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Pricing Cards Grid */}
       <div style={{ 
         display: "grid", 
@@ -644,7 +928,7 @@ function SubscriptionContent() {
               {/* Price */}
               {(() => {
                 const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const price = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
+                const basePrice = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
 
                 // MultiPass Bundle Savings:
                 // Standalone individual products cost $49/mo ($39 annual) for Pro, $499/mo ($399 annual) for Enterprise.
@@ -654,7 +938,14 @@ function SubscriptionContent() {
                   ? (billingCycle === "annual" ? 39 : 49) 
                   : (billingCycle === "annual" ? 399 : 499);
                 const bundleSavings = isMultiPassPlan ? singleProductRate : 0;
-                const unbundledPrice = price + bundleSavings;
+                const unbundledPrice = basePrice + bundleSavings;
+
+                // Eris Dynamic Bundle Discount:
+                const erisCalc = (isEris && !isFree)
+                  ? getErisPrice(plan.tier as any, billingCycle, hasVantage, hasPraxis)
+                  : null;
+                const isErisDiscounted = erisCalc?.isDiscounted ?? false;
+                const effectivePrice = erisCalc ? erisCalc.finalPrice : basePrice;
 
                 return (
                   <div style={{ marginBottom: "1.75rem", display: "flex", flexDirection: "column", gap: "2px" }}>
@@ -670,7 +961,20 @@ function SubscriptionContent() {
                           ${unbundledPrice}
                         </span>
                       )}
-                      <span style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FFFFFF" }}>${price}</span>
+                      {isErisDiscounted && (
+                        <span style={{
+                          fontSize: "1.4rem",
+                          fontWeight: 700,
+                          color: "#64748B",
+                          textDecoration: "line-through",
+                          marginRight: "2px"
+                        }}>
+                          ${basePrice}
+                        </span>
+                      )}
+                      <span style={{ fontSize: "2.5rem", fontWeight: 900, color: isErisDiscounted ? "#FBBF24" : "#FFFFFF" }}>
+                        ${effectivePrice}
+                      </span>
                       <span style={{ color: "#94A3B8", fontSize: "0.9rem", fontWeight: 500 }}>
                         {isFree ? "forever" : "/mo"}
                       </span>
@@ -700,6 +1004,29 @@ function SubscriptionContent() {
                       </div>
                     )}
 
+                    {/* Eris Dynamic Bundle Savings Badge */}
+                    {isErisDiscounted && erisCalc && (
+                      <div style={{
+                        marginTop: "6px",
+                        background: erisCalc.discountPercent === 40
+                          ? "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)"
+                          : "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)",
+                        border: erisCalc.discountPercent === 40
+                          ? "1px solid rgba(34, 197, 94, 0.4)"
+                          : "1px solid rgba(139, 92, 246, 0.4)",
+                        borderRadius: "8px",
+                        padding: "6px 10px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px"
+                      }}>
+                        <Sparkles size={14} color={erisCalc.discountPercent === 40 ? "#86EFAC" : "#C4B5FD"} style={{ flexShrink: 0 }} />
+                        <span style={{ fontSize: "0.78rem", fontWeight: 800, color: erisCalc.discountPercent === 40 ? "#86EFAC" : "#C4B5FD" }}>
+                          Save ${erisCalc.discountSavings}/mo ({erisCalc.discountPercent}% Bundle Discount applied!)
+                        </span>
+                      </div>
+                    )}
+
                     <div style={{
                       fontSize: "0.72rem",
                       marginTop: "6px",
@@ -713,23 +1040,31 @@ function SubscriptionContent() {
                         ? "rgba(16, 185, 129, 0.15)" 
                         : isMultiPassPlan 
                           ? "rgba(236, 72, 153, 0.15)" 
-                          : "rgba(56, 189, 248, 0.15)",
+                          : isErisDiscounted
+                            ? "rgba(245, 158, 11, 0.15)"
+                            : "rgba(56, 189, 248, 0.15)",
                       color: isFree 
                         ? "#34D399" 
                         : isMultiPassPlan 
                           ? "#F472B6" 
-                          : "#38BDF8",
+                          : isErisDiscounted
+                            ? "#FBBF24"
+                            : "#38BDF8",
                       border: isFree 
                         ? "1px solid rgba(16, 185, 129, 0.3)" 
                         : isMultiPassPlan 
                           ? "1px solid rgba(236, 72, 153, 0.35)" 
-                          : "1px solid rgba(56, 189, 248, 0.3)"
+                          : isErisDiscounted
+                            ? "1px solid rgba(245, 158, 11, 0.35)"
+                            : "1px solid rgba(56, 189, 248, 0.3)"
                     }}>
                       {isFree 
                         ? (isPraxis ? "✓ 1 HOST NODE INCLUDED FREE FOREVER" : "✓ 1 USER SEAT INCLUDED FREE FOREVER")
                         : isMultiPassPlan 
                           ? "✓ COMPLETE SUITE BUNDLE • 1 PRODUCT FREE" 
-                          : (isPraxis ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
+                          : isErisDiscounted
+                            ? `✓ BUNDLE DISCOUNT • ${erisCalc?.discountPercent}% OFF APPLIED`
+                            : (isPraxis ? "✓ FIXED FLEET PRESET TIER" : "✓ FIXED PRESET TIER")}
                     </div>
                   </div>
                 );
@@ -753,13 +1088,17 @@ function SubscriptionContent() {
               {/* Action Button */}
               {(() => {
                 const isFree = plan.tier === "free" || plan.priceMonthly === 0;
-                const price = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
+                const basePrice = isFree ? 0 : (billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly);
+                const erisCalc = (isEris && !isFree)
+                  ? getErisPrice(plan.tier as any, billingCycle, hasVantage, hasPraxis)
+                  : null;
+                const effectivePrice = erisCalc ? erisCalc.finalPrice : basePrice;
                 const planLabel = plan.name;
 
                 return (
                   <button
                     disabled={isCurrent || isSwitchingFree}
-                    onClick={() => handlePlanSelect(plan.tier, planLabel, price)}
+                    onClick={() => handlePlanSelect(plan.tier, planLabel, effectivePrice)}
                     className={isCurrent ? "" : "btn-primary"}
                     style={{
                       width: "100%",

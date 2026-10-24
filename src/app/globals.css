@@ -2008,15 +2008,15 @@ textarea.input-field {
   text-align: center;
 }
 
-/* 3-Column Grid for Foundational Platforms */
+/* 4-Column Grid for Foundational Platforms */
 .platform-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.25rem;
   width: 100%;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1080px) {
   .platform-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

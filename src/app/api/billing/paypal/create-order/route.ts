@@ -31,6 +31,10 @@ const PRICING_CATALOG: Record<string, Record<string, { monthly: number; annual: 
     pro: { monthly: 49, annual: 39 * 12 },
     enterprise: { monthly: 499, annual: 399 * 12 },
   },
+  eris: {
+    pro: { monthly: 49, annual: 39 * 12 },
+    enterprise: { monthly: 499, annual: 399 * 12 },
+  },
 };
 
 export async function POST(req: Request) {

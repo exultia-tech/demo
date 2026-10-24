@@ -20,8 +20,8 @@ export async function GET(req: Request) {
       where: eq(subscriptions.userId, sessionUser.id),
     });
 
-    // Ensure all 5 flagship products in the suite are represented
-    const products = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom'];
+    // Ensure all flagship products in the suite are represented
+    const products = ['pureide', 'uvi', 'praxis', 'pureos', 'axiom', 'eris'];
     const enriched = products.map(prod => {
       const match = subs.find(s => s.product === prod);
       return {

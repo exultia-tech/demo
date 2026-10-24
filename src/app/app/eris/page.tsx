@@ -26,7 +26,8 @@ import {
   Code2,
   Bug,
   BookOpen,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { ErisIcon, PraxisIcon, VantageIcon } from '@/components/BrandIcons';
 import { 
@@ -257,8 +258,28 @@ export default function ErisPage() {
               </div>
             </div>
 
-            {/* Quick Bridge Button to Praxis */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* Quick Actions: Bridge to Praxis & Pricing */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+              <Link 
+                href="/account/subscription?product=eris"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 18px",
+                  borderRadius: "10px",
+                  background: "rgba(245, 158, 11, 0.15)",
+                  border: "1px solid rgba(245, 158, 11, 0.4)",
+                  color: "#FBBF24",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  textDecoration: "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <Sparkles size={16} />
+                <span>Pricing &amp; Bundles</span>
+              </Link>
               <Link 
                 href="/app/praxis?erisRemediate=true"
                 style={{

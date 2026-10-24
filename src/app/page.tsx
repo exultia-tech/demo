@@ -7,6 +7,7 @@ import {
   PureOsIcon, 
   PraxisIcon, 
   AxiomIcon, 
+  ErisIcon,
   ExultiaLogo 
 } from "@/components/BrandIcons";
 import { ArrowRight } from "lucide-react";
@@ -172,6 +173,30 @@ export default function HomePage() {
             </p>
             <div className="platform-card-link">
               <span>Launch Simulator</span>
+              <ArrowRight size={13} />
+            </div>
+          </Link>
+
+          {/* 6. Eris (Adversary Simulation & Chaos Range) */}
+          <Link 
+            href="/app/eris"
+            className="platform-card platform-card-eris"
+            style={{
+              // @ts-ignore
+              "--card-accent": "#F59E0B",
+              "--card-glow": "rgba(245, 158, 11, 0.4)",
+            }}
+          >
+            <div className="platform-icon-wrap">
+              <ErisIcon size={48} glow={true} />
+            </div>
+            <h3 className="platform-card-title">Eris</h3>
+            <div className="platform-card-sub">Adversary &amp; Chaos Lab</div>
+            <p className="platform-card-desc">
+              Intentional vulnerability proving ground. Seed controlled CVEs &amp; rogue sockets to validate detection.
+            </p>
+            <div className="platform-card-link">
+              <span>Enter Chaos Range</span>
               <ArrowRight size={13} />
             </div>
           </Link>
