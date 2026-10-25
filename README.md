@@ -18,6 +18,26 @@
 
 ---
 
+## ⚡ Just See It Work (Single-Line Copy-Paste)
+
+For engineers who don't want to read a wall of text and just want to verify it works right now:
+
+#### 🐧 Linux / macOS / WSL
+```bash
+git clone --depth=1 https://github.com/exultia-tech/demo.git && cd demo && python3 validate.py
+```
+*(or zero-clone via curl: `curl -sSL https://raw.githubusercontent.com/exultia-tech/demo/main/scripts/quick-test.sh | bash`)*
+
+#### 🪟 Windows (PowerShell)
+```powershell
+git clone --depth=1 https://github.com/exultia-tech/demo.git; cd demo; python validate.py
+```
+*(or zero-clone via irm: `irm https://raw.githubusercontent.com/exultia-tech/demo/main/scripts/quick-test.ps1 | iex`)*
+
+> Runs in ~5 seconds with zero external dependencies (Python 3.8+ stdlib only). Benchmarks sub-second deterministic rollback (<35ms), verifies cryptographic SLSA Level 3 checksums, audits in-the-wild CVE remediation packages, and checks fleet harness readiness.
+
+---
+
 ## 🧐 Why This Repository Exists
 
 Most enterprise cybersecurity software is **80% PowerPoint slide decks, 15% buzzword-filled marketing brochures, and 5% broken agent software** that crashes production servers during a Friday 5 PM kernel update.
