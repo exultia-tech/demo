@@ -1,6 +1,7 @@
 # Exultia Technologies: Master API Reference
 
-**Consolidated REST & Streaming Endpoints Specification**
+**Consolidated REST & Streaming Endpoints Specification**  
+**Version:** 2.4.0
 
 ---
 
@@ -65,7 +66,101 @@ Natural-language executive consultation and vulnerability risk briefing.
 
 ---
 
-### 3. Axiom (Certification Simulator & Question Base)
+### 3. Eris (Adversary Emulation & Chaos Lab)
+
+#### `POST /api/eris/generate`
+Compiles an on-demand inoculation script with auto-rollback watchdog.
+- **Request Body**:
+  ```json
+  {
+    "os": "ubuntu",
+    "selectedModuleIds": ["ssh_permissive_regresshion", "rogue_c2_listeners"],
+    "autoRollbackMinutes": 10
+  }
+  ```
+- **Example cURL**:
+  ```bash
+  curl -X POST "https://exultia.tech/api/eris/generate" \
+    -H "Content-Type: application/json" \
+    -d '{"os":"ubuntu","autoRollbackMinutes":10}'
+  ```
+
+#### `GET /api/eris/raw`
+Returns raw compiled POSIX shell script suitable for piping directly into `sh`.
+- **Parameters**: `os=ubuntu|debian|rhel|rocky|alpine`, `timeout=10`, `modules=id1,id2`
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/eris/raw?os=ubuntu&timeout=10" | sudo sh
+  ```
+
+---
+
+### 4. Valkyrie (Non-Destructive Canary BAS)
+
+#### `POST /api/valkyrie/probe`
+Executes an on-demand non-destructive canary probe against a target endpoint.
+- **Request Body**:
+  ```json
+  {
+    "probeId": "probe-regresshion",
+    "targetHost": "10.0.4.15",
+    "targetPort": 22,
+    "dryRun": false
+  }
+  ```
+- **Example cURL**:
+  ```bash
+  curl -X POST "https://exultia.tech/api/valkyrie/probe" \
+    -H "Content-Type: application/json" \
+    -d '{"probeId": "probe-regresshion", "targetHost": "10.0.4.15", "targetPort": 22}'
+  ```
+
+#### `GET /api/valkyrie/probe`
+Returns the active catalog of non-destructive canary probes with CVSS and EPSS scoring.
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/valkyrie/probe"
+  ```
+
+---
+
+### 5. Praxis (Tactical Simulation & Remediation)
+
+#### `GET /api/praxis/feed`
+Retrieves remediation strategies by OS target.
+- **Parameters**: `target=ubuntu|rocky|debian|alpine`
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/praxis/feed?target=ubuntu"
+  ```
+
+#### `POST /api/praxis/generate`
+Generates serialized Ansible playbooks with 10% canary controls or POSIX hotfix scripts.
+- **Example cURL**:
+  ```bash
+  curl -X POST "https://exultia.tech/api/praxis/generate" \
+    -H "Content-Type: application/json" \
+    -d '{"cveId": "CVE-2024-6387", "targetPlatform": "ubuntu", "automationFormat": "ansible", "canaryPercentage": 10}'
+  ```
+
+---
+
+### 6. Argent (Multi-OS Vendor Errata Feed)
+
+#### `GET /api/argent/feed`
+Streams standardized vendor security advisories from Debian, Ubuntu, Red Hat, Rocky, Alpine, and SUSE.
+- **Parameters**: `os=string`, `severity=string`, `limit=N`
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/argent/feed?os=ubuntu&limit=10"
+  ```
+
+#### `GET /api/argent/stats`
+Telemetry metrics across all aggregated distribution security trackers.
+
+---
+
+### 7. Axiom (Certification Simulator & Question Base)
 
 #### `GET /api/axiom/exam`
 Fetches adaptive simulation questions by certification exam.
@@ -85,12 +180,12 @@ Evaluates responses, computes domain strength percentages, and issues certificat
   ```
 
 #### `GET /api/axiom/export`
-Exports question catalogues and syllabus data for LMS integration.
+Exports question catalogues and syllabus data for enterprise LMS integration (SCORM / LTI).
 - **Parameters**: `exam=name`, `format=json|csv`
 
 ---
 
-### 4. Inquest (Digital Forensics & Public Records)
+### 8. Inquest (Digital Forensics & Public Records)
 
 #### `GET /api/inquest/cases`
 Lists open investigations and public records requests.
@@ -102,27 +197,17 @@ Creates a new forensic tracking case with statutory deadlines.
 
 ---
 
-### 5. Praxis (Tactical Simulation & Remediation)
-
-#### `GET /api/praxis/feed`
-Retrieves remediation strategies by OS target.
-
-#### `POST /api/praxis/generate`
-Generates serialized Ansible playbooks with 10% canary controls.
-
----
-
-### 6. PureIDE & PureOS
+### 9. PureIDE & PureOS
 
 #### `GET /api/pureide/versions`
-Certified compiler and toolchain versions.
+Certified compiler and toolchain versions for hermetic builds.
 
 #### `POST /api/pureide/events`
 Telemetry logging for hermetic build sandboxes.
 
 ---
 
-### 7. Support & Sentinel AI
+### 10. AI Support Sentinel
 
 #### `POST /api/support/chat`
 Autonomous technical support sentinel answering product queries, installation instructions, and licensing details.
@@ -130,5 +215,5 @@ Autonomous technical support sentinel answering product queries, installation in
   ```bash
   curl -X POST "https://exultia.tech/api/support/chat" \
     -H "Content-Type: application/json" \
-    -d '{"message": "How do I run the Kinetic daemon on Linux?"}'
+    -d '{"message": "How do I test in-memory hotpatching with Praxis?"}'
   ```
