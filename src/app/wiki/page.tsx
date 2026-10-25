@@ -12,6 +12,7 @@ import {
   ValkyrieIcon
 } from "@/components/BrandIcons";
 import ProductSimulators from "@/components/research/ProductSimulators";
+import DefenseCockpit from "@/components/research/DefenseCockpit";
 import { 
   Search, 
   Terminal, 
@@ -32,7 +33,8 @@ import {
   Play,
   RotateCcw,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Activity
 } from "lucide-react";
 
 interface ApiEndpoint {
@@ -744,7 +746,7 @@ const PRODUCT_SUBTITLES: Record<string, string> = {
 
 export default function ResearchWikiPage() {
   const [activeProductId, setActiveProductId] = useState<string>("vantage");
-  const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis">("simulator");
+  const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis" | "cockpit">("simulator");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -757,7 +759,7 @@ export default function ResearchWikiPage() {
       if (productParam && WIKI_PRODUCTS.some(p => p.id === productParam.toLowerCase())) {
         setActiveProductId(productParam.toLowerCase());
       }
-      if (tabParam && ["simulator", "details", "quickstart", "api", "all-apis"].includes(tabParam)) {
+      if (tabParam && ["simulator", "details", "quickstart", "api", "all-apis", "cockpit"].includes(tabParam)) {
         setActiveTab(tabParam as any);
       }
     }
@@ -1237,6 +1239,38 @@ export default function ResearchWikiPage() {
                 flexDirection: "column",
                 gap: "6px"
               }}>
+                <button
+                  onClick={() => {
+                    setActiveTab("cockpit");
+                    if (typeof window !== "undefined") {
+                      window.history.pushState(null, "", "/wiki?tab=cockpit");
+                    }
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "9px 12px",
+                    borderRadius: "8px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    color: activeTab === "cockpit" ? "#22D3EE" : "#FFFFFF",
+                    background: activeTab === "cockpit" ? "rgba(6, 182, 212, 0.2)" : "rgba(6, 182, 212, 0.08)",
+                    border: activeTab === "cockpit" ? "1px solid #06B6D4" : "1px solid rgba(6, 182, 212, 0.25)",
+                    cursor: "pointer",
+                    marginBottom: "0.5rem",
+                    transition: "all 0.15s ease",
+                    width: "100%",
+                    textAlign: "left"
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Activity size={15} color="#00E5FF" />
+                    <span>Defense Cockpit</span>
+                  </span>
+                  <span style={{ fontSize: "0.62rem", background: "rgba(0, 229, 255, 0.2)", color: "#67E8F9", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>LIVE LAB</span>
+                </button>
+
                 <div style={{
                   fontSize: "0.7rem",
                   fontWeight: 800,
@@ -1397,12 +1431,28 @@ export default function ResearchWikiPage() {
             </span>
             <span style={{ color: "#64748B" }}>/</span>
             <span style={{ color: activeProduct.accentColor, fontWeight: 600 }}>
-              {activeTab === "simulator" ? "Interactive Lab Simulator" :
+              {activeTab === "cockpit" ? "Autonomous Closed-Loop Defense Cockpit" :
+               activeTab === "simulator" ? "Interactive Lab Simulator" :
                activeTab === "details" ? "Architecture & Specs" :
                activeTab === "quickstart" ? "Quick-Start Guide" :
                `API & cURL Reference (${activeProduct.apiEndpoints.length})`}
             </span>
           </div>
+
+        {/* TAB -1: CLOSED-LOOP DEFENSE COCKPIT */}
+        {activeTab === "cockpit" && (
+          <div style={{ marginBottom: "2rem" }}>
+            <div style={{ marginBottom: "1.25rem" }}>
+              <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
+                Autonomous Closed-Loop Defense Cockpit
+              </h2>
+              <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                Interactive live simulation of the full OODA loop: Detect (Vantage) &rarr; Emulate (Eris) &rarr; Verify (Valkyrie) &rarr; Remediate (Kinetic).
+              </p>
+            </div>
+            <DefenseCockpit />
+          </div>
+        )}
 
         {/* TAB 0: INTERACTIVE LAB SIMULATOR */}
         {activeTab === "simulator" && (

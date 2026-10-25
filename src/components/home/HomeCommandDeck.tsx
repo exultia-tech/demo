@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import { 
   PureIdeIcon, 
@@ -10,253 +10,34 @@ import {
   AxiomIcon, 
   ErisIcon, 
   ValkyrieIcon,
-  ExultiaLogo 
+  ExultiaLinuxIcon
 } from "@/components/BrandIcons";
 import { 
-  Play, 
-  RotateCcw, 
   CheckCircle2, 
   ShieldCheck, 
   ArrowRight, 
-  Terminal, 
   Sparkles, 
-  AlertTriangle,
-  Flame,
-  Radio,
-  Cpu,
-  Layers,
-  Activity,
-  Server,
-  Lock,
-  ExternalLink,
-  ChevronRight,
-  Shield,
-  Zap,
-  Globe,
-  Award
+  Cpu, 
+  Layers, 
+  Activity, 
+  Server, 
+  Lock, 
+  ChevronRight, 
+  Shield, 
+  Zap, 
+  RotateCcw,
+  Terminal,
+  ExternalLink
 } from "lucide-react";
 
-interface Scenario {
-  id: string;
-  name: string;
-  cve: string;
-  cvss: number;
-  severity: "CRITICAL" | "HIGH";
-  vector: string;
-  targetService: string;
-  vantageSummary: string;
-  erisModule: string;
-  valkyriePayload: string;
-  praxisHotpatch: string;
-  attestationSha: string;
-}
-
-const SCENARIOS: Scenario[] = [
-  {
-    id: "php-cgi",
-    name: "PHP-CGI Argument Injection RCE",
-    cve: "CVE-2024-4577",
-    cvss: 9.8,
-    severity: "CRITICAL",
-    vector: "Windows Best-Fit %AD Mapping Bypass",
-    targetService: "Apache/2.4.59 (Win64) PHP/8.2.19 (CGI)",
-    vantageSummary: "CISA KEV active. Zero-day exploitation detected against unpatched Windows CGI instances via command line query parameter injection.",
-    erisModule: "php_cgi_query_injection",
-    valkyriePayload: "POST /test.php?%ADd+allow_url_include%3d1 HTTP/1.1",
-    praxisHotpatch: "RewriteCond %{QUERY_STRING} ^(%AD|%ad)d [NC] -> RewriteRule .* - [F,L]",
-    attestationSha: "sha256:4a8c9b2f10e7d532a89c3b1e920d58f3b2a1c0d4"
-  },
-  {
-    id: "regresshion",
-    name: "OpenSSH Signal Race Pre-Auth RCE",
-    cve: "CVE-2024-6387",
-    cvss: 8.1,
-    severity: "CRITICAL",
-    vector: "SIGALRM Handler Race Condition",
-    targetService: "OpenSSH_9.2p1 Debian-2+deb12u2 (glibc)",
-    vantageSummary: "Signal handler race condition in sshd allows unauthenticated root code execution on glibc-based Linux systems.",
-    erisModule: "ssh_regresshion_signal_race",
-    valkyriePayload: "TCP Handshake Port 22 -> Banner Probe (Safe Non-Destructive Canary)",
-    praxisHotpatch: "sshd_config: LoginGraceTime 0 -> sysctl net.ipv4.tcp_max_syn_backlog=4096",
-    attestationSha: "sha256:7b1e9a3c4d5f608192a3b4c5d6e7f8a9b0c1d2e3"
-  },
-  {
-    id: "xz-backdoor",
-    name: "XZ Utils Upstream Liblzma Backdoor",
-    cve: "CVE-2024-3094",
-    cvss: 10.0,
-    severity: "CRITICAL",
-    vector: "Supply-Chain IFUNC Hijack",
-    targetService: "liblzma.so.5.6.0 / sshd systemd socket",
-    vantageSummary: "Compromised upstream release tarballs containing malicious test files injecting unauthorized RSA decryption keys into sshd.",
-    erisModule: "xz_liblzma_backdoor_injection",
-    valkyriePayload: "ELF Section Inspection -> Symbol Check `_get_cpuid`",
-    praxisHotpatch: "Atomic package rollback: liblzma 5.6.0 -> 5.4.5 + kill -HUP sshd",
-    attestationSha: "sha256:9f8e7d6c5b4a392817263544536271809a8b7c6d"
-  },
-  {
-    id: "log4shell",
-    name: "Apache Log4j2 JNDI Remote Code Execution",
-    cve: "CVE-2021-44228",
-    cvss: 10.0,
-    severity: "CRITICAL",
-    vector: "JNDI LDAP Lookup Injection",
-    targetService: "Apache Log4j 2.14.1 (Java 11 OpenJDK)",
-    vantageSummary: "Unauthenticated remote code execution via recursive message lookup substitution parsing attacker-controlled JNDI strings.",
-    erisModule: "log4j_jndi_ldap_injection",
-    valkyriePayload: "${jndi:ldap://127.0.0.1:1389/CanaryProbe}",
-    praxisHotpatch: "JVM flag: -Dlog4j2.formatMsgNoLookups=true + Classpath Bytecode Strip",
-    attestationSha: "sha256:1a2b3c4d5e6f708192a3b4c5d6e7f8a9b0c1d2e3"
-  }
-];
-
 export default function HomeCommandDeck() {
-  const [selectedScenario, setSelectedScenario] = useState<Scenario>(SCENARIOS[0]);
-  const [isRunning, setIsRunning] = useState(false);
-  const [activeStage, setActiveStage] = useState<number>(0); // 0=idle, 1=detect, 2=emulate, 3=verify, 4=remediate, 5=complete
-  const [terminalLines, setTerminalLines] = useState<string[]>([
-    "EXULTIA KINETIC AUTONOMOUS KERNEL DAEMON v2.4.0 (x86_64-linux-gnu)",
-    "Status: DAEMON_ARMORED • 110+ authoritative feeds synchronized • 0 active alerts",
-    "Ready. Select a CVE scenario above and click 'Run Closed-Loop Defense'."
-  ]);
-  const [isMitigated, setIsMitigated] = useState(false);
-  const [isRolledBack, setIsRolledBack] = useState(false);
-
-  const terminalEndRef = useRef<HTMLDivElement>(null);
-  const simulatorRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollTop = terminalEndRef.current.scrollHeight;
-    }
-  }, [terminalLines]);
-
-  const handleScenarioChange = (scenario: Scenario) => {
-    setSelectedScenario(scenario);
-    setActiveStage(0);
-    setIsRunning(false);
-    setIsMitigated(false);
-    setIsRolledBack(false);
-    setTerminalLines([
-      `SCENARIO ARMED: ${scenario.name} (${scenario.cve})`,
-      `CVSS Score: ${scenario.cvss} [${scenario.severity}] • Vector: ${scenario.vector}`,
-      `Target Service: ${scenario.targetService}`,
-      "Click 'Run Closed-Loop Defense' to execute detection, emulation, and in-memory hotpatching."
-    ]);
-  };
-
-  const runSequence = async () => {
-    if (isRunning) return;
-    setIsRunning(true);
-    setIsMitigated(false);
-    setIsRolledBack(false);
-
-    const now = () => {
-      const d = new Date();
-      return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}.${d.getMilliseconds().toString().padStart(3, "0")}`;
-    };
-
-    setTerminalLines([
-      `[${now()}] 🚀 INITIALIZING AUTONOMOUS CLOSED-LOOP DEFENSE SEQUENCE`,
-      `[${now()}] TARGET CVE: ${selectedScenario.cve} (${selectedScenario.name})`,
-      `[${now()}] -------------------------------------------------------------`
-    ]);
-
-    // STAGE 1: DETECT
-    setActiveStage(1);
-    await new Promise((r) => setTimeout(r, 600));
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 📡 [STAGE 1: VANTAGE DETECT] Ingested advisory ${selectedScenario.cve} (CVSS: ${selectedScenario.cvss})`,
-      `[${now()}]    Source: CISA KEV & NIST NVD • Impact: Critical remote compromise`,
-      `[${now()}]    Vector breakdown: ${selectedScenario.vector}`
-    ]);
-
-    // STAGE 2: EMULATE
-    setActiveStage(2);
-    await new Promise((r) => setTimeout(r, 700));
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 🧪 [STAGE 2: ERIS EMULATE] Initializing isolated chaos container sandbox`,
-      `[${now()}]    Module: ${selectedScenario.erisModule} • Binding ephemeral socket`,
-      `[${now()}]    Target service running: ${selectedScenario.targetService}`,
-      `[${now()}]    Watchdog failsafe armed: 10m auto-kill timer`
-    ]);
-
-    // STAGE 3: VERIFY
-    setActiveStage(3);
-    await new Promise((r) => setTimeout(r, 700));
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 🎯 [STAGE 3: VALKYRIE VERIFY] Injecting safe non-destructive canary probe`,
-      `[${now()}]    Payload: ${selectedScenario.valkyriePayload}`,
-      `[${now()}]    ⚠️ RESULT: EXPLOITABILITY CONFIRMED [Target Vulnerable]`
-    ]);
-
-    // STAGE 4: REMEDIATE
-    setActiveStage(4);
-    await new Promise((r) => setTimeout(r, 800));
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 🔧 [STAGE 4: PRAXIS REMEDIATE] Synthesizing targeted in-memory hotpatch`,
-      `[${now()}]    Rule: ${selectedScenario.praxisHotpatch}`,
-      `[${now()}]    Taking atomic snapshot: /var/lib/kinetic/snapshots/${selectedScenario.cve}/`,
-      `[${now()}] ⚡ KINETIC: Hotpatch injected in 34ms! Zero daemon restart. Zero downtime.`
-    ]);
-
-    // STAGE 5: POST-FLIGHT ATTESTATION
-    setActiveStage(5);
-    await new Promise((r) => setTimeout(r, 600));
-    setIsMitigated(true);
-    setIsRunning(false);
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 🛡️ [STAGE 5: POST-FLIGHT PROVE] Re-executing Valkyrie canary probe`,
-      `[${now()}]    HTTP Status: 403 Forbidden [Payload Blocked]`,
-      `[${now()}] ✅ CRYPTOGRAPHIC ATTESTATION: ${selectedScenario.attestationSha}`,
-      `[${now()}] 🎉 CLOSED LOOP COMPLETE in 198ms. Host armored against ${selectedScenario.cve}.`
-    ]);
-  };
-
-  const triggerRollback = async () => {
-    if (isRunning || !isMitigated) return;
-    setIsRunning(true);
-
-    const now = () => {
-      const d = new Date();
-      return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}.${d.getMilliseconds().toString().padStart(3, "0")}`;
-    };
-
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] 🔄 USER TRIGGERED DETERMINISTIC ROLLBACK: sudo kinetic rollback --cve=${selectedScenario.cve}`,
-      `[${now()}] Restoring pre-flight atomic snapshot...`
-    ]);
-
-    await new Promise((r) => setTimeout(r, 500));
-    setIsMitigated(false);
-    setIsRolledBack(true);
-    setIsRunning(false);
-    setActiveStage(0);
-
-    setTerminalLines((prev) => [
-      ...prev,
-      `[${now()}] ✅ ATOMIC ROLLBACK SUCCESSFUL in 14ms! Restored original binary & firewall state.`,
-      `[${now()}] Host returned to baseline state.`
-    ]);
-  };
-
-  const scrollToSimulator = () => {
-    if (simulatorRef.current) {
-      simulatorRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1.5rem 1rem 5rem 1rem" }}>
       
-      {/* ── HERO HEADLINE & CONFIDENT MISSION ─────────────────────────────────── */}
-      <section style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+      {/* ── 1. HERO HEADLINE & SOVEREIGN MISSION ─────────────────────────────────── */}
+      <section style={{ textAlign: "center", marginBottom: "4rem" }}>
+        
+        {/* Status Pill Badge */}
         <div style={{
           display: "inline-flex",
           alignItems: "center",
@@ -265,7 +46,7 @@ export default function HomeCommandDeck() {
           border: "1px solid rgba(0, 229, 255, 0.25)",
           padding: "5px 14px",
           borderRadius: "20px",
-          marginBottom: "1.25rem",
+          marginBottom: "1.5rem",
           fontSize: "0.78rem",
           fontFamily: "var(--font-mono, monospace)",
           color: "#67E8F9",
@@ -276,19 +57,20 @@ export default function HomeCommandDeck() {
           <span>The Unified Cyber Sovereignty Ecosystem</span>
         </div>
 
+        {/* Hero Title */}
         <h1 style={{ 
           fontFamily: "var(--font-display, 'Orbitron', sans-serif)", 
-          fontSize: "clamp(2.2rem, 4.4vw, 3.6rem)", 
+          fontSize: "clamp(2.3rem, 4.5vw, 3.8rem)", 
           fontWeight: 900, 
           color: "#FFFFFF", 
           letterSpacing: "-0.02em", 
-          marginBottom: "1rem",
-          lineHeight: 1.15
+          marginBottom: "1.25rem",
+          lineHeight: 1.12
         }}>
           Autonomous Cyber Defense.
           <span style={{ 
             display: "block", 
-            background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 50%, #A855F7 100%)",
+            background: "linear-gradient(135deg, #00E5FF 0%, #38BDF8 40%, #818CF8 70%, #C084FC 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent"
           }}>
@@ -296,356 +78,310 @@ export default function HomeCommandDeck() {
           </span>
         </h1>
 
-        <p style={{ color: "#94A3B8", fontSize: "1.1rem", maxWidth: "840px", margin: "0 auto 2rem auto", lineHeight: 1.6 }}>
-          Zero-day threats move in minutes. Upstream vendor security patches take weeks. Exultia closes the loop: real-time universal threat detection, isolated adversary emulation, non-destructive pentest probes, and sub-second in-memory hotpatching.
+        {/* Subtitle */}
+        <p style={{ color: "#94A3B8", fontSize: "1.15rem", maxWidth: "860px", margin: "0 auto 2.5rem auto", lineHeight: 1.6 }}>
+          Zero-day threats move in minutes. Upstream vendor security patches take weeks. Exultia closes the loop: continuous universal threat intelligence, a sovereign declarative operating system, and sub-second zero-downtime hotpatching.
         </p>
 
-        {/* Hero CTAs */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "2rem" }}>
+        {/* Action CTAs */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "2.5rem" }}>
+          <Link
+            href="/products/exultia-linux"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              background: "linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)",
+              color: "#FFFFFF",
+              fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
+              fontWeight: 800,
+              fontSize: "0.95rem",
+              letterSpacing: "0.04em",
+              padding: "14px 26px",
+              borderRadius: "10px",
+              textDecoration: "none",
+              boxShadow: "0 0 30px rgba(6, 182, 212, 0.4)",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease"
+            }}
+          >
+            <ExultiaLinuxIcon size={22} glow={false} />
+            <span>Explore Exultia Linux (OS) →</span>
+          </Link>
+
           <Link
             href="/account/subscription"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%)",
-              color: "#030608",
-              fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-              fontWeight: 900,
-              fontSize: "0.95rem",
-              letterSpacing: "0.05em",
-              padding: "14px 28px",
-              borderRadius: "8px",
-              textDecoration: "none",
-              boxShadow: "0 0 25px rgba(0, 229, 255, 0.4)",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease"
-            }}
-          >
-            <span>Launch Sovereign Console ($100/mo)</span>
-            <ArrowRight size={16} />
-          </Link>
-
-          <button
-            onClick={scrollToSimulator}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "rgba(255, 255, 255, 0.04)",
+              background: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(0, 229, 255, 0.3)",
               color: "#E2F8FF",
               fontFamily: "var(--font-mono, monospace)",
               fontWeight: 700,
-              fontSize: "0.9rem",
+              fontSize: "0.92rem",
               padding: "14px 22px",
-              borderRadius: "8px",
-              cursor: "pointer",
+              borderRadius: "10px",
+              textDecoration: "none",
               transition: "all 0.2s ease"
             }}
           >
-            <Activity size={16} color="#00E5FF" />
-            <span>Interactive Defense Simulator ↓</span>
-          </button>
+            <span>Launch Console ($100/mo)</span>
+            <ArrowRight size={16} />
+          </Link>
+
+          <Link
+            href="/wiki?tab=cockpit"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "rgba(168, 85, 247, 0.12)",
+              border: "1px solid rgba(168, 85, 247, 0.35)",
+              color: "#D8B4FE",
+              fontFamily: "var(--font-mono, monospace)",
+              fontWeight: 700,
+              fontSize: "0.92rem",
+              padding: "14px 22px",
+              borderRadius: "10px",
+              textDecoration: "none",
+              transition: "all 0.2s ease"
+            }}
+          >
+            <Activity size={16} color="#C084FC" />
+            <span>Live Defense Cockpit (Wiki) ↗</span>
+          </Link>
         </div>
 
-        {/* Architectural Truth Badges */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.75rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)" }}>
+        {/* Architectural Trust Badges */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2rem", flexWrap: "wrap", fontSize: "0.85rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <Lock size={13} color="#00E5FF" /> 100% Zero-Telemetry Workstations
+            <Lock size={14} color="#00E5FF" /> 100% Zero-Telemetry Workstations
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <RotateCcw size={13} color="#10B981" /> 14ms Deterministic Rollback
+            <RotateCcw size={14} color="#10B981" /> &lt;50ms Deterministic Rollback SLA
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShieldCheck size={13} color="#A855F7" /> HMAC-SHA256 Cryptographic Proof
+            <ShieldCheck size={14} color="#A855F7" /> Cosign SLSA L3 Attestations
           </span>
         </div>
       </section>
 
-      {/* ── THE INTERACTIVE CLOSED-LOOP PROVING GROUND (COCKPIT CENTERPIECE) ─── */}
-      <section ref={simulatorRef} style={{ marginBottom: "5rem" }}>
+      {/* ── 2. THE 4 FLAGSHIP CORE FOUNDATIONS (HIGH PROMINENCE) ───────────────── */}
+      <section style={{ marginBottom: "5rem" }}>
         
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#00E5FF", boxShadow: "0 0 12px #00E5FF" }} />
-            <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0, letterSpacing: "0.04em" }}>
-              Interactive Closed-Loop Defense Cockpit
-            </h2>
+        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "rgba(6, 182, 212, 0.1)",
+            border: "1px solid rgba(6, 182, 212, 0.25)",
+            padding: "4px 14px",
+            borderRadius: "20px",
+            marginBottom: "0.75rem",
+            fontSize: "0.74rem",
+            fontFamily: "var(--font-mono, monospace)",
+            color: "#22D3EE",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase"
+          }}>
+            <span>The Core Defensive Architecture</span>
           </div>
-          <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#64748B" }}>
-            Real-Time Kinetic Kernel Simulator
-          </span>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2.1rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
+            Four Sovereign Pillars
+          </h2>
+          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0 auto" }}>
+            Engineered to replace fragmented point solutions with an integrated, self-healing sovereign runtime.
+          </p>
         </div>
 
-        {/* Scenario Pills Selector */}
-        <div style={{
-          background: "rgba(10, 15, 26, 0.8)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "12px 12px 0 0",
-          padding: "12px 18px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "10px",
-          borderBottom: "1px solid rgba(0, 229, 255, 0.2)"
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.74rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)", fontWeight: 700 }}>
-              SELECT ADVERSARY THREAT:
-            </span>
-            {SCENARIOS.map((sc) => (
-              <button
-                key={sc.id}
-                disabled={isRunning}
-                onClick={() => handleScenarioChange(sc)}
-                style={{
-                  background: selectedScenario.id === sc.id ? "rgba(0, 229, 255, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                  border: selectedScenario.id === sc.id ? "1px solid #00E5FF" : "1px solid rgba(255, 255, 255, 0.1)",
-                  color: selectedScenario.id === sc.id ? "#FFFFFF" : "#94A3B8",
-                  padding: "5px 12px",
-                  borderRadius: "6px",
-                  fontSize: "0.76rem",
-                  fontFamily: "var(--font-mono, monospace)",
-                  fontWeight: 800,
-                  cursor: isRunning ? "not-allowed" : "pointer",
-                  transition: "all 0.15s ease"
-                }}
-              >
-                {sc.cve}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ fontSize: "0.76rem", fontFamily: "var(--font-mono, monospace)", color: "#EF4444" }}>
-            SEVERITY: <strong>CVSS {selectedScenario.cvss} [CRITICAL]</strong>
-          </div>
-        </div>
-
-        {/* Dual-Pane Display */}
-        <div className="cyber-cockpit" style={{ borderRadius: "0 0 20px 20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: "1.5rem" }}>
           
-          {/* LEFT PANE: 4-Stage Interactive Pipeline */}
-          <div>
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{ fontSize: "0.72rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                Target Adversary Scenario
+          {/* PILLAR 1: Exultia Linux */}
+          <Link
+            href="/products/exultia-linux"
+            className="glass-card"
+            style={{
+              padding: "2rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(6, 182, 212, 0.3)",
+              background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
+              textDecoration: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              boxShadow: "0 8px 30px rgba(6, 182, 212, 0.12)",
+              transition: "transform 0.2s ease, border-color 0.2s ease"
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
+                <ExultiaLinuxIcon size={46} glow={true} />
+                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#22D3EE", background: "rgba(6, 182, 212, 0.15)", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
+                  FLAGSHIP OS
+                </span>
               </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "4px 0" }}>
-                {selectedScenario.name}
+              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
+                Exultia Linux
               </h3>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: 0 }}>
-                {selectedScenario.vantageSummary}
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#67E8F9", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Sovereign Declarative Operating System
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
+                Content-addressed, immutable OS built upon a Nix base. Resident Kinetic™ daemon autonomously patches running workloads in &lt;300ms with 0 dropped sockets and a &lt;50ms atomic rollback SLA.
               </p>
             </div>
-
-            {/* 4-Stage OODA Visual Track */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "1.5rem" }}>
-              
-              {/* Stage 1: Vantage */}
-              <div style={{
-                background: activeStage === 1 ? "rgba(168, 85, 247, 0.2)" : activeStage > 1 ? "rgba(168, 85, 247, 0.08)" : "rgba(255, 255, 255, 0.02)",
-                border: activeStage === 1 ? "1px solid #A855F7" : activeStage > 1 ? "1px solid rgba(168, 85, 247, 0.35)" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "10px",
-                padding: "10px 14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <VantageIcon size={24} />
-                  <div>
-                    <div style={{ fontSize: "0.68rem", color: "#C084FC", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>STAGE 01 &bull; DETECT</div>
-                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Vantage Threat Intelligence</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: activeStage >= 1 ? "#A855F7" : "#64748B" }}>
-                  {activeStage > 1 ? "ADVISORY INGESTED ✓" : activeStage === 1 ? "ANALYZING..." : "STANDBY"}
-                </span>
-              </div>
-
-              {/* Stage 2: Eris */}
-              <div style={{
-                background: activeStage === 2 ? "rgba(239, 68, 68, 0.2)" : activeStage > 2 ? "rgba(239, 68, 68, 0.08)" : "rgba(255, 255, 255, 0.02)",
-                border: activeStage === 2 ? "1px solid #EF4444" : activeStage > 2 ? "1px solid rgba(239, 68, 68, 0.35)" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "10px",
-                padding: "10px 14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <ErisIcon size={24} glow={false} />
-                  <div>
-                    <div style={{ fontSize: "0.68rem", color: "#F87171", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>STAGE 02 &bull; EMULATE</div>
-                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Eris Chaos Sandbox Range</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: activeStage >= 2 ? "#EF4444" : "#64748B" }}>
-                  {activeStage > 2 ? "SANDBOX PROVISIONED ✓" : activeStage === 2 ? "REPLICATING..." : "STANDBY"}
-                </span>
-              </div>
-
-              {/* Stage 3: Valkyrie */}
-              <div style={{
-                background: activeStage === 3 ? "rgba(6, 182, 212, 0.2)" : activeStage > 3 ? "rgba(6, 182, 212, 0.08)" : "rgba(255, 255, 255, 0.02)",
-                border: activeStage === 3 ? "1px solid #06B6D4" : activeStage > 3 ? "1px solid rgba(6, 182, 212, 0.35)" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "10px",
-                padding: "10px 14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <ValkyrieIcon size={24} glow={false} />
-                  <div>
-                    <div style={{ fontSize: "0.68rem", color: "#67E8F9", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>STAGE 03 &bull; VERIFY</div>
-                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Valkyrie On-Demand Pentest BAS</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: activeStage >= 3 ? "#06B6D4" : "#64748B" }}>
-                  {activeStage > 3 ? "EXPLOIT PROVEN ✓" : activeStage === 3 ? "FIRING PROBE..." : "STANDBY"}
-                </span>
-              </div>
-
-              {/* Stage 4: Praxis */}
-              <div style={{
-                background: activeStage === 4 || activeStage === 5 ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.02)",
-                border: activeStage === 4 || activeStage === 5 ? "1px solid #F59E0B" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "10px",
-                padding: "10px 14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <PraxisIcon size={24} />
-                  <div>
-                    <div style={{ fontSize: "0.68rem", color: "#FDE68A", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>STAGE 04 &bull; REMEDIATE</div>
-                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis Autonomous Hotpatch</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: activeStage >= 4 ? "#F59E0B" : "#64748B" }}>
-                  {activeStage === 5 ? "HOTPATCH COMMITTED ✓" : activeStage === 4 ? "INJECTING PATCH..." : "STANDBY"}
-                </span>
-              </div>
-
-            </div>
-
-            {/* Execution Buttons */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <button
-                disabled={isRunning}
-                onClick={runSequence}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  background: isRunning 
-                    ? "rgba(0, 229, 255, 0.2)" 
-                    : "linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%)",
-                  color: "#030608",
-                  fontFamily: "var(--font-mono, monospace)",
-                  fontWeight: 900,
-                  fontSize: "0.88rem",
-                  padding: "12px 22px",
-                  borderRadius: "8px",
-                  border: "none",
-                  cursor: isRunning ? "not-allowed" : "pointer",
-                  boxShadow: isRunning ? "none" : "0 4px 20px rgba(0, 229, 255, 0.4)",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                <Play size={16} fill="#030608" />
-                <span>{isRunning ? "Running Autonomous Defense..." : "Run Closed-Loop Defense"}</span>
-              </button>
-
-              {isMitigated && (
-                <button
-                  disabled={isRunning}
-                  onClick={triggerRollback}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    background: "rgba(239, 68, 68, 0.15)",
-                    border: "1px solid rgba(239, 68, 68, 0.4)",
-                    color: "#FCA5A5",
-                    fontFamily: "var(--font-mono, monospace)",
-                    fontWeight: 800,
-                    fontSize: "0.82rem",
-                    padding: "12px 18px",
-                    borderRadius: "8px",
-                    cursor: isRunning ? "not-allowed" : "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  <RotateCcw size={14} />
-                  <span>Test Sub-Second Rollback (Revert in 14ms)</span>
-                </button>
-              )}
-            </div>
-
-            <div style={{ marginTop: "1rem", fontSize: "0.76rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)" }}>
-              Target Host Architecture: <span style={{ color: "#CBD5E1" }}>{selectedScenario.targetService}</span>
-            </div>
-          </div>
-
-          {/* RIGHT PANE: Real-Time Operational Console (Terminal) */}
-          <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF" }}>
-                <Terminal size={14} />
-                <span>KERNEL OPERATIONAL TELEMETRY STREAM</span>
-              </div>
-              <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#10B981" }}>
-                LIVE FEED ●
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
+              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#34D399", fontWeight: 700 }}>
+                • 0 Open Findings (Trivy Audit)
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#22D3EE", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
+                <span>Specs &amp; Image</span> <ChevronRight size={15} />
               </span>
             </div>
+          </Link>
 
-            <div 
-              ref={terminalEndRef}
-              style={{
-                flex: 1,
-                minHeight: "360px",
-                maxHeight: "440px",
-                background: "#03060C",
-                border: "1px solid rgba(0, 229, 255, 0.2)",
-                borderRadius: "12px",
-                padding: "1.25rem",
-                fontFamily: "var(--font-mono, monospace)",
-                fontSize: "0.82rem",
-                overflowY: "auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                lineHeight: 1.55,
-                boxShadow: "inset 0 0 35px rgba(0, 0, 0, 0.95)"
-              }}
-            >
-              {terminalLines.map((line, idx) => (
-                <div key={idx} style={{
-                  color: line.includes("CRITICAL") || line.includes("⚠️") 
-                    ? "#F87171" 
-                    : line.includes("✅") || line.includes("COMPLETE") || line.includes("ARMORED") 
-                    ? "#34D399" 
-                    : line.includes("STAGE") 
-                    ? "#FDE047" 
-                    : line.includes("KINETIC") 
-                    ? "#38BDF8" 
-                    : "#94A3B8"
-                }}>
-                  {line}
-                </div>
-              ))}
+          {/* PILLAR 2: Vantage */}
+          <Link
+            href="/app/uvi"
+            className="glass-card"
+            style={{
+              padding: "2rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(168, 85, 247, 0.3)",
+              background: "linear-gradient(180deg, rgba(20, 10, 35, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
+              textDecoration: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              boxShadow: "0 8px 30px rgba(168, 85, 247, 0.12)",
+              transition: "transform 0.2s ease, border-color 0.2s ease"
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
+                <VantageIcon size={46} />
+                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", background: "rgba(168, 85, 247, 0.15)", border: "1px solid rgba(168, 85, 247, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
+                  INTEL FEED
+                </span>
+              </div>
+              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
+                Vantage Intel
+              </h3>
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#C084FC", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Universal Vulnerability Aggregator
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
+                Real-time universal threat intelligence pipeline synchronizing 110+ authoritative registries (CISA KEV, NIST NVD, Linux vendor advisories) with algorithmic hotfix playbook synthesis.
+              </p>
             </div>
-          </div>
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
+              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", fontWeight: 700 }}>
+                • 110+ Ingestion Registries
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#C084FC", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
+                <span>Live Feed</span> <ChevronRight size={15} />
+              </span>
+            </div>
+          </Link>
+
+          {/* PILLAR 3: PureIDE */}
+          <Link
+            href="/products/pure-ide"
+            className="glass-card"
+            style={{
+              padding: "2rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(59, 130, 246, 0.3)",
+              background: "linear-gradient(180deg, rgba(10, 20, 45, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
+              textDecoration: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              boxShadow: "0 8px 30px rgba(59, 130, 246, 0.12)",
+              transition: "transform 0.2s ease, border-color 0.2s ease"
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
+                <PureIdeIcon size={46} />
+                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#60A5FA", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
+                  DEV ENCLAVE
+                </span>
+              </div>
+              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
+                PureIDE
+              </h3>
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#60A5FA", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Zero-Telemetry Developer Workstation
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
+                Air-gapped, supply-chain hardened development environment. Pre-configured build isolation, automated SBOM generation, and live vulnerability linting right at compile time.
+              </p>
+            </div>
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
+              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#60A5FA", fontWeight: 700 }}>
+                • 100% Egress Blocking
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#60A5FA", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
+                <span>Workstation</span> <ChevronRight size={15} />
+              </span>
+            </div>
+          </Link>
+
+          {/* PILLAR 4: Praxis */}
+          <Link
+            href="/app/praxis"
+            className="glass-card"
+            style={{
+              padding: "2rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(245, 158, 11, 0.3)",
+              background: "linear-gradient(180deg, rgba(35, 25, 10, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
+              textDecoration: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              boxShadow: "0 8px 30px rgba(245, 158, 11, 0.12)",
+              transition: "transform 0.2s ease, border-color 0.2s ease"
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
+                <PraxisIcon size={46} />
+                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
+                  HOTPATCH ENGINE
+                </span>
+              </div>
+              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
+                Praxis &amp; Kinetic
+              </h3>
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#FBBF24", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Autonomous Fleet Remediation
+              </div>
+              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
+                Sub-second in-memory patch injection engine. Enforces ring-based progressive canary rollouts, automated eBPF firewall ACL synthesis, and instant cryptographic pre-image rollbacks.
+              </p>
+            </div>
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
+              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", fontWeight: 700 }}>
+                • 0 Disrupted TCP Sockets
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#FBBF24", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
+                <span>Fleet Console</span> <ChevronRight size={15} />
+              </span>
+            </div>
+          </Link>
 
         </div>
-
       </section>
 
-      {/* ── ARCHITECTURAL BLUEPRINT: THE OODA KINETIC RESPONSE LOOP (NO CARDS!) ── */}
+      {/* ── 3. THE 4-STAGE CONTINUOUS DEFENSE LOOP (OODA PIPELINE) ─────────────── */}
       <section style={{ marginBottom: "5rem" }}>
         
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
@@ -768,20 +504,20 @@ export default function HomeCommandDeck() {
                 </span>
               </div>
               <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
-                Valkyrie BAS
+                Valkyrie Pentest
               </h3>
               <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#67E8F9", marginBottom: "0.75rem", fontWeight: 700 }}>
-                On-Demand Exploit Prober
+                Safe Breach Probes
               </div>
               <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                Breach &amp; attack simulation. Probe endpoints with safe non-destructive canaries to prove exploitability with HMAC tokens.
+                Safe, non-destructive canary payloads confirming true exploitability before dispatching autonomous hotpatches.
               </p>
             </div>
             
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>HMAC Signed</span>
+              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>HMAC Proofs</span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#06B6D4", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Prober</span> <ChevronRight size={14} />
+                <span>Probes</span> <ChevronRight size={14} />
               </span>
             </div>
           </Link>
@@ -799,204 +535,103 @@ export default function HomeCommandDeck() {
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <PraxisIcon size={38} />
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#FDE68A", background: "rgba(245, 158, 11, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
+                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", background: "rgba(245, 158, 11, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
                   04 // REMEDIATE
                 </span>
               </div>
               <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
                 Praxis Hotpatch
               </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#FDE68A", marginBottom: "0.75rem", fontWeight: 700 }}>
-                Autonomous Remediation
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#FBBF24", marginBottom: "0.75rem", fontWeight: 700 }}>
+                Kinetic Memory Remediator
               </div>
               <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                Sub-second deterministic hotpatching with atomic snapshots, Ansible canary rollouts, and hardware firewall synthesis.
+                In-memory hotpatching and eBPF filters deployed in sub-second runtime. Zero daemon restarts. Instant atomic rollback.
               </p>
             </div>
             
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>&lt;40ms Patch</span>
+              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>&lt;50ms Rollback</span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#F59E0B", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Engine</span> <ChevronRight size={14} />
+                <span>Remediate</span> <ChevronRight size={14} />
               </span>
             </div>
           </Link>
 
         </div>
 
+        {/* ── COCKPIT LINK BANNER (CALLOUT TO RESEARCH WIKI) ─── */}
+        <div style={{
+          marginTop: "2rem",
+          background: "linear-gradient(135deg, rgba(8, 20, 35, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%)",
+          border: "1px solid rgba(0, 229, 255, 0.3)",
+          borderRadius: "16px",
+          padding: "1.5rem 2rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1.25rem",
+          boxShadow: "0 0 35px rgba(0, 229, 255, 0.1)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(0, 229, 255, 0.15)", border: "1px solid rgba(0, 229, 255, 0.3)", display: "grid", placeItems: "center", color: "#22D3EE" }}>
+              <Terminal size={22} />
+            </div>
+            <div>
+              <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", fontFamily: "var(--font-display, 'Orbitron', sans-serif)" }}>
+                Interactive Closed-Loop Defense Cockpit
+              </div>
+              <div style={{ fontSize: "0.85rem", color: "#94A3B8", marginTop: "2px" }}>
+                Test simulated adversary scenarios (PHP-CGI, OpenSSH RegreSSHion, XZ backdoor) live in the Research Wiki.
+              </div>
+            </div>
+          </div>
+
+          <Link
+            href="/wiki?tab=cockpit"
+            className="btn-primary"
+            style={{
+              padding: "10px 22px",
+              fontSize: "0.88rem",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%)",
+              color: "#030608",
+              fontWeight: 800
+            }}
+          >
+            <span>Launch Cockpit Simulator ↗</span>
+          </Link>
+        </div>
+
       </section>
 
-      {/* ── ARCHITECTURAL BLUEPRINT: THE SOVEREIGN FOUNDATIONS (3 COLUMNS) ──── */}
+      {/* ── 4. ARCHITECTURAL COMPARISON: SOVEREIGN VS. LEGACY ─────────────────── */}
       <section style={{ marginBottom: "5rem" }}>
         
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(59, 130, 246, 0.1)",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            marginBottom: "0.75rem",
-            fontSize: "0.74rem",
-            fontFamily: "var(--font-mono, monospace)",
-            color: "#93C5FD",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase"
-          }}>
-            <span>The Foundational Engineering &amp; Runtime Plane</span>
-          </div>
-
           <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
-            Hermetic Toolchains, Hardened Runtimes &amp; Workforce Readiness
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "700px", margin: "0 auto", lineHeight: 1.5 }}>
-            Security is not just an operational response. It is built into developer compilers, container bases, and human competence.
-          </p>
-        </div>
-
-        <div className="foundation-stack">
-          
-          {/* Foundation 1: PureIDE */}
-          <Link 
-            href="/products/pure-ide"
-            className="foundation-card"
-            style={{
-              // @ts-ignore
-              "--card-accent": "#3B82F6",
-              "--card-glow": "rgba(59, 130, 246, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-                <PureIdeIcon size={42} glow={false} />
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                    PureIDE
-                  </h3>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", color: "#93C5FD", fontWeight: 700 }}>
-                    Hermetic Compiler Workstation
-                  </div>
-                </div>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-                Air-gapped, zero-telemetry development workstations with kernel network egress sandboxing and automated CycloneDX SBOM cosign verification.
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#93C5FD", background: "rgba(59, 130, 246, 0.15)", padding: "2px 7px", borderRadius: "3px" }}>Zero-Telemetry</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>Egress Gate</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>CycloneDX SBOM</span>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: "1.25rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#3B82F6", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Specifications</span> <ArrowRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Foundation 2: PureOS */}
-          <Link 
-            href="/app/pureos"
-            className="foundation-card"
-            style={{
-              // @ts-ignore
-              "--card-accent": "#10B981",
-              "--card-glow": "rgba(16, 185, 129, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-                <PureOsIcon size={42} glow={false} />
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                    PureOS Containers
-                  </h3>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", color: "#6EE7B7", fontWeight: 700 }}>
-                    CIS-Benchmarked Images
-                  </div>
-                </div>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-                Minimal distroless and CIS Level 1 &amp; 2 pre-hardened container base images continuously synchronized against active Vantage CVE disclosures.
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#6EE7B7", background: "rgba(16, 185, 129, 0.15)", padding: "2px 7px", borderRadius: "3px" }}>CIS L1 / L2</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>Distroless Base</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>Daily Sync</span>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: "1.25rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#10B981", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Image Catalog</span> <ArrowRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Foundation 3: Axiom */}
-          <Link 
-            href="/app/axiom"
-            className="foundation-card"
-            style={{
-              // @ts-ignore
-              "--card-accent": "#F43F5E",
-              "--card-glow": "rgba(244, 63, 94, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-                <AxiomIcon size={42} />
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                    Axiom Platform
-                  </h3>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", color: "#FDA4AF", fontWeight: 700 }}>
-                    Defense Certification &amp; LMS API
-                  </div>
-                </div>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-                Hands-on cybersecurity exam simulation (Security+, CySA+, CC) with verifiable SHA-256 certs and institutional LMS deep linking (SCORM / LTI 1.3).
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#FDA4AF", background: "rgba(244, 63, 94, 0.15)", padding: "2px 7px", borderRadius: "3px" }}>SHA-256 Certs</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>SCORM / LTI API</span>
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#CBD5E1", background: "rgba(255, 255, 255, 0.05)", padding: "2px 7px", borderRadius: "3px" }}>Question Banks</span>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: "1.25rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#F43F5E", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Launch Simulator</span> <ArrowRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-        </div>
-
-      </section>
-
-      {/* ── THE SOVEREIGN DIFFERENCE: EMPIRICAL BENCHMARKS TABLE ─────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.8rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
-            The Sovereign Difference
+            The Sovereign Architectural Moat
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.95rem" }}>
-            Raw engineering realities comparing fragmented legacy vendors with Exultia's unified closed-loop platform.
+            Why high-consequence enterprise infrastructure cannot rely on legacy patchwork security.
           </p>
         </div>
 
-        <div className="comparison-table-wrap">
-          <table className="comparison-table">
+        <div style={{
+          background: "rgba(10, 15, 26, 0.8)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "16px",
+          overflow: "hidden"
+        }}>
+          <table className="comparison-table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
             <thead>
-              <tr>
-                <th style={{ width: "24%" }}>Capability Dimension</th>
-                <th style={{ width: "38%" }}>Legacy Enterprise Tools (CrowdStrike / Snyk / Splunk)</th>
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", background: "rgba(255, 255, 255, 0.02)" }}>
+                <th style={{ width: "24%" }}>Capability / Metric</th>
+                <th style={{ width: "38%" }}>Fragmented Legacy Vendors</th>
                 <th style={{ width: "38%" }} className="sovereign-col">Exultia Sovereign Platform</th>
               </tr>
             </thead>
@@ -1019,7 +654,7 @@ export default function HomeCommandDeck() {
                 <td style={{ fontWeight: 700, color: "#FFFFFF" }}>Rollback Guarantee</td>
                 <td style={{ color: "#F87171" }}>Risky host reboot, service outage, and manual image re-flashing</td>
                 <td className="sovereign-col" style={{ color: "#38BDF8" }}>
-                  <strong>14ms Sub-Second Atomic Revert</strong> via pre-flight snapshot
+                  <strong>&lt;50ms Deterministic SLA</strong> (Empirical: 18.6ms pre-flight snapshot revert)
                 </td>
               </tr>
               <tr>
@@ -1033,7 +668,7 @@ export default function HomeCommandDeck() {
                 <td style={{ fontWeight: 700, color: "#FFFFFF" }}>Commercial Architecture</td>
                 <td style={{ color: "#F87171" }}>5 &ndash; 7 fragmented subscriptions ($1,200+/month total)</td>
                 <td className="sovereign-col" style={{ color: "#FDE047" }}>
-                  <strong>1 Unified Subscription ($100/mo)</strong> unlocking all 7 engines
+                  <strong>1 Unified Subscription ($100/mo)</strong> unlocking all 8 engines &amp; platforms
                 </td>
               </tr>
             </tbody>
@@ -1042,15 +677,15 @@ export default function HomeCommandDeck() {
 
       </section>
 
-      {/* ── UNIFIED SOVEREIGN PLATFORM TIERS ─────────────────────────────────── */}
+      {/* ── 5. UNIFIED SOVEREIGN PLATFORM TIERS ───────────────────────────────── */}
       <section style={{ marginBottom: "4rem" }}>
         
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.8rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
             Transparent Unified Platform Access
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.95rem" }}>
-            Zero per-engine surcharges. All 7 defense technologies unified under one simple subscription.
+            Zero per-engine surcharges. All defense technologies unified under one simple subscription.
           </p>
         </div>
 
@@ -1100,55 +735,56 @@ export default function HomeCommandDeck() {
                 fontSize: "0.85rem"
               }}
             >
-              Get Free Community Access
+              Access Community Tools
             </Link>
           </div>
 
-          {/* Tier 2: Professional Operator (Featured) */}
+          {/* Tier 2: Enterprise Sovereign (Flagship) */}
           <div style={{
-            background: "linear-gradient(180deg, rgba(0, 229, 255, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%)",
-            border: "2px solid #00E5FF",
+            background: "linear-gradient(180deg, rgba(8, 20, 35, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%)",
+            border: "1px solid rgba(0, 229, 255, 0.4)",
             borderRadius: "16px",
             padding: "2rem",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            boxShadow: "0 10px 40px -10px rgba(0, 229, 255, 0.35)",
+            boxShadow: "0 0 35px rgba(0, 229, 255, 0.15)",
             position: "relative"
           }}>
             <div style={{
               position: "absolute",
-              top: "-12px",
+              top: "-11px",
               right: "20px",
-              background: "#00E5FF",
+              background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%)",
               color: "#030608",
               fontFamily: "var(--font-mono, monospace)",
               fontSize: "0.68rem",
               fontWeight: 900,
               padding: "2px 10px",
-              borderRadius: "10px",
-              letterSpacing: "0.08em"
+              borderRadius: "12px",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase"
             }}>
-              RECOMMENDED PLATFORM
+              MOST POPULAR
             </div>
 
             <div>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#00E5FF", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                Full Kinetic Defense Fleet
+              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#67E8F9", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                Full Autonomous Defense
               </div>
               <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.4rem", fontWeight: 900, color: "#FFFFFF", margin: "6px 0 12px 0" }}>
-                Professional Operator
+                Enterprise Sovereign
               </h3>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", fontFamily: "var(--font-display, 'Orbitron', sans-serif)", marginBottom: "1rem" }}>
-                $100 <span style={{ fontSize: "0.9rem", color: "#67E8F9", fontWeight: 500 }}>/ month</span>
+                $100 <span style={{ fontSize: "0.9rem", color: "#64748B", fontWeight: 500 }}>/ month</span>
               </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#E2F8FF" }}>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> <strong>All 7 Defense Engines Unlocked</strong></li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Unlimited Praxis in-memory hotpatches</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Private Eris chaos sandbox ranges</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Valkyrie BAS with signed HMAC tokens</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> PureIDE air-gap cosign &amp; PureOS CIS L1/L2</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Axiom cert simulator with SHA-256 certs</li>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#E2E8F0" }}>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Exultia Linux OS Node Deployments</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Full Vantage Threat Feed (110+ Registries &amp; CISA KEV)</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Air-Gapped PureIDE with Zero Telemetry</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Praxis &amp; Kinetic In-Memory Hotpatching</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Eris Chaos Adversary Inoculation Range</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> Valkyrie Automated Non-Destructive Exploit Probes</li>
               </ul>
             </div>
 
@@ -1162,17 +798,17 @@ export default function HomeCommandDeck() {
                 padding: "12px",
                 borderRadius: "8px",
                 textDecoration: "none",
-                fontFamily: "var(--font-mono, monospace)",
+                fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
                 fontWeight: 900,
-                fontSize: "0.9rem",
-                boxShadow: "0 4px 15px rgba(0, 229, 255, 0.4)"
+                fontSize: "0.85rem",
+                boxShadow: "0 0 20px rgba(0, 229, 255, 0.3)"
               }}
             >
-              Start Operator Access ($100/mo)
+              Subscribe Now ($100/mo) →
             </Link>
           </div>
 
-          {/* Tier 3: Enterprise Fleet */}
+          {/* Tier 3: Sovereign Government / High-Consequence */}
           <div style={{
             background: "rgba(15, 23, 42, 0.7)",
             border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -1184,25 +820,24 @@ export default function HomeCommandDeck() {
           }}>
             <div>
               <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                Institutional Infrastructure
+                Defense &bull; Classified &bull; High-Consequence
               </div>
               <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.4rem", fontWeight: 900, color: "#FFFFFF", margin: "6px 0 12px 0" }}>
-                Enterprise Fleet
+                Sovereign Enclave
               </h3>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", fontFamily: "var(--font-display, 'Orbitron', sans-serif)", marginBottom: "1rem" }}>
-                $500 <span style={{ fontSize: "0.9rem", color: "#64748B", fontWeight: 500 }}>/ month</span>
+                Custom <span style={{ fontSize: "0.9rem", color: "#64748B", fontWeight: 500 }}>/ annual SLA</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#94A3B8" }}>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Everything in Professional Operator</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Multi-node Kubernetes &amp; Docker swarm hotpatching</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Custom hotpatch rule authoring &amp; audit keys</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> SCORM &amp; LTI 1.3 LMS deep linking for colleges</li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> 24/7 dedicated SOC support and SLA guarantee</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> 100% Air-Gapped Datacenter Appliance Deployments</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Custom Kernel &amp; Hardware Cryptographic Roots of Trust</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Dedicated Sovereign Key Management (HSM / KMS)</li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> 24/7 Dedicated Principal Systems Architect Escalation</li>
               </ul>
             </div>
 
             <Link
-              href="/account/subscription"
+              href="/support"
               style={{
                 display: "block",
                 textAlign: "center",
@@ -1217,48 +852,12 @@ export default function HomeCommandDeck() {
                 fontSize: "0.85rem"
               }}
             >
-              Configure Enterprise Fleet
+              Contact Enterprise Lab
             </Link>
           </div>
 
         </div>
-
       </section>
-
-      {/* ── PERSISTENT TACTICAL SOVEREIGN DOCK (DIRECT ENGINE LAUNCHER) ───────── */}
-      <div className="sovereign-dock">
-        <span style={{ fontSize: "0.72rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)", marginRight: "6px" }}>
-          ENGINE DOCK:
-        </span>
-        <Link href="/app/uvi" className="dock-item">
-          <VantageIcon size={18} />
-          <span>Vantage</span>
-        </Link>
-        <Link href="/app/praxis" className="dock-item">
-          <PraxisIcon size={18} />
-          <span>Praxis</span>
-        </Link>
-        <Link href="/app/eris" className="dock-item">
-          <ErisIcon size={18} glow={false} />
-          <span>Eris</span>
-        </Link>
-        <Link href="/app/valkyrie" className="dock-item">
-          <ValkyrieIcon size={18} glow={false} />
-          <span>Valkyrie</span>
-        </Link>
-        <Link href="/products/pure-ide" className="dock-item">
-          <PureIdeIcon size={18} glow={false} />
-          <span>PureIDE</span>
-        </Link>
-        <Link href="/app/pureos" className="dock-item">
-          <PureOsIcon size={18} glow={false} />
-          <span>PureOS</span>
-        </Link>
-        <Link href="/app/axiom" className="dock-item">
-          <AxiomIcon size={18} />
-          <span>Axiom</span>
-        </Link>
-      </div>
 
     </div>
   );
