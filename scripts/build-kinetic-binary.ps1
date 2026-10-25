@@ -1,6 +1,7 @@
 # Build script for Exultia Kinetic Standalone Compiled Binary
 param(
-    [switch]$SkipPyInstaller
+    [switch]$SkipPyInstaller,
+    [switch]$SkipLinuxElf
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -12,24 +13,35 @@ Set-Location $projectRoot
 
 New-Item -ItemType Directory -Force -Path "bin/dist", "public/downloads/kinetic" | Out-Null
 
-# 1. Build Multi-Arch Standalone Zipapp Archive (Linux / macOS / POSIX)
-Write-Host "[1/3] Packaging Universal Executable Zipapp..." -ForegroundColor Yellow
-python -m zipapp kinetic-cli -m "kinetic_cli.main:cli_entry" -o "bin/dist/kinetic" -p "/usr/bin/env python3"
-Copy-Item "bin/dist/kinetic" "bin/dist/kinetic.pyz" -Force
-Copy-Item "bin/dist/kinetic" "public/downloads/kinetic/kinetic" -Force
+# 1. Build Multi-Arch Standalone Universal Zipapp (Compiled Bytecode)
+Write-Host "[1/4] Packaging Compiled Universal Zipapp..." -ForegroundColor Yellow
+python -m zipapp kinetic-cli -m "kinetic_cli.main:cli_entry" -o "bin/dist/kinetic.pyz" -p "/usr/bin/env python3" -c
 Copy-Item "bin/dist/kinetic.pyz" "public/downloads/kinetic/kinetic.pyz" -Force
-Write-Host "  ✓ Universal Zipapp built: bin/dist/kinetic (93 KB)" -ForegroundColor Green
+Write-Host "  ✓ Universal Zipapp built: bin/dist/kinetic.pyz" -ForegroundColor Green
 
-# 2. Build Standalone Native Executable via PyInstaller
+# 2. Build Standalone Native Executable via PyInstaller (Windows PE32+)
 if (-not $SkipPyInstaller) {
-    Write-Host "[2/3] Compiling Native Single-File Executable via PyInstaller..." -ForegroundColor Yellow
+    Write-Host "[2/4] Compiling Native Windows Single-File PE32+ via PyInstaller..." -ForegroundColor Yellow
     python -m PyInstaller --onefile --clean --name kinetic --distpath "bin/dist" --workpath "build/pyinstaller" kinetic-cli/run.py
     Copy-Item "bin/dist/kinetic.exe" "public/downloads/kinetic/kinetic.exe" -Force
-    Write-Host "  ✓ Native Executable built: bin/dist/kinetic.exe" -ForegroundColor Green
+    Write-Host "  ✓ Native Windows Executable built: bin/dist/kinetic.exe" -ForegroundColor Green
 }
 
-# 3. Generate SHA-256 Checksums
-Write-Host "[3/3] Generating SHA256 Checksum Manifest..." -ForegroundColor Yellow
+# 3. Build Standalone Native ELF Executable via PyInstaller (Linux ELF 64-bit)
+if (-not $SkipLinuxElf) {
+    if (Get-Command wsl -ErrorAction SilentlyContinue) {
+        Write-Host "[3/4] Compiling Native Linux Single-File ELF Binary via WSL..." -ForegroundColor Yellow
+        $linuxScript = "/mnt/c/" + ($projectRoot -replace "^C:\\", "" -replace "\\", "/") + "/scripts/build-kinetic-linux.sh"
+        wsl -e bash $linuxScript
+        Write-Host "  ✓ Native Linux ELF Binary built: public/downloads/kinetic/kinetic" -ForegroundColor Green
+    } else {
+        Write-Host "[3/4] WSL not detected; copying universal binary as kinetic" -ForegroundColor DarkGray
+        Copy-Item "bin/dist/kinetic.pyz" "public/downloads/kinetic/kinetic" -Force
+    }
+}
+
+# 4. Generate SHA-256 Checksums
+Write-Host "[4/4] Generating SHA256 Checksum Manifest..." -ForegroundColor Yellow
 $checksums = Get-ChildItem "public/downloads/kinetic/*" -Exclude "*.txt" | ForEach-Object {
     "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
 }
