@@ -188,6 +188,15 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
       expect(res.reply).toMatch(/solo security researcher|automated|enterprise/i);
       expect(res.reply).toContain('$100');
     });
+
+    it('should address skepticism regarding vaporware and direct users to wiki simulators and quickstart guides', () => {
+      const res = AiSupportEngine.processQuery('This looks like vaporware bullshit, how can I prove this actually works?');
+      expect(res.topic).toBe('skepticism');
+      expect(res.reply).toMatch(/Research Wiki Simulators|\/wiki\?tab=simulator/i);
+      expect(res.reply).toMatch(/Quick-Start Guides|\/wiki\?tab=quickstart/i);
+      expect(res.reply).toContain('14ms');
+      expect(res.reply).toContain('/faq');
+    });
   });
 
   describe('10. Zero Telemetry & Privacy Guarantees', () => {

@@ -344,6 +344,11 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       q.includes('why so cheap') ||
       q.includes('suspicious') ||
       q.includes('toy') ||
+      q.includes('vaporware') ||
+      q.includes('bullshit') ||
+      q.includes('prove') ||
+      q.includes('actually work') ||
+      q.includes('real or fake') ||
       q.includes('cost $100') ||
       q.includes('$100') ||
       q.includes('cost $59') ||
@@ -362,23 +367,29 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
         timestamp: now,
         reply: `### 🛡️ Direct Answers to Technical Skepticism
 
-We welcome critical engineering scrutiny. Here is how our architecture guarantees safety:
+We welcome critical engineering scrutiny. Here is how our architecture guarantees safety and provides concrete proof:
 
-#### 1. In-Memory Hotpatch Safety (Zero Memory Corruption)
+#### 1. Proving It Works (Zero Vaporware)
+We don't expect you to take marketing claims on faith:
+- **Interactive Lab Simulators:** Open our [Research Wiki Simulators](/wiki?tab=simulator). Every single one of the 7 engines features live interactive browser testing (disassembly trampolines, BAS exploit canaries, and live CVE threat feeds).
+- **Executable CLI Quick-Starts:** Follow the [Wiki Quick-Start Guides](/wiki?tab=quickstart). Run \`praxis test\` to verify real synthetic mutations, pre-image SHA-256 snapshots, and 14ms atomic rollbacks on your own hardware.
+- **Free Community Sovereign Tier ($0 Forever):** Zero credit card or sales gatekeeping—deploy immediately on 1 host.
+
+#### 2. In-Memory Hotpatch Safety (Zero Memory Corruption)
 Praxis does not execute arbitrary byte overwrites. It compiles deterministic trampoline micro-hooks targeting solely the vulnerable logic (such as input sanitizers or URI argument decoders). Before injection, a mandatory atomic snapshot is recorded in \`/var/lib/kinetic/snapshots/\`. If any process fault occurs, an automatic 14ms rollback restores baseline state instantly.
 
-#### 2. Not an Open-Source or iptables Wrapper
+#### 3. Not an Open-Source or iptables Wrapper
 While Vantage ingests public registries (CISA KEV, NIST NVD), our kinetic remediation stack is 100% proprietary systems code. Praxis compiles in-memory trampolines with eBPF & XDP kernel hooks at Layer 7 rather than simple packet-dropping iptables or nftables wrappers. Valkyrie executes non-destructive HMAC-signed canary handshakes; Eris provisions isolated 5-container Docker ranges with 10-minute auto-destruct watchdogs; and PureIDE provides an air-gapped hermetic compiler. Open-source scanners only alert you; Exultia autonomously remediates.
 
-#### 3. Why $100/mo Is Real and Not a Toy
+#### 4. Why $100/mo Is Real and Not a Toy
 Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. You pay for pure systems security engineering ($100/mo vs $50,000/yr).
 
 Read full technical proofs on our [Frequently Asked Questions & Skepticism page](/faq).`,
         suggestions: [
+          'How do I test the interactive simulators on the Wiki?',
           'How does the closed-loop defense work?',
           'Why zero outbound telemetry?',
-          'What is the deterministic rollback command?',
-          'View FAQ & Skepticism Deep-Dive'
+          'What is the deterministic rollback command?'
         ]
       };
     }

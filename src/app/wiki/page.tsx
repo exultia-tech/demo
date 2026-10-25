@@ -343,7 +343,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
           label: "2. Execute Self-Contained Validation Gate",
           command: "praxis test",
           codeLang: "bash",
-          details: "Runs synthetic mutation, pre-image SHA-256 snapshotting, and verifies sub-second rollback (<50ms)."
+          details: "Runs synthetic mutation, pre-image SHA-256 snapshotting, and verifies 14ms atomic rollback."
         },
         {
           label: "3. Apply Active Critical Hotfixes (Zero Reboot)",
@@ -375,7 +375,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       ],
       specifications: [
         { label: "Supported Operating Systems", value: "Ubuntu, Debian, Rocky Linux, RHEL, Alpine, FreeBSD, AIX, Solaris" },
-        { label: "Local Rollback Benchmark", value: "Sub-100ms atomic restore (typical)" },
+        { label: "Local Rollback Benchmark", value: "14ms atomic restore via /var/lib/kinetic/snapshots/" },
         { label: "Automation Engines", value: "Ansible, AWX, Terraform, Shell, Systemd" }
       ]
     },
@@ -605,7 +605,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       specifications: [
         { label: "Chaos Scenarios", value: "7+ active CVE modules & multi-container compose ranges" },
         { label: "Rollback Guarantee", value: "100% deterministic SHA-256 pre-image snapshots" },
-        { label: "Bundle Eligibility", value: "30% (1 companion), 40% (2 companions), 50% (all three)" }
+        { label: "Platform Availability", value: "Included in Unified Platform ($100/mo Pro, $500/mo Enterprise)" }
       ]
     },
     apiEndpoints: [
@@ -686,12 +686,12 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       capabilities: [
         { title: "On-Demand Pentest Engine", desc: "Perform immediate targeted security scans against specific CVEs across hosts, containers, and web endpoints." },
         { title: "Cryptographic Attestation", desc: "Every scan outputs a SHA-256 signed attestation token for audit readiness (SOC 2, ISO 27001)." },
-        { title: "Sovereignty Bundle Member", desc: "Unlocks 30%, 40%, or 50% discount savings when bundled with Vantage, Praxis, and Eris." }
+        { title: "Unified Platform Member", desc: "Included in the $100/mo Pro and $500/mo Enterprise unified subscriptions alongside Vantage, Praxis, and Eris." }
       ],
       specifications: [
         { label: "Supported Attack Vectors", value: "SSH, HTTP/REST, TLS/SSL, DNS, Docker Socket, Kubernetes API" },
         { label: "Attestation Algorithm", value: "HMAC-SHA256 with timestamped cryptographic nonce" },
-        { label: "Bundle Tier", value: "30% (1 companion), 40% (2 companions), 50% (all three)" }
+        { label: "Platform Availability", value: "Included in Unified Platform ($100/mo Pro, $500/mo Enterprise)" }
       ]
     },
     apiEndpoints: [
@@ -841,25 +841,69 @@ export default function ResearchWikiPage() {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
             gap: "12px",
-            marginBottom: "1.75rem",
+            marginBottom: "1.25rem",
             textAlign: "left"
           }}>
             <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
               <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Core Systems</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--accent-primary, #00E5FF)" }}>8 Products</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--accent-primary, #00E5FF)" }}>7 Engines</div>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
               <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Testing Rigs</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#C084FC" }}>8 Live Simulators</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#C084FC" }}>7 Live Simulators</div>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
               <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Deterministic Rollback</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#34D399" }}>Sub-50ms Local</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#34D399" }}>14ms Atomic Engine</div>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Compliance Baseline</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#FDE047" }}>100% Zero-Trust</div>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Unified Platform</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#FDE047" }}>$100 / $500</div>
             </div>
+          </div>
+
+          {/* Quick Platform Navigation Links */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.75rem", flexWrap: "wrap" }}>
+            <Link
+              href="/account/subscription"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.82rem",
+                fontFamily: "var(--font-mono, monospace)",
+                fontWeight: 700,
+                color: "#38BDF8",
+                background: "rgba(56, 189, 248, 0.1)",
+                border: "1px solid rgba(56, 189, 248, 0.3)",
+                padding: "5px 12px",
+                borderRadius: "6px",
+                textDecoration: "none"
+              }}
+            >
+              <span>Unified Platform Plans ($100/mo Pro)</span>
+              <ArrowRight size={13} />
+            </Link>
+            <Link
+              href="/faq"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.82rem",
+                fontFamily: "var(--font-mono, monospace)",
+                fontWeight: 700,
+                color: "#A7F3D0",
+                background: "rgba(16, 185, 129, 0.1)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                padding: "5px 12px",
+                borderRadius: "6px",
+                textDecoration: "none"
+              }}
+            >
+              <span>Technical FAQ &amp; Skepticism Answers</span>
+              <ArrowRight size={13} />
+            </Link>
           </div>
 
           {/* SEARCH BAR */}
@@ -1070,7 +1114,7 @@ export default function ResearchWikiPage() {
                   borderRadius: "4px",
                   fontWeight: 700
                 }}>
-                  ENTERPRISE
+                  UNIFIED PLATFORM ENGINE • $100/MO PRO
                 </span>
               </div>
               <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: "4px 0 0 0" }}>

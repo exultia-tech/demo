@@ -48,6 +48,22 @@ interface FaqItem {
 const FAQ_DATA: FaqItem[] = [
   // ── SKEPTICISM & OPERATIONAL SAFETY ─────────────────────────────────────────
   {
+    id: "vaporware-proof",
+    category: "skepticism",
+    categoryLabel: "Skepticism & Safety",
+    isSkepticism: true,
+    question: "This looks like vaporware bullshit, how can I prove this actually works?",
+    shortSummary: "Don't take our word for it. Test live interactive simulators in the Wiki and run our reproducible quick-start guides right now.",
+    keyProof: "7 live interactive browser simulators on our Research Wiki + executable bash quick-start guides with instant 14ms rollback verification.",
+    answer: [
+      "We completely understand your skepticism. The cybersecurity market is saturated with marketing buzzwords, pitch decks, and vaporware. That is why we built reproducible proof directly into the platform so you can verify our claims in 60 seconds with zero sales gatekeeping:",
+      "1. Interactive Simulators on the Research Wiki: Visit the Exultia Research Wiki (/wiki?tab=simulator) right now. Every single one of the 7 defense engines includes an interactive, in-browser lab simulator. You can execute simulated in-memory hotpatching with real-time disassembly trampolines (Praxis), trigger non-destructive BAS exploitability probes (Valkyrie), query live filtered threat telemetry across 110+ registries (Vantage), and spin up chaos attack vectors (Eris).",
+      "2. Executable Quick-Start Guides: In the Research Wiki (/wiki?tab=quickstart), every product features copy-pasteable CLI commands. You can download the compiled standalone binary via `curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o praxis` and run `praxis test`. It executes a real synthetic mutation on your system, takes a pre-image SHA-256 snapshot, and verifies an atomic rollback in under 14ms.",
+      "3. Free Community Sovereign Tier ($0 Forever): You do not need to sign a contract, talk to a salesperson, or provide a credit card. Deploy the free tier on 1 host node, pull CIS Benchmark Level 2 containers from PureOS, and query the real-time CISA KEV feed from Vantage.",
+      "4. Cryptographic Attestations: Every mitigation payload and container image is signed with Cosign SLSA Level 3 provenance keys that you can inspect and verify independently using open-source tooling."
+    ]
+  },
+  {
     id: "memory-safety",
     category: "skepticism",
     categoryLabel: "Skepticism & Safety",
@@ -315,6 +331,7 @@ export default function FaqPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
+    "vaporware-proof": true,
     "memory-safety": true,
     "rebranded-wrapper": true
   });
