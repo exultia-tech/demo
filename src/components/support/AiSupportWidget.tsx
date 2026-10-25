@@ -26,6 +26,7 @@ interface ChatMessage {
   timestamp: string;
   suggestions?: string[];
   topic?: string;
+  sources?: { title: string; doc: string; url: string }[];
 }
 
 export default function AiSupportWidget() {
@@ -59,6 +60,11 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
         "How do I execute a 14ms rollback?",
         "Why zero outbound telemetry?",
         "Where is the full FAQ directory?"
+      ],
+      sources: [
+        { title: "Unified Cyber Sovereignty Platform", doc: "wiki/overview.md", url: "/wiki" },
+        { title: "Interactive Engineering Skepticism FAQ", doc: "src/app/faq/page.tsx", url: "/faq" },
+        { title: "Bullshit Validator Verification Fleet", doc: "github.com/exultia-tech/demo", url: "https://github.com/exultia-tech/demo" }
       ]
     }
   ]);
@@ -111,7 +117,8 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
         text: data.reply,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         suggestions: data.suggestions,
-        topic: data.topic
+        topic: data.topic,
+        sources: data.sources
       };
 
       setMessages((prev) => [...prev, botMsg]);
@@ -577,6 +584,67 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
                   <span style={{ fontSize: "0.65rem", color: "#64748B", marginTop: "4px", padding: "0 4px" }}>
                     {m.timestamp}
                   </span>
+
+                  {/* RAG Grounded Sources Badges */}
+                  {m.sources && m.sources.length > 0 && !isUser && (
+                    <div style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px",
+                      marginTop: "6px",
+                      maxWidth: "95%"
+                    }}>
+                      {m.sources.map((src, sIdx) => {
+                        const isExternal = src.url.startsWith("http");
+                        return isExternal ? (
+                          <a
+                            key={sIdx}
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              background: "rgba(16, 185, 129, 0.1)",
+                              border: "1px solid rgba(16, 185, 129, 0.3)",
+                              color: "#6EE7B7",
+                              fontSize: "0.68rem",
+                              fontWeight: 600,
+                              textDecoration: "none"
+                            }}
+                          >
+                            <ExternalLink size={10} />
+                            <span>{src.doc}</span>
+                          </a>
+                        ) : (
+                          <Link
+                            key={sIdx}
+                            href={src.url}
+                            onClick={() => setIsOpen(false)}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              background: "rgba(56, 189, 248, 0.1)",
+                              border: "1px solid rgba(56, 189, 248, 0.3)",
+                              color: "#38BDF8",
+                              fontSize: "0.68rem",
+                              fontWeight: 600,
+                              textDecoration: "none"
+                            }}
+                          >
+                            <ShieldCheck size={10} />
+                            <span>{src.doc}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Suggestion pills if present */}
                   {m.suggestions && m.suggestions.length > 0 && !isUser && (

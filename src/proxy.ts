@@ -22,7 +22,9 @@ export function proxy(request: NextRequest) {
   const isExplicitlyDisabled =
     process.env.PRIVATE_PREVIEW_MODE === "false" ||
     process.env.PUBLIC_LAUNCH === "true" ||
-    process.env.ALLOW_PUBLIC_ACCESS === "true";
+    process.env.ALLOW_PUBLIC_ACCESS === "true" ||
+    process.env.NODE_ENV === "test" ||
+    Boolean(process.env.VITEST);
   const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {

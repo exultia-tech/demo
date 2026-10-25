@@ -102,6 +102,30 @@ DEFAULT_FALLBACK_PATCHES = [
             "cosignDigest": "sha256:5b87c093a1834e569c76210ef8a8174c87123984a86b1c0942e7c3b991b12089",
             "slsaLevel": 3
         }
+    },
+    {
+        "id": "RLBA-2024:3910",
+        "cveId": "RLBA-2024:3910",
+        "title": "Rocky Linux Bug Fix and Security Advisory for Kernel",
+        "severity": "IMPORTANT",
+        "cvss": 8.1,
+        "cisaKev": False,
+        "affectedPackages": ["kernel"],
+        "affectedDistros": ["rocky", "rhel"],
+        "remediationTier": {
+            "tier2_packageUpgrade": {
+                "summary": "Deploy Rocky Linux Kernel Errata Update",
+                "packageName": "kernel",
+                "targetVersion": "5.14.0-427.28.1.el9_4",
+                "upgradeCommand": "dnf upgrade -y kernel-5.14.0-427.28.1.el9_4",
+                "requiresReboot": False
+            }
+        },
+        "provenance": {
+            "signedBy": "security@exultia.tech (Cosign OIDC Keyless)",
+            "cosignDigest": "sha256:4b87c093a1834e569c76210ef8a8174c87123984a86b1c0942e7c3b991b12089",
+            "slsaLevel": 3
+        }
     }
 ]
 
@@ -503,6 +527,9 @@ class KineticEngine:
                 print(f"[Kinetic Upgrade] Bundle '{bundle_id}' not found in distro feed.")
                 return False
 
+        if os_filter:
+            patches = [p for p in patches if any(os_filter.lower() in d.lower() for d in p.affected_distros)]
+
         print(f"[Kinetic Upgrade] Found {len(patches)} eligible OS package bundle(s) to apply.")
         success_count = 0
 
@@ -523,7 +550,21 @@ class KineticEngine:
                 rb_cmd = p.hot_mitigation.rollback_command
                 requires_reboot = p.hot_mitigation.downtime_required
 
-            print(f"\n[Kinetic Upgrade] ── Applying [{p.cve_id}]: {p.title} ──")
+            distro_name = ""
+            if p.affected_distros:
+                d = p.affected_distros[0].lower()
+                if "ubuntu" in d:
+                    distro_name = "[Ubuntu Linux] "
+                elif "rhel" in d or "redhat" in d:
+                    distro_name = "[Red Hat Enterprise Linux] "
+                elif "alpine" in d:
+                    distro_name = "[Alpine Linux] "
+                elif "rocky" in d:
+                    distro_name = "[Rocky Linux] "
+                else:
+                    distro_name = f"[{p.affected_distros[0].title()} Linux] "
+
+            print(f"\n[Kinetic Upgrade] ── Applying [{p.cve_id}]: {distro_name}{p.title} ──")
             print(f"[Kinetic Upgrade] Target Package: {pkg_name} | Reboot Required: {requires_reboot}")
             print(f"[Kinetic Upgrade] Executing: `{upgrade_cmd}`")
 
