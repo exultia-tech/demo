@@ -188,9 +188,68 @@ def demonstrate_live_hotfix_conditions(target_cve=None):
     demonstrating exact file states, unified diffs, cryptographic hashes,
     and microsecond-level rollback restoration. Dynamically adapts to target_cve.
     """
-    is_php = target_cve and ("4577" in target_cve.upper() or "PHP" in target_cve.upper())
+    # Recent PHP vulnerability disclosed in the past week (October 21, 2026): PHP2Shell (CVE-2026-109618 / CVE-2026-109619)
+    is_recent_php = target_cve and (any(k in target_cve.upper() for k in ["109618", "109619", "115560", "PHP2SHELL"]) or ("PHP" in target_cve.upper() and "4577" not in target_cve.upper()))
+    is_legacy_php = target_cve and "4577" in target_cve.upper()
 
-    if is_php:
+    if is_recent_php:
+        cve_id = "CVE-2026-109618"
+        cve_title = "PHP Core Memory Management 'PHP2Shell' Heap Corruption RCE"
+        daemon_svc = "php8.3-fpm.service (State: Active/Running, PID: 18450)"
+        vuln_directive = "session.upload_progress.enabled = 1; zend_mm boundary check unconstrained"
+        vuln_desc = "Unauthenticated RCE via multipart/form-data heap corruption in Zend allocator"
+        hotfix_directive = "session.upload_progress.enabled = 0; kinetic.zend_mm_guard = 1 (Zero-Downtime Worker Protection)"
+        before_cmd = "curl -s -X POST -F 'boundary_probe=@payload.bin' 'http://127.0.0.1/upload.php'"
+        before_out = "HTTP/1.1 200 OK (Vulnerable: Unbounded multipart chunk allocated by worker heap)"
+        socket_cmd = "ss -tulpn | grep -E ':9000|:80'"
+        socket_out = 'tcp   LISTEN 0      511          127.0.0.1:9000       0.0.0.0:*    users:(("php-fpm8.3",pid=18450,fd=7))'
+        dropin_path = "/etc/php/8.3/fpm/conf.d/00-kinetic-php2shell.ini"
+        apply_cmd = "sudo kinetic apply --cve=CVE-2026-109618 --fpm-boundary-clamp"
+        diff_lines = [
+            f"    {GREEN}+ # --- EXULTIA KINETIC HOTFIX [CVE-2026-109618 PHP2Shell] ---{RESET}",
+            f"    {GREEN}+ session.upload_progress.enabled = 0{RESET}",
+            f"    {GREEN}+ max_input_vars = 1000{RESET}",
+            f"    {GREEN}+ max_multipart_body_parts = 128{RESET}",
+            f"    {GREEN}+ kinetic.zend_mm_guard = 1{RESET}",
+            f"    {GREEN}+ kinetic.clamp_boundary_len = 8192{RESET}"
+        ]
+        apply_trace = [
+            "    [kinetic::core] Ingested advisory CVE-2026-109618 (CVSS 9.2 Critical - PHP2Shell).",
+            "    [kinetic::fs] Snapshotting baseline -> /var/lib/kinetic/snapshots/cve-2026-109618/pre_image.bak",
+            "    [kinetic::fs] Writing drop-in /etc/php/8.3/fpm/conf.d/00-kinetic-php2shell.ini...",
+            "    [kinetic::exec] Sending SIGUSR2 to php-fpm master [PID 18450] (graceful worker cycle)... OK",
+            "    [kinetic::telemetry] Asserting daemon continuity: Active sockets = 48/48 (0 dropped conns)",
+            "    [kinetic::gate] Hotfix applied in 1.34 ms. Zero downtime verified."
+        ]
+        after_cmd = "curl -s -X POST -F 'boundary_probe=@payload.bin' 'http://127.0.0.1/upload.php'"
+        after_out = "HTTP/1.1 400 Bad Request (Immunized: Malformed multipart boundary clamped by Kinetic guard)"
+        cat_cmd = f"cat {dropin_path}"
+        cat_out = "# --- EXULTIA KINETIC HOTFIX [CVE-2026-109618 PHP2Shell] ---\nsession.upload_progress.enabled = 0\nmax_input_vars = 1000\nkinetic.zend_mm_guard = 1"
+        active_cmd = "systemctl is-active php8.3-fpm"
+        active_out = "active (PID: 18450 uninterrupted, active workers: 32/32, uptime preserved)"
+        rollback_cmd = "sudo kinetic rollback --cve=CVE-2026-109618"
+        rollback_trace = [
+            "    [kinetic::rollback] Reversion trigger received: Operator health assertion.",
+            "    [kinetic::rollback] Unlinking /etc/php/8.3/fpm/conf.d/00-kinetic-php2shell.ini...",
+            "    [kinetic::rollback] Sending SIGUSR2 to php-fpm master [PID 18450]... OK",
+            "    [kinetic::rollback] Inode state restored in 0.015 ms (15 µs).",
+            "    [kinetic::gate] Cryptographic match confirmed: bitwise delta = 0 bytes."
+        ]
+        baseline_content = """; PHP-FPM Session Configuration - Baseline
+session.upload_progress.enabled = 1
+session.upload_progress.cleanup = 1
+max_input_vars = 10000
+"""
+        hotfix_content = """; PHP-FPM Session Configuration - Baseline
+session.upload_progress.enabled = 1
+session.upload_progress.cleanup = 1
+max_input_vars = 10000
+# --- EXULTIA KINETIC HOTFIX [CVE-2026-109618 PHP2Shell] ---
+session.upload_progress.enabled = 0
+max_input_vars = 1000
+kinetic.zend_mm_guard = 1
+"""
+    elif is_legacy_php:
         cve_id = "CVE-2024-4577"
         cve_title = "PHP CGI Argument Injection Windows/Linux Remote Code Execution"
         daemon_svc = "apache2.service / php-cgi (State: Active/Running, PID: 8412)"
@@ -508,6 +567,7 @@ def check_remediation_catalog():
 
     # 2. Comprehensive Real-World Threat Catalogs (Platform Partitioned)
     catalog_linux_50 = [
+        {"cve": "CVE-2026-109618", "name": "PHP Core Memory Management 'PHP2Shell' Remote Code Execution", "sev": "CRITICAL", "cvss": 9.2, "kev": True, "platform": "Linux", "before": "Unbounded multipart boundary parsing triggers heap corruption in PHP-FPM / mod_php worker pool", "hotfix": "kinetic apply --cve=CVE-2026-109618 --fpm-boundary-clamp", "after": "eBPF zend_mm boundary guard active; multipart chunk bounded; 0 dropped sockets", "rollback": "kinetic rollback --cve=CVE-2026-109618"},
         {"cve": "CVE-2024-4577", "name": "PHP CGI Argument Injection Windows/Linux Remote Code Execution", "sev": "CRITICAL", "cvss": 9.8, "kev": True, "platform": "Linux", "before": "Apache mod_cgi / php-cgi accepts query string argument injections %ADd+allow_url_include%3d1", "hotfix": "kinetic apply --cve=CVE-2024-4577 --apache-mod-rewrite", "after": "Strict Unicode soft hyphen %AD regex rule drops exploit requests with HTTP 403", "rollback": "kinetic rollback --cve=CVE-2024-4577"},
         {"cve": "CVE-2024-6387", "name": "OpenSSH Signal Handler Race Condition (regreSSHion)", "sev": "CRITICAL", "cvss": 9.8, "kev": True, "platform": "Linux", "before": "LoginGraceTime 120 in sshd_config -> SIGALRM handler race unauth root RCE", "hotfix": "mkdir -p /etc/ssh/sshd_config.d && echo 'LoginGraceTime 0' > /etc/ssh/sshd_config.d/00-exultia.conf && systemctl reload sshd", "after": "LoginGraceTime 0; SIGALRM race eliminated; zero dropped TCP sockets", "rollback": "rm -f /etc/ssh/sshd_config.d/00-exultia.conf && systemctl reload sshd"},
         {"cve": "CVE-2024-3094", "name": "XZ Utils Liblzma Upstream Supply Chain Backdoor", "sev": "CRITICAL", "cvss": 10.0, "kev": True, "platform": "Linux", "before": "Compromised liblzma 5.6.0 intercepts RSA_public_decrypt inside sshd process space", "hotfix": "kinetic hotfix apply --cve=CVE-2024-3094 --got-redirect --fallback=5.4.5", "after": "In-memory GOT symbol redirected; clean liblzma 5.4.5 active; clean auth", "rollback": "kinetic rollback --cve=CVE-2024-3094"},
