@@ -31,7 +31,9 @@ import {
   Key,
   Database,
   Play,
-  RotateCcw
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 interface ApiEndpoint {
@@ -731,11 +733,22 @@ const WIKI_PRODUCTS: ProductWiki[] = [
   }
 ];
 
+const PRODUCT_SUBTITLES: Record<string, string> = {
+  vantage: "Threat Ingestion & Feed",
+  praxis: "Autonomous Hotpatch & Rollback",
+  eris: "Chaos Inoculation Testing",
+  valkyrie: "Binary Hardening & Defense",
+  pureide: "Dual-Kernel Web IDE",
+  pureos: "Isolated MicroVM Host OS",
+  axiom: "Forensic Redaction Engine"
+};
+
 export default function ResearchWikiPage() {
   const [activeProductId, setActiveProductId] = useState<string>("vantage");
   const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis">("simulator");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -782,88 +795,75 @@ export default function ResearchWikiPage() {
     return matches;
   }, [searchQuery]);
 
+  const displayedProducts = useMemo(() => {
+    if (!searchQuery.trim()) return WIKI_PRODUCTS;
+    const q = searchQuery.toLowerCase();
+    const matched = WIKI_PRODUCTS.filter(p => 
+      p.name.toLowerCase().includes(q) || 
+      p.tagline.toLowerCase().includes(q) ||
+      (PRODUCT_SUBTITLES[p.id] && PRODUCT_SUBTITLES[p.id].toLowerCase().includes(q))
+    );
+    return matched.length > 0 ? matched : WIKI_PRODUCTS;
+  }, [searchQuery]);
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--background-dark, #07090E)", color: "#E2E8F0" }}>
-      {/* HERO BANNER */}
+      {/* COMPACT TOP HEADER */}
       <div style={{
         borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
         background: "radial-gradient(ellipse at top, rgba(14, 21, 37, 0.9) 0%, rgba(7, 9, 14, 0.98) 100%)",
-        padding: "3.5rem 1.5rem 2.5rem 1.5rem"
+        padding: "2rem 1.5rem"
       }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{
-              fontFamily: "var(--font-mono, monospace)",
-              fontSize: "0.75rem",
-              background: "rgba(0, 229, 255, 0.12)",
-              color: "var(--accent-primary, #00E5FF)",
-              border: "1px solid rgba(0, 229, 255, 0.3)",
-              padding: "2px 8px",
-              borderRadius: "4px",
-              fontWeight: 800,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase"
+        <div style={{ maxWidth: "1600px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.25rem" }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.5rem", flexWrap: "wrap" }}>
+              <span style={{
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "0.75rem",
+                background: "rgba(0, 229, 255, 0.12)",
+                color: "var(--accent-primary, #00E5FF)",
+                border: "1px solid rgba(0, 229, 255, 0.3)",
+                padding: "2px 8px",
+                borderRadius: "4px",
+                fontWeight: 800,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase"
+              }}>
+                RESEARCH WIKI • LIVE LABS &amp; ARCHITECTURE
+              </span>
+              <span style={{ fontSize: "0.8rem", color: "#64748B" }}>•</span>
+              <span style={{
+                fontSize: "0.8rem",
+                color: "#94A3B8",
+                fontFamily: "var(--font-mono, monospace)"
+              }}>
+                Interactive Engineering Reference v2.6
+              </span>
+            </div>
+
+            <h1 style={{
+              fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
+              fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)",
+              fontWeight: 900,
+              color: "#FFFFFF",
+              letterSpacing: "0.02em",
+              margin: 0
             }}>
-              RESEARCH WIKI • LIVE LABS &amp; ARCHITECTURE
-            </span>
-            <span style={{ fontSize: "0.8rem", color: "#64748B" }}>•</span>
-            <span style={{
-              fontSize: "0.8rem",
+              EXULTIA RESEARCH WIKI
+            </h1>
+            <p style={{
+              fontSize: "0.95rem",
               color: "#94A3B8",
-              fontFamily: "var(--font-mono, monospace)"
+              maxWidth: "850px",
+              lineHeight: 1.5,
+              marginTop: "0.4rem",
+              marginBottom: 0
             }}>
-              Interactive Engineering Reference v2.6
-            </span>
+              Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, forensic redaction engines, and explore architectural specifications and enterprise REST API schemas.
+            </p>
           </div>
 
-          <h1 style={{
-            fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-            fontSize: "clamp(2rem, 4vw, 2.75rem)",
-            fontWeight: 900,
-            color: "#FFFFFF",
-            letterSpacing: "0.02em",
-            marginBottom: "0.75rem"
-          }}>
-            EXULTIA RESEARCH WIKI
-          </h1>
-          <p style={{
-            fontSize: "1.05rem",
-            color: "#94A3B8",
-            maxWidth: "850px",
-            lineHeight: 1.6,
-            marginBottom: "1.75rem"
-          }}>
-            Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, forensic redaction engines, and explore architectural specifications and enterprise REST API schemas.
-          </p>
-
-          {/* Quick Metrics Bar */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "12px",
-            marginBottom: "1.25rem",
-            textAlign: "left"
-          }}>
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Core Systems</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--accent-primary, #00E5FF)" }}>7 Engines</div>
-            </div>
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Testing Rigs</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#C084FC" }}>7 Live Simulators</div>
-            </div>
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Deterministic Rollback</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#34D399" }}>14ms Atomic Engine</div>
-            </div>
-            <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px 14px", borderRadius: "8px" }}>
-              <div style={{ fontSize: "0.7rem", color: "#94A3B8", fontWeight: 700, textTransform: "uppercase" }}>Unified Platform</div>
-              <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#FDE047" }}>$100 / $500</div>
-            </div>
-          </div>
-
-          {/* Quick Platform Navigation Links */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.75rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
             <Link
               href="/account/subscription"
               style={{
@@ -876,12 +876,12 @@ export default function ResearchWikiPage() {
                 color: "#38BDF8",
                 background: "rgba(56, 189, 248, 0.1)",
                 border: "1px solid rgba(56, 189, 248, 0.3)",
-                padding: "5px 12px",
+                padding: "6px 14px",
                 borderRadius: "6px",
                 textDecoration: "none"
               }}
             >
-              <span>Unified Platform Plans ($100/mo Pro)</span>
+              <span>Platform Plans ($100/mo Pro)</span>
               <ArrowRight size={13} />
             </Link>
             <Link
@@ -896,178 +896,478 @@ export default function ResearchWikiPage() {
                 color: "#A7F3D0",
                 background: "rgba(16, 185, 129, 0.1)",
                 border: "1px solid rgba(16, 185, 129, 0.3)",
-                padding: "5px 12px",
+                padding: "6px 14px",
                 borderRadius: "6px",
                 textDecoration: "none"
               }}
             >
-              <span>Technical FAQ &amp; Skepticism Answers</span>
+              <span>Technical FAQ</span>
               <ArrowRight size={13} />
             </Link>
-          </div>
-
-          {/* SEARCH BAR */}
-          <div style={{ maxWidth: "680px", position: "relative" }}>
-            <Search size={18} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#64748B" }} />
-            <input
-              type="text"
-              placeholder="Search specifications, simulators, API endpoints (e.g. rollback, sandbox, /api/patches/feed)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px 16px 12px 42px",
-                background: "rgba(15, 23, 42, 0.8)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                borderRadius: "10px",
-                color: "#FFFFFF",
-                fontSize: "0.92rem",
-                fontFamily: "var(--font-mono, monospace)",
-                outline: "none",
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)"
-              }}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "transparent",
-                  border: "none",
-                  color: "#64748B",
-                  cursor: "pointer",
-                  fontSize: "0.8rem"
-                }}
-              >
-                Clear
-              </button>
-            )}
           </div>
         </div>
       </div>
 
-      {/* SEARCH RESULTS OVERLAY (IF QUERY ENTERED) */}
-      {searchQuery.trim() !== "" && (
-        <div style={{ maxWidth: "1280px", margin: "1.5rem auto", padding: "0 1.5rem" }}>
-          <div style={{
-            background: "rgba(15, 23, 42, 0.9)",
-            border: "1px solid rgba(0, 229, 255, 0.3)",
-            borderRadius: "12px",
-            padding: "1.5rem"
-          }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "1rem" }}>
-              Search Results for "{searchQuery}" ({filteredApis.length} API endpoints found)
-            </h3>
-            {filteredApis.length === 0 ? (
-              <div style={{ color: "#94A3B8", fontSize: "0.9rem" }}>No matching API endpoints found. Try searching for "feed", "download", "exam", or "stats".</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {filteredApis.map(({ product, endpoint }, i) => (
-                  <div key={i} style={{
-                    padding: "12px",
-                    background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between"
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <span style={{
-                        fontFamily: "var(--font-mono, monospace)",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                        padding: "3px 8px",
-                        borderRadius: "4px",
-                        background: endpoint.method === "GET" ? "rgba(6, 182, 212, 0.2)" : "rgba(16, 185, 129, 0.2)",
-                        color: endpoint.method === "GET" ? "#22D3EE" : "#34D399"
-                      }}>
-                        {endpoint.method}
-                      </span>
-                      <code style={{ color: "#FFFFFF", fontSize: "0.9rem" }}>{endpoint.path}</code>
-                      <span style={{ fontSize: "0.8rem", color: "#94A3B8" }}>({product.name})</span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setActiveProductId(product.id);
-                        setActiveTab("api");
-                        setSearchQuery("");
-                      }}
-                      style={{
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: "1px solid rgba(255, 255, 255, 0.15)",
-                        color: "#FFFFFF",
-                        padding: "5px 12px",
-                        borderRadius: "6px",
-                        fontSize: "0.8rem",
-                        cursor: "pointer"
-                      }}
-                    >
-                      View in Wiki →
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* MAIN WIKI INTERFACE */}
-      <div style={{ maxWidth: "1280px", margin: "2rem auto", padding: "0 1.5rem" }}>
-        {/* PRODUCT SELECTION BAR */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "10px",
-          marginBottom: "2rem"
+      {/* MAIN TWO-COLUMN LAYOUT: LEFTHAND SIDEBAR + CONTENT AREA */}
+      <div style={{
+        maxWidth: "1600px",
+        margin: "1.5rem auto",
+        padding: "0 1.5rem",
+        display: "flex",
+        gap: "1.5rem",
+        alignItems: "flex-start",
+        position: "relative"
+      }}>
+        {/* LEFTHAND SIDEBAR */}
+        <aside style={{
+          width: isSidebarCollapsed ? "58px" : "310px",
+          minWidth: isSidebarCollapsed ? "58px" : "310px",
+          maxWidth: isSidebarCollapsed ? "58px" : "310px",
+          position: "sticky",
+          top: "1rem",
+          maxHeight: "calc(100vh - 2rem)",
+          background: "rgba(13, 19, 33, 0.85)",
+          backdropFilter: "blur(18px)",
+          border: "1px solid rgba(255, 255, 255, 0.09)",
+          borderRadius: "14px",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.35)",
+          display: "flex",
+          flexDirection: "column",
+          transition: "width 0.2s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.2s, max-width 0.2s",
+          overflowY: isSidebarCollapsed ? "hidden" : "auto",
+          padding: isSidebarCollapsed ? "0.75rem 0.35rem" : "1.25rem 1rem",
+          zIndex: 20
         }}>
-          {WIKI_PRODUCTS.map(p => {
-            const isSelected = p.id === activeProductId;
-            return (
+          {isSidebarCollapsed ? (
+            /* Collapsed Rail View */
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.75rem",
+              height: "100%"
+            }}>
               <button
-                key={p.id}
-                onClick={() => setActiveProductId(p.id)}
+                onClick={() => setIsSidebarCollapsed(false)}
                 style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(0, 229, 255, 0.12)",
+                  border: "1px solid rgba(0, 229, 255, 0.3)",
+                  color: "var(--accent-primary, #00E5FF)",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                  fontSize: "0.85rem"
+                }}
+                title="Expand Wiki Sidebar"
+              >
+                <ChevronRight size={16} />
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsSidebarCollapsed(false);
+                }}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#94A3B8",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer"
+                }}
+                title="Search Engines & APIs"
+              >
+                <Search size={16} />
+              </button>
+
+              <div style={{ width: "24px", height: "1px", background: "rgba(255, 255, 255, 0.1)", margin: "4px 0" }} />
+
+              {WIKI_PRODUCTS.map(p => {
+                const isSelected = p.id === activeProductId;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setActiveProductId(p.id)}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      background: isSelected ? `${p.accentColor}25` : "rgba(255, 255, 255, 0.03)",
+                      border: isSelected ? `1px solid ${p.accentColor}` : "1px solid rgba(255, 255, 255, 0.08)",
+                      boxShadow: isSelected ? `0 0 10px ${p.accentColor}44` : "none",
+                      display: "grid",
+                      placeItems: "center",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease"
+                    }}
+                    title={`${p.name} - ${PRODUCT_SUBTITLES[p.id] || "Wiki"}`}
+                  >
+                    <div style={{ transform: "scale(0.85)" }}>{p.icon}</div>
+                  </button>
+                );
+              })}
+
+              <div style={{ width: "24px", height: "1px", background: "rgba(255, 255, 255, 0.1)", margin: "4px 0", marginTop: "auto" }} />
+
+              <Link
+                href="/faq"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(16, 185, 129, 0.1)",
+                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                  color: "#34D399",
+                  display: "grid",
+                  placeItems: "center",
+                  textDecoration: "none"
+                }}
+                title="Technical FAQ"
+              >
+                <BookOpen size={16} />
+              </Link>
+            </div>
+          ) : (
+            /* Expanded Full Sidebar */
+            <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: "1rem" }}>
+              {/* Sidebar Header with Collapse */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{
+                  fontSize: "0.72rem",
+                  fontFamily: "var(--font-mono, monospace)",
+                  fontWeight: 800,
+                  color: "var(--accent-primary, #00E5FF)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase"
+                }}>
+                  WIKI NAVIGATOR
+                </span>
+                <button
+                  onClick={() => setIsSidebarCollapsed(true)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "6px",
+                    width: "26px",
+                    height: "26px",
+                    display: "grid",
+                    placeItems: "center",
+                    color: "#94A3B8",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
+                  title="Collapse Sidebar"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+              </div>
+
+              {/* SEARCH INPUT */}
+              <div style={{ position: "relative" }}>
+                <Search size={15} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#64748B" }} />
+                <input
+                  type="text"
+                  placeholder="Search engines & APIs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 30px 9px 32px",
+                    background: "rgba(15, 23, 42, 0.9)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "8px",
+                    color: "#FFFFFF",
+                    fontSize: "0.82rem",
+                    fontFamily: "var(--font-mono, monospace)",
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    style={{
+                      position: "absolute",
+                      right: "8px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "transparent",
+                      border: "none",
+                      color: "#94A3B8",
+                      cursor: "pointer",
+                      fontSize: "0.75rem",
+                      padding: "2px 4px"
+                    }}
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* SECTION: ENGINES & MODULES */}
+              <div>
+                <div style={{
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  color: "#64748B",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.5rem",
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: isSelected 
-                    ? `1px solid ${p.accentColor}` 
-                    : "1px solid rgba(255, 255, 255, 0.08)",
-                  background: isSelected 
-                    ? `linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.4) 100%)` 
-                    : "rgba(15, 23, 42, 0.5)",
-                  boxShadow: isSelected ? `0 0 16px ${p.accentColor}33` : "none",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                <div style={{ flexShrink: 0 }}>{p.icon}</div>
-                <div>
-                  <div style={{
-                    fontSize: "0.95rem",
-                    fontWeight: 700,
-                    color: isSelected ? "#FFFFFF" : "#CBD5E1",
-                    fontFamily: "var(--font-display, sans-serif)"
+                  justifyContent: "space-between"
+                }}>
+                  <span>Engines &amp; Modules</span>
+                  <span style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    color: "#94A3B8",
+                    padding: "1px 6px",
+                    borderRadius: "4px",
+                    fontSize: "0.68rem"
                   }}>
-                    {p.name}
-                  </div>
-                  <div style={{ fontSize: "0.72rem", color: "#64748B" }}>Wiki & Docs</div>
+                    {displayedProducts.length}
+                  </span>
                 </div>
-              </button>
-            );
-          })}
-        </div>
 
-        {/* ACTIVE PRODUCT HEADER */}
-        <div style={{
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  {displayedProducts.map(p => {
+                    const isSelected = p.id === activeProductId;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setActiveProductId(p.id);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "8px 10px",
+                          borderRadius: "8px",
+                          border: isSelected 
+                            ? `1px solid ${p.accentColor}` 
+                            : "1px solid rgba(255, 255, 255, 0.06)",
+                          background: isSelected 
+                            ? `linear-gradient(135deg, ${p.accentColor}20 0%, rgba(15, 23, 42, 0.85) 100%)` 
+                            : "rgba(15, 23, 42, 0.4)",
+                          boxShadow: isSelected ? `0 0 12px ${p.accentColor}25` : "none",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          width: "100%",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        <div style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "6px",
+                          background: isSelected ? `${p.accentColor}30` : "rgba(255, 255, 255, 0.04)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}>
+                          <div style={{ transform: "scale(0.8)" }}>{p.icon}</div>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            fontSize: "0.88rem",
+                            fontWeight: 700,
+                            color: isSelected ? "#FFFFFF" : "#CBD5E1",
+                            fontFamily: "var(--font-display, sans-serif)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                          }}>
+                            <span>{p.name}</span>
+                            {isSelected && (
+                              <span style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                background: p.accentColor,
+                                boxShadow: `0 0 6px ${p.accentColor}`
+                              }} />
+                            )}
+                          </div>
+                          <div style={{
+                            fontSize: "0.7rem",
+                            color: isSelected ? "#94A3B8" : "#64748B",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                          }}>
+                            {PRODUCT_SUBTITLES[p.id] || "Wiki & Simulator"}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* QUICK LINKS SECTION */}
+              <div style={{
+                marginTop: "auto",
+                paddingTop: "1rem",
+                borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px"
+              }}>
+                <div style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 800,
+                  color: "#64748B",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.25rem"
+                }}>
+                  Quick Reference
+                </div>
+                <Link
+                  href="/faq"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "7px 10px",
+                    borderRadius: "6px",
+                    fontSize: "0.78rem",
+                    color: "#94A3B8",
+                    textDecoration: "none",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <BookOpen size={13} color="#34D399" />
+                    <span>Technical FAQ</span>
+                  </span>
+                  <ArrowRight size={12} color="#64748B" />
+                </Link>
+                <Link
+                  href="/account/subscription"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "7px 10px",
+                    borderRadius: "6px",
+                    fontSize: "0.78rem",
+                    color: "#94A3B8",
+                    textDecoration: "none",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Shield size={13} color="#38BDF8" />
+                    <span>Platform Plans ($100)</span>
+                  </span>
+                  <ArrowRight size={12} color="#64748B" />
+                </Link>
+              </div>
+            </div>
+          )}
+        </aside>
+
+        {/* RIGHT MAIN CONTENT AREA */}
+        <main style={{ flex: 1, minWidth: 0 }}>
+          {/* SEARCH RESULTS OVERLAY (IF QUERY ENTERED) */}
+          {searchQuery.trim() !== "" && (
+            <div style={{
+              background: "rgba(15, 23, 42, 0.9)",
+              border: "1px solid rgba(0, 229, 255, 0.3)",
+              borderRadius: "12px",
+              padding: "1.25rem",
+              marginBottom: "1.5rem"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>
+                  Search Results for "{searchQuery}" ({filteredApis.length} API endpoints found)
+                </h3>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#94A3B8",
+                    fontSize: "0.78rem",
+                    cursor: "pointer",
+                    textDecoration: "underline"
+                  }}
+                >
+                  Clear Search
+                </button>
+              </div>
+              {filteredApis.length === 0 ? (
+                <div style={{ color: "#94A3B8", fontSize: "0.85rem" }}>No matching API endpoints found. Try searching for "feed", "download", "exam", or "stats".</div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {filteredApis.map(({ product, endpoint }, i) => (
+                    <div key={i} style={{
+                      padding: "10px 12px",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "10px",
+                      flexWrap: "wrap"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span style={{
+                          fontFamily: "var(--font-mono, monospace)",
+                          fontSize: "0.72rem",
+                          fontWeight: 700,
+                          padding: "2px 7px",
+                          borderRadius: "4px",
+                          background: endpoint.method === "GET" ? "rgba(6, 182, 212, 0.2)" : "rgba(16, 185, 129, 0.2)",
+                          color: endpoint.method === "GET" ? "#22D3EE" : "#34D399"
+                        }}>
+                          {endpoint.method}
+                        </span>
+                        <code style={{ color: "#FFFFFF", fontSize: "0.85rem" }}>{endpoint.path}</code>
+                        <span style={{ fontSize: "0.78rem", color: "#94A3B8" }}>({product.name})</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setActiveProductId(product.id);
+                          setActiveTab("api");
+                          setSearchQuery("");
+                        }}
+                        style={{
+                          background: "rgba(255, 255, 255, 0.08)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          color: "#FFFFFF",
+                          padding: "4px 10px",
+                          borderRadius: "6px",
+                          fontSize: "0.78rem",
+                          cursor: "pointer"
+                        }}
+                      >
+                        View in Wiki →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ACTIVE PRODUCT HEADER */}
+          <div style={{
           background: "rgba(15, 23, 42, 0.6)",
           backdropFilter: "blur(12px)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -1612,7 +1912,8 @@ export default function ResearchWikiPage() {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
-  );
+  </div>
+);
 }
