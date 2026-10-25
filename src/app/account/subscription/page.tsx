@@ -152,8 +152,8 @@ function SubscriptionContent() {
           </span>
         </h1>
 
-        <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "580px", margin: "0 auto", lineHeight: 1.5 }}>
-          Full access to the sovereign defense ecosystem. Zero add-ons, no hidden fees.
+        <p style={{ color: "#94A3B8", fontSize: "1.15rem", maxWidth: "580px", margin: "0 auto", lineHeight: 1.5 }}>
+          Practical tools, predictable pricing.
         </p>
 
         {/* CURRENT TIER BADGE */}
