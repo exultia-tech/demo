@@ -2,12 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { 
-  PureIdeIcon, 
-  VantageIcon, 
-  PraxisIcon, 
-  ExultiaLinuxIcon
-} from "@/components/BrandIcons";
+import { ExultiaLinuxIcon } from "@/components/BrandIcons";
 import ProductTourWalkthrough from "@/components/home/ProductTourWalkthrough";
 import { 
   CheckCircle2, 
@@ -164,221 +159,7 @@ export default function HomeCommandDeck() {
         </div>
       </section>
 
-      {/* ── 2. THE 4 FLAGSHIP CORE FOUNDATIONS (HIGH PROMINENCE) ───────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(6, 182, 212, 0.1)",
-            border: "1px solid rgba(6, 182, 212, 0.25)",
-            padding: "4px 14px",
-            borderRadius: "20px",
-            marginBottom: "0.75rem",
-            fontSize: "0.74rem",
-            fontFamily: "var(--font-mono, monospace)",
-            color: "#22D3EE",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase"
-          }}>
-            <span>The Core Defensive Architecture</span>
-          </div>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2.1rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
-            Four Sovereign Pillars
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0 auto" }}>
-            Engineered to replace fragmented point solutions with an integrated, self-healing sovereign runtime.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: "1.5rem" }}>
-          
-          {/* PILLAR 1: Exultia Linux */}
-          <Link
-            href="/products/exultia-linux"
-            className="glass-card"
-            style={{
-              padding: "2rem",
-              borderRadius: "20px",
-              border: "1px solid rgba(6, 182, 212, 0.3)",
-              background: "linear-gradient(180deg, rgba(8, 20, 35, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
-              textDecoration: "none",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              boxShadow: "0 8px 30px rgba(6, 182, 212, 0.12)",
-              transition: "transform 0.2s ease, border-color 0.2s ease"
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
-                <ExultiaLinuxIcon size={46} glow={true} />
-                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#22D3EE", background: "rgba(6, 182, 212, 0.15)", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
-                  FLAGSHIP OS
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                Exultia Linux
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#67E8F9", fontWeight: 700, marginBottom: "0.85rem" }}>
-                Sovereign Declarative Operating System
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
-                Content-addressed, immutable OS built upon a Nix base. Resident Kinetic™ daemon autonomously patches running workloads in &lt;300ms with 0 dropped sockets and a &lt;50ms atomic rollback SLA.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
-              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#34D399", fontWeight: 700 }}>
-                • 0 Open Findings (Trivy Audit)
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#22D3EE", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Specs &amp; Image</span> <ChevronRight size={15} />
-              </span>
-            </div>
-          </Link>
-
-          {/* PILLAR 2: Vantage */}
-          <Link
-            href="/app/uvi"
-            className="glass-card"
-            style={{
-              padding: "2rem",
-              borderRadius: "20px",
-              border: "1px solid rgba(168, 85, 247, 0.3)",
-              background: "linear-gradient(180deg, rgba(20, 10, 35, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
-              textDecoration: "none",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              boxShadow: "0 8px 30px rgba(168, 85, 247, 0.12)",
-              transition: "transform 0.2s ease, border-color 0.2s ease"
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
-                <VantageIcon size={46} />
-                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", background: "rgba(168, 85, 247, 0.15)", border: "1px solid rgba(168, 85, 247, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
-                  INTEL FEED
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                Vantage Intel
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#C084FC", fontWeight: 700, marginBottom: "0.85rem" }}>
-                Universal Vulnerability Aggregator
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
-                Real-time universal threat intelligence pipeline synchronizing 110+ authoritative registries (CISA KEV, NIST NVD, Linux vendor advisories) with algorithmic hotfix playbook synthesis.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
-              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", fontWeight: 700 }}>
-                • 110+ Ingestion Registries
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#C084FC", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Live Feed</span> <ChevronRight size={15} />
-              </span>
-            </div>
-          </Link>
-
-          {/* PILLAR 3: PureIDE */}
-          <Link
-            href="/products/pure-ide"
-            className="glass-card"
-            style={{
-              padding: "2rem",
-              borderRadius: "20px",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
-              background: "linear-gradient(180deg, rgba(10, 20, 45, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
-              textDecoration: "none",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              boxShadow: "0 8px 30px rgba(59, 130, 246, 0.12)",
-              transition: "transform 0.2s ease, border-color 0.2s ease"
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
-                <PureIdeIcon size={46} />
-                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#60A5FA", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
-                  DEV ENCLAVE
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                PureIDE
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#60A5FA", fontWeight: 700, marginBottom: "0.85rem" }}>
-                Zero-Telemetry Developer Workstation
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
-                Air-gapped, supply-chain hardened development environment. Pre-configured build isolation, automated SBOM generation, and live vulnerability linting right at compile time.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
-              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#60A5FA", fontWeight: 700 }}>
-                • 100% Egress Blocking
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#60A5FA", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Workstation</span> <ChevronRight size={15} />
-              </span>
-            </div>
-          </Link>
-
-          {/* PILLAR 4: Praxis */}
-          <Link
-            href="/app/praxis"
-            className="glass-card"
-            style={{
-              padding: "2rem",
-              borderRadius: "20px",
-              border: "1px solid rgba(245, 158, 11, 0.3)",
-              background: "linear-gradient(180deg, rgba(35, 25, 10, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%)",
-              textDecoration: "none",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              boxShadow: "0 8px 30px rgba(245, 158, 11, 0.12)",
-              transition: "transform 0.2s ease, border-color 0.2s ease"
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
-                <PraxisIcon size={46} />
-                <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 8px", borderRadius: "5px", fontWeight: 800, textTransform: "uppercase" }}>
-                  HOTPATCH ENGINE
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                Praxis &amp; Kinetic
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", color: "#FBBF24", fontWeight: 700, marginBottom: "0.85rem" }}>
-                Autonomous Fleet Remediation
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 1.5rem 0" }}>
-                Sub-second in-memory patch injection engine. Enforces ring-based progressive canary rollouts, automated eBPF firewall ACL synthesis, and instant cryptographic pre-image rollbacks.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
-              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", fontWeight: 700 }}>
-                • 0 Disrupted TCP Sockets
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#FBBF24", fontSize: "0.82rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Fleet Console</span> <ChevronRight size={15} />
-              </span>
-            </div>
-          </Link>
-
-        </div>
-      </section>
-
-      {/* ── 3. CHRONOLOGICAL PRODUCT APPLICATION TOUR (GUIDED WALKTHROUGH) ─────── */}
+      {/* ── 2. CHRONOLOGICAL PRODUCT APPLICATION TOUR (GUIDED WALKTHROUGH) ─────── */}
       <section style={{ marginBottom: "5rem" }}>
         <ProductTourWalkthrough />
 
@@ -431,7 +212,7 @@ export default function HomeCommandDeck() {
 
       </section>
 
-      {/* ── 4. ARCHITECTURAL COMPARISON: SOVEREIGN VS. LEGACY ─────────────────── */}
+      {/* ── 3. ARCHITECTURAL COMPARISON: SOVEREIGN VS. LEGACY ─────────────────── */}
       <section style={{ marginBottom: "5rem" }}>
         
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
@@ -499,7 +280,7 @@ export default function HomeCommandDeck() {
 
       </section>
 
-      {/* ── 5. UNIFIED SOVEREIGN PLATFORM TIERS ───────────────────────────────── */}
+      {/* ── 4. UNIFIED SOVEREIGN PLATFORM TIERS ───────────────────────────────── */}
       <section style={{ marginBottom: "4rem" }}>
         
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
