@@ -39,7 +39,7 @@ async function handleValidatorRequest(request: NextRequest) {
 
   // If testing a single specific subsystem
   if (testParam === "hotfix") {
-    const hotfix = runLiveHotfixProbe();
+    const hotfix = runLiveHotfixProbe(cveParam);
     if (wantsText) {
       const text = [
         `\x1b[0;36m\x1b[1m=== EXULTIA LIVE HOTFIX BEFORE-AND-AFTER CONDITION PROBE ===\x1b[0m`,
