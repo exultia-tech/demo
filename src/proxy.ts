@@ -46,7 +46,8 @@ export function proxy(request: NextRequest) {
     if (
       pathname === "/preview" ||
       pathname.startsWith("/preview/") ||
-      pathname.startsWith("/api/preview")
+      pathname.startsWith("/api/preview") ||
+      pathname.startsWith("/api/validator")
     ) {
       return NextResponse.next();
     }
