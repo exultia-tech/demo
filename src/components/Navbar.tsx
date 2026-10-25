@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -115,8 +115,12 @@ export default function Navbar() {
     pathname.startsWith("/products/valkyrie")
   );
 
+  const isExultiaLinuxContext = !isIsolated && (
+    pathname.startsWith("/products/exultia-linux")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext;
+  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -255,7 +259,7 @@ export default function Navbar() {
                         Closed-Loop Ecosystem
                       </div>
                       <div style={{ fontSize: "0.78rem", color: "#94A3B8" }}>
-                        7 interconnected sovereign defense engines
+                        8 interconnected sovereign defense engines &amp; platforms
                       </div>
                     </div>
                     {/* PRODUCT 1: PUREIDE */}
@@ -355,6 +359,34 @@ export default function Navbar() {
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureOS</div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Pre-hardened OS container catalogue</div>
+                      </div>
+                    </Link>
+
+                    {/* PRODUCT 5B: Exultia Linux (Sovereign Operating System) */}
+                    <Link 
+                      href="/products/exultia-linux" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isExultiaLinuxContext ? "rgba(6, 182, 212, 0.18)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <ExultiaLinuxIcon size={32} glow={false} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Exultia Linux
+                          <span style={{ fontSize: "0.6rem", background: "rgba(6, 182, 212, 0.2)", color: "#22D3EE", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>SOVEREIGN OS</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Declarative OS with autonomous Kinetic™ hotpatching</div>
                       </div>
                     </Link>
 

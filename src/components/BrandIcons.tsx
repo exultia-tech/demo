@@ -976,5 +976,118 @@ export function ValkyrieIcon({ size = 32, className = "", glow = true }: IconPro
   );
 }
 
+/**
+ * Exultia Linux Sovereign OS Icon
+ * Cybernetic sovereign kernel core: faceted titanium-cyan defensive hexagon,
+ * atomic declarative state rings (Nix/Kinetic), and central autonomous pulse node.
+ */
+export function ExultiaLinuxIcon({
+  size = 48,
+  className = "",
+  glow = false,
+}: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={
+        glow
+          ? {
+              filter:
+                "drop-shadow(0 0 12px rgba(6, 182, 212, 0.7)) drop-shadow(0 0 24px rgba(16, 185, 129, 0.35))",
+            }
+          : undefined
+      }
+    >
+      <defs>
+        <linearGradient id="ex-linux-base" x1="24" y1="2" x2="24" y2="46" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#081423" />
+          <stop offset="100%" stopColor="#030712" />
+        </linearGradient>
+        <linearGradient id="ex-linux-border" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#22D3EE" />
+          <stop offset="50%" stopColor="#06B6D4" />
+          <stop offset="100%" stopColor="#10B981" />
+        </linearGradient>
+        <linearGradient id="ex-linux-core" x1="16" y1="16" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#67E8F9" />
+          <stop offset="50%" stopColor="#0EA5E9" />
+          <stop offset="100%" stopColor="#059669" />
+        </linearGradient>
+        <radialGradient id="ex-linux-glow" cx="24" cy="24" r="14" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Hexagonal Sovereign Shield Body */}
+      <polygon
+        points="24,3 43,13.5 43,34.5 24,45 5,34.5 5,13.5"
+        fill="url(#ex-linux-base)"
+        stroke="url(#ex-linux-border)"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+
+      {/* Inner Hardened Shell */}
+      <polygon
+        points="24,7 39,15.5 39,32.5 24,41 9,32.5 9,15.5"
+        fill="rgba(6, 182, 212, 0.05)"
+        stroke="rgba(34, 211, 238, 0.25)"
+        strokeWidth="1"
+        strokeDasharray="3 3"
+      />
+
+      {/* Ambient Core Glow */}
+      <circle cx="24" cy="24" r="13" fill="url(#ex-linux-glow)" />
+
+      {/* Declarative Atomic Orbit Spokes (Nix / Kinetic Geometry) */}
+      <path
+        d="M 24 9 L 24 18 M 24 30 L 24 39"
+        stroke="#22D3EE"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 11 16.5 L 18.5 21 M 29.5 27 L 37 31.5"
+        stroke="#06B6D4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 37 16.5 L 29.5 21 M 18.5 27 L 11 31.5"
+        stroke="#10B981"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      {/* Outer Atomic Nodes */}
+      <circle cx="24" cy="9" r="2" fill="#67E8F9" stroke="#081423" strokeWidth="0.8" />
+      <circle cx="37" cy="16.5" r="2" fill="#67E8F9" stroke="#081423" strokeWidth="0.8" />
+      <circle cx="37" cy="31.5" r="2" fill="#34D399" stroke="#081423" strokeWidth="0.8" />
+      <circle cx="24" cy="39" r="2" fill="#34D399" stroke="#081423" strokeWidth="0.8" />
+      <circle cx="11" cy="31.5" r="2" fill="#22D3EE" stroke="#081423" strokeWidth="0.8" />
+      <circle cx="11" cy="16.5" r="2" fill="#22D3EE" stroke="#081423" strokeWidth="0.8" />
+
+      {/* Central Sovereign Microkernel Core */}
+      <polygon
+        points="24,17 30,20.5 30,27.5 24,31 18,27.5 18,20.5"
+        fill="url(#ex-linux-core)"
+        stroke="#FFFFFF"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      
+      {/* Dynamic Pulse Kernel Node */}
+      <circle cx="24" cy="24" r="2.4" fill="#FFFFFF" />
+      <circle cx="24" cy="24" r="1" fill="#081423" />
+    </svg>
+  );
+}
+
 
 
