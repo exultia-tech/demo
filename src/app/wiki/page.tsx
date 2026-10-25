@@ -27,7 +27,6 @@ import {
   Download, 
   RefreshCw, 
   ArrowRight,
-  FileText,
   Key,
   Database,
   Play,
@@ -862,49 +861,6 @@ export default function ResearchWikiPage() {
               Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, forensic redaction engines, and explore architectural specifications and enterprise REST API schemas.
             </p>
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <Link
-              href="/account/subscription"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "0.82rem",
-                fontFamily: "var(--font-mono, monospace)",
-                fontWeight: 700,
-                color: "#38BDF8",
-                background: "rgba(56, 189, 248, 0.1)",
-                border: "1px solid rgba(56, 189, 248, 0.3)",
-                padding: "6px 14px",
-                borderRadius: "6px",
-                textDecoration: "none"
-              }}
-            >
-              <span>Platform Plans ($100/mo Pro)</span>
-              <ArrowRight size={13} />
-            </Link>
-            <Link
-              href="/faq"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "0.82rem",
-                fontFamily: "var(--font-mono, monospace)",
-                fontWeight: 700,
-                color: "#A7F3D0",
-                background: "rgba(16, 185, 129, 0.1)",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                padding: "6px 14px",
-                borderRadius: "6px",
-                textDecoration: "none"
-              }}
-            >
-              <span>Technical FAQ</span>
-              <ArrowRight size={13} />
-            </Link>
-          </div>
         </div>
       </div>
 
@@ -1140,74 +1096,133 @@ export default function ResearchWikiPage() {
                   {displayedProducts.map(p => {
                     const isSelected = p.id === activeProductId;
                     return (
-                      <button
-                        key={p.id}
-                        onClick={() => {
-                          setActiveProductId(p.id);
-                        }}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                          padding: "8px 10px",
-                          borderRadius: "8px",
-                          border: isSelected 
-                            ? `1px solid ${p.accentColor}` 
-                            : "1px solid rgba(255, 255, 255, 0.06)",
-                          background: isSelected 
-                            ? `linear-gradient(135deg, ${p.accentColor}20 0%, rgba(15, 23, 42, 0.85) 100%)` 
-                            : "rgba(15, 23, 42, 0.4)",
-                          boxShadow: isSelected ? `0 0 12px ${p.accentColor}25` : "none",
-                          cursor: "pointer",
-                          textAlign: "left",
-                          width: "100%",
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        <div style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "6px",
-                          background: isSelected ? `${p.accentColor}30` : "rgba(255, 255, 255, 0.04)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}>
-                          <div style={{ transform: "scale(0.8)" }}>{p.icon}</div>
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{
-                            fontSize: "0.88rem",
-                            fontWeight: 700,
-                            color: isSelected ? "#FFFFFF" : "#CBD5E1",
-                            fontFamily: "var(--font-display, sans-serif)",
+                      <div key={p.id} style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <button
+                          onClick={() => {
+                            setActiveProductId(p.id);
+                          }}
+                          style={{
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between"
-                          }}>
-                            <span>{p.name}</span>
-                            {isSelected && (
-                              <span style={{
-                                width: "6px",
-                                height: "6px",
-                                borderRadius: "50%",
-                                background: p.accentColor,
-                                boxShadow: `0 0 6px ${p.accentColor}`
-                              }} />
-                            )}
-                          </div>
+                            gap: "10px",
+                            padding: "8px 10px",
+                            borderRadius: "8px",
+                            border: isSelected 
+                              ? `1px solid ${p.accentColor}` 
+                              : "1px solid rgba(255, 255, 255, 0.06)",
+                            background: isSelected 
+                              ? `linear-gradient(135deg, ${p.accentColor}20 0%, rgba(15, 23, 42, 0.85) 100%)` 
+                              : "rgba(15, 23, 42, 0.4)",
+                            boxShadow: isSelected ? `0 0 12px ${p.accentColor}25` : "none",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            width: "100%",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
                           <div style={{
-                            fontSize: "0.7rem",
-                            color: isSelected ? "#94A3B8" : "#64748B",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
+                            width: "30px",
+                            height: "30px",
+                            borderRadius: "6px",
+                            background: isSelected ? `${p.accentColor}30` : "rgba(255, 255, 255, 0.04)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0
                           }}>
-                            {PRODUCT_SUBTITLES[p.id] || "Wiki & Simulator"}
+                            <div style={{ transform: "scale(0.8)" }}>{p.icon}</div>
                           </div>
-                        </div>
-                      </button>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontSize: "0.88rem",
+                              fontWeight: 700,
+                              color: isSelected ? "#FFFFFF" : "#CBD5E1",
+                              fontFamily: "var(--font-display, sans-serif)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between"
+                            }}>
+                              <span>{p.name}</span>
+                              {isSelected && (
+                                <span style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  background: p.accentColor,
+                                  boxShadow: `0 0 6px ${p.accentColor}`
+                                }} />
+                              )}
+                            </div>
+                            <div style={{
+                              fontSize: "0.7rem",
+                              color: isSelected ? "#94A3B8" : "#64748B",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
+                            }}>
+                              {PRODUCT_SUBTITLES[p.id] || "Wiki & Simulator"}
+                            </div>
+                          </div>
+                        </button>
+
+                        {isSelected && (
+                          <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "2px",
+                            marginLeft: "16px",
+                            paddingLeft: "10px",
+                            borderLeft: `2px solid ${p.accentColor}44`,
+                            marginTop: "2px",
+                            marginBottom: "6px"
+                          }}>
+                            {[
+                              { id: "simulator" as const, label: "Lab Simulator", icon: Sparkles },
+                              { id: "details" as const, label: "Architecture & Specs", icon: BookOpen },
+                              { id: "quickstart" as const, label: "Quick-Start Guide", icon: Terminal },
+                              { id: "api" as const, label: `API Reference (${p.apiEndpoints.length})`, icon: Code2 }
+                            ].map(sub => {
+                              const isSubActive = activeTab === sub.id;
+                              const SubIcon = sub.icon;
+                              return (
+                                <button
+                                  key={sub.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveProductId(p.id);
+                                    setActiveTab(sub.id);
+                                  }}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    padding: "5px 8px",
+                                    borderRadius: "6px",
+                                    fontSize: "0.76rem",
+                                    fontWeight: isSubActive ? 700 : 500,
+                                    color: isSubActive ? "#FFFFFF" : "#94A3B8",
+                                    background: isSubActive ? `${p.accentColor}25` : "transparent",
+                                    border: isSubActive ? `1px solid ${p.accentColor}55` : "1px solid transparent",
+                                    cursor: "pointer",
+                                    textAlign: "left",
+                                    width: "100%",
+                                    transition: "all 0.12s ease"
+                                  }}
+                                >
+                                  <SubIcon size={13} color={isSubActive ? p.accentColor : "#64748B"} />
+                                  <span style={{
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                  }}>
+                                    {sub.label}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -1366,83 +1381,28 @@ export default function ResearchWikiPage() {
             </div>
           )}
 
-          {/* ACTIVE PRODUCT HEADER */}
+          {/* SLIM BREADCRUMB BAR */}
           <div style={{
-          background: "rgba(15, 23, 42, 0.6)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "14px",
-          padding: "1.75rem",
-          marginBottom: "1.5rem",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem"
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{
-              width: "56px",
-              height: "56px",
-              borderRadius: "12px",
-              background: "rgba(255, 255, 255, 0.05)",
-              border: `1px solid ${activeProduct.accentColor}44`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              {activeProduct.icon}
-            </div>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <h2 style={{
-                  fontFamily: "var(--font-display, sans-serif)",
-                  fontSize: "1.6rem",
-                  fontWeight: 900,
-                  color: "#FFFFFF",
-                  margin: 0
-                }}>
-                  {activeProduct.name}
-                </h2>
-                <span style={{
-                  fontSize: "0.7rem",
-                  fontFamily: "var(--font-mono, monospace)",
-                  background: `${activeProduct.accentColor}22`,
-                  color: activeProduct.accentColor,
-                  border: `1px solid ${activeProduct.accentColor}55`,
-                  padding: "2px 7px",
-                  borderRadius: "4px",
-                  fontWeight: 700
-                }}>
-                  UNIFIED PLATFORM ENGINE • $100/MO PRO
-                </span>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: "4px 0 0 0" }}>
-                {activeProduct.tagline}
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "0.82rem",
-                fontFamily: "var(--font-mono, monospace)",
-                padding: "8px 14px",
-                borderRadius: "8px",
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                color: "#94A3B8"
-              }}
-            >
-              <FileText size={14} color="var(--accent-primary, #00E5FF)" />
-              <span>Specification: {activeProduct.specDoc}</span>
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.88rem",
+            color: "#94A3B8",
+            marginBottom: "1.25rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)"
+          }}>
+            <span style={{ color: "#FFFFFF", fontWeight: 700, fontFamily: "var(--font-display, sans-serif)" }}>
+              {activeProduct.name}
+            </span>
+            <span style={{ color: "#64748B" }}>/</span>
+            <span style={{ color: activeProduct.accentColor, fontWeight: 600 }}>
+              {activeTab === "simulator" ? "Interactive Lab Simulator" :
+               activeTab === "details" ? "Architecture & Specs" :
+               activeTab === "quickstart" ? "Quick-Start Guide" :
+               `API & cURL Reference (${activeProduct.apiEndpoints.length})`}
             </span>
           </div>
-        </div>
 
         {/* SUB-TABS (SIMULATOR, ARCHITECTURE, QUICKSTART, API REFERENCE) */}
         <div style={{
