@@ -23,6 +23,7 @@
 # downloads & staged builds (large binaries)
 /public/downloads/*
 !/public/downloads/.gitkeep
+!/public/downloads/validate.py
 !/public/downloads/kinetic
 !/public/downloads/kinetic/**
 bin/dist/*.exe
