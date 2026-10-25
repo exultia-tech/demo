@@ -2428,19 +2428,22 @@ export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
       { product: "FrankenPHP", ecosystem: "PHP", affectedVersions: "< 1.2.6", fixedInVersion: "1.2.6", purl: "pkg:generic/frankenphp" }
     ],
     cisaKev: {
-      isKevKnownExploited: true,
+      isKnownExploited: true,
       dateAdded: "2026-10-22",
-      dueDate: "2026-11-05",
-      requiredAction: "Apply vendor security updates or apply zero-downtime hotfix mitigation immediately.",
+      ransomwareUse: false,
       notes: "Actively exploited in the wild targeting web applications processing multipart/form-data uploads."
     },
+    upstreamSignals: [
+      { sourceId: "vendor_php", sourceName: "PHP Group Emergency Advisory", badge: "Vendor Emergency", finding: "Critical core memory management heap corruption in zend_alloc.c and rfc1867.c.", signalType: "CVE_RECORD", confidence: "CONFIRMED" },
+      { sourceId: "cisa_kev", sourceName: "CISA KEV Catalog", badge: "Known Exploited", finding: "PHP2Shell added to CISA KEV catalog under emergency federal remediation directive.", signalType: "ACTIVE_EXPLOITATION", confidence: "CONFIRMED" },
+      { sourceId: "kinetic_sentinel", sourceName: "Kinetic Fleet Sentinel", badge: "Zero-Downtime Hotfix", finding: "Drop-in FPM pool clamp and zend_mm eBPF guard successfully neutralize exploit payloads.", signalType: "RESEARCH_DISCLOSURE", confidence: "CONFIRMED" }
+    ],
     remediation: {
-      status: "OFFICIAL_FIX_AVAILABLE",
-      fixVersion: "8.3.13 / 8.2.25",
-      description: "Apply Kinetic drop-in pool configuration / eBPF zend_mm boundary clamp, or update PHP packages."
+      recommendedAction: "Apply vendor security updates (PHP 8.3.13 / 8.2.25) or apply Kinetic zero-downtime hotfix drop-in immediately.",
+      patchDetails: "Apply Kinetic drop-in pool configuration / eBPF zend_mm boundary clamp, or update PHP packages."
     },
-    publishedDate: "2026-10-21T00:00:00Z",
-    lastModifiedDate: "2026-10-24T18:00:00Z"
+    publishedDate: "2026-10-21",
+    lastUpdatedDate: "2026-10-24"
   },
   // 1. PHP-CGI Windows CommandLine Argument Injection (CVE-2024-4577)
   {

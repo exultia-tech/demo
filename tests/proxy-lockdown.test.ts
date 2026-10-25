@@ -13,7 +13,7 @@ describe("Proxy Private Preview Lockdown & API Bypass Vectors", () => {
     delete process.env.PUBLIC_LAUNCH;
     delete process.env.ALLOW_PUBLIC_ACCESS;
     // Clear test/vitest flag to test the real production lockdown branch
-    delete process.env.NODE_ENV;
+    delete (process.env as any).NODE_ENV;
     delete (process.env as any).VITEST;
   });
 
