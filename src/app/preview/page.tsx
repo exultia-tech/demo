@@ -212,22 +212,10 @@ export default function PreviewHoldingPage() {
           </button>
         </form>
 
-        {/* Secondary Links */}
-        <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1.25rem", display: "flex", justifyContent: "space-between", fontSize: "0.76rem" }}>
-          <Link
-            href="/admin/login"
-            style={{ color: "#64748B", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#F59E0B")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "#64748B")}
-          >
-            <ShieldAlert size={13} />
-            <span>Root Break-Glass</span>
-          </Link>
-
-          <span style={{ color: "#475569" }}>•</span>
-
+        {/* Footer */}
+        <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1.25rem", textAlign: "center", fontSize: "0.76rem" }}>
           <span style={{ color: "#64748B" }}>
-            Exultia SecOps © 2026
+            Exultia SecOps © 2026 • Private Validation Staging
           </span>
         </div>
       </div>

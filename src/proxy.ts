@@ -16,26 +16,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. PRIVATE PREVIEW & OPERATOR GATE
-  // When active (default: true during validation), visitors cannot see the live site unless authorized with the operator key
-  const isExplicitlyDisabled = process.env.PRIVATE_PREVIEW_MODE === "false" || process.env.PUBLIC_LAUNCH === "true" || process.env.ALLOW_PUBLIC_ACCESS === "true";
+  // 2. PRIVATE PREVIEW LOCKDOWN & OPERATOR GATE
+  // When active (default: true during validation), NO OTHER PAGES OR APIS are accessible
+  // to the public. Only authorized operators with the valid key can access the platform.
+  const isExplicitlyDisabled =
+    process.env.PRIVATE_PREVIEW_MODE === "false" ||
+    process.env.PUBLIC_LAUNCH === "true" ||
+    process.env.ALLOW_PUBLIC_ACCESS === "true";
   const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {
-    // Whitelist the preview page itself, unlock/lock APIs, auth routes, wiki/docs, and the emergency admin login
-    if (
-      pathname.startsWith("/preview") ||
-      pathname.startsWith("/api/preview") ||
-      pathname.startsWith("/admin/login") ||
-      pathname.startsWith("/api/auth") ||
-      pathname.startsWith("/wiki") ||
-      pathname.startsWith("/docs") ||
-      pathname.startsWith("/cve") ||
-      pathname.startsWith("/api/patches")
-    ) {
-      return NextResponse.next();
-    }
-
     // Check for operator authorization passkey cookie
     const operatorCookie = request.cookies.get(OPERATOR_COOKIE_NAME)?.value;
     const expectedKey = (process.env.OPERATOR_PREVIEW_KEY || DEFAULT_OPERATOR_KEY).trim();
@@ -44,12 +34,33 @@ export function proxy(request: NextRequest) {
       operatorCookie && operatorCookie.trim() === expectedKey
     );
 
-    // If not authorized as operator, redirect to the preview holding page
-    if (!isOperatorAuthorized) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/preview";
-      return NextResponse.redirect(url);
+    // If operator is authenticated, allow full access to all pages and APIs
+    if (isOperatorAuthorized) {
+      return NextResponse.next();
     }
+
+    // --- STRICT LOCKDOWN (Unauthenticated Visitors) ---
+    // Only allow the preview holding page and the operator unlock API endpoints
+    if (
+      pathname === "/preview" ||
+      pathname.startsWith("/preview/") ||
+      pathname.startsWith("/api/preview")
+    ) {
+      return NextResponse.next();
+    }
+
+    // Unauthorized API requests are strictly rejected with 403 Forbidden
+    if (pathname.startsWith("/api")) {
+      return NextResponse.json(
+        { error: "Access restricted: site in private preview lockdown." },
+        { status: 403 }
+      );
+    }
+
+    // All unauthorized page requests are redirected to the holding page
+    const url = request.nextUrl.clone();
+    url.pathname = "/preview";
+    return NextResponse.redirect(url);
   }
 
   // 3. Isolated Threat Feed Mode (legacy / optional)
@@ -71,6 +82,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
