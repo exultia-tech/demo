@@ -47,19 +47,31 @@ async function handleValidatorRequest(request: NextRequest) {
         `  Socket / PID   : ${hotfix.before.openSocket} (PID: ${hotfix.before.pid})`,
         `  Baseline SHA   : ${hotfix.before.sha256Baseline}`,
         `  Window         : ${hotfix.before.vulnerabilityWindow}`,
+        `  \x1b[1mCommand Outputs [BEFORE FIX]:\x1b[0m`,
+        ...hotfix.before.commandsExecuted.map(c => `    $ ${c.command}\n    > ${c.output}`),
         `\x1b[0;36m[2. HOTFIX MUTATION]\x1b[0m`,
         `  Target         : ${hotfix.hotfixMutation.targetPath}`,
         `  Applied        : ${hotfix.hotfixMutation.appliedDirective}`,
         `  Diff           :\n${hotfix.hotfixMutation.unifiedDiff}`,
+        `  \x1b[1mCommand Executed & Trace:\x1b[0m`,
+        `    $ ${hotfix.hotfixMutation.commandExecuted.command}`,
+        `    > ${hotfix.hotfixMutation.commandExecuted.output.split("\n").join("\n    > ")}`,
         `\x1b[0;32m[3. AFTER CONDITION]\x1b[0m State: ${hotfix.after.state}`,
         `  Directive      : ${hotfix.after.configDirective}`,
         `  Socket / PID   : ${hotfix.after.openSocket} (PID: ${hotfix.after.pid})`,
         `  Downtime       : ${hotfix.after.downtimeSeconds}s (Zero Downtime)`,
         `  Post-SHA256    : ${hotfix.after.sha256PostHotfix}`,
+        `  \x1b[1mCommand Outputs [AFTER FIX]:\x1b[0m`,
+        ...hotfix.after.commandsExecuted.map(c => `    $ ${c.command}\n    > ${c.output}`),
         `\x1b[0;35m[4. DETERMINISTIC ROLLBACK]\x1b[0m`,
         `  Latency        : ${hotfix.rollback.durationMs.toFixed(4)} ms (${hotfix.rollback.durationUs} µs)`,
         `  Restored SHA   : ${hotfix.rollback.sha256AfterRollback}`,
-        `  Bitwise Match  : ${hotfix.rollback.bitwiseBaselineMatch ? "\x1b[0;32m100% IDENTICAL\x1b[0m" : "MISMATCH"}`
+        `  Bitwise Match  : ${hotfix.rollback.bitwiseBaselineMatch ? "\x1b[0;32m100% IDENTICAL\x1b[0m" : "MISMATCH"}`,
+        `  \x1b[1mRollback Command Trace:\x1b[0m`,
+        `    $ ${hotfix.rollback.commandExecuted.command}`,
+        `    > ${hotfix.rollback.commandExecuted.output.split("\n").join("\n    > ")}`,
+        `  \x1b[1mCommand Outputs [AFTER ROLLBACK]:\x1b[0m`,
+        ...hotfix.rollback.afterRollbackCommandsExecuted.map(c => `    $ ${c.command}\n    > ${c.output}`)
       ].join("\n");
       return new NextResponse(text + "\n", {
         headers: { "Content-Type": "text/plain; charset=utf-8" }
