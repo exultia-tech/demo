@@ -432,7 +432,7 @@ export async function getVantageThreatSamples(options?: {
     a.upstreamSignals?.some(s => s.signalType === "ACTIVE_EXPLOITATION" || s.sourceName.includes("CISA KEV"))
   ).length;
 
-  const count = Math.max(options?.samples || 50, 50);
+  const count = options?.samples ? Math.max(options.samples, 1) : 50;
   const order = options?.order || "newest";
 
   let candidates = [...allAdvisories];
