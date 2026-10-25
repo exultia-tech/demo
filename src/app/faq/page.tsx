@@ -85,7 +85,7 @@ const FAQ_DATA: FaqItem[] = [
     category: "skepticism",
     categoryLabel: "Skepticism & Safety",
     isSkepticism: true,
-    question: "Isn't $59/mo suspiciously cheap for a platform claiming to replace multi-thousand-dollar enterprise suites?",
+    question: "Isn't $100/mo suspiciously cheap for a platform claiming to replace multi-thousand-dollar enterprise suites?",
     shortSummary: "Modern systems engineering eliminates the massive sales overhead and cloud ingestion bloat of legacy vendors.",
     keyProof: "Zero cloud telemetry ingest fees + compiled native binary architecture = 90% lower operational cost.",
     answer: [
@@ -262,12 +262,12 @@ const FAQ_DATA: FaqItem[] = [
     id: "single-subscription",
     category: "pricing",
     categoryLabel: "Pricing & Licensing",
-    question: "Do I really get full access to all 7 platform engines with a single $59/mo subscription?",
+    question: "Do I really get full access to all 7 platform engines with a single $100/mo subscription?",
     shortSummary: "Yes. An active Professional Operator subscription unlocks all 7 defense engines with zero add-on fees.",
     keyProof: "All 7 engines included: Vantage, Praxis, Eris, Valkyrie, PureIDE, PureOS, and Axiom.",
     answer: [
       "Yes. Unlike legacy vendors that charge separate licensing fees for threat feeds, vulnerability scanners, pentest tools, container registries, and training simulators, Exultia provides the entire ecosystem under one unified platform subscription.",
-      "Your $59/mo ($590/year) Professional Operator subscription includes:",
+      "Your $100/mo ($1,200/year) Professional Operator subscription includes:",
       "• Unlimited Praxis in-memory hotpatching and atomic rollbacks",
       "• Full Vantage threat intelligence across 110+ authoritative registries",
       "• Private Eris chaos sandbox testing ranges",
@@ -297,11 +297,11 @@ const FAQ_DATA: FaqItem[] = [
     id: "enterprise-features",
     category: "pricing",
     categoryLabel: "Pricing & Licensing",
-    question: "What extra capabilities are included in the Enterprise Fleet plan ($399/mo)?",
+    question: "What extra capabilities are included in the Enterprise Fleet plan ($500/mo)?",
     shortSummary: "Multi-cluster orchestration, custom patch authoring, SCORM/LTI LMS APIs, and 24/7 priority SLA.",
     keyProof: "Designed for enterprise SOCs, multi-cluster Kubernetes deployments, and universities.",
     answer: [
-      "The Enterprise Fleet tier ($399/mo or custom annual invoicing) is engineered for multi-team organizations, universities, and mission-critical infrastructure:",
+      "The Enterprise Fleet tier ($500/mo or custom annual invoicing) is engineered for multi-team organizations, universities, and mission-critical infrastructure:",
       "• Multi-Node Cluster Orchestration: Centrally orchestrate hotpatching across hundreds of Kubernetes nodes and server clusters.",
       "• Custom Hotpatch Authoring: Author and audit proprietary trampoline patches for internal, proprietary enterprise binaries.",
       "• Institutional LMS Integration: SCORM and LTI 1.3 deep-linking API for embedding Axiom certification exams into university and corporate LMS systems.",
@@ -760,7 +760,7 @@ export default function FaqPage() {
               boxShadow: "0 4px 20px rgba(0, 229, 255, 0.4)"
             }}
           >
-            <span>Platform Plans ($59/mo)</span>
+            <span>Platform Plans ($100/mo)</span>
             <ArrowRight size={15} />
           </Link>
 

@@ -21,18 +21,18 @@ describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 3-Tier Mod
     expect(community.annualBilledTotal).toBe(0);
     expect(community.highlights.length).toBeGreaterThanOrEqual(5);
 
-    // Pro ($79/mo or $59/mo annual)
+    // Pro ($120/mo or $100/mo annual)
     expect(pro.id).toBe('pro');
-    expect(pro.priceMonthly).toBe(79);
-    expect(pro.priceAnnual).toBe(59);
-    expect(pro.annualBilledTotal).toBe(708);
+    expect(pro.priceMonthly).toBe(120);
+    expect(pro.priceAnnual).toBe(100);
+    expect(pro.annualBilledTotal).toBe(1200);
     expect(pro.isPopular).toBe(true);
 
-    // Enterprise ($499/mo or $399/mo annual)
+    // Enterprise ($600/mo or $500/mo annual)
     expect(enterprise.id).toBe('enterprise');
-    expect(enterprise.priceMonthly).toBe(499);
-    expect(enterprise.priceAnnual).toBe(399);
-    expect(enterprise.annualBilledTotal).toBe(4788);
+    expect(enterprise.priceMonthly).toBe(600);
+    expect(enterprise.priceAnnual).toBe(500);
+    expect(enterprise.annualBilledTotal).toBe(6000);
   });
 
   it('should cover all 7 sovereign defense engines across every tier', () => {
@@ -49,11 +49,11 @@ describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 3-Tier Mod
   it('should resolve tier objects via getPlatformTier safely', () => {
     const pro = getPlatformTier('pro');
     expect(pro.name).toBe('Professional Operator');
-    expect(pro.priceAnnual).toBe(59);
+    expect(pro.priceAnnual).toBe(100);
 
     const enterprise = getPlatformTier('enterprise');
     expect(enterprise.name).toBe('Enterprise Fleet');
-    expect(enterprise.priceAnnual).toBe(399);
+    expect(enterprise.priceAnnual).toBe(500);
 
     const community = getPlatformTier('community');
     expect(community.name).toBe('Community Sovereign');

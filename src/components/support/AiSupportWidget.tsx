@@ -46,7 +46,7 @@ export default function AiSupportWidget() {
 
 Welcome! I am Exultia's **24/7 technical intelligence sentinel**. I provide instant architectural answers, CLI commands, hotpatching verification, pricing calculations, and deep-dive technical skepticism responses for the **7-engine unified cyber sovereignty platform**.
 
-- **Unified Platform Pricing:** $0 Community (1 host), $59/mo Pro (all 7 engines, 10 hosts), $399/mo Enterprise (unlimited air-gap nodes).
+- **Unified Platform Pricing:** $0 Community (1 host), $100/mo Pro (all 7 engines, 10 hosts), $500/mo Enterprise (unlimited air-gap nodes).
 - **Zero Telemetry:** Strict outbound silence with zero vendor beacons or phone-home telemetry.
 - **Closed-Loop OODA:** Autonomous detection to deterministic eBPF hotpatching in <250ms.
 - **Instant Rollbacks:** 14ms atomic rollbacks via \`sudo kinetic rollback --latest\`.
@@ -55,7 +55,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
       suggestions: [
         "How does the closed-loop defense work?",
         "Is in-memory hotpatching safe?",
-        "What is included in the $59/mo platform plan?",
+        "What is included in the $100/mo platform plan?",
         "How do I execute a 14ms rollback?",
         "Why zero outbound telemetry?",
         "Where is the full FAQ directory?"

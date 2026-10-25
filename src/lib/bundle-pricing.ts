@@ -83,9 +83,9 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
     name: "Professional Operator",
     tagline: "Full closed-loop cyber sovereignty for solo security engineers & operators",
     badge: "MOST POPULAR",
-    priceMonthly: 79,
-    priceAnnual: 59,
-    annualBilledTotal: 708,
+    priceMonthly: 120,
+    priceAnnual: 100,
+    annualBilledTotal: 1200,
     description: "Unlock all 7 engines in unison: automated threat detection, adversary emulation, proof probing, hotpatch remediation, and cryptographic attestation.",
     highlights: [
       "Real-time Vantage threat streams, zero-day warnings & 300 req/min API",
@@ -95,7 +95,7 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
       "Isolated PureIDE cloud build runners & automated CycloneDX SBOMs",
       "Zero-trust hardened PureOS variants with cryptographic provenance",
       "Axiom verifiable SHA-256 certificates & CSV/JSON student transcript exports",
-      "Over $340/month in individual product value consolidated into one plan"
+      "Consolidated unified access to all 7 sovereign defense tools in one plan"
     ],
     engineCapabilities: {
       vantage: "Real-time threat feed streams, zero-day early warnings, and 300 req/min API quota",
@@ -114,9 +114,9 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
     name: "Enterprise Fleet",
     tagline: "Fleet-wide multi-node orchestration, compliance attestation & institutional LMS",
     badge: "FLEET & COMPLIANCE",
-    priceMonthly: 499,
-    priceAnnual: 399,
-    annualBilledTotal: 4788,
+    priceMonthly: 600,
+    priceAnnual: 500,
+    annualBilledTotal: 6000,
     description: "Multi-node fleet adversary orchestration, air-gapped CI/CD, SLSA Level 3 signed manifests, compliance reports, and deep LMS integrations.",
     highlights: [
       "Commercial redistributable Vantage feeds & real-time SIEM webhooks",

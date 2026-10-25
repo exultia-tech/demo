@@ -321,7 +321,7 @@ export default function HomeCommandDeck() {
               transition: "transform 0.2s ease, box-shadow 0.2s ease"
             }}
           >
-            <span>Launch Sovereign Console ($59/mo)</span>
+            <span>Launch Sovereign Console ($100/mo)</span>
             <ArrowRight size={16} />
           </Link>
 
@@ -1033,7 +1033,7 @@ export default function HomeCommandDeck() {
                 <td style={{ fontWeight: 700, color: "#FFFFFF" }}>Commercial Architecture</td>
                 <td style={{ color: "#F87171" }}>5 &ndash; 7 fragmented subscriptions ($1,200+/month total)</td>
                 <td className="sovereign-col" style={{ color: "#FDE047" }}>
-                  <strong>1 Unified Subscription ($59/mo)</strong> unlocking all 7 engines
+                  <strong>1 Unified Subscription ($100/mo)</strong> unlocking all 7 engines
                 </td>
               </tr>
             </tbody>
@@ -1140,7 +1140,7 @@ export default function HomeCommandDeck() {
                 Professional Operator
               </h3>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", fontFamily: "var(--font-display, 'Orbitron', sans-serif)", marginBottom: "1rem" }}>
-                $59 <span style={{ fontSize: "0.9rem", color: "#67E8F9", fontWeight: 500 }}>/ month</span>
+                $100 <span style={{ fontSize: "0.9rem", color: "#67E8F9", fontWeight: 500 }}>/ month</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#E2F8FF" }}>
                 <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#00E5FF" /> <strong>All 7 Defense Engines Unlocked</strong></li>
@@ -1168,7 +1168,7 @@ export default function HomeCommandDeck() {
                 boxShadow: "0 4px 15px rgba(0, 229, 255, 0.4)"
               }}
             >
-              Start Operator Access ($59/mo)
+              Start Operator Access ($100/mo)
             </Link>
           </div>
 
@@ -1190,7 +1190,7 @@ export default function HomeCommandDeck() {
                 Enterprise Fleet
               </h3>
               <div style={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", fontFamily: "var(--font-display, 'Orbitron', sans-serif)", marginBottom: "1rem" }}>
-                $399 <span style={{ fontSize: "0.9rem", color: "#64748B", fontWeight: 500 }}>/ month</span>
+                $500 <span style={{ fontSize: "0.9rem", color: "#64748B", fontWeight: 500 }}>/ month</span>
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#94A3B8" }}>
                 <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><CheckCircle2 size={15} color="#10B981" /> Everything in Professional Operator</li>

@@ -93,8 +93,8 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
     it('should describe unified platform tiers (Professional Operator and Enterprise Fleet)', () => {
       const res = AiSupportEngine.processQuery('What is included in MultiPass?');
       expect(res.topic).toBe('multipass');
-      expect(res.reply).toContain('$79');
-      expect(res.reply).toContain('$499');
+      expect(res.reply).toContain('$100');
+      expect(res.reply).toContain('$500');
       expect(res.reply).toContain('PureIDE');
       expect(res.reply).toContain('Vantage');
       expect(res.reply).toContain('Praxis');
@@ -182,11 +182,11 @@ describe('Exultia Autonomous AI Support Agent & Per-Host Pricing Suite', () => {
       expect(res.reply).toContain('/faq');
     });
 
-    it('should address skepticism regarding the $59/mo price reality', () => {
-      const res = AiSupportEngine.processQuery('How can all 7 engines only cost $59/mo? Is it a toy?');
+    it('should address skepticism regarding the $100/mo price reality', () => {
+      const res = AiSupportEngine.processQuery('How can all 7 engines only cost $100/mo? Is it a toy?');
       expect(res.topic).toBe('skepticism');
       expect(res.reply).toMatch(/solo security researcher|automated|enterprise/i);
-      expect(res.reply).toContain('$59');
+      expect(res.reply).toContain('$100');
     });
   });
 

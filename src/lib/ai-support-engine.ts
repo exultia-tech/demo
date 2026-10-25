@@ -268,8 +268,8 @@ Exultia has consolidated from piecemeal point products into a **singular, unifie
 | Tier | Price (Annual) | Price (Monthly) | Core Value & Scope |
 | :--- | :--- | :--- | :--- |
 | **Community Sovereign** | **$0 / Free** | **$0** | Open-source threat feed (Vantage), 5 BAS canary probes (Valkyrie), 5 chaos modules (Eris), manual hotpatches (Praxis), local hermetic compiler (PureIDE), CIS base containers (PureOS), and full exam banks (Axiom). |
-| **Professional Operator** | **$59 / mo** ($708/yr) | **$79 / mo** | **Full Closed Loop:** Real-time threat feeds, autonomous hotpatch streaming daemon with sub-second rollbacks, complete 7+ CVE chaos lab & 5-container attack range, 10+ CVE pentest probes with SHA-256 attestations, cloud compiler runners, and verifiable certs. |
-| **Enterprise Fleet** | **$399 / mo** ($4,788/yr) | **$499 / mo** | **Fleet Scale & Compliance:** Multi-node fleet orchestration, commercial threat feeds, SIEM webhooks (Splunk/Sentinel/QRadar), Cosign SLSA Level 3 signed manifests, institutional LMS embedding (Canvas/Blackboard/Moodle) with SCORM/LTI, executive compliance reports, and priority SLA. |
+| **Professional Operator** | **$100 / mo** ($1,200/yr) | **$120 / mo** | **Full Closed Loop:** Real-time threat feeds, autonomous hotpatch streaming daemon with sub-second rollbacks, complete 7+ CVE chaos lab & 5-container attack range, 10+ CVE pentest probes with SHA-256 attestations, cloud compiler runners, and verifiable certs. |
+| **Enterprise Fleet** | **$500 / mo** ($6,000/yr) | **$600 / mo** | **Fleet Scale & Compliance:** Multi-node fleet orchestration, commercial threat feeds, SIEM webhooks (Splunk/Sentinel/QRadar), Cosign SLSA Level 3 signed manifests, institutional LMS embedding (Canvas/Blackboard/Moodle) with SCORM/LTI, executive compliance reports, and priority SLA. |
 
 #### The 7 Interconnected Engines:
 1. **Vantage:** Universal threat feed aggregating 110+ authoritative registries.
@@ -344,6 +344,8 @@ For air-gapped data centers, Enterprise subscribers can generate offline cryptog
       q.includes('why so cheap') ||
       q.includes('suspicious') ||
       q.includes('toy') ||
+      q.includes('cost $100') ||
+      q.includes('$100') ||
       q.includes('cost $59') ||
       q.includes('$59') ||
       q.includes('why trust') ||
@@ -368,8 +370,8 @@ Praxis does not execute arbitrary byte overwrites. It compiles deterministic tra
 #### 2. Not an Open-Source or iptables Wrapper
 While Vantage ingests public registries (CISA KEV, NIST NVD), our kinetic remediation stack is 100% proprietary systems code. Praxis compiles in-memory trampolines with eBPF & XDP kernel hooks at Layer 7 rather than simple packet-dropping iptables or nftables wrappers. Valkyrie executes non-destructive HMAC-signed canary handshakes; Eris provisions isolated 5-container Docker ranges with 10-minute auto-destruct watchdogs; and PureIDE provides an air-gapped hermetic compiler. Open-source scanners only alert you; Exultia autonomously remediates.
 
-#### 3. Why $59/mo Is Real and Not a Toy
-Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. You pay for pure systems security engineering.
+#### 3. Why $100/mo Is Real and Not a Toy
+Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. You pay for pure systems security engineering ($100/mo vs $50,000/yr).
 
 Read full technical proofs on our [Frequently Asked Questions & Skepticism page](/faq).`,
         suggestions: [
@@ -407,7 +409,7 @@ Learn more on our [FAQ & Skepticism page](/faq).`,
           'Can Exultia run in an air-gapped SCIF?',
           'How does the closed-loop defense work?',
           'Is in-memory hotpatching safe?',
-          'What is included in the $59/mo platform plan?'
+          'What is included in the $100/mo platform plan?'
         ]
       };
     }
@@ -440,7 +442,7 @@ Complete Observe, Orient, Decide, and Act OODA cycle executes in <250ms. Test th
           'Is in-memory hotpatching safe?',
           'How does Valkyrie prove exploitability safely?',
           'What is the deterministic rollback command?',
-          'What is included in the $59/mo plan?'
+          'What is included in the $100/mo plan?'
         ]
       };
     }
@@ -460,7 +462,7 @@ We have a dedicated, searchable knowledge base answering all technical, architec
 
 - **In-Memory Safety:** How trampoline hooks and atomic register snapshots guarantee 14ms rollback.
 - **Proprietary Engineering:** Why Exultia is not a wrapper around Trivy, Suricata, or iptables.
-- **Fair Pricing:** Why our lean systems architecture enables $59/mo platform pricing.
+- **Fair Pricing:** Why our lean systems architecture enables $100/mo platform pricing.
 - **Air-Gap & Offline Support:** Data diode transfer protocols and Cosign signature verification.
 - **The 7 Sovereign Engines:** Complete breakdown of Vantage, Praxis, Eris, Valkyrie, PureIDE, PureOS, and Axiom.
 
@@ -469,7 +471,7 @@ Explore the complete [Frequently Asked Questions & Skepticism page](/faq).`,
           'How does the closed-loop defense work?',
           'Is in-memory hotpatching safe?',
           'Why zero telemetry?',
-          'What is included in the $59/mo plan?'
+          'What is included in the $100/mo plan?'
         ]
       };
     }
@@ -523,7 +525,7 @@ Exultia provides security engineering tools designed for solo operators, securit
 Hello! I am Exultia's autonomous technical support agent. Because Exultia is run as a focused **solo-operator engineering project**, I am online 24/7 to provide instant answers without putting our solo maintainer on the hook for routine inquiries.
 
 Here is what I can help you with immediately:
-- **Unified Cyber Sovereignty Platform ($59/mo):** All 7 engines unlocked under one subscription with zero add-on fees.
+- **Unified Cyber Sovereignty Platform ($100/mo):** All 7 engines unlocked under one subscription with zero add-on fees.
 - **Closed-Loop Autonomous Defense:** Detect, emulate, verify, and hotpatch zero-days in under 40 milliseconds.
 - **Technical Skepticism & Safety:** Honest breakdowns of in-memory hotpatching, zero-telemetry architecture, and 14ms atomic rollbacks.
 - **Deterministic Rollback:** \`sudo kinetic rollback --cve=...\` instructions and snapshot mechanics.
@@ -534,7 +536,7 @@ What would you like assistance with?`,
       suggestions: [
         'How does the closed-loop defense work?',
         'Is in-memory hotpatching safe?',
-        'What is included in the $59/mo platform plan?',
+        'What is included in the $100/mo platform plan?',
         'How do I execute a deterministic rollback?'
       ]
     };
