@@ -297,6 +297,24 @@ const FAQ_DATA: FaqItem[] = [
       "• Private Cosign Audit Keys: Cryptographically sign patch manifests using your organization's private HSM / KMS keys.",
       "• Dedicated 24/7 SLA: Direct escalation access to senior systems security engineers with guaranteed response SLAs."
     ]
+  },
+  {
+    id: "sales-demo",
+    category: "pricing",
+    question: "Can I get a sales demo?",
+    shortSummary: "Find the most technical person you know, send them a link to our wiki, and tell them to follow the instructions.",
+    answer: [
+      "Sure. Find the most technical person you know, send them a link to our wiki, and tell them to follow the instructions and report their results back to you."
+    ]
+  },
+  {
+    id: "whitelabel-pipeline",
+    category: "pricing",
+    question: "Can I whitelabel the remediation pipeline?",
+    shortSummary: "For a limited time only, you can make a one-time purchase of my entire company and call it whatever you want.",
+    answer: [
+      "Sure; for a limited time only, you can make a one-time purchase of my entire company and call it whatever you want."
+    ]
   }
 ];
 
@@ -308,7 +326,9 @@ export default function FaqPage() {
     "rebranded-wrapper": true,
     "closed-loop-explained": true,
     "airgap-support": true,
-    "single-subscription": true
+    "single-subscription": true,
+    "sales-demo": true,
+    "whitelabel-pipeline": true
   });
 
   const toggleItem = (id: string) => {
