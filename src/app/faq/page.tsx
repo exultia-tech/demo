@@ -3,58 +3,69 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { 
-  PureIdeIcon, 
-  VantageIcon, 
-  PraxisIcon, 
-  PureOsIcon, 
-  AxiomIcon, 
-  ErisIcon, 
-  ValkyrieIcon,
-  ExultiaLogo 
-} from "@/components/BrandIcons";
-import { 
   Search, 
   ChevronDown, 
   ChevronUp, 
-  ShieldCheck, 
-  AlertTriangle, 
-  Sparkles, 
-  Lock, 
-  RotateCcw, 
-  Cpu, 
-  Terminal, 
   ArrowRight, 
-  Layers, 
-  CheckCircle2, 
-  ShieldAlert,
-  Server,
-  Zap,
-  Globe,
   HelpCircle,
-  Check
+  Hash,
+  ListTree
 } from "lucide-react";
 
 interface FaqItem {
   id: string;
   category: "skepticism" | "product" | "deployment" | "pricing";
-  categoryLabel: string;
-  isSkepticism?: boolean;
   question: string;
   shortSummary: string;
   answer: string[];
-  keyProof: string;
 }
 
+interface OutlineSection {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  category: "skepticism" | "product" | "deployment" | "pricing";
+}
+
+const OUTLINE_SECTIONS: OutlineSection[] = [
+  {
+    id: "skepticism",
+    number: "1.0",
+    title: "Skepticism & Operational Safety",
+    description: "Direct answers to technical doubts, memory integrity, telemetry boundaries, and reproducible verification.",
+    category: "skepticism"
+  },
+  {
+    id: "product",
+    number: "2.0",
+    title: "Product & Architecture",
+    description: "Deep dive into the 7 defense engines, non-destructive CANARY BAS probes, and isolated chaos environments.",
+    category: "product"
+  },
+  {
+    id: "deployment",
+    number: "3.0",
+    title: "Deployment & Air-Gap Operations",
+    description: "Air-gapped data diodes, supported Linux distributions, container runtimes, and 14ms atomic rollback mechanics.",
+    category: "deployment"
+  },
+  {
+    id: "pricing",
+    number: "4.0",
+    title: "Pricing, Licensing & Sovereign Tiers",
+    description: "Transparent pricing breakdown: Community ($0 forever), Professional ($100/mo), and Enterprise ($500/mo).",
+    category: "pricing"
+  }
+];
+
 const FAQ_DATA: FaqItem[] = [
-  // ── SKEPTICISM & OPERATIONAL SAFETY ─────────────────────────────────────────
+  // ── 1.0 SKEPTICISM & OPERATIONAL SAFETY ──────────────────────────────────────
   {
     id: "vaporware-proof",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "This looks like vaporware bullshit, how can I prove this actually works?",
     shortSummary: "Don't take our word for it. Test live interactive simulators in the Wiki and run our reproducible quick-start guides right now.",
-    keyProof: "7 live interactive browser simulators on our Research Wiki + executable bash quick-start guides with instant 14ms rollback verification.",
     answer: [
       "We completely understand your skepticism. The cybersecurity market is saturated with marketing buzzwords, pitch decks, and vaporware. That is why we built reproducible proof directly into the platform so you can verify our claims in 60 seconds with zero sales gatekeeping:",
       "1. Interactive Simulators on the Research Wiki: Visit the Exultia Research Wiki (/wiki?tab=simulator) right now. Every single one of the 7 defense engines includes an interactive, in-browser lab simulator. You can execute simulated in-memory hotpatching with real-time disassembly trampolines (Praxis), trigger non-destructive BAS exploitability probes (Valkyrie), query live filtered threat telemetry across 110+ registries (Vantage), and spin up chaos attack vectors (Eris).",
@@ -66,11 +77,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "memory-safety",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "Is in-memory hotpatching actually safe, or will it corrupt running kernel and process memory?",
     shortSummary: "Praxis uses deterministic trampoline redirection with atomic snapshots and 14ms failsafe rollbacks.",
-    keyProof: "Verified atomic rollback in 14ms via /var/lib/kinetic/snapshots/ with zero daemon restart.",
     answer: [
       "Praxis does not execute arbitrary runtime memory overwrites or unsafe byte patching. Every hotpatch follows a strict 4-step deterministic verification pipeline before injection:",
       "1. Static Disassembly Verification: The Kinetic engine inspects process binary offsets and verifies symbol integrity against known compiler fingerprints.",
@@ -82,11 +90,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "rebranded-wrapper",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "Is Exultia just a rebranded wrapper around open-source tools like Trivy, Suricata, or ClamAV?",
     shortSummary: "No. The closed-loop kinetic hotpatch compiler, BAS prober, and chaos range are 100% proprietary systems.",
-    keyProof: "Custom in-memory bytecode patch synthesizer and HMAC-signed exploit verification engine.",
     answer: [
       "No. While Vantage aggregates public vulnerability feeds (such as NIST NVD, CISA KEV, and Linux vendor errata) alongside private feeds, the entire kinetic defense and remediation execution engine is custom proprietary systems code:",
       "• Praxis Hotpatch Engine: Synthesizes in-memory trampolines, Ansible canary plays, and hardware firewall ACLs directly. No open-source scanner can hotpatch live process memory.",
@@ -99,11 +104,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "suspicious-pricing",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "Isn't $100/mo suspiciously cheap for a platform claiming to replace multi-thousand-dollar enterprise suites?",
     shortSummary: "Modern systems engineering eliminates the massive sales overhead and cloud ingestion bloat of legacy vendors.",
-    keyProof: "Zero cloud telemetry ingest fees + compiled native binary architecture = 90% lower operational cost.",
     answer: [
       "Traditional cybersecurity giants (CrowdStrike, Palo Alto, Snyk, Splunk) spend between 60% and 75% of their total revenue on enterprise sales commissions, executive overhead, and expensive multi-gigabyte cloud ingestion pipelines.",
       "Exultia was engineered from day one on lean, modern systems principles:",
@@ -116,11 +118,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "trust-new-platform",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "Why should we trust Exultia in production over established 20-year-old enterprise security vendors?",
     shortSummary: "Legacy vendors have a broken record of catastrophic fleet crashes and 30-day patch delays.",
-    keyProof: "SLSA Level 3 cryptographic provenance, non-destructive pre-flight probes, and 100% deterministic rollbacks.",
     answer: [
       "Established legacy vendors rely on an antiquated, high-risk security paradigm:",
       "• The Broken Cycle: Legacy tools detect a zero-day, alert your team, and leave you exposed for 14 to 45 days while waiting for an upstream vendor patch.",
@@ -132,11 +131,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "custom-logic-breakage",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "What if a hotpatch breaks our custom proprietary application logic?",
     shortSummary: "Patches target vulnerable system entry points and argument decoders, not application business logic.",
-    keyProof: "Staged 10% canary rollouts and instant atomic snapshots preserve original operational state.",
     answer: [
       "Praxis hotpatches are surgical. They target the specific exploit trigger condition—such as sanitizing unescaped query arguments (e.g. CVE-2024-4577 in PHP-CGI) or enforcing authentication timeouts (e.g. CVE-2024-6387 in OpenSSH). They do not alter your internal business rules, database queries, or proprietary application logic.",
       "In addition, enterprise workflows support staged canary rollouts:",
@@ -149,11 +145,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "zero-telemetry-pull",
     category: "skepticism",
-    categoryLabel: "Skepticism & Safety",
-    isSkepticism: true,
     question: "You claim 'Zero Telemetry'. How can you keep vulnerability feeds current without phoning home?",
     shortSummary: "Hosts use unidirectional static pulls via HTTPS; no private customer data ever leaves your network.",
-    keyProof: "Static JSON cryptographic distribution over public CDN. Zero outbound telemetry sockets.",
     answer: [
       "Exultia operates on a strict Unidirectional Pull Architecture:",
       "1. Static Signed Distribution: Exultia compiles and cryptographically signs threat intelligence advisories into static JSON manifests distributed over high-speed public CDNs.",
@@ -163,14 +156,12 @@ const FAQ_DATA: FaqItem[] = [
     ]
   },
 
-  // ── PRODUCT & ARCHITECTURAL WORKFLOW ────────────────────────────────────────
+  // ── 2.0 PRODUCT & ARCHITECTURE ──────────────────────────────────────────────
   {
     id: "closed-loop-explained",
     category: "product",
-    categoryLabel: "Product & Architecture",
     question: "What is the closed-loop defense model, and how do the 7 engines interact?",
     shortSummary: "Continuous detection, adversary emulation, non-destructive pentesting, and in-memory hotpatching in <200ms.",
-    keyProof: "OODA loop: Vantage (Detect) -> Eris (Emulate) -> Valkyrie (Verify) -> Praxis (Remediate).",
     answer: [
       "Traditional cybersecurity separates vulnerability management into fragmented steps: a scanner finds an issue, a security analyst reviews it, a penetration tester validates it, and DevOps schedules a patch weeks later.",
       "Exultia automates this entire lifecycle into a machine-speed OODA (Observe-Orient-Decide-Act) closed loop:",
@@ -184,10 +175,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "valkyrie-canary",
     category: "product",
-    categoryLabel: "Product & Architecture",
     question: "How does Valkyrie prove exploitability without risking system downtime or denial of service?",
     shortSummary: "Valkyrie uses safe canary handshakes containing signed HMAC tokens rather than weaponized payloads.",
-    keyProof: "Non-destructive protocol validation proving vulnerability existence without executing malicious shellcode.",
     answer: [
       "Traditional penetration tests fire weaponized exploits that risk buffer overflows, thread deadlocks, or unintended kernel panics.",
       "Valkyrie takes a completely different, non-destructive approach called Canary BAS (Breach & Attack Simulation):",
@@ -199,10 +188,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "eris-chaos-range",
     category: "product",
-    categoryLabel: "Product & Architecture",
     question: "How does Eris safely emulate live exploits without risk of host escape or lateral movement?",
     shortSummary: "Ephemeral multi-container Docker Compose ranges with dropped Linux capabilities and 10m watchdog timers.",
-    keyProof: "Isolated bridge networks, read-only root filesystems, and hardware-enforced auto-destruct timers.",
     answer: [
       "Eris allows security teams to intentionally inoculate their environments by simulating real attacks inside tightly confined sandboxes:",
       "• Complete Kernel Isolation: Eris containers run with dropped root capabilities (`CAP_SYS_ADMIN` disabled), unprivileged user namespaces, and read-only root filesystems.",
@@ -213,10 +200,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "pureide-airgap",
     category: "product",
-    categoryLabel: "Product & Architecture",
     question: "What makes PureIDE fundamentally different from standard developer environments like VS Code?",
     shortSummary: "PureIDE enforces kernel-level network egress sandboxing, air-gap cosigning, and automated CycloneDX SBOMs.",
-    keyProof: "Zero telemetry outbound connections; upstream supply-chain poisoning blocked at compiler stage.",
     answer: [
       "Modern IDEs and code editors stream extensive telemetry, source code snippets, and telemetry prompts to third-party cloud servers. Furthermore, standard compilers make unrestricted outbound network calls during build steps, leaving them vulnerable to supply-chain attacks (such as the XZ Utils backdoor).",
       "PureIDE solves this at the workstation layer:",
@@ -226,14 +211,12 @@ const FAQ_DATA: FaqItem[] = [
     ]
   },
 
-  // ── DEPLOYMENT & AIR-GAP ─────────────────────────────────────────────────────
+  // ── 3.0 DEPLOYMENT & AIR-GAP OPERATIONS ─────────────────────────────────────
   {
     id: "airgap-support",
     category: "deployment",
-    categoryLabel: "Deployment & Air-Gap",
     question: "Can Exultia run in completely air-gapped, classified, or SCIF data center environments?",
     shortSummary: "Yes. All daemons, container ranges, and patch compilers run completely self-contained and offline.",
-    keyProof: "Offline bundle synchronization via data diodes with cryptographic signature verification.",
     answer: [
       "Yes. Exultia was designed from inception for sovereign, air-gapped, and defense-grade environments:",
       "• Self-Contained Binaries: The Kinetic daemon, Praxis hotpatch synthesizer, and Valkyrie prober require no continuous connection to Exultia cloud servers.",
@@ -244,10 +227,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "supported-os",
     category: "deployment",
-    categoryLabel: "Deployment & Air-Gap",
     question: "Which operating systems, distributions, and container environments are supported?",
     shortSummary: "Ubuntu, Debian, RHEL, AlmaLinux, Rocky, Alpine Linux, Docker, containerd, and Kubernetes.",
-    keyProof: "Broad Linux server architecture support across both x86_64 and ARM64 (aarch64).",
     answer: [
       "Exultia supports all major modern enterprise Linux distributions and container platforms:",
       "• Distributions: Ubuntu (20.04, 22.04, 24.04 LTS), Debian (11, 12), RHEL / Rocky Linux / AlmaLinux (8, 9), Alpine Linux (3.18+), and Arch Linux.",
@@ -259,10 +240,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "rollback-mechanics",
     category: "deployment",
-    categoryLabel: "Deployment & Air-Gap",
     question: "How does the sub-second deterministic rollback command actually work on a live host?",
     shortSummary: "Pre-flight memory snapshots allow instant unlinking of trampoline hooks in under 14 milliseconds.",
-    keyProof: "Single terminal command: sudo kinetic rollback --cve=... or --latest restores original state in 14ms.",
     answer: [
       "When Praxis hotpatches a running process or service, it commits an atomic memory snapshot and filesystem delta before modifying any active instructions.",
       "To execute a rollback:",
@@ -273,14 +252,12 @@ const FAQ_DATA: FaqItem[] = [
     ]
   },
 
-  // ── PRICING & LICENSING ─────────────────────────────────────────────────────
+  // ── 4.0 PRICING, LICENSING & SOVEREIGN TIERS ─────────────────────────────────
   {
     id: "single-subscription",
     category: "pricing",
-    categoryLabel: "Pricing & Licensing",
     question: "Do I really get full access to all 7 platform engines with a single $100/mo subscription?",
     shortSummary: "Yes. An active Professional Operator subscription unlocks all 7 defense engines with zero add-on fees.",
-    keyProof: "All 7 engines included: Vantage, Praxis, Eris, Valkyrie, PureIDE, PureOS, and Axiom.",
     answer: [
       "Yes. Unlike legacy vendors that charge separate licensing fees for threat feeds, vulnerability scanners, pentest tools, container registries, and training simulators, Exultia provides the entire ecosystem under one unified platform subscription.",
       "Your $100/mo ($1,200/year) Professional Operator subscription includes:",
@@ -296,10 +273,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "free-community",
     category: "pricing",
-    categoryLabel: "Pricing & Licensing",
     question: "What is included in the free Community Sovereign plan?",
     shortSummary: "The Community plan is free forever for security researchers, students, and open-source developers.",
-    keyProof: "Public Vantage feed access, PureOS community base images, and free Axiom cert questions.",
     answer: [
       "The Community Sovereign tier ($0 forever) provides core defense capabilities for individual practitioners:",
       "• Full public Vantage threat feed access (aggregating NIST NVD, CISA KEV, and open CVE feeds)",
@@ -312,10 +287,8 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "enterprise-features",
     category: "pricing",
-    categoryLabel: "Pricing & Licensing",
     question: "What extra capabilities are included in the Enterprise Fleet plan ($500/mo)?",
     shortSummary: "Multi-cluster orchestration, custom patch authoring, SCORM/LTI LMS APIs, and 24/7 priority SLA.",
-    keyProof: "Designed for enterprise SOCs, multi-cluster Kubernetes deployments, and universities.",
     answer: [
       "The Enterprise Fleet tier ($500/mo or custom annual invoicing) is engineered for multi-team organizations, universities, and mission-critical infrastructure:",
       "• Multi-Node Cluster Orchestration: Centrally orchestrate hotpatching across hundreds of Kubernetes nodes and server clusters.",
@@ -329,11 +302,13 @@ const FAQ_DATA: FaqItem[] = [
 
 export default function FaqPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     "vaporware-proof": true,
     "memory-safety": true,
-    "rebranded-wrapper": true
+    "rebranded-wrapper": true,
+    "closed-loop-explained": true,
+    "airgap-support": true,
+    "single-subscription": true
   });
 
   const toggleItem = (id: string) => {
@@ -355,212 +330,228 @@ export default function FaqPage() {
     setExpandedItems({});
   };
 
-  const filteredFaqs = useMemo(() => {
-    return FAQ_DATA.filter((item) => {
-      const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
-      if (!matchesCategory) return false;
+  // Grouped questions by outline section
+  const sectionsWithItems = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
 
-      if (!searchQuery.trim()) return true;
+    return OUTLINE_SECTIONS.map((sec) => {
+      const items = FAQ_DATA.filter((item) => item.category === sec.category);
+      const filtered = items.filter((item) => {
+        if (!query) return true;
+        return (
+          item.question.toLowerCase().includes(query) ||
+          item.shortSummary.toLowerCase().includes(query) ||
+          item.answer.some((line) => line.toLowerCase().includes(query))
+        );
+      });
 
-      const q = searchQuery.toLowerCase();
-      return (
-        item.question.toLowerCase().includes(q) ||
-        item.shortSummary.toLowerCase().includes(q) ||
-        item.keyProof.toLowerCase().includes(q) ||
-        item.answer.some((line) => line.toLowerCase().includes(q))
-      );
+      return {
+        ...sec,
+        totalItems: items.length,
+        items: filtered
+      };
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery]);
 
-  const skepticismCount = useMemo(() => {
-    return FAQ_DATA.filter((f) => f.category === "skepticism").length;
-  }, []);
+  const totalVisibleCount = useMemo(() => {
+    return sectionsWithItems.reduce((acc, sec) => acc + sec.items.length, 0);
+  }, [sectionsWithItems]);
 
   return (
-    <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "2.5rem 1.5rem 6rem 1.5rem" }}>
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2.5rem 1.5rem 6rem 1.5rem" }}>
       
-      {/* ── HERO BANNER ──────────────────────────────────────────────────────── */}
-      <section style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+      {/* ── HEADER ──────────────────────────────────────────────────────────── */}
+      <header style={{ marginBottom: "3rem" }}>
         
         <div style={{ 
           display: "inline-flex", 
           alignItems: "center", 
           gap: "8px", 
-          background: "linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12))", 
-          border: "1px solid rgba(6, 182, 212, 0.35)", 
-          padding: "6px 16px", 
-          borderRadius: "999px", 
+          background: "rgba(255, 255, 255, 0.04)", 
+          border: "1px solid rgba(255, 255, 255, 0.12)", 
+          padding: "5px 14px", 
+          borderRadius: "6px", 
           marginBottom: "1.25rem",
-          boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)"
+          fontFamily: "var(--font-mono, monospace)",
+          fontSize: "0.8rem",
+          color: "#94A3B8"
         }}>
-          <Sparkles size={14} color="#67E8F9" />
-          <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#A5F3FC", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Transparency &bull; Architecture &bull; Verification
-          </span>
+          <ListTree size={14} color="#00E5FF" />
+          <span>DOCUMENTATION &bull; REFERENCE OUTLINE</span>
         </div>
 
         <h1 style={{ 
           fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-          fontSize: "clamp(2.2rem, 4.2vw, 3.4rem)", 
+          fontSize: "clamp(2.2rem, 4vw, 3.2rem)", 
           fontWeight: 900, 
           color: "#FFFFFF", 
           letterSpacing: "-0.02em", 
           marginBottom: "1rem",
           lineHeight: 1.15
         }}>
-          Frequently Asked Questions.
-          <span style={{ 
-            display: "block", 
-            background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 50%, #A855F7 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          }}>
-            Direct Answers to Technical Skepticism.
-          </span>
+          Frequently Asked Questions
         </h1>
 
-        <p style={{ color: "#94A3B8", fontSize: "1.1rem", maxWidth: "780px", margin: "0 auto 2.5rem auto", lineHeight: 1.6 }}>
-          We welcome critical engineering skepticism. Here is an honest, deep-dive breakdown of how our closed-loop architecture works, why in-memory hotpatching is safe, and how we prove exploitability with cryptographic certainty.
+        <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "760px", margin: "0 0 2rem 0", lineHeight: 1.6 }}>
+          Comprehensive outline covering architectural safety, autonomous hotpatching, zero-telemetry boundaries, air-gap operations, and platform subscriptions.
         </p>
 
-        {/* Search Bar */}
-        <div style={{ maxWidth: "640px", margin: "0 auto", position: "relative" }}>
-          <Search size={18} color="#64748B" style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} />
-          <input
-            type="text"
-            placeholder="Search questions, keywords (e.g. 'hotpatch', 'safety', 'airgap', 'pricing')..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "14px 18px 14px 48px",
-              background: "rgba(15, 23, 42, 0.8)",
-              border: "1px solid rgba(0, 229, 255, 0.25)",
-              borderRadius: "12px",
-              color: "#FFFFFF",
-              fontSize: "0.95rem",
-              fontFamily: "var(--font-mono, monospace)",
-              outline: "none",
-              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 229, 255, 0.05)"
-            }}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
+        {/* Search Bar & Expand/Collapse Toolbar */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
+          background: "rgba(15, 23, 42, 0.6)",
+          padding: "1rem 1.25rem",
+          borderRadius: "12px",
+          border: "1px solid rgba(255, 255, 255, 0.08)"
+        }}>
+          <div style={{ position: "relative", flex: 1, minWidth: "260px" }}>
+            <Search size={16} color="#64748B" style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+            <input
+              type="text"
+              placeholder="Search outline (e.g., 'hotpatch', 'vaporware', 'airgap', 'pricing')..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                position: "absolute",
-                right: "14px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "rgba(255, 255, 255, 0.1)",
+                width: "100%",
+                padding: "10px 14px 10px 42px",
+                background: "rgba(0, 0, 0, 0.4)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: "8px",
+                color: "#FFFFFF",
+                fontSize: "0.9rem",
+                fontFamily: "var(--font-mono, monospace)",
+                outline: "none"
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
+                  border: "none",
+                  color: "#94A3B8",
+                  cursor: "pointer",
+                  fontSize: "1rem",
+                  padding: "4px"
+                }}
+              >
+                &times;
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.82rem", fontFamily: "var(--font-mono, monospace)" }}>
+            <button
+              onClick={expandAll}
+              style={{
+                background: "transparent",
                 border: "none",
-                borderRadius: "50%",
-                width: "22px",
-                height: "22px",
+                color: "#00E5FF",
+                cursor: "pointer",
+                fontWeight: 700,
+                padding: "4px 8px"
+              }}
+            >
+              Expand All
+            </button>
+            <span style={{ color: "#334155" }}>&bull;</span>
+            <button
+              onClick={collapseAll}
+              style={{
+                background: "transparent",
+                border: "none",
                 color: "#94A3B8",
                 cursor: "pointer",
-                fontSize: "0.75rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              &times;
-            </button>
-          )}
-        </div>
-
-      </section>
-
-      {/* ── CATEGORY PILLS & CONTROLS ────────────────────────────────────────── */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem",
-        marginBottom: "2rem",
-        paddingBottom: "1.25rem",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.08)"
-      }}>
-        {/* Category Filter Pills */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-          {[
-            { id: "all", label: "All Questions", count: FAQ_DATA.length },
-            { id: "skepticism", label: `Skepticism & Safety (${skepticismCount})`, highlight: true },
-            { id: "product", label: "Product & Architecture" },
-            { id: "deployment", label: "Deployment & Air-Gap" },
-            { id: "pricing", label: "Pricing & Licensing" }
-          ].map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              style={{
-                background: selectedCategory === cat.id 
-                  ? cat.highlight 
-                    ? "rgba(239, 68, 68, 0.2)" 
-                    : "rgba(0, 229, 255, 0.18)" 
-                  : "rgba(255, 255, 255, 0.04)",
-                border: selectedCategory === cat.id 
-                  ? cat.highlight 
-                    ? "1px solid #EF4444" 
-                    : "1px solid #00E5FF" 
-                  : "1px solid rgba(255, 255, 255, 0.1)",
-                color: selectedCategory === cat.id 
-                  ? "#FFFFFF" 
-                  : cat.highlight 
-                    ? "#FCA5A5" 
-                    : "#94A3B8",
-                padding: "6px 14px",
-                borderRadius: "8px",
-                fontSize: "0.8rem",
-                fontFamily: "var(--font-mono, monospace)",
                 fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.15s ease"
+                padding: "4px 8px"
               }}
             >
-              {cat.label}
+              Collapse All
             </button>
-          ))}
+          </div>
         </div>
 
-        {/* Expand / Collapse Controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <button
-            onClick={expandAll}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#00E5FF",
-              fontSize: "0.78rem",
-              fontFamily: "var(--font-mono, monospace)",
-              cursor: "pointer",
-              fontWeight: 700
-            }}
-          >
-            Expand All
-          </button>
-          <span style={{ color: "#334155" }}>&bull;</span>
-          <button
-            onClick={collapseAll}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#64748B",
-              fontSize: "0.78rem",
-              fontFamily: "var(--font-mono, monospace)",
-              cursor: "pointer",
-              fontWeight: 700
-            }}
-          >
-            Collapse All
-          </button>
-        </div>
-      </div>
+      </header>
 
-      {/* ── FAQ ACCORDION LIST ───────────────────────────────────────────────── */}
-      {filteredFaqs.length === 0 ? (
+      {/* ── TABLE OF CONTENTS OUTLINE DIRECTORY ─────────────────────────────── */}
+      {!searchQuery && (
+        <nav 
+          aria-label="FAQ Outline Directory"
+          style={{
+            background: "rgba(10, 15, 26, 0.6)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px",
+            padding: "1.25rem 1.5rem",
+            marginBottom: "3.5rem"
+          }}
+        >
+          <div style={{
+            fontSize: "0.75rem",
+            fontFamily: "var(--font-mono, monospace)",
+            fontWeight: 800,
+            color: "#64748B",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            marginBottom: "0.75rem"
+          }}>
+            OUTLINE DIRECTORY
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+            gap: "0.75rem"
+          }}>
+            {OUTLINE_SECTIONS.map((sec) => (
+              <a
+                key={sec.id}
+                href={`#section-${sec.id}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "8px 12px",
+                  background: "rgba(255, 255, 255, 0.02)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease"
+                }}
+              >
+                <span style={{
+                  fontFamily: "var(--font-mono, monospace)",
+                  fontWeight: 800,
+                  fontSize: "0.85rem",
+                  color: "#00E5FF"
+                }}>
+                  {sec.number}
+                </span>
+                <span style={{
+                  color: "#E2E8F0",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}>
+                  {sec.title}
+                </span>
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
+      {/* ── OUTLINE SECTIONS ────────────────────────────────────────────────── */}
+      {totalVisibleCount === 0 ? (
         <div style={{
           textAlign: "center",
           padding: "4rem 2rem",
@@ -573,10 +564,10 @@ export default function FaqPage() {
             No matching questions found
           </h3>
           <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
-            We couldn't find any questions matching "{searchQuery}". Try clearing your search or filter.
+            We couldn't find any questions matching "{searchQuery}".
           </p>
           <button
-            onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}
+            onClick={() => setSearchQuery("")}
             style={{
               background: "rgba(0, 229, 255, 0.15)",
               border: "1px solid #00E5FF",
@@ -588,180 +579,201 @@ export default function FaqPage() {
               cursor: "pointer"
             }}
           >
-            Reset Filters
+            Clear Search
           </button>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {filteredFaqs.map((faq) => {
-            const isExpanded = !!expandedItems[faq.id];
-            const isSkepticism = faq.category === "skepticism";
+        <div style={{ display: "flex", flexDirection: "column", gap: "3.5rem" }}>
+          {sectionsWithItems.map((section) => {
+            if (section.items.length === 0) return null;
 
             return (
-              <div
-                key={faq.id}
-                style={{
-                  background: isExpanded
-                    ? isSkepticism 
-                      ? "linear-gradient(180deg, rgba(239, 68, 68, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%)"
-                      : "linear-gradient(180deg, rgba(0, 229, 255, 0.06) 0%, rgba(15, 23, 42, 0.95) 100%)"
-                    : "rgba(10, 15, 26, 0.75)",
-                  border: isExpanded
-                    ? isSkepticism 
-                      ? "1px solid rgba(239, 68, 68, 0.45)" 
-                      : "1px solid rgba(0, 229, 255, 0.4)"
-                    : "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "14px",
-                  overflow: "hidden",
-                  transition: "all 0.2s ease",
-                  boxShadow: isExpanded ? "0 10px 30px rgba(0, 0, 0, 0.6)" : "none"
-                }}
+              <section 
+                key={section.id} 
+                id={`section-${section.id}`}
+                style={{ scrollMarginTop: "90px" }}
               >
-                {/* Accordion Header Button */}
-                <button
-                  onClick={() => toggleItem(faq.id)}
-                  style={{
-                    width: "100%",
-                    padding: "1.25rem 1.5rem",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: "1rem",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    textAlign: "left"
-                  }}
-                >
+                {/* Outline Section Heading */}
+                <div style={{
+                  display: "flex",
+                  alignItems: "flex-baseline",
+                  gap: "12px",
+                  paddingBottom: "0.75rem",
+                  marginBottom: "1.25rem",
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.12)"
+                }}>
+                  <span style={{
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "1.25rem",
+                    fontWeight: 900,
+                    color: "#00E5FF"
+                  }}>
+                    {section.number}
+                  </span>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                      <span style={{
-                        fontSize: "0.68rem",
-                        fontFamily: "var(--font-mono, monospace)",
-                        fontWeight: 800,
-                        padding: "2px 8px",
-                        borderRadius: "4px",
-                        background: isSkepticism ? "rgba(239, 68, 68, 0.2)" : "rgba(0, 229, 255, 0.15)",
-                        color: isSkepticism ? "#F87171" : "#67E8F9",
-                        border: isSkepticism ? "1px solid rgba(239, 68, 68, 0.4)" : "1px solid rgba(0, 229, 255, 0.3)"
-                      }}>
-                        {isSkepticism ? "CRITICAL SKEPTICISM" : faq.categoryLabel.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <h3 style={{
+                    <h2 style={{
                       fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-                      fontSize: "1.1rem",
+                      fontSize: "1.45rem",
                       fontWeight: 800,
                       color: "#FFFFFF",
-                      margin: "0 0 6px 0",
-                      lineHeight: 1.35
+                      margin: "0 0 4px 0",
+                      letterSpacing: "-0.01em"
                     }}>
-                      {faq.question}
-                    </h3>
-
-                    {!isExpanded && (
-                      <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0, lineHeight: 1.45 }}>
-                        {faq.shortSummary}
-                      </p>
-                    )}
+                      {section.title}
+                    </h2>
+                    <p style={{ margin: 0, color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.4 }}>
+                      {section.description}
+                    </p>
                   </div>
-
-                  <div style={{
-                    padding: "6px",
-                    borderRadius: "6px",
-                    background: isExpanded ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                    color: "#94A3B8",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: "4px"
+                  <span style={{
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.75rem",
+                    color: "#64748B",
+                    whiteSpace: "nowrap"
                   }}>
-                    {isExpanded ? <ChevronUp size={20} color="#00E5FF" /> : <ChevronDown size={20} />}
-                  </div>
-                </button>
+                    {section.items.length} {section.items.length === 1 ? "entry" : "entries"}
+                  </span>
+                </div>
 
-                {/* Accordion Expanded Body */}
-                {isExpanded && (
-                  <div style={{
-                    padding: "0 1.5rem 1.5rem 1.5rem",
-                    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-                    marginTop: "0.5rem",
-                    paddingTop: "1.25rem"
-                  }}>
-                    {/* Key Engineering Proof Callout */}
-                    <div style={{
-                      background: "rgba(0, 0, 0, 0.45)",
-                      border: "1px solid rgba(0, 229, 255, 0.2)",
-                      borderRadius: "8px",
-                      padding: "10px 14px",
-                      marginBottom: "1.25rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      fontSize: "0.82rem",
-                      fontFamily: "var(--font-mono, monospace)"
-                    }}>
-                      <Terminal size={16} color="#00E5FF" />
-                      <span style={{ color: "#67E8F9", fontWeight: 700 }}>VERIFIED PROOF:</span>
-                      <span style={{ color: "#E2E8F0" }}>{faq.keyProof}</span>
-                    </div>
+                {/* Section Question Items */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {section.items.map((faq, itemIndex) => {
+                    const isExpanded = !!expandedItems[faq.id];
+                    const questionNumber = `${section.number.split(".")[0]}.${itemIndex + 1}`;
 
-                    {/* Detailed Answer Paragraphs */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", color: "#CBD5E1", fontSize: "0.92rem", lineHeight: 1.65 }}>
-                      {faq.answer.map((para, pIdx) => (
-                        <p key={pIdx} style={{ margin: 0 }}>
-                          {para}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                    return (
+                      <article
+                        key={faq.id}
+                        style={{
+                          background: isExpanded ? "rgba(15, 23, 42, 0.75)" : "rgba(10, 15, 26, 0.5)",
+                          border: isExpanded ? "1px solid rgba(0, 229, 255, 0.3)" : "1px solid rgba(255, 255, 255, 0.06)",
+                          borderRadius: "10px",
+                          overflow: "hidden",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        {/* Question Header Button */}
+                        <button
+                          onClick={() => toggleItem(faq.id)}
+                          aria-expanded={isExpanded}
+                          style={{
+                            width: "100%",
+                            padding: "1.1rem 1.25rem",
+                            display: "flex",
+                            alignItems: "flex-start",
+                            justifyContent: "space-between",
+                            gap: "1rem",
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            textAlign: "left"
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", flex: 1 }}>
+                            <span style={{
+                              fontFamily: "var(--font-mono, monospace)",
+                              fontSize: "0.85rem",
+                              fontWeight: 800,
+                              color: isExpanded ? "#00E5FF" : "#64748B",
+                              paddingTop: "2px"
+                            }}>
+                              {questionNumber}
+                            </span>
+                            <div style={{ flex: 1 }}>
+                              <h3 style={{
+                                fontSize: "1.02rem",
+                                fontWeight: 700,
+                                color: isExpanded ? "#FFFFFF" : "#E2E8F0",
+                                margin: "0 0 4px 0",
+                                lineHeight: 1.4
+                              }}>
+                                {faq.question}
+                              </h3>
+                              {!isExpanded && (
+                                <p style={{ color: "#94A3B8", fontSize: "0.84rem", margin: 0, lineHeight: 1.45 }}>
+                                  {faq.shortSummary}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div style={{
+                            padding: "4px",
+                            color: isExpanded ? "#00E5FF" : "#64748B",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "2px"
+                          }}>
+                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          </div>
+                        </button>
+
+                        {/* Answer Expanded Body */}
+                        {isExpanded && (
+                          <div style={{
+                            padding: "0 1.25rem 1.25rem 2.75rem",
+                            borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                            marginTop: "0.25rem",
+                            paddingTop: "1rem"
+                          }}>
+                            <div style={{ 
+                              display: "flex", 
+                              flexDirection: "column", 
+                              gap: "0.75rem", 
+                              color: "#CBD5E1", 
+                              fontSize: "0.92rem", 
+                              lineHeight: 1.65 
+                            }}>
+                              {faq.answer.map((para, pIdx) => (
+                                <p key={pIdx} style={{ margin: 0 }}>
+                                  {para}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
             );
           })}
         </div>
       )}
 
-      {/* ── BOTTOM CALLOUT: STILL HAVE SKEPTICISM? ───────────────────────────── */}
-      <section style={{
-        marginTop: "4.5rem",
-        background: "linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%)",
-        border: "1px solid rgba(0, 229, 255, 0.3)",
-        borderRadius: "20px",
-        padding: "2.5rem 2rem",
+      {/* ── FOOTER CALLOUT ──────────────────────────────────────────────────── */}
+      <footer style={{
+        marginTop: "5rem",
+        background: "rgba(15, 23, 42, 0.6)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        borderRadius: "14px",
+        padding: "2rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         flexWrap: "wrap",
-        gap: "2rem",
-        boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7)"
+        gap: "1.5rem"
       }}>
         <div style={{ flex: 1, minWidth: "280px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 10px #10B981" }} />
-            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#67E8F9", fontWeight: 800, textTransform: "uppercase" }}>
-              Test It Yourself
-            </span>
-          </div>
-
           <h3 style={{
             fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-            fontSize: "1.45rem",
-            fontWeight: 900,
+            fontSize: "1.2rem",
+            fontWeight: 800,
             color: "#FFFFFF",
             margin: "0 0 0.5rem 0"
           }}>
-            Don't take our word for it. Run the live proving ground.
+            Verify the architecture in real time
           </h3>
-          <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0, lineHeight: 1.5 }}>
-            Trigger an isolated adversary scenario on the homepage, execute an in-memory hotpatch in under 40 milliseconds, and test our sub-second deterministic rollback in 14ms.
+          <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: 0, lineHeight: 1.5 }}>
+            Access the 7 interactive browser simulators on the Research Wiki or review reproducible CLI quick-start guides with instant 14ms rollback.
           </p>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
           <Link
-            href="/account/subscription"
+            href="/wiki?tab=simulator"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -769,39 +781,38 @@ export default function FaqPage() {
               background: "linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%)",
               color: "#030608",
               fontFamily: "var(--font-mono, monospace)",
-              fontWeight: 900,
-              fontSize: "0.88rem",
-              padding: "12px 22px",
-              borderRadius: "8px",
-              textDecoration: "none",
-              boxShadow: "0 4px 20px rgba(0, 229, 255, 0.4)"
+              fontWeight: 800,
+              fontSize: "0.85rem",
+              padding: "10px 18px",
+              borderRadius: "6px",
+              textDecoration: "none"
             }}
           >
-            <span>Platform Plans ($100/mo)</span>
+            <span>Wiki Simulators</span>
             <ArrowRight size={15} />
           </Link>
 
           <Link
-            href="/"
+            href="/account/subscription"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
               background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
               color: "#FFFFFF",
               fontFamily: "var(--font-mono, monospace)",
               fontWeight: 700,
               fontSize: "0.85rem",
-              padding: "12px 20px",
-              borderRadius: "8px",
+              padding: "10px 16px",
+              borderRadius: "6px",
               textDecoration: "none"
             }}
           >
-            <span>Live Mission Deck</span>
+            <span>Platform Plans ($100/mo)</span>
           </Link>
         </div>
-      </section>
+      </footer>
 
       {/* ── PERSISTENT DOCK ──────────────────────────────────────────────────── */}
       <div style={{
@@ -813,8 +824,12 @@ export default function FaqPage() {
         marginTop: "3rem"
       }}>
         <span style={{ fontSize: "0.72rem", color: "#64748B", fontFamily: "var(--font-mono, monospace)", marginRight: "4px" }}>
-          EXPLORE ENGINES:
+          SYSTEM DIRECTORY:
         </span>
+        <Link href="/wiki" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
+          Research Wiki
+        </Link>
+        <span style={{ color: "#334155" }}>&bull;</span>
         <Link href="/app/uvi" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
           Vantage
         </Link>
