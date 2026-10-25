@@ -79,9 +79,9 @@ export class AiSupportEngine {
     return {
       topic: 'general',
       timestamp: now,
-      reply: `### 🤖 Exultia Technical AI Support Sentinel
+      reply: `### Exultia Support: Autonomous Technical Intel
 
-Welcome! I am Exultia's **24/7 technical AI support sentinel**, maintained under our lean **solo-operator** engineering model. Grounded directly in our architectural wikis, CVE sentinels, and the [**Bullshit Validator verification fleet**](https://github.com/exultia-tech/demo).
+Welcome! I am Exultia Support (**Autonomous Technical Intel** / Exultia Technical AI Support Sentinel), operated under our lean **solo-operator** engineering model. Grounded directly in our architectural wikis, CVE sentinels, and the [**Bullshit Validator verification fleet**](https://github.com/exultia-tech/demo).
 
 #### Key Technical Foundations:
 - **Zero Vaporware Guarantee:** Run \`git clone --depth=1 https://github.com/exultia-tech/demo.git && cd demo && python3 validate.py\` to test our sub-second rollback engine and SLSA Level 3 checksums locally in ~5 seconds.

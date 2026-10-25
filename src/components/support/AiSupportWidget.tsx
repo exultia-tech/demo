@@ -43,27 +43,23 @@ export default function AiSupportWidget() {
       id: "msg-welcome",
       role: "assistant",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      text: `### 🛡️ Exultia Autonomous Cyber Sentinel
+      text: `### Exultia Support
+**Autonomous Technical Intel**
 
-Welcome! I am Exultia's **24/7 technical intelligence sentinel**. I provide instant architectural answers, CLI commands, hotpatching verification, pricing calculations, and deep-dive technical skepticism responses for the **7-engine unified cyber sovereignty platform**.
-
-- **Unified Platform Pricing:** $0 Community (1 host), $100/mo Pro (all 7 engines, 10 hosts), $500/mo Enterprise (unlimited air-gap nodes).
-- **Zero Telemetry:** Strict outbound silence with zero vendor beacons or phone-home telemetry.
-- **Closed-Loop OODA:** Autonomous detection to deterministic eBPF hotpatching in <250ms.
-- **Instant Rollbacks:** 14ms atomic rollbacks via \`sudo kinetic rollback --latest\`.
-
-Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me below or inspect our [**Interactive FAQ Directory**](/faq)!`,
+How can I help you today? I provide architectural answers, CLI commands, pricing estimates, and technical verification directly grounded in our specifications:
+- **Architecture & OODA:** Sub-250ms closed-loop defense and zero outbound telemetry.
+- **CLI & Rollbacks:** Kinetic daemon setup and 14ms deterministic rollbacks.
+- **Pricing & Plans:** $100/mo unified platform and linear per-host fleet pricing.
+- **Verification:** The public [Bullshit Validator](https://github.com/exultia-tech/demo) test fleet or our [Interactive FAQ](/faq).`,
       suggestions: [
-        "How does the closed-loop defense work?",
-        "Is in-memory hotpatching safe?",
-        "What is included in the $100/mo platform plan?",
-        "How do I execute a 14ms rollback?",
-        "Why zero outbound telemetry?",
-        "Where is the full FAQ directory?"
+        "How do I run the Bullshit Validator?",
+        "How does deterministic rollback work?",
+        "What is included in the $100/mo plan?",
+        "Why zero outbound telemetry?"
       ],
       sources: [
         { title: "Unified Cyber Sovereignty Platform", doc: "wiki/overview.md", url: "/wiki" },
-        { title: "Interactive Engineering Skepticism FAQ", doc: "src/app/faq/page.tsx", url: "/faq" },
+        { title: "Interactive Engineering FAQ", doc: "src/app/faq/page.tsx", url: "/faq" },
         { title: "Bullshit Validator Verification Fleet", doc: "github.com/exultia-tech/demo", url: "https://github.com/exultia-tech/demo" }
       ]
     }
@@ -378,7 +374,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
         {!isOpen ? (
           <button
             onClick={() => setIsOpen(true)}
-            aria-label="Open AI Support Sentinel"
+            aria-label="Open Exultia Support"
             style={{
               display: "flex",
               alignItems: "center",
@@ -420,7 +416,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
 
             <div style={{ textAlign: "left" }}>
               <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>AI Support Sentinel</span>
+                <span>Exultia Support</span>
                 <span style={{
                   fontSize: "0.62rem",
                   background: "rgba(16, 185, 129, 0.2)",
@@ -434,7 +430,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
                 </span>
               </div>
               <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
-                7-Engine Technical Defense Intel
+                Autonomous Technical Intel
               </div>
             </div>
           </button>
@@ -487,7 +483,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
               </div>
               <div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>Exultia Support Sentinel</span>
+                  <span>Exultia Support</span>
                   <span style={{
                     width: "7px",
                     height: "7px",
@@ -496,7 +492,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
                   }} />
                 </div>
                 <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>
-                  Autonomous Technical Intel & FAQ Sentinel
+                  Autonomous Technical Intel
                 </div>
               </div>
             </div>
@@ -697,7 +693,7 @@ Have skepticism about in-memory safety, eBPF wrappers, or licensing? Ask me belo
                   borderTopColor: "#38BDF8",
                   animation: "spin 1s linear infinite"
                 }} />
-                <span>Exultia Sentinel analyzing inquiry...</span>
+                <span>Exultia Support analyzing inquiry...</span>
               </div>
             )}
 
