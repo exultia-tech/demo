@@ -47,7 +47,7 @@ const OUTLINE_SECTIONS: OutlineSection[] = [
     id: "deployment",
     number: "3.0",
     title: "Deployment & Air-Gap Operations",
-    description: "Air-gapped data diodes, supported Linux distributions, container runtimes, and 14ms atomic rollback mechanics.",
+    description: "Air-gapped data diodes, supported Linux distributions, container runtimes, and deterministic rollback mechanics.",
     category: "deployment"
   },
   {
@@ -67,9 +67,9 @@ const FAQ_DATA: FaqItem[] = [
     question: "This looks like vaporware bullshit, how can I prove this actually works?",
     shortSummary: "Don't take our word for it. Test live interactive simulators in the Wiki and run our reproducible quick-start guides right now.",
     answer: [
-      "We completely understand your skepticism. The cybersecurity market is saturated with marketing buzzwords, pitch decks, and vaporware. That is why we built reproducible proof directly into the platform so you can verify our claims in 60 seconds with zero sales gatekeeping:",
+      "We completely understand your skepticism. The cybersecurity market is saturated with marketing buzzwords, pitch decks, and vaporware. That is why we built reproducible proof directly into the platform so you can verify our claims directly with zero sales gatekeeping:",
       "1. Interactive Simulators on the Research Wiki: Visit the Exultia Research Wiki (/wiki?tab=simulator) right now. Every single one of the 7 defense engines includes an interactive, in-browser lab simulator. You can execute simulated in-memory hotpatching with real-time disassembly trampolines (Praxis), trigger non-destructive BAS exploitability probes (Valkyrie), query live filtered threat telemetry across 110+ registries (Vantage), and spin up chaos attack vectors (Eris).",
-      "2. Executable Quick-Start Guides: In the Research Wiki (/wiki?tab=quickstart), every product features copy-pasteable CLI commands. You can download the compiled standalone binary via `curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o praxis` and run `praxis test`. It executes a real synthetic mutation on your system, takes a pre-image SHA-256 snapshot, and verifies an atomic rollback in under 14ms.",
+      "2. Executable Quick-Start Guides: In the Research Wiki (/wiki?tab=quickstart), every product features copy-pasteable CLI commands. You can download the compiled standalone binary via `curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o praxis` and run `praxis test`. It executes a real synthetic mutation on your system, takes a pre-image SHA-256 snapshot, and verifies a deterministic atomic rollback.",
       "3. Free Community Sovereign Tier ($0 Forever): You do not need to sign a contract, talk to a salesperson, or provide a credit card. Deploy the free tier on 1 host node, pull CIS Benchmark Level 2 containers from PureOS, and query the real-time CISA KEV feed from Vantage.",
       "4. Cryptographic Attestations: Every mitigation payload and container image is signed with Cosign SLSA Level 3 provenance keys that you can inspect and verify independently using open-source tooling."
     ]
@@ -78,27 +78,27 @@ const FAQ_DATA: FaqItem[] = [
     id: "memory-safety",
     category: "skepticism",
     question: "Is in-memory hotpatching actually safe, or will it corrupt running kernel and process memory?",
-    shortSummary: "Praxis uses deterministic trampoline redirection with atomic snapshots and 14ms failsafe rollbacks.",
+    shortSummary: "Praxis uses deterministic trampoline redirection with atomic snapshots and immediate failsafe rollbacks.",
     answer: [
       "Praxis does not execute arbitrary runtime memory overwrites or unsafe byte patching. Every hotpatch follows a strict 4-step deterministic verification pipeline before injection:",
       "1. Static Disassembly Verification: The Kinetic engine inspects process binary offsets and verifies symbol integrity against known compiler fingerprints.",
       "2. Hermetic Trampoline Hooks: Patches are synthesized as micro-trampolines targeting solely the vulnerable logic (such as input sanitizers or query string decoders) without altering surrounding business logic.",
       "3. Pre-Flight Atomic Snapshotting: Prior to memory injection, an atomic snapshot of the process state and memory registers is committed to `/var/lib/kinetic/snapshots/`.",
-      "4. Automated Health Watchdog: If the patched process encounters any signal faults (e.g. SIGSEGV or SIGABRT), the host watchdog automatically executes an atomic rollback in under 14 milliseconds, restoring baseline state with zero residual corruption."
+      "4. Automated Health Watchdog: If the patched process encounters any signal faults (e.g. SIGSEGV or SIGABRT), the host watchdog automatically executes an atomic rollback, restoring baseline state with zero residual corruption."
     ]
   },
   {
     id: "rebranded-wrapper",
     category: "skepticism",
-    question: "Is Exultia just a rebranded wrapper around open-source tools like Trivy, Suricata, or ClamAV?",
-    shortSummary: "No. The closed-loop kinetic hotpatch compiler, BAS prober, and chaos range are 100% proprietary systems.",
+    question: "Is Exultia just a wrapper around generic open-source scanning tools?",
+    shortSummary: "No. The closed-loop kinetic hotpatch compiler, BAS prober, and chaos range are custom-built systems engines.",
     answer: [
       "No. While Vantage aggregates public vulnerability feeds (such as NIST NVD, CISA KEV, and Linux vendor errata) alongside private feeds, the entire kinetic defense and remediation execution engine is custom proprietary systems code:",
-      "• Praxis Hotpatch Engine: Synthesizes in-memory trampolines, Ansible canary plays, and hardware firewall ACLs directly. No open-source scanner can hotpatch live process memory.",
+      "• Praxis Hotpatch Engine: Synthesizes in-memory trampolines, Ansible canary plays, and hardware firewall ACLs directly. Vulnerability scanners merely report issues; Praxis actively remediates them.",
       "• Valkyrie BAS: Injects non-destructive, HMAC-signed canary handshakes to mathematically prove exploitability before remediation.",
       "• Eris Chaos Lab: Programmatically spins up isolated 5-container Docker ranges with automated 10-minute auto-destruct watchdog timers.",
       "• PureIDE: Air-gapped developer compiler with kernel-level network egress gating and automated CycloneDX SBOM cosigning.",
-      "Open-source scanners only alert you to problems; Exultia is a closed-loop platform that autonomously remediates them in sub-second time."
+      "Open-source scanners only alert you to problems; Exultia is a closed-loop platform that automates live remediation and verification."
     ]
   },
   {
@@ -107,25 +107,25 @@ const FAQ_DATA: FaqItem[] = [
     question: "Isn't $100/mo suspiciously cheap for a platform claiming to replace multi-thousand-dollar enterprise suites?",
     shortSummary: "Modern systems engineering eliminates the massive sales overhead and cloud ingestion bloat of legacy vendors.",
     answer: [
-      "Traditional cybersecurity giants (CrowdStrike, Palo Alto, Snyk, Splunk) spend between 60% and 75% of their total revenue on enterprise sales commissions, executive overhead, and expensive multi-gigabyte cloud ingestion pipelines.",
+      "Traditional enterprise cybersecurity suites typically carry significant overhead from multi-tiered sales structures, enterprise commission plans, and centralized cloud ingestion architectures where customers pay high markups on storage and compute.",
       "Exultia was engineered from day one on lean, modern systems principles:",
-      "1. Compiled Native Binaries: Lightweight Rust/Go/Python daemons consume less than 35MB of RAM per host with near-zero CPU footprint.",
-      "2. Zero Telemetry Cloud Costs: Because customer source code and telemetry are never streamed to our cloud, we don't pay millions in AWS/GCP storage costs and don't pass those markups to you.",
+      "1. Compiled Native Binaries: Lightweight native daemons engineered for minimal memory and CPU footprints compared to heavy Java or Electron agent runtimes.",
+      "2. Zero Telemetry Cloud Costs: Because customer source code and internal operational data are never stored in our cloud, we avoid heavy multi-tenant cloud infrastructure costs and don't pass those markups to you.",
       "3. Unified Architecture: By unifying all 7 tools into a single codebase, we eliminate the engineering friction of maintaining 7 separate product companies.",
-      "You are paying for pure security engineering and vulnerability intelligence—not sales conferences and vendor golf trips."
+      "You are paying directly for security engineering and vulnerability intelligence—not bloated sales overhead and vendor markups."
     ]
   },
   {
     id: "trust-new-platform",
     category: "skepticism",
     question: "Why should we trust Exultia in production over established 20-year-old enterprise security vendors?",
-    shortSummary: "Legacy vendors have a broken record of catastrophic fleet crashes and 30-day patch delays.",
+    shortSummary: "Exultia emphasizes local staging, cryptographic verification, and deterministic rollback over opaque global updates.",
     answer: [
-      "Established legacy vendors rely on an antiquated, high-risk security paradigm:",
-      "• The Broken Cycle: Legacy tools detect a zero-day, alert your team, and leave you exposed for 14 to 45 days while waiting for an upstream vendor patch.",
-      "• Catastrophic Outage Risk: Legacy kernel-level sensor updates pushed globally without local sandbox verification have caused historic, multi-billion-dollar IT outages.",
+      "Established legacy vendors often rely on an antiquated, high-risk security paradigm:",
+      "• The Remediation Gap: Conventional monitoring detects a vulnerability and alerts your team, but leaves you exposed while waiting weeks for upstream vendor patches.",
+      "• Centralized Agent Risk: Global auto-updating kernel agents introduce systemic risk across production infrastructure when updates are not staged and verified locally.",
       "• Cryptographic Integrity: Exultia operates under SLSA Level 3 provenance with signed SHA-256 HMAC attestations for every patch applied.",
-      "• Local Verification: Every hotpatch can be verified locally on a dry-run host or staged canary fleet before broad deployment. If anything goes wrong, a single command restores the original binary in 14 milliseconds."
+      "• Local Verification: Every hotpatch can be verified locally on a dry-run host or staged canary fleet before broad deployment. If anything goes wrong, a single command restores the original binary immediately."
     ]
   },
   {
@@ -139,7 +139,7 @@ const FAQ_DATA: FaqItem[] = [
       "• Stage patches across 10% of worker nodes first.",
       "• Monitor latency and HTTP status code distribution.",
       "• Commit fleet-wide only after automated verification confirms 100% application stability.",
-      "If any unexpected behavior occurs, `sudo kinetic rollback --cve=...` restores the original binary in 14ms."
+      "If any unexpected behavior occurs, `sudo kinetic rollback --cve=...` restores the original binary immediately."
     ]
   },
   {
@@ -161,14 +161,14 @@ const FAQ_DATA: FaqItem[] = [
     id: "closed-loop-explained",
     category: "product",
     question: "What is the closed-loop defense model, and how do the 7 engines interact?",
-    shortSummary: "Continuous detection, adversary emulation, non-destructive pentesting, and in-memory hotpatching in <200ms.",
+    shortSummary: "Continuous detection, adversary emulation, non-destructive pentesting, and automated in-memory hotpatching.",
     answer: [
       "Traditional cybersecurity separates vulnerability management into fragmented steps: a scanner finds an issue, a security analyst reviews it, a penetration tester validates it, and DevOps schedules a patch weeks later.",
       "Exultia automates this entire lifecycle into a machine-speed OODA (Observe-Orient-Decide-Act) closed loop:",
       "1. Vantage (Detect): Ingests zero-day advisories from 110+ registries (CISA KEV, NIST, Linux errata).",
       "2. Eris (Emulate): Spins up an ephemeral container range replicating the exact adversary vulnerability conditions.",
       "3. Valkyrie (Verify): Injects a safe non-destructive canary probe to mathematically prove exploitability.",
-      "4. Praxis (Remediate): Compiles and injects an in-memory bytecode hotpatch in <40ms, snapshotting state for 14ms rollback.",
+      "4. Praxis (Remediate): Compiles and applies an in-memory bytecode hotpatch, snapshotting state for immediate rollback.",
       "5. Foundations: PureIDE, PureOS, and Axiom provide air-gapped workstations, pre-hardened container images, and certified workforce training."
     ]
   },
@@ -200,10 +200,10 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "pureide-airgap",
     category: "product",
-    question: "What makes PureIDE fundamentally different from standard developer environments like VS Code?",
+    question: "What makes PureIDE fundamentally different from standard developer environments?",
     shortSummary: "PureIDE enforces kernel-level network egress sandboxing, air-gap cosigning, and automated CycloneDX SBOMs.",
     answer: [
-      "Modern IDEs and code editors stream extensive telemetry, source code snippets, and telemetry prompts to third-party cloud servers. Furthermore, standard compilers make unrestricted outbound network calls during build steps, leaving them vulnerable to supply-chain attacks (such as the XZ Utils backdoor).",
+      "Many modern development environments and editor plugins default to cloud telemetry and external integrations. Furthermore, standard compilers often make unrestricted outbound network calls during build steps, leaving workstations exposed to supply-chain vulnerabilities.",
       "PureIDE solves this at the workstation layer:",
       "• Air-Gapped Workstations: Zero telemetry is collected or transmitted. Completely functional in fully offline environments.",
       "• Egress Sandboxing: Build tasks are executed inside restricted cgroups where unauthorized network egress is blocked at the kernel boundary.",
@@ -240,15 +240,15 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "rollback-mechanics",
     category: "deployment",
-    question: "How does the sub-second deterministic rollback command actually work on a live host?",
-    shortSummary: "Pre-flight memory snapshots allow instant unlinking of trampoline hooks in under 14 milliseconds.",
+    question: "How does the deterministic rollback command actually work on a live host?",
+    shortSummary: "Pre-flight memory snapshots allow instant unlinking of trampoline hooks without service restarts.",
     answer: [
       "When Praxis hotpatches a running process or service, it commits an atomic memory snapshot and filesystem delta before modifying any active instructions.",
       "To execute a rollback:",
       "1. Execute `sudo kinetic rollback --latest` (or target a specific CVE, e.g. `sudo kinetic rollback --cve=CVE-2024-4577`).",
       "2. The Kinetic kernel driver immediately unlinks the memory trampoline hook, restoring the original function pointer offsets.",
       "3. Pre-flight file permissions and binary hashes are verified against the snapshot manifest.",
-      "4. The entire reversal completes in approximately 14 milliseconds with zero daemon restarts and zero dropped client connections."
+      "4. The entire reversal unlinks the hook immediately with zero daemon restarts and zero dropped client connections."
     ]
   },
 
@@ -787,7 +787,7 @@ export default function FaqPage() {
             Verify the architecture in real time
           </h3>
           <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: 0, lineHeight: 1.5 }}>
-            Access the 7 interactive browser simulators on the Research Wiki or review reproducible CLI quick-start guides with instant 14ms rollback.
+            Access the 7 interactive browser simulators on the Research Wiki or review reproducible CLI quick-start guides with deterministic atomic rollback.
           </p>
         </div>
 
