@@ -1,0 +1,38 @@
+[
+  {
+    "id": "probe-regresshion",
+    "name": "OpenSSH Signal Handler Race Canary (RegreSSHion)",
+    "cveRef": "CVE-2024-6387",
+    "cvss": 9.8,
+    "epssPercentile": 0.94,
+    "defaultPort": 22,
+    "probeProtocol": "TCP",
+    "probeCategory": "PROTOCOL_HANDSHAKE",
+    "safePayloadDescription": "RFC-4253 SSH banner negotiation and LoginGraceTime race window inspection without shellcode delivery.",
+    "cisaKev": true
+  },
+  {
+    "id": "probe-xz-backdoor",
+    "name": "liblzma Subverted ELF IFUNC Signature Probe",
+    "cveRef": "CVE-2024-3094",
+    "cvss": 10.0,
+    "epssPercentile": 0.98,
+    "defaultPort": 22,
+    "probeProtocol": "TCP",
+    "probeCategory": "MEMORY_CANARY",
+    "safePayloadDescription": "Detects IFUNC hook interception delay and symbol table tampering in dynamic linker runtime.",
+    "cisaKev": true
+  },
+  {
+    "id": "probe-log4shell",
+    "name": "Log4j JNDI Remote Injection Callback Canary",
+    "cveRef": "CVE-2021-44228",
+    "cvss": 10.0,
+    "epssPercentile": 0.99,
+    "defaultPort": 8080,
+    "probeProtocol": "HTTP",
+    "probeCategory": "HEADER_INJECTION",
+    "safePayloadDescription": "Injects safe canary token in User-Agent header; verifies whether JNDI lookup attempts resolution.",
+    "cisaKev": true
+  }
+]
