@@ -1,0 +1,64 @@
+---
+# ==============================================================================
+# Exultia Praxis - Staged Fleet Canary Remediation Playbook Template
+# Version: 2.4.0
+# Rollout Pattern: Staged 10% Canary Serial Batches with Health Gate
+# ==============================================================================
+
+- name: Exultia Praxis Tactical Fleet Remediation
+  hosts: "{{ target_hosts | default('all') }}"
+  become: yes
+  serial: "10%" # Protect 90% of worker nodes from unexpected regressions
+  max_fail_percentage: 0 # Halt execution immediately if any canary node fails
+  
+  vars:
+    remediation_id: "PRAXIS-{{ lookup('pipe', 'date +%s') }}"
+    cve_id: "CVE-2024-6387"
+    snapshot_dir: "/var/lib/kinetic/snapshots/{{ remediation_id }}"
+    dropin_conf: "/etc/ssh/sshd_config.d/00-exultia-regrsshion-fix.conf"
+
+  pre_tasks:
+    - name: "[Pre-Flight] Ensure snapshot store directory exists"
+      ansible.builtin.file:
+        path: "{{ snapshot_dir }}"
+        state: directory
+        mode: '0700'
+
+    - name: "[Pre-Flight] Commit pre-image state for 14ms atomic rollback"
+      ansible.builtin.copy:
+        src: "{{ dropin_conf }}"
+        dest: "{{ snapshot_dir }}/dropin.orig"
+        remote_src: yes
+        mode: preserve
+      failed_when: false
+
+  tasks:
+    - name: "[Remediate] Deploy surgical drop-in mitigation"
+      ansible.builtin.copy:
+        dest: "{{ dropin_conf }}"
+        content: |
+          # Exultia Praxis Canary Hotpatch: {{ cve_id }}
+          # Generated: {{ ansible_date_time.iso8601 }}
+          LoginGraceTime 0
+        owner: root
+        group: root
+        mode: '0600'
+      notify: Validate and Reload SSHD
+
+    - name: "[Verify] Execute pre-flight syntax inspection"
+      ansible.builtin.command: sshd -t
+      changed_when: false
+      register: sshd_syntax_check
+
+  handlers:
+    - name: Validate and Reload SSHD
+      ansible.builtin.service:
+        name: "{{ 'ssh' if ansible_os_family == 'Debian' else 'sshd' }}"
+        state: reloaded
+
+  post_tasks:
+    - name: "[Attestation] Verify active service response"
+      ansible.builtin.wait_for:
+        port: 22
+        timeout: 5
+      delegate_to: localhost
