@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://exultia.tech">
+    <img src="https://raw.githubusercontent.com/wstrika/exultia/main/public/branding/navbar_helm_cyan.png" alt="Exultia Cybernetic Fortress Helm" width="110" />
+  </a>
+</p>
+
 # Exultia Kinetic™ Customer Operational Wiki & Disaster Recovery Runbook
 **Product**: Exultia Kinetic Rapid Patch Management Feed  
 **Audience**: Enterprise SecOps, Platform Engineering, DevOps, and SRE Teams  

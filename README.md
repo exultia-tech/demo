@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://exultia.tech">
+    <img src="https://raw.githubusercontent.com/wstrika/exultia/main/public/branding/navbar_helm_cyan.png" alt="Exultia Cybernetic Fortress Helm" width="140" /><br>
+    <img src="https://raw.githubusercontent.com/wstrika/exultia/main/public/branding/logo_lockup_cyan.png" alt="Exultia Technologies" width="360" />
+  </a>
+</p>
+
 # Exultia Sovereign Security Platform
 
 > **Autonomous Closed-Loop Cyber Defense & Verified Zero-Day Remediation Engine**  

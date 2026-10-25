@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://exultia.tech">
+    <img src="https://raw.githubusercontent.com/wstrika/exultia/main/public/branding/navbar_helm_cyan.png" alt="Exultia Cybernetic Fortress Helm" width="130" /><br>
+    <img src="https://raw.githubusercontent.com/wstrika/exultia/main/public/branding/logo_lockup_cyan.png" alt="Exultia Technologies" width="340" />
+  </a>
+</p>
+
 # Exultia Platform Documentation & Wiki
 
 Welcome to the official technical documentation and engineering wiki for the **Exultia Technologies** closed-loop sovereign security platform.
