@@ -5,13 +5,10 @@ import Link from "next/link";
 import { 
   PureIdeIcon, 
   VantageIcon, 
-  PureOsIcon, 
   PraxisIcon, 
-  AxiomIcon, 
-  ErisIcon, 
-  ValkyrieIcon,
   ExultiaLinuxIcon
 } from "@/components/BrandIcons";
+import ProductTourWalkthrough from "@/components/home/ProductTourWalkthrough";
 import { 
   CheckCircle2, 
   ShieldCheck, 
@@ -381,184 +378,9 @@ export default function HomeCommandDeck() {
         </div>
       </section>
 
-      {/* ── 3. THE 4-STAGE CONTINUOUS DEFENSE LOOP (OODA PIPELINE) ─────────────── */}
+      {/* ── 3. CHRONOLOGICAL PRODUCT APPLICATION TOUR (GUIDED WALKTHROUGH) ─────── */}
       <section style={{ marginBottom: "5rem" }}>
-        
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(168, 85, 247, 0.1)",
-            border: "1px solid rgba(168, 85, 247, 0.3)",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            marginBottom: "0.75rem",
-            fontSize: "0.74rem",
-            fontFamily: "var(--font-mono, monospace)",
-            color: "#C084FC",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase"
-          }}>
-            <span>The Continuous Security Operations Plane</span>
-          </div>
-
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.5rem 0" }}>
-            The 4 Stages of Kinetic Autonomous Defense
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "700px", margin: "0 auto", lineHeight: 1.5 }}>
-            A unified pipeline executing OODA (Observe &bull; Orient &bull; Decide &bull; Act) at machine speed with zero human lag.
-          </p>
-        </div>
-
-        {/* 4 Connected Pipeline Nodes */}
-        <div className="ooda-circuit">
-          
-          {/* Node 1: Vantage */}
-          <Link 
-            href="/app/uvi"
-            className="ooda-node"
-            style={{
-              // @ts-ignore
-              "--node-accent": "#A855F7",
-              "--node-glow": "rgba(168, 85, 247, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <VantageIcon size={38} />
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", background: "rgba(168, 85, 247, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
-                  01 // DETECT
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
-                Vantage Intel
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#C084FC", marginBottom: "0.75rem", fontWeight: 700 }}>
-                Universal Advisory Registry
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                Continuous aggregation across 110+ authoritative registries (NIST NVD, CISA KEV, Linux errata, PHP, OpenSSL).
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>6,391 Ingested</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#C084FC", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Feed</span> <ChevronRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Node 2: Eris */}
-          <Link 
-            href="/app/eris"
-            className="ooda-node"
-            style={{
-              // @ts-ignore
-              "--node-accent": "#EF4444",
-              "--node-glow": "rgba(239, 68, 68, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <ErisIcon size={38} glow={false} />
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#F87171", background: "rgba(239, 68, 68, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
-                  02 // EMULATE
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
-                Eris Chaos Lab
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#F87171", marginBottom: "0.75rem", fontWeight: 700 }}>
-                Adversary Proving Ground
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                Intentional vulnerability inoculation. Replicate live CVEs in 5-container Docker ranges with automated watchdog rollbacks.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>10m Watchdog</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#EF4444", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Sandbox</span> <ChevronRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Node 3: Valkyrie */}
-          <Link 
-            href="/app/valkyrie"
-            className="ooda-node"
-            style={{
-              // @ts-ignore
-              "--node-accent": "#06B6D4",
-              "--node-glow": "rgba(6, 182, 212, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <ValkyrieIcon size={38} glow={false} />
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#67E8F9", background: "rgba(6, 182, 212, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
-                  03 // VERIFY
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
-                Valkyrie Pentest
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#67E8F9", marginBottom: "0.75rem", fontWeight: 700 }}>
-                Safe Breach Probes
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                Safe, non-destructive canary payloads confirming true exploitability before dispatching autonomous hotpatches.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>HMAC Proofs</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#06B6D4", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Probes</span> <ChevronRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Node 4: Praxis */}
-          <Link 
-            href="/app/praxis"
-            className="ooda-node"
-            style={{
-              // @ts-ignore
-              "--node-accent": "#F59E0B",
-              "--node-glow": "rgba(245, 158, 11, 0.35)",
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <PraxisIcon size={38} />
-                <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#FBBF24", background: "rgba(245, 158, 11, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 800 }}>
-                  04 // REMEDIATE
-                </span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px 0" }}>
-                Praxis Hotpatch
-              </h3>
-              <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#FBBF24", marginBottom: "0.75rem", fontWeight: 700 }}>
-                Kinetic Memory Remediator
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.85rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                In-memory hotpatching and eBPF filters deployed in sub-second runtime. Zero daemon restarts. Instant atomic rollback.
-              </p>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.75rem" }}>
-              <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono, monospace)", color: "#64748B" }}>&lt;50ms Rollback</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#F59E0B", fontSize: "0.78rem", fontWeight: 800, fontFamily: "var(--font-mono, monospace)" }}>
-                <span>Remediate</span> <ChevronRight size={14} />
-              </span>
-            </div>
-          </Link>
-
-        </div>
+        <ProductTourWalkthrough />
 
         {/* ── COCKPIT LINK BANNER (CALLOUT TO RESEARCH WIKI) ─── */}
         <div style={{
