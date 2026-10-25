@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Always allow assets, favicons, static files, and Next.js internals (never API routes)
-  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|txt|xml)$/i;
+  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|txt|xml|py)$/i;
   if (
     !pathname.startsWith("/api") &&
     (pathname.startsWith("/_next") ||

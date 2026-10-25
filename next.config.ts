@@ -8,6 +8,7 @@ const antiFramingHeaders = [
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/kinetic/download': ['./public/downloads/kinetic/**/*'],
+    '/api/validator/script': ['./public/downloads/validate.py', './scripts/validate.py', './validate.py'],
   },
   async headers() {
     return [

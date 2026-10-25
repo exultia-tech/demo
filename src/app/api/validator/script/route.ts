@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+import { EMBEDDED_VALIDATOR_SCRIPT } from "@/lib/embedded-validator";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -16,9 +18,17 @@ export async function GET(request: NextRequest) {
   let scriptContent = "";
   for (const p of candidatePaths) {
     if (fs.existsSync(p)) {
-      scriptContent = fs.readFileSync(p, "utf-8");
-      break;
+      try {
+        scriptContent = fs.readFileSync(p, "utf-8");
+        break;
+      } catch {
+        // continue
+      }
     }
+  }
+
+  if (!scriptContent) {
+    scriptContent = EMBEDDED_VALIDATOR_SCRIPT;
   }
 
   if (!scriptContent) {
