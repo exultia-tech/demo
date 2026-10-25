@@ -6,12 +6,13 @@ import { OPERATOR_COOKIE_NAME, DEFAULT_OPERATOR_KEY } from "./app/api/preview/un
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Always allow assets, favicons, static files, and Next.js internals
-  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|json|txt|xml)$/i;
+  // 1. Always allow assets, favicons, static files, and Next.js internals (never API routes)
+  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|txt|xml)$/i;
   if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon") ||
-    STATIC_FILE_REGEX.test(pathname)
+    !pathname.startsWith("/api") &&
+    (pathname.startsWith("/_next") ||
+      pathname.startsWith("/favicon") ||
+      STATIC_FILE_REGEX.test(pathname))
   ) {
     return NextResponse.next();
   }
@@ -28,17 +29,42 @@ export function proxy(request: NextRequest) {
   const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {
-    // Check for operator authorization passkey cookie
-    const operatorCookie = request.cookies.get(OPERATOR_COOKIE_NAME)?.value;
     const expectedKey = (process.env.OPERATOR_PREVIEW_KEY || DEFAULT_OPERATOR_KEY).trim();
 
-    const isOperatorAuthorized = Boolean(
-      operatorCookie && operatorCookie.trim() === expectedKey
-    );
+    // Support multiple authorization bypass vectors for CLI / API & Browser access:
+    // 1. Header: X-Operator-Key: <key>
+    // 2. Header: Authorization: Bearer <key>
+    // 3. Query Param: ?key=<key> (or ?operator_key=<key>, ?token=<key>)
+    // 4. Cookie: exultia_operator_key=<key>
+    const headerKey = request.headers.get("x-operator-key")?.trim();
+    const authHeader = request.headers.get("authorization")?.trim();
+    const bearerKey = authHeader?.toLowerCase().startsWith("bearer ")
+      ? authHeader.slice(7).trim()
+      : undefined;
+    const queryKey = (
+      request.nextUrl.searchParams.get("key") ||
+      request.nextUrl.searchParams.get("operator_key") ||
+      request.nextUrl.searchParams.get("token")
+    )?.trim();
+    const operatorCookie = request.cookies.get(OPERATOR_COOKIE_NAME)?.value?.trim();
+
+    const providedKey = headerKey || bearerKey || queryKey || operatorCookie;
+    const isOperatorAuthorized = Boolean(providedKey && providedKey === expectedKey);
 
     // If operator is authenticated, allow full access to all pages and APIs
     if (isOperatorAuthorized) {
-      return NextResponse.next();
+      const response = NextResponse.next();
+      // If authorized via header or query param, ensure cookie is set for session persistence
+      if (!operatorCookie && providedKey === expectedKey) {
+        response.cookies.set(OPERATOR_COOKIE_NAME, expectedKey, {
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+        });
+      }
+      return response;
     }
 
     // --- STRICT LOCKDOWN (Unauthenticated Visitors) ---
@@ -46,16 +72,18 @@ export function proxy(request: NextRequest) {
     if (
       pathname === "/preview" ||
       pathname.startsWith("/preview/") ||
-      pathname.startsWith("/api/preview") ||
-      pathname.startsWith("/api/validator")
+      pathname.startsWith("/api/preview")
     ) {
       return NextResponse.next();
     }
 
-    // Unauthorized API requests are strictly rejected with 403 Forbidden
+    // Unauthorized API requests are strictly rejected from the root path
     if (pathname.startsWith("/api")) {
       return NextResponse.json(
-        { error: "Access restricted: site in private preview lockdown." },
+        {
+          error: "Access restricted: site in private preview lockdown.",
+          hint: "To authenticate API requests, provide your operator key via 'X-Operator-Key' header, 'Authorization: Bearer <key>', or '?key=<key>' query parameter."
+        },
         { status: 403 }
       );
     }
