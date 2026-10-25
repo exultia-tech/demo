@@ -76,9 +76,14 @@ export default function Footer() {
         color: "var(--text-muted)",
         fontFamily: "var(--font-mono, 'Share Tech Mono', monospace)",
         letterSpacing: "0.05em",
-        opacity: 0.6,
+        opacity: 0.75,
+        textAlign: "center",
+        lineHeight: 1.6
       }}>
-        © {new Date().getFullYear()} EXULTIA TECHNOLOGIES
+        © {new Date().getFullYear()} Exultia Technologies Inc. All Rights Reserved.<br />
+        <span style={{ opacity: 0.7, fontSize: "0.7rem" }}>
+          Kinetic™, Vantage™, and Exultia Linux™ are proprietary trademarks of Exultia Technologies Inc.
+        </span>
       </div>
     </footer>
   );

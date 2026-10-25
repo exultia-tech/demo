@@ -57,7 +57,7 @@ const SECTIONS: Section[] = [
     title: "5. License and Restrictions",
     body: [
       "Subject to these Terms and payment of applicable fees, Exultia grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Services and any software we provide for your internal business or personal security purposes, within the limits of your plan (including seat, host, and rate limits).",
-      "Some components are provided under open-source licenses. Those licenses govern your use of those components and prevail over these Terms to the extent they conflict.",
+      "Exultia Linux and associated software distributions aggregate standard open-source components (including the Linux kernel, systemd, glibc, and system utilities) governed by their respective licenses (such as GPLv2, GPLv3, and LGPL). In accordance with open-source licensing standards and the 'mere aggregation' doctrine, third-party open-source components are subject to their upstream terms. Exultia's proprietary technologies—including the Kinetic™ Hotfix Engine, Sentinel Daemons, Vantage™ Threat Intelligence Feeds, and remediation playbooks—remain the proprietary and confidential property of Exultia Technologies Inc.",
       "You agree not to:",
       { list: [
         "resell, sublicense, or redistribute the Services, data feeds, or derived datasets except as your plan expressly allows;",

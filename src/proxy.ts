@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Exultia Technologies Inc. All rights reserved.
+ * Proprietary and Confidential.
+ *
+ * Exultia Edge Proxy, Route Security, and Private Preview Lockdown Gate.
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SITE_CONFIG } from "./config/site-config";

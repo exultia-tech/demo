@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Exultia Technologies Inc. All rights reserved.
+ * Proprietary and Confidential.
+ *
+ * Vantage Threat Intelligence & Autonomous CVE Remediation Feed API.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { SAMPLE_PATCH_FEED, type PatchFeedItem } from '@/lib/patch-data';
 export { SAMPLE_PATCH_FEED, type PatchFeedItem };
