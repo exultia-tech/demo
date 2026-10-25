@@ -71,6 +71,12 @@ for arg in sys.argv:
         elif p in ("all", "fleet"):
             PLATFORM_MODE = "all"
 
+# Filter by specific CVE if requested
+FILTER_CVE = None
+for arg in sys.argv:
+    if arg.startswith("--cve="):
+        FILTER_CVE = arg.split("=")[1].strip().upper()
+
 def pace(seconds: float = 0.35):
     """Introduces human-readable pacing delay unless --fast is specified."""
     if not FAST_MODE:
@@ -412,6 +418,7 @@ def check_remediation_catalog():
 
     # 2. Comprehensive Real-World Threat Catalogs (Platform Partitioned)
     catalog_linux_50 = [
+        {"cve": "CVE-2024-4577", "name": "PHP CGI Argument Injection Windows/Linux Remote Code Execution", "sev": "CRITICAL", "cvss": 9.8, "kev": True, "platform": "Linux", "before": "Apache mod_cgi / php-cgi accepts query string argument injections %ADd+allow_url_include%3d1", "hotfix": "kinetic apply --cve=CVE-2024-4577 --apache-mod-rewrite", "after": "Strict Unicode soft hyphen %AD regex rule drops exploit requests with HTTP 403", "rollback": "kinetic rollback --cve=CVE-2024-4577"},
         {"cve": "CVE-2024-6387", "name": "OpenSSH Signal Handler Race Condition (regreSSHion)", "sev": "CRITICAL", "cvss": 9.8, "kev": True, "platform": "Linux", "before": "LoginGraceTime 120 in sshd_config -> SIGALRM handler race unauth root RCE", "hotfix": "mkdir -p /etc/ssh/sshd_config.d && echo 'LoginGraceTime 0' > /etc/ssh/sshd_config.d/00-exultia.conf && systemctl reload sshd", "after": "LoginGraceTime 0; SIGALRM race eliminated; zero dropped TCP sockets", "rollback": "rm -f /etc/ssh/sshd_config.d/00-exultia.conf && systemctl reload sshd"},
         {"cve": "CVE-2024-3094", "name": "XZ Utils Liblzma Upstream Supply Chain Backdoor", "sev": "CRITICAL", "cvss": 10.0, "kev": True, "platform": "Linux", "before": "Compromised liblzma 5.6.0 intercepts RSA_public_decrypt inside sshd process space", "hotfix": "kinetic hotfix apply --cve=CVE-2024-3094 --got-redirect --fallback=5.4.5", "after": "In-memory GOT symbol redirected; clean liblzma 5.4.5 active; clean auth", "rollback": "kinetic rollback --cve=CVE-2024-3094"},
         {"cve": "CVE-2024-21626", "name": "runc Leaky Vessels Container Boundary Breakout", "sev": "HIGH", "cvss": 8.6, "kev": False, "platform": "Linux", "before": "runc <= 1.1.11 leaks /sys/fs/cgroup file descriptors allowing host escape", "hotfix": "kinetic apply --cve=CVE-2024-21626 --ebpf-sanitize-fd", "after": "O_CLOEXEC enforced; leaked file descriptors clamped at kernel boundary", "rollback": "kinetic rollback --cve=CVE-2024-21626"},
@@ -489,9 +496,14 @@ def check_remediation_catalog():
         platform_desc = "All Platforms (Full Enterprise Fleet)"
         platform_detail = "Cross-platform multi-ring evaluation across Linux and Windows fleets"
 
-    selected_samples = list(active_catalog[:SAMPLES_COUNT])
-    if ORDER_MODE == "random":
-        random.shuffle(selected_samples)
+    if FILTER_CVE:
+        selected_samples = [c for c in active_catalog if FILTER_CVE in c["cve"].upper() or FILTER_CVE in c["name"].upper()]
+        if not selected_samples:
+            selected_samples = [c for c in (catalog_linux_50 + catalog_windows_50) if FILTER_CVE in c["cve"].upper() or FILTER_CVE in c["name"].upper()]
+    else:
+        selected_samples = list(active_catalog[:SAMPLES_COUNT])
+        if ORDER_MODE == "random":
+            random.shuffle(selected_samples)
 
     print_paged(f"  {BOLD}[Host Architecture & Remediation Scope]{RESET}")
     print_paged(f"  {DIM}--------------------------------------------------------------------------{RESET}")
