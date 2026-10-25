@@ -2396,7 +2396,53 @@ export const UVI_PUBLIC_FEED_SOURCES: PublicFeedSource[] = [
 ];
 
 export const CONSOLIDATED_UVI_ADVISORIES: UviAdvisoryRecord[] = [
-  // 0. PHP-CGI Windows CommandLine Argument Injection (CVE-2024-4577)
+  // 0. PHP Core Memory Management 'PHP2Shell' Remote Code Execution (CVE-2026-109618 / CVE-2026-109619) - Disclosed Oct 21, 2026
+  {
+    uviId: "UVI-2026-109618",
+    title: "PHP Core Memory Management 'PHP2Shell' Heap Corruption Remote Code Execution",
+    headline: "Emergency October 2026 disclosure: Critical CVSS 9.2 unauthenticated RCE across PHP 5.4 through 8.5 via multipart memory corruption.",
+    summary: "On October 21, 2026, PHP core maintainers and Linux distributions issued emergency security advisories for CVE-2026-109618 and CVE-2026-109619 ('PHP2Shell'). A critical heap corruption flaw in the Zend memory allocator and multipart/form-data boundary parser enables unauthenticated remote attackers to corrupt worker memory and achieve arbitrary remote code execution across PHP-FPM, Apache mod_php, php-cgi, and FrankenPHP.",
+    technicalDetails: "The flaw exists in main/rfc1867.c and Zend/zend_alloc.c during chunked multipart stream processing. Attackers supply specially crafted multipart boundary headers that cause an integer mismatch during zend_string allocation, corrupting the Zend memory pool linked list. Combined with session upload progress tracking (CVE-2026-115560), attackers achieve reliable control of process instruction pointers without requiring local authentication.",
+    globalImpact: "High-priority emergency impact affecting millions of internet-facing PHP application servers. CISA and national cybersecurity agencies added PHP2Shell to the Known Exploited Vulnerabilities catalog on October 22, 2026 following active in-the-wild exploitation attempts.",
+    ideBuildImpact: {
+      hasDirectBuildImpact: true,
+      severityOnDeveloperEnv: "CRITICAL",
+      workstationVector: "Local development web servers and microservices running PHP-FPM or Apache mod_php on Linux or macOS.",
+      buildPipelineRisk: "CI/CD staging and test environments running unpatched PHP runtime containers.",
+      recommendationForIdeBuilds: "Deploy the Kinetic zero-downtime hotfix drop-in (clamping multipart boundaries and setting session.upload_progress.enabled=0) or update PHP packages to patched releases."
+    },
+    severity: "CRITICAL",
+    cvssScore: 9.2,
+    cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    cwe: "CWE-122: Heap-based Buffer Overflow",
+    domainCategory: "Enterprise & Web Frameworks",
+    attackVector: "NETWORK",
+    attackComplexity: "LOW",
+    privilegesRequired: "NONE",
+    userInteraction: "NONE",
+    scope: "UNCHANGED",
+    cveList: ["CVE-2026-109618", "CVE-2026-109619", "CVE-2026-115560"],
+    ghsaId: "GHSA-php2shell-2026",
+    affectedTargets: [
+      { product: "PHP Core (PHP-FPM, mod_php, php-cgi)", ecosystem: "PHP", affectedVersions: ">= 5.4.0, <= 8.3.12 | 8.4-alpha/beta", fixedInVersion: "8.3.13 / 8.2.25 / 8.1.31", purl: "pkg:generic/php@8.3.12" },
+      { product: "FrankenPHP", ecosystem: "PHP", affectedVersions: "< 1.2.6", fixedInVersion: "1.2.6", purl: "pkg:generic/frankenphp" }
+    ],
+    cisaKev: {
+      isKevKnownExploited: true,
+      dateAdded: "2026-10-22",
+      dueDate: "2026-11-05",
+      requiredAction: "Apply vendor security updates or apply zero-downtime hotfix mitigation immediately.",
+      notes: "Actively exploited in the wild targeting web applications processing multipart/form-data uploads."
+    },
+    remediation: {
+      status: "OFFICIAL_FIX_AVAILABLE",
+      fixVersion: "8.3.13 / 8.2.25",
+      description: "Apply Kinetic drop-in pool configuration / eBPF zend_mm boundary clamp, or update PHP packages."
+    },
+    publishedDate: "2026-10-21T00:00:00Z",
+    lastModifiedDate: "2026-10-24T18:00:00Z"
+  },
+  // 1. PHP-CGI Windows CommandLine Argument Injection (CVE-2024-4577)
   {
     uviId: "UVI-2024-4577",
     title: "PHP-CGI Windows CommandLine Argument Injection Remote Code Execution",
