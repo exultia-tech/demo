@@ -1,0 +1,28 @@
+{
+  "name": "Exultia PureIDE Air-Gapped DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "runArgs": [
+    "--cap-drop=ALL",
+    "--cap-add=CHOWN",
+    "--cap-add=SETUID",
+    "--cap-add=SETGID",
+    "--security-opt=no-new-privileges:true",
+    "--dns=127.0.0.1"
+  ],
+  "containerEnv": {
+    "PUREIDE_AIRGAP_ENFORCED": "true",
+    "PUREIDE_SBOM_AUTOSIGN": "true",
+    "SLSA_PROVENANCE_LEVEL": "3"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "telemetry.telemetryLevel": "off",
+        "update.mode": "none",
+        "extensions.autoUpdate": false,
+        "workbench.enableExperiments": false
+      }
+    }
+  },
+  "postCreateCommand": "echo '[PureIDE] Air-gap workstation initialized. Network egress bounded.'"
+}

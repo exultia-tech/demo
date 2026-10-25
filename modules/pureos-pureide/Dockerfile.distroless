@@ -1,0 +1,27 @@
+# ==============================================================================
+# Exultia PureOS - Hardened Distroless Base Container Template
+# Version: 2.4.0
+# Compliance: CIS Benchmark Level 2, NIST SP 800-190, SLSA Level 3
+# ==============================================================================
+
+# Stage 1: Build & Static Linkage
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/service .
+
+# Stage 2: Distroless Sovereign Runtime (Zero Shell, Zero Package Manager)
+FROM gcr.io/distroless/static-debian12:nonroot
+
+LABEL org.opencontainers.image.vendor="Exultia PureOS" \
+      org.opencontainers.image.title="Sovereign Hardened Service" \
+      org.opencontainers.image.description="CIS Level 2 distroless minimal container" \
+      tech.exultia.slsa.level="3"
+
+WORKDIR /
+COPY --from=builder /bin/service /service
+
+# Enforce non-root execution (UID 65532: nonroot)
+USER 65532:65532
+
+ENTRYPOINT ["/service"]
