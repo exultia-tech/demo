@@ -40,8 +40,8 @@ export default function ExultiaLinuxProductPage() {
         <p className="hero-subtitle" style={{ maxWidth: "820px", margin: "0 auto 2.5rem auto", fontSize: "1.18rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
           The sovereign, declarative operating system engineered for high-consequence enterprise infrastructure.
           Built on a cryptographically immutable base, Exultia Linux continuously monitors its running workloads,
-          synthesizes surgical zero-downtime hotfixes in <strong style={{ color: "#22D3EE" }}>&lt; 300ms</strong>, and guarantees
-          deterministic atomic rollbacks in <strong style={{ color: "#34D399" }}>18.6ms</strong> with zero dropped TCP sockets.
+          applies surgical zero-downtime hotfixes with <strong style={{ color: "#22D3EE" }}>sub-second runtime execution</strong>, and provides
+          a guaranteed <strong style={{ color: "#34D399" }}>&lt;50ms deterministic rollback SLA</strong> with zero dropped TCP sockets.
         </p>
 
         {/* CTA Button Array */}
@@ -98,16 +98,16 @@ export default function ExultiaLinuxProductPage() {
         {/* Key Metrics Banner */}
         <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", padding: "0 1rem" }}>
           <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#38BDF8" }}>&lt; 300ms</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Autonomous Hotfix Injection</div>
+            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#38BDF8" }}>Sub-Second</div>
+            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Local Runtime Hotfix (~300ms)</div>
           </div>
           <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
             <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#34D399" }}>0 Sockets</div>
             <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Disrupted During Patching</div>
           </div>
           <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#FBBF24" }}>18.6ms</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Deterministic Atomic Rollback</div>
+            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#FBBF24" }}>&lt; 50ms</div>
+            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Deterministic Rollback SLA</div>
           </div>
           <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
             <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#A7F3D0" }}>0 Findings</div>

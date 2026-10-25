@@ -259,7 +259,7 @@ export default function ExultiaLinuxClientView() {
               <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Kinetic™ Zero-Downtime Engine</h3>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Surgically applies in-memory hotpatches, dynamic drop-in configurations, and eBPF filters in &lt;300ms. Active TCP streams, SSH shells, and database connections remain uninterrupted.
+              Surgically applies in-memory hotpatches, dynamic drop-in configurations, and eBPF filters at sub-second execution speeds (benchmarked at ~300ms). Active TCP streams, SSH shells, and database connections remain uninterrupted.
             </p>
           </div>
 
@@ -269,10 +269,10 @@ export default function ExultiaLinuxClientView() {
               <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24" }}>
                 <RotateCcw size={24} />
               </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Deterministic &lt;50ms Rollback</h3>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Deterministic &lt;50ms Rollback SLA</h3>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Prior to any hotfix, Kinetic captures microsecond pre-image state snapshots. If post-patch sentinel verification fails, the system reverts instantaneously in 18.6ms with zero reboots.
+              Prior to applying any hotfix, Kinetic captures microsecond pre-image state snapshots. If post-patch sentinel verification fails, the system reverts instantaneously (benchmarked at 18.6ms) with zero reboots.
             </p>
           </div>
 
@@ -370,12 +370,12 @@ export default function ExultiaLinuxClientView() {
                 <td style={{ padding: "1rem 1.5rem", color: "#94A3B8" }}>Stock distro kernel; requires reboot</td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Remediation Latency</td>
+                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Hotpatch Execution Latency</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  &lt; 300ms (Autonomous In-Memory)
+                  Sub-second (~300ms runtime injection)
                 </td>
                 <td style={{ padding: "1rem 1.5rem", color: "#FBBF24" }}>Fast (Redeploy updated container)</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>30–90 days (Maintenance window)</td>
+                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Service restart &amp; downtime (Minutes)</td>
               </tr>
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
                 <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Socket Continuity</td>
@@ -388,7 +388,7 @@ export default function ExultiaLinuxClientView() {
               <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
                 <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Deterministic Rollback</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  18.6ms Atomic Pre-Image Restore
+                  &lt;50ms SLA (Empirical: 18.6ms)
                 </td>
                 <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Roll back image tag (10–30s)</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Manual snapshot / recovery (Hours)</td>

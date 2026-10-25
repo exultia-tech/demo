@@ -1002,10 +1002,10 @@ export default function HomeCommandDeck() {
             </thead>
             <tbody>
               <tr>
-                <td style={{ fontWeight: 700, color: "#FFFFFF" }}>Zero-Day Response Latency</td>
-                <td style={{ color: "#F87171" }}>14 &ndash; 45 days waiting for upstream vendor patch release</td>
+                <td style={{ fontWeight: 700, color: "#FFFFFF" }}>Host Hotpatch Execution</td>
+                <td style={{ color: "#F87171" }}>Disruptive service restarts, dropped TCP sockets &amp; deferred maintenance windows</td>
                 <td className="sovereign-col" style={{ color: "#34D399" }}>
-                  <strong>&lt; 40 milliseconds</strong> autonomous in-memory hotpatching
+                  <strong>Sub-second runtime injection</strong> with 0 dropped sockets (benchmarked &lt; 350ms)
                 </td>
               </tr>
               <tr>
