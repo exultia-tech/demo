@@ -378,71 +378,96 @@ export default function FaqPage() {
   }, [sectionsWithItems]);
 
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2.5rem 1.5rem 6rem 1.5rem" }}>
+    <div style={{ minHeight: "100vh", background: "#030712", color: "#F8FAFC" }}>
       
-      {/* ── HEADER ──────────────────────────────────────────────────────────── */}
-      <header style={{ marginBottom: "3rem" }}>
-        
-        <div style={{ 
-          display: "inline-flex", 
-          alignItems: "center", 
-          gap: "8px", 
-          background: "rgba(255, 255, 255, 0.04)", 
-          border: "1px solid rgba(255, 255, 255, 0.12)", 
-          padding: "5px 14px", 
-          borderRadius: "6px", 
-          marginBottom: "1.25rem",
-          fontFamily: "var(--font-mono, monospace)",
-          fontSize: "0.8rem",
-          color: "#94A3B8"
-        }}>
-          <ListTree size={14} color="#00E5FF" />
-          <span>DOCUMENTATION &bull; REFERENCE OUTLINE</span>
+      {/* ── COMPACT TOP HEADER ─────────────────────────────────────────────────── */}
+      <div style={{
+        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+        background: "rgba(10, 15, 26, 0.8)",
+        backdropFilter: "blur(12px)",
+        padding: "1.75rem 1.5rem"
+      }}>
+        <div style={{ maxWidth: "1600px", margin: "0 auto" }}>
+          <div style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            gap: "8px", 
+            background: "rgba(255, 255, 255, 0.04)", 
+            border: "1px solid rgba(255, 255, 255, 0.12)", 
+            padding: "4px 12px", 
+            borderRadius: "6px", 
+            marginBottom: "0.75rem",
+            fontFamily: "var(--font-mono, monospace)",
+            fontSize: "0.75rem",
+            color: "#94A3B8"
+          }}>
+            <ListTree size={13} color="#00E5FF" />
+            <span>DOCUMENTATION &bull; REFERENCE OUTLINE</span>
+          </div>
+
+          <h1 style={{ 
+            fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
+            fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)", 
+            fontWeight: 900, 
+            color: "#FFFFFF", 
+            letterSpacing: "-0.02em", 
+            margin: 0,
+            lineHeight: 1.2
+          }}>
+            Frequently Asked Questions
+          </h1>
+
+          <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "850px", margin: "0.4rem 0 0 0", lineHeight: 1.5 }}>
+            Comprehensive technical outline covering architectural safety, autonomous hotpatching, zero-telemetry boundaries, air-gap operations, and platform subscriptions.
+          </p>
         </div>
+      </div>
 
-        <h1 style={{ 
-          fontFamily: "var(--font-display, 'Orbitron', sans-serif)",
-          fontSize: "clamp(2.2rem, 4vw, 3.2rem)", 
-          fontWeight: 900, 
-          color: "#FFFFFF", 
-          letterSpacing: "-0.02em", 
-          marginBottom: "1rem",
-          lineHeight: 1.15
-        }}>
-          Frequently Asked Questions
-        </h1>
-
-        <p style={{ color: "#94A3B8", fontSize: "1.05rem", maxWidth: "760px", margin: "0 0 2rem 0", lineHeight: 1.6 }}>
-          Comprehensive outline covering architectural safety, autonomous hotpatching, zero-telemetry boundaries, air-gap operations, and platform subscriptions.
-        </p>
-
-        {/* Search Bar & Expand/Collapse Toolbar */}
-        <div style={{
+      {/* ── MAIN TWO-COLUMN LAYOUT: TOC SIDEBAR + CONTENT AREA ─────────────────── */}
+      <div style={{
+        maxWidth: "1600px",
+        margin: "1.5rem auto",
+        padding: "0 1.5rem 6rem 1.5rem",
+        display: "flex",
+        gap: "1.75rem",
+        alignItems: "flex-start",
+        flexDirection: "row",
+        position: "relative"
+      }}>
+        {/* LEFTHAND TABLE OF CONTENTS SIDEBAR */}
+        <aside style={{
+          width: "320px",
+          minWidth: "300px",
+          flexShrink: 0,
+          position: "sticky",
+          top: "80px",
+          maxHeight: "calc(100vh - 100px)",
+          overflowY: "auto",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "1rem",
-          background: "rgba(15, 23, 42, 0.6)",
-          padding: "1rem 1.25rem",
-          borderRadius: "12px",
-          border: "1px solid rgba(255, 255, 255, 0.08)"
+          flexDirection: "column",
+          gap: "1.25rem",
+          background: "rgba(10, 15, 26, 0.75)",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          borderRadius: "14px",
+          padding: "1.25rem",
+          backdropFilter: "blur(12px)"
         }}>
-          <div style={{ position: "relative", flex: 1, minWidth: "260px" }}>
-            <Search size={16} color="#64748B" style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+          {/* SEARCH INPUT */}
+          <div style={{ position: "relative", width: "100%" }}>
+            <Search size={15} color="#64748B" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }} />
             <input
               type="text"
-              placeholder="Search outline (e.g., 'hotpatch', 'vaporware', 'airgap', 'pricing')..."
+              placeholder="Search FAQ outline..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: "100%",
-                padding: "10px 14px 10px 42px",
+                padding: "9px 32px 9px 36px",
                 background: "rgba(0, 0, 0, 0.4)",
                 border: "1px solid rgba(255, 255, 255, 0.12)",
                 borderRadius: "8px",
                 color: "#FFFFFF",
-                fontSize: "0.9rem",
+                fontSize: "0.85rem",
                 fontFamily: "var(--font-mono, monospace)",
                 outline: "none"
               }}
@@ -452,7 +477,7 @@ export default function FaqPage() {
                 onClick={() => setSearchQuery("")}
                 style={{
                   position: "absolute",
-                  right: "12px",
+                  right: "10px",
                   top: "50%",
                   transform: "translateY(-50%)",
                   background: "transparent",
@@ -460,7 +485,7 @@ export default function FaqPage() {
                   color: "#94A3B8",
                   cursor: "pointer",
                   fontSize: "1rem",
-                  padding: "4px"
+                  padding: "2px"
                 }}
               >
                 &times;
@@ -468,107 +493,243 @@ export default function FaqPage() {
             )}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.82rem", fontFamily: "var(--font-mono, monospace)" }}>
-            <button
-              onClick={expandAll}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#00E5FF",
-                cursor: "pointer",
-                fontWeight: 700,
-                padding: "4px 8px"
-              }}
-            >
-              Expand All
-            </button>
-            <span style={{ color: "#334155" }}>&bull;</span>
-            <button
-              onClick={collapseAll}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#94A3B8",
-                cursor: "pointer",
-                fontWeight: 700,
-                padding: "4px 8px"
-              }}
-            >
-              Collapse All
-            </button>
-          </div>
-        </div>
-
-      </header>
-
-      {/* ── TABLE OF CONTENTS OUTLINE DIRECTORY ─────────────────────────────── */}
-      {!searchQuery && (
-        <nav 
-          aria-label="FAQ Outline Directory"
-          style={{
-            background: "rgba(10, 15, 26, 0.6)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "12px",
-            padding: "1.25rem 1.5rem",
-            marginBottom: "3.5rem"
-          }}
-        >
+          {/* TOOLBAR CONTROLS */}
           <div style={{
-            fontSize: "0.75rem",
-            fontFamily: "var(--font-mono, monospace)",
-            fontWeight: 800,
-            color: "#64748B",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            marginBottom: "0.75rem"
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingBottom: "0.75rem",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+            fontSize: "0.78rem",
+            fontFamily: "var(--font-mono, monospace)"
           }}>
-            OUTLINE DIRECTORY
-          </div>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
-            gap: "0.75rem"
-          }}>
-            {OUTLINE_SECTIONS.map((sec) => (
-              <a
-                key={sec.id}
-                href={`#section-${sec.id}`}
+            <span style={{ color: "#64748B" }}>
+              {totalVisibleCount} {totalVisibleCount === 1 ? "entry" : "entries"}
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <button
+                onClick={expandAll}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "8px 12px",
-                  background: "rgba(255, 255, 255, 0.02)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
-                  borderRadius: "6px",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease"
+                  background: "transparent",
+                  border: "none",
+                  color: "#00E5FF",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  fontSize: "0.76rem",
+                  padding: 0
                 }}
               >
-                <span style={{
-                  fontFamily: "var(--font-mono, monospace)",
-                  fontWeight: 800,
-                  fontSize: "0.85rem",
-                  color: "#00E5FF"
-                }}>
-                  {sec.number}
-                </span>
-                <span style={{
-                  color: "#E2E8F0",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis"
-                }}>
-                  {sec.title}
-                </span>
-              </a>
-            ))}
+                Expand
+              </button>
+              <span style={{ color: "#334155" }}>&bull;</span>
+              <button
+                onClick={collapseAll}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#94A3B8",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  fontSize: "0.76rem",
+                  padding: 0
+                }}
+              >
+                Collapse
+              </button>
+            </div>
           </div>
-        </nav>
-      )}
+
+          {/* TABLE OF CONTENTS OUTLINE */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{
+              fontSize: "0.7rem",
+              fontWeight: 800,
+              color: "#64748B",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em"
+            }}>
+              Table of Contents
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {sectionsWithItems.map((sec) => (
+                <div key={sec.id} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <a
+                    href={`#section-${sec.id}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "8px 10px",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      borderRadius: "6px",
+                      textDecoration: "none",
+                      color: "#E2E8F0",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                      <span style={{
+                        fontFamily: "var(--font-mono, monospace)",
+                        fontWeight: 800,
+                        fontSize: "0.82rem",
+                        color: "#00E5FF",
+                        flexShrink: 0
+                      }}>
+                        {sec.number}
+                      </span>
+                      <span style={{
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }}>
+                        {sec.title}
+                      </span>
+                    </div>
+                    <span style={{
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontSize: "0.7rem",
+                      color: "#64748B",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      padding: "1px 6px",
+                      borderRadius: "4px"
+                    }}>
+                      {sec.items.length}
+                    </span>
+                  </a>
+
+                  {/* Sub-item question list */}
+                  {sec.items.length > 0 && (
+                    <div style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "2px",
+                      marginLeft: "14px",
+                      paddingLeft: "8px",
+                      borderLeft: "2px solid rgba(0, 229, 255, 0.2)",
+                      marginTop: "2px",
+                      marginBottom: "4px"
+                    }}>
+                      {sec.items.map((faq, itemIdx) => {
+                        const qNum = `${sec.number.split(".")[0]}.${itemIdx + 1}`;
+                        const isItemExpanded = !!expandedItems[faq.id];
+                        return (
+                          <button
+                            key={faq.id}
+                            onClick={() => {
+                              setExpandedItems(prev => ({ ...prev, [faq.id]: true }));
+                              const el = document.getElementById(`faq-${faq.id}`);
+                              if (el) {
+                                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                              }
+                            }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              padding: "4px 6px",
+                              background: isItemExpanded ? "rgba(0, 229, 255, 0.08)" : "transparent",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              width: "100%",
+                              color: isItemExpanded ? "#FFFFFF" : "#94A3B8",
+                              fontSize: "0.75rem",
+                              transition: "all 0.12s ease"
+                            }}
+                          >
+                            <span style={{
+                              fontFamily: "var(--font-mono, monospace)",
+                              fontSize: "0.7rem",
+                              color: isItemExpanded ? "#00E5FF" : "#64748B",
+                              flexShrink: 0
+                            }}>
+                              {qNum}
+                            </span>
+                            <span style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              flex: 1
+                            }}>
+                              {faq.question}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* QUICK LINKS SECTION */}
+          <div style={{
+            marginTop: "auto",
+            paddingTop: "1rem",
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px"
+          }}>
+            <div style={{
+              fontSize: "0.7rem",
+              fontWeight: 800,
+              color: "#64748B",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              marginBottom: "0.25rem"
+            }}>
+              Quick Reference
+            </div>
+            <Link
+              href="/wiki"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "7px 10px",
+                borderRadius: "6px",
+                fontSize: "0.78rem",
+                color: "#94A3B8",
+                textDecoration: "none",
+                background: "rgba(255, 255, 255, 0.03)",
+                border: "1px solid rgba(255, 255, 255, 0.06)",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <span>Research Wiki &amp; Labs</span>
+              <ArrowRight size={13} />
+            </Link>
+            <Link
+              href="/account/subscription"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "7px 10px",
+                borderRadius: "6px",
+                fontSize: "0.78rem",
+                color: "#94A3B8",
+                textDecoration: "none",
+                background: "rgba(255, 255, 255, 0.03)",
+                border: "1px solid rgba(255, 255, 255, 0.06)",
+                transition: "all 0.15s ease"
+              }}
+            >
+              <span>Platform Plans ($100/mo)</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        </aside>
+
+        {/* ── MAIN CONTENT AREA ────────────────────────────────────────────────── */}
+        <main style={{ flex: 1, minWidth: 0 }}>
 
       {/* ── OUTLINE SECTIONS ────────────────────────────────────────────────── */}
       {totalVisibleCount === 0 ? (
@@ -664,7 +825,9 @@ export default function FaqPage() {
                     return (
                       <article
                         key={faq.id}
+                        id={`faq-${faq.id}`}
                         style={{
+                          scrollMarginTop: "90px",
                           background: isExpanded ? "rgba(15, 23, 42, 0.75)" : "rgba(10, 15, 26, 0.5)",
                           border: isExpanded ? "1px solid rgba(0, 229, 255, 0.3)" : "1px solid rgba(255, 255, 255, 0.06)",
                           borderRadius: "10px",
@@ -762,7 +925,10 @@ export default function FaqPage() {
           })}
         </div>
       )}
+        </main>
+      </div>
 
+      <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "0 1.5rem 6rem 1.5rem" }}>
       {/* ── FOOTER CALLOUT ──────────────────────────────────────────────────── */}
       <footer style={{
         marginTop: "5rem",
@@ -879,6 +1045,7 @@ export default function FaqPage() {
         </Link>
       </div>
 
+      </div>
     </div>
   );
 }
