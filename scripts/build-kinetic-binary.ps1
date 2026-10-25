@@ -11,6 +11,14 @@ Write-Host "==========================================================" -Foregro
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
+# 0. Pre-Flight Runtime Security & EOL Lifecycle Audit
+Write-Host "[0/4] Auditing Python Build Runtime Security & EOL Status..." -ForegroundColor Cyan
+python scripts/verify-python-runtime.py
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "CRITICAL: Python runtime security audit failed! Halting build."
+    exit 1
+}
+
 New-Item -ItemType Directory -Force -Path "bin/dist", "public/downloads/kinetic" | Out-Null
 
 # 1. Build Multi-Arch Standalone Universal Zipapp (Compiled Bytecode)

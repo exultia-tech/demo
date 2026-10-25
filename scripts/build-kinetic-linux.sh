@@ -9,6 +9,9 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_VENV="/tmp/kinetic-build-venv"
 BUILD_WORK="/tmp/pyinstaller-build"
 
+echo "[0/4] Auditing Python Build Runtime Security & EOL Status..."
+python3 "$REPO_ROOT/scripts/verify-python-runtime.py"
+
 echo "[1/4] Preparing isolated Linux build virtualenv..."
 if [ ! -d "$BUILD_VENV" ]; then
     python3 -m venv "$BUILD_VENV"

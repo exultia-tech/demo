@@ -20,6 +20,15 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Setup Python Runtime (Floating Security Patches)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          check-latest: true
+
+      - name: Audit Python Runtime & EOL Lifecycle Gate
+        run: python scripts/verify-python-runtime.py
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 

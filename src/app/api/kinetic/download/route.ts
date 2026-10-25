@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
           file: 'kinetic',
           url: '/api/kinetic/download?platform=linux',
           format: 'ELF 64-bit Standalone Native Binary (PyInstaller)',
-          sha256: '4a20cf67998f31c8f5ca3a0007e34d85383ff9beb23018d0d338c393296ae002'
+          sha256: '18e836c85c1af06becef9161a5e66a99bb7efea35bcfa5234c67c56f3c7bd5c6'
         },
         windows_amd64: {
           file: 'kinetic.exe',
