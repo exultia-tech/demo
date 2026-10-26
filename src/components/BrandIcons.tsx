@@ -1089,5 +1089,103 @@ export function ExultiaLinuxIcon({
   );
 }
 
+/**
+ * Daedelus Sovereign Developer Suite Emblem
+ * An intricate geometric labyrinth and architectural wing motif,
+ * symbolizing mathematical zero-trust isolation and clean-room supply chain escape.
+ */
+export function DaedelusIcon({ size = 48, className = "", glow = false }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{
+        filter: glow ? "drop-shadow(0 0 14px rgba(16, 185, 129, 0.55)) drop-shadow(0 0 24px rgba(6, 182, 212, 0.35))" : "none",
+        flexShrink: 0
+      }}
+    >
+      <defs>
+        <linearGradient id="daedelus-outer-grad" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#22D3EE" />
+          <stop offset="50%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#059669" />
+        </linearGradient>
+        <linearGradient id="daedelus-wing-grad" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#67E8F9" />
+          <stop offset="100%" stopColor="#34D399" />
+        </linearGradient>
+        <linearGradient id="daedelus-core-grad" x1="20" y1="20" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#A7F3D0" />
+        </linearGradient>
+      </defs>
+
+      {/* Hexagonal Labyrinth Boundary */}
+      <polygon
+        points="24,4 41,13.8 41,34.2 24,44 7,34.2 7,13.8"
+        fill="#04121F"
+        stroke="url(#daedelus-outer-grad)"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+
+      {/* Concentric Labyrinth Rings (Zero-Bypass Architecture) */}
+      <polygon
+        points="24,9 37,16.5 37,31.5 24,39 11,31.5 11,16.5"
+        fill="rgba(6, 182, 212, 0.08)"
+        stroke="#22D3EE"
+        strokeWidth="1.2"
+        strokeDasharray="4 2.5"
+        strokeLinejoin="round"
+      />
+
+      {/* Daedalus Architectural Wings (Escape from Supply Chain Entrapment) */}
+      {/* Left Wing */}
+      <path
+        d="M 12 28 L 18 19 L 24 24 L 18 29 Z"
+        fill="rgba(16, 185, 129, 0.25)"
+        stroke="url(#daedelus-wing-grad)"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      {/* Right Wing */}
+      <path
+        d="M 36 28 L 30 19 L 24 24 L 30 29 Z"
+        fill="rgba(6, 182, 212, 0.25)"
+        stroke="url(#daedelus-wing-grad)"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+
+      {/* Upper Wings Elevation */}
+      <path
+        d="M 24 12 L 20 18 L 24 22 L 28 18 Z"
+        fill="rgba(52, 211, 153, 0.3)"
+        stroke="#34D399"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+
+      {/* Labyrinth Ingress Portals / Cryptographic Gateways */}
+      <circle cx="24" cy="4" r="2" fill="#67E8F9" />
+      <circle cx="41" cy="13.8" r="2" fill="#34D399" />
+      <circle cx="41" cy="34.2" r="2" fill="#10B981" />
+      <circle cx="24" cy="44" r="2" fill="#059669" />
+      <circle cx="7" cy="34.2" r="2" fill="#10B981" />
+      <circle cx="7" cy="13.8" r="2" fill="#34D399" />
+
+      {/* Central Sanctum / Clean-Room Crucible */}
+      <circle cx="24" cy="24" r="4.5" fill="url(#daedelus-core-grad)" />
+      <circle cx="24" cy="24" r="2" fill="#04121F" />
+      <circle cx="24" cy="24" r="0.8" fill="#34D399" />
+    </svg>
+  );
+}
+
+
 
 

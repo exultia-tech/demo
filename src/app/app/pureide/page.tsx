@@ -2297,14 +2297,14 @@ build_hardened_ide:
             )}
           </button>
           <Link
-            href="/products/pure-catalog"
+            href="/products/daedelus"
             target="_blank"
             className="console-sidebar-item"
-            title="Pure Package Catalog (Zero-CVE Packages)"
+            title="Daedelus Clean-Room Artifacts (Zero-CVE Packages & Blueprints)"
             style={{ textDecoration: 'none' }}
           >
             <span style={{ fontSize: '1rem', lineHeight: 1 }}>🛡️</span>
-            {!sidebarCollapsed && <span>Zero-CVE Catalog</span>}
+            {!sidebarCollapsed && <span>Daedelus Artifacts</span>}
             {!sidebarCollapsed && (
               <span className="console-sidebar-badge" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', borderColor: 'rgba(16, 185, 129, 0.4)' }}>0 CVE</span>
             )}

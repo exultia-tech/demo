@@ -80,6 +80,8 @@ export default function Navbar() {
   // Determine subnav contexts
   const isSecureIdeContext = !isIsolated && (
     pathname === "/app/pureide" || 
+    pathname === "/app/daedelus" ||
+    pathname.startsWith("/products/daedelus") ||
     pathname.startsWith("/products/pure-ide") || 
     pathname.startsWith("/products/pure-catalog") ||
     pathname.startsWith("/docs") ||
@@ -263,9 +265,9 @@ export default function Navbar() {
                         8 interconnected sovereign defense engines &amp; platforms
                       </div>
                     </div>
-                    {/* PRODUCT 1: PUREIDE */}
+                    {/* PRODUCT 1: DAEDELUS (SOVEREIGN IDE & ZERO-CVE CATALOG) */}
                     <Link 
-                      href="/products/pure-ide" 
+                      href="/products/daedelus" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
@@ -275,7 +277,7 @@ export default function Navbar() {
                         borderRadius: "10px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isSecureIdeContext ? "rgba(59, 130, 246, 0.15)" : "transparent"
+                        background: (pathname.startsWith("/products/daedelus") || isSecureIdeContext) ? "rgba(59, 130, 246, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
@@ -283,8 +285,11 @@ export default function Navbar() {
                         <PureIdeIcon size={32} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureIDE</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Zero-trust developer workstation compiler</div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Daedelus
+                          <span style={{ fontSize: "0.6rem", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", border: "1px solid rgba(59, 130, 246, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>DEV PLATFORM</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Sovereign air-gapped IDEs &amp; Zero-CVE negative-admission catalog</div>
                       </div>
                     </Link>
 
@@ -849,31 +854,31 @@ export default function Navbar() {
             <div className="product-submenu-group">
               <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <PureIdeIcon size={16} glow={false} />
-                PureIDE
+                Daedelus
               </span>
 
               <Link 
-                href="/products/pure-ide" 
-                className={`submenu-link ${pathname === "/products/pure-ide" || pathname === "/products/secure-ide" ? "active-blue" : ""}`}>
-                Overview & Features
+                href="/products/daedelus" 
+                className={`submenu-link ${pathname === "/products/daedelus" || pathname === "/products/pure-ide" ? "active-blue" : ""}`}>
+                Platform Overview
+              </Link>
+              <Link 
+                href="/products/daedelus?tab=catalog" 
+                className={`submenu-link ${pathname === "/products/pure-catalog" ? "active-emerald" : ""}`}
+                style={{ fontWeight: 600, color: "#34D399" }}>
+                Zero-CVE Catalog
+              </Link>
+              <Link 
+                href="/app/pureide" 
+                className={`submenu-link ${pathname === "/app/pureide" || pathname === "/app/daedelus" ? "active-blue" : ""}`}
+                style={{ fontWeight: 600 }}>
+                Builder Console
               </Link>
               <Link 
                 href="/account/subscription?product=pureide" 
                 className="submenu-link"
                 style={{ color: "#93C5FD", fontWeight: 700 }}>
-                Plans & Pricing
-              </Link>
-              <Link 
-                href="/app/pureide" 
-                className={`submenu-link ${pathname === "/app/pureide" ? "active-blue" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Builder Console
-              </Link>
-              <Link 
-                href="/products/pure-catalog" 
-                className={`submenu-link ${pathname === "/products/pure-catalog" ? "active-emerald" : ""}`}
-                style={{ fontWeight: 600, color: "#34D399" }}>
-                Zero-CVE Catalog
+                Plans &amp; Pricing
               </Link>
             </div>
           )}
