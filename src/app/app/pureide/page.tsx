@@ -2296,6 +2296,19 @@ build_hardened_ide:
               <span className="console-sidebar-badge" suppressHydrationWarning>{blueprints.length + customBlueprints.length}</span>
             )}
           </button>
+          <Link
+            href="/products/pure-catalog"
+            target="_blank"
+            className="console-sidebar-item"
+            title="Pure Package Catalog (Zero-CVE Packages)"
+            style={{ textDecoration: 'none' }}
+          >
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🛡️</span>
+            {!sidebarCollapsed && <span>Zero-CVE Catalog</span>}
+            {!sidebarCollapsed && (
+              <span className="console-sidebar-badge" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', borderColor: 'rgba(16, 185, 129, 0.4)' }}>0 CVE</span>
+            )}
+          </Link>
         </div>
 
         {/* Group 2: Hardening & Brand */}
