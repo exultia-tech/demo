@@ -21,6 +21,7 @@ import {
   Layers,
   ArrowRight
 } from "lucide-react";
+import SelfHealingSimulator from "@/components/research/SelfHealingSimulator";
 import { CATALOG_PACKAGES, PurePackage } from "@/app/api/pure-catalog/packages/route";
 
 export default function PureCatalogClientView() {
@@ -521,6 +522,11 @@ export default function PureCatalogClientView() {
             );
           })}
         </div>
+      </section>
+
+      {/* ── SECTION 2.5: AUTONOMOUS RETROACTIVE INVALDATION & RE-SYNTHESIS ────── */}
+      <section style={{ marginBottom: "5rem" }}>
+        <SelfHealingSimulator />
       </section>
 
       {/* ── SECTION 3: PROXY INTEGRATION MATRIX (HOW TO POINT TOOLS) ──────────── */}

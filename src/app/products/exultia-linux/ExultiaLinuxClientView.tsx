@@ -26,6 +26,7 @@ import {
   Clock,
   ArrowRight
 } from "lucide-react";
+import SelfHealingSimulator from "@/components/research/SelfHealingSimulator";
 
 export default function ExultiaLinuxClientView() {
   const [flavorTab, setFlavorTab] = useState<"nixos" | "bsd" | "debian" | "alpine" | "silverblue">("nixos");
@@ -316,7 +317,28 @@ export default function ExultiaLinuxClientView() {
             </p>
           </div>
 
+          {/* Pillar 7: Autonomous Self-Healing & Next-Best Version Re-Synthesis */}
+          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(16, 185, 129, 0.35)", background: "rgba(16, 185, 129, 0.04)", gridColumn: "1 / -1" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
+              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.2)", color: "#34D399" }}>
+                <RefreshCw size={24} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Autonomous Vulnerability Eviction & Next-Best Version Re-Synthesis</h3>
+                <span style={{ fontSize: "0.78rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Zero-Day Self-Healing Guarantee</span>
+              </div>
+            </div>
+            <p style={{ color: "#CBD5E1", fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>
+              The moment an installed package is identified in a new zero-day disclosure, Exultia Linux does not wait for a maintenance window. The OS immediately strips execution bits (<code>chmod 0000</code>), queries its constraint solver for the <strong>Next-Best Non-Vulnerable Candidate</strong> (official patch or clean historical stable), verifies strict ELF soname ABI compatibility, and activates the new generation in <strong>&lt;50ms with 0 dropped sockets</strong>.
+            </p>
+          </div>
+
         </div>
+      </section>
+
+      {/* ── SECTION 2.5: LIVE AUTONOMOUS SELF-HEALING SIMULATOR ────────────────── */}
+      <section style={{ marginBottom: "5rem" }}>
+        <SelfHealingSimulator />
       </section>
 
       {/* ── SECTION 3: HEAD-TO-HEAD COMPARISON TABLE ──────────────────────────── */}
@@ -394,13 +416,21 @@ export default function ExultiaLinuxClientView() {
                 <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Roll back image tag (10–30s)</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Manual snapshot / recovery (Hours)</td>
               </tr>
-              <tr>
+              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
                 <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Continuous Audit</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
                   Native Trivy Timer &bull; 0 Findings Certified
                 </td>
                 <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Pre-baked CIS &amp; SBOM manifest</td>
                 <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Stale quarterly point-in-time scans</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Zero-Day Disclosure Response</td>
+                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
+                  Autonomous Self-Correction: Taints binary, solves next-best clean candidate, verifies ABI &amp; swaps profile in &lt;50ms (0 dropped sockets)
+                </td>
+                <td style={{ padding: "1rem 1.5rem", color: "#FBBF24" }}>CI pipeline rebuilds image tag; rolling container restart drops active sockets</td>
+                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Manual emergency patching; vulnerable for days/weeks awaiting vendor packages</td>
               </tr>
             </tbody>
           </table>

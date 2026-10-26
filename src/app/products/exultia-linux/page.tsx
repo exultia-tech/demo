@@ -7,7 +7,7 @@ import ExultiaLinuxClientView from "./ExultiaLinuxClientView";
 export const metadata: Metadata = {
   title: "Exultia Linux | Sovereign Declarative Operating System",
   description:
-    "The official sovereign Linux operating system with continuous autonomous threat remediation, zero-downtime hotpatching, and guaranteed sub-50ms atomic rollbacks.",
+    "The official sovereign Linux operating system with continuous autonomous vulnerability self-correction, retroactive package eviction & next-best clean re-synthesis, zero-downtime hotpatching, and guaranteed sub-50ms atomic rollbacks.",
 };
 
 export default function ExultiaLinuxProductPage() {
