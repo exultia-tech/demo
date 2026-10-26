@@ -54,7 +54,7 @@ const BLUEPRINTS: Blueprint[] = [
     memoryQuota: "8 GB RAM / 4 vCPU",
     securityProfile: "Strict Air-Gapped",
     extensions: ["rust-analyzer", "crates", "tombi", "lldb-dap"],
-    command: "daedelus launch ws:rust-systems-enclave"
+    command: "dae launch ws:rust-systems-enclave"
   },
   {
     id: "bp-go-microservices",
@@ -65,7 +65,7 @@ const BLUEPRINTS: Blueprint[] = [
     memoryQuota: "4 GB RAM / 2 vCPU",
     securityProfile: "Isolated Proxy",
     extensions: ["golang.go", "docker", "buf", "proto"],
-    command: "daedelus launch ws:go-cloud-native"
+    command: "dae launch ws:go-cloud-native"
   },
   {
     id: "bp-python-secops",
@@ -76,7 +76,7 @@ const BLUEPRINTS: Blueprint[] = [
     memoryQuota: "16 GB RAM / 8 vCPU",
     securityProfile: "Hardware Enclave",
     extensions: ["ms-python.python", "charliermarsh.ruff", "jupyter"],
-    command: "daedelus launch ws:python-confidential"
+    command: "dae launch ws:python-confidential"
   },
   {
     id: "bp-cpp-embedded",
@@ -87,7 +87,7 @@ const BLUEPRINTS: Blueprint[] = [
     memoryQuota: "8 GB RAM / 4 vCPU",
     securityProfile: "Strict Air-Gapped",
     extensions: ["llvm-vs-code-extensions.vscode-clangd", "cmake-tools"],
-    command: "daedelus launch ws:cpp-hardened"
+    command: "dae launch ws:cpp-hardened"
   },
   {
     id: "bp-node-secure",
@@ -98,7 +98,7 @@ const BLUEPRINTS: Blueprint[] = [
     memoryQuota: "4 GB RAM / 2 vCPU",
     securityProfile: "Isolated Proxy",
     extensions: ["biomejs.biome", "typescript-next", "tailwind-intellisense"],
-    command: "daedelus launch ws:node-cleanroom"
+    command: "dae launch ws:node-cleanroom"
   }
 ];
 
@@ -123,7 +123,7 @@ const CONTAINERS: OciContainer[] = [
     cveDisclosed: 0,
     baseArch: "multi-arch",
     description: "Pure runtime scratch container without package manager or shell. Stripped glibc, CA certs, and tzdata only.",
-    pullCommand: "daedelus pull oci:registry.exultia.tech/daedelus/base-distroless:2026.1",
+    pullCommand: "dae pull oci:registry.exultia.tech/daedelus/base-distroless:2026.1",
     digest: "sha256:7e91a20f9c2d1b827364501a349bc9aef7c11a8"
   },
   {
@@ -134,7 +134,7 @@ const CONTAINERS: OciContainer[] = [
     cveDisclosed: 0,
     baseArch: "multi-arch",
     description: "Zero-dependency static container base for pure Go and Rust binaries. Highest possible attack surface reduction.",
-    pullCommand: "daedelus pull oci:registry.exultia.tech/daedelus/static-scratch:latest",
+    pullCommand: "dae pull oci:registry.exultia.tech/daedelus/static-scratch:latest",
     digest: "sha256:3a180cf91a74d420f18821035b8014a93c9d12f"
   },
   {
@@ -145,7 +145,7 @@ const CONTAINERS: OciContainer[] = [
     cveDisclosed: 0,
     baseArch: "multi-arch",
     description: "Pre-hardened Node.js 20 LTS runtime with V8 sandbox flags enabled, no npm CLI, and read-only rootfs.",
-    pullCommand: "daedelus pull oci:registry.exultia.tech/daedelus/node-runtime:20.14-distroless",
+    pullCommand: "dae pull oci:registry.exultia.tech/daedelus/node-runtime:20.14-distroless",
     digest: "sha256:4d872a901844b2049182377bce981cba90124fe"
   },
   {
@@ -156,7 +156,7 @@ const CONTAINERS: OciContainer[] = [
     cveDisclosed: 0,
     baseArch: "multi-arch",
     description: "CPython 3.11 with bytecode pre-compiled, stripped tests/tk/idlelib, and hardened memory allocator (scudo).",
-    pullCommand: "daedelus pull oci:registry.exultia.tech/daedelus/python-minimal:3.11-hardened",
+    pullCommand: "dae pull oci:registry.exultia.tech/daedelus/python-minimal:3.11-hardened",
     digest: "sha256:8b0124fc69830da019842f1b402839a9cba801a"
   }
 ];
