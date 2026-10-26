@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 
 export default function ExultiaLinuxClientView() {
+  const [flavorTab, setFlavorTab] = useState<"nixos" | "bsd" | "debian" | "alpine" | "silverblue">("nixos");
   const [terminalTab, setTerminalTab] = useState<"status" | "hotfix" | "rollback" | "audit">("status");
   const [deployTab, setDeployTab] = useState<"qcow2" | "iso" | "flake" | "cloud">("qcow2");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -406,7 +407,373 @@ export default function ExultiaLinuxClientView() {
         </div>
       </section>
 
-      {/* ── SECTION 4: DEPLOYMENT & ARTIFACT DOWNLOADS ─────────────────────────── */}
+      {/* ── SECTION 4: HARDENED DERIVATIVE DISTRIBUTIONS ──────────────────────── */}
+      <section style={{ marginBottom: "5rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(139, 92, 246, 0.12)", border: "1px solid rgba(139, 92, 246, 0.35)", padding: "4px 14px", borderRadius: "999px", marginBottom: "1rem" }}>
+            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#A78BFA" }} />
+            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", fontWeight: 700, color: "#DDD6FE", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Multi-Architecture Family • Best-Practice Hardened
+            </span>
+          </div>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+            The Exultia Sovereign Derivatives
+          </h2>
+          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "780px", margin: "0 auto" }}>
+            Tailored derivative distributions engineered to the strictest security conventions of OpenBSD, Debian, Alpine, and Fedora Silverblue. All flavors interface natively with the central Vantage Threat Intelligence Feed.
+          </p>
+        </div>
+
+        {/* Derivative Selector Nav */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
+          <button
+            onClick={() => setFlavorTab("nixos")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              background: flavorTab === "nixos" ? "rgba(6, 182, 212, 0.2)" : "rgba(255, 255, 255, 0.04)",
+              border: flavorTab === "nixos" ? "1px solid #06B6D4" : "1px solid rgba(255, 255, 255, 0.1)",
+              color: flavorTab === "nixos" ? "#22D3EE" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>❄️</span> Exultia NixOS (Flagship)
+          </button>
+          <button
+            onClick={() => setFlavorTab("bsd")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              background: flavorTab === "bsd" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.04)",
+              border: flavorTab === "bsd" ? "1px solid #F59E0B" : "1px solid rgba(255, 255, 255, 0.1)",
+              color: flavorTab === "bsd" ? "#FBBF24" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>🐡</span> Exultia BSD (OpenBSD Fortress)
+          </button>
+          <button
+            onClick={() => setFlavorTab("debian")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              background: flavorTab === "debian" ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.04)",
+              border: flavorTab === "debian" ? "1px solid #EF4444" : "1px solid rgba(255, 255, 255, 0.1)",
+              color: flavorTab === "debian" ? "#F87171" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>🌀</span> Exultia Debian (LTS Workhorse)
+          </button>
+          <button
+            onClick={() => setFlavorTab("alpine")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              background: flavorTab === "alpine" ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.04)",
+              border: flavorTab === "alpine" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.1)",
+              color: flavorTab === "alpine" ? "#34D399" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>🏔️</span> Exultia Alpine (MicroVM &amp; Edge)
+          </button>
+          <button
+            onClick={() => setFlavorTab("silverblue")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              background: flavorTab === "silverblue" ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.04)",
+              border: flavorTab === "silverblue" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
+              color: flavorTab === "silverblue" ? "#60A5FA" : "#94A3B8",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <span>🔷</span> Exultia Silverblue (Atomic OSTree)
+          </button>
+        </div>
+
+        {/* Flavor Details Container */}
+        <div style={{
+          background: "rgba(10, 16, 30, 0.85)",
+          borderRadius: "18px",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          padding: "2rem",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
+        }}>
+          {/* 1. NIXOS */}
+          {flavorTab === "nixos" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#22D3EE", fontWeight: 800, textTransform: "uppercase" }}>
+                    Flagship Sovereign OS &bull; NixOS 24.05 Base
+                  </div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
+                    Exultia Linux (Declarative Immutable)
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                    Target: Enterprise Sovereign Datacenters, Bare-Metal Clouds, and Air-Gapped Clusters.
+                  </p>
+                </div>
+                <div style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#67E8F9", fontFamily: "var(--font-mono, monospace)" }}>
+                  SLA: &lt;50ms Deterministic Rollback
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Kernel Security</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>linuxPackages_hardened</code>, <code>security.protectKernelImage = true;</code>, <code>security.unprivilegedUsernsClone = false;</code>, and <code>security.forcePageTableIsolation = true;</code>.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Access &amp; Sandboxing</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>users.mutableUsers = false;</code> prevents runtime account tampering. <code>security.apparmor.killUnconfined = true;</code> guarantees strict confinement.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Declarative Firewall</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>networking.firewall.enable = true;</code> with strictly defined ports <code>[ 22 443 ]</code>. Automated store GC via <code>nix.gc.automatic = true;</code>.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Vantage Threat Integration</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>services.exultia.vantage.endpoint</code> synchronizes 110+ registries every 15m. In-memory Kinetic hotpatching executes in ~300ms with 0 dropped sockets.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. OPENBSD */}
+          {flavorTab === "bsd" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#FBBF24", fontWeight: 800, textTransform: "uppercase" }}>
+                    Fortress Edition &bull; OpenBSD 7.5+ Base
+                  </div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
+                    Exultia BSD (Formal Verification &amp; W^X)
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                    Target: Air-Gapped Gateway Firewalls, High-Consequence Bastions, and Cryptographic Signing Anchors.
+                  </p>
+                </div>
+                <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#FBBF24", fontFamily: "var(--font-mono, monospace)" }}>
+                  Security: 100% Strict W^X &bull; KARL Dynamic Link
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Dynamic KARL &amp; W^X</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Kernel Address Randomized Link rebuilds unique kernel binary on every boot. <code>wxallowed</code> stripped from <code>/usr/local</code> in <code>/etc/fstab</code>.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Packet Filter (block return)</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>/etc/pf.conf</code> enforces <code>set block-policy return</code> and <code>block return all</code> for clean rejections. Synproxy and anti-spoofing quick rules.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Scoped doas &amp; Zero Daemons</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>sudo</code> prohibited; <code>/etc/doas.conf</code> strictly scopes commands to <code>/sbin/pfctl</code>. Unneeded daemons disabled (<code>smtpd</code>, <code>sndiod</code>, <code>resolvd</code>).
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Vantage pf Anchor Sentinel</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>/etc/rc.d/vantage_sentinel</code> injects dynamic blocklists into <code>anchor &quot;vantage/*&quot;</code> and verifies base binary SHA-256 integrity checksums.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3. DEBIAN */}
+          {flavorTab === "debian" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#F87171", fontWeight: 800, textTransform: "uppercase" }}>
+                    Enterprise LTS Edition &bull; Debian 12 (Bookworm)
+                  </div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
+                    Exultia Debian (Datacenter Workhorse)
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                    Target: Enterprise Application Servers, Clustered Databases, and Legacy Migration Fleets.
+                  </p>
+                </div>
+                <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#F87171", fontFamily: "var(--font-mono, monospace)" }}>
+                  Compliance: CIS Level 2 &bull; AppArmor Enforced
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ AppArmor Enforce Mode</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>apparmor</code> and <code>apparmor-profiles</code> locked down with <code>aa-enforce</code> across all critical network services instead of complain mode.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚙️ Hardened Sysctl Parameters</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>net.ipv4.tcp_syncookies = 1</code>, <code>net.ipv4.ip_forward = 0</code>, ICMP redirects disabled, YAMA ptrace scope 3, and protected FIFOs/symlinks.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 PAM &amp; Service Pruning</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>libpam-tmpdir</code> for user isolation, <code>libpam-pwquality</code> for entropy, and masking of legacy services (<code>avahi-daemon</code>, <code>rpcbind</code>, <code>bluetooth</code>).
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ UFW Firewall &amp; Vantage Hotpatch</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Default deny in/out, <code>ufw limit ssh</code>. <code>vantage-kinetic.service</code> applies eBPF in-memory hotpatches with zero TCP drops and &lt;50ms rollback SLA.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 4. ALPINE */}
+          {flavorTab === "alpine" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#34D399", fontWeight: 800, textTransform: "uppercase" }}>
+                    MicroVM &amp; Edge Edition &bull; Alpine 3.20 (musl)
+                  </div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
+                    Exultia Alpine (Hyper-Minimal Sentinel)
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                    Target: Cloud-Native MicroVMs (Firecracker / QEMU), Container Hosts, and Resource-Constrained Edge Appliances.
+                  </p>
+                </div>
+                <div style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#34D399", fontFamily: "var(--font-mono, monospace)" }}>
+                  Footprint: &lt;20MB RAM &bull; Boot &lt;50ms
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Linux Hardened Kernel</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Default kernel swapped for <code>linux-hardened</code> package with strict memory bounds, musl stack canaries, and 100% PIE enforcement.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Alpine Wall (awall)</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Declarative JSON policy with default <code>DROP</code> for both inbound and outbound traffic, strictly whitelisting required management ports.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Mounts &amp; SSH Lockdown</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>/tmp</code>, <code>/var/tmp</code>, and <code>/dev/shm</code> mounted with <code>nodev, nosuid, noexec</code>. <code>sshd_config</code> enforces <code>PermitRootLogin no</code> and <code>PasswordAuthentication no</code>.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Minimized lbu &amp; Vantage Agent</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    <code>lbu</code> backup scope strictly minimized to prevent credential leakage in <code>.apkovl</code>. Resident musl-compiled Vantage agent requires &lt;8MB RAM.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5. SILVERBLUE */}
+          {flavorTab === "silverblue" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#60A5FA", fontWeight: 800, textTransform: "uppercase" }}>
+                    Atomic OSTree Edition &bull; Fedora Silverblue &amp; CoreOS Base
+                  </div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
+                    Exultia Silverblue (Immutable Enclave)
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
+                    Target: Hardened Developer Workstations, Container Platforms, and Automated Ignition Clusters.
+                  </p>
+                </div>
+                <div style={{ background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#60A5FA", fontFamily: "var(--font-mono, monospace)" }}>
+                  Sysroot: Read-Only OSTree &bull; SELinux Enforcing
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Strict SELinux Enforcing</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Never downgraded to permissive. Custom <code>exultia_kinetic.te</code> Type Enforcement module enables eBPF hotpatching under full MAC confinement.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Zero OS Drift &amp; Rootless Podman</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Layered RPMs minimized; userland software confined to Flatpaks/containers. Rootful Docker daemon masked; all workloads execute rootless via Podman.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔑 Ignition &amp; TPM 2.0 LUKS</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    CoreOS Butane configuration provisions TPM 2.0 hardware encrypted LUKS root and locked root password natively on initial ignition boot.
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Drop-Zone firewalld &amp; Vantage</div>
+                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
+                    Primary interfaces bound to firewalld <code>drop</code> zone. <code>vantage-ostree-sentinel.service</code> inspects atomic commits and coordinates in-memory hotpatching.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── SECTION 5: DEPLOYMENT & ARTIFACT DOWNLOADS ─────────────────────────── */}
       <section id="deployment-options" style={{ marginBottom: "5rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
           <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
