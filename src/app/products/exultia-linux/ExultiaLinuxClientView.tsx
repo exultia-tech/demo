@@ -410,10 +410,10 @@ export default function ExultiaLinuxClientView() {
       <section id="deployment-options" style={{ marginBottom: "5rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
           <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            Deploy Exultia Linux
+            Download &amp; Deploy Exultia Linux (100% Free)
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "1rem" }}>
-            Select your preferred deployment target: Turnkey virtual appliance, bare-metal live ISO, or declarative Flake module.
+            Zero license fees. Zero node locks. Select your target: Turnkey virtual appliance, bare-metal live ISO, or declarative Flake module.
           </p>
         </div>
 
@@ -617,7 +617,7 @@ export default function ExultiaLinuxClientView() {
             Explore PureOS Containers →
           </Link>
           <Link href="/account/subscription" className="btn-primary" style={{ padding: "0.85rem 2rem", fontSize: "0.95rem" }}>
-            Get Fleet License →
+            Connect to Enterprise Fleet Stream ($100/mo) →
           </Link>
         </div>
       </section>

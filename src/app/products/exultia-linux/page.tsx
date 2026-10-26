@@ -20,7 +20,7 @@ export default function ExultiaLinuxProductPage() {
         <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "6px 16px", borderRadius: "999px", marginBottom: "1.75rem" }}>
           <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#22D3EE", boxShadow: "0 0 10px #22D3EE" }} />
           <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.82rem", fontWeight: 700, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            Sovereign OS • Kinetic™ Engine Native • Declarative Immutability
+            100% Free &amp; Open-Source OS • Kinetic™ Native • Declarative Immutability
           </span>
         </div>
 
@@ -38,8 +38,8 @@ export default function ExultiaLinuxProductPage() {
 
         {/* Subtitle */}
         <p className="hero-subtitle" style={{ maxWidth: "820px", margin: "0 auto 2.5rem auto", fontSize: "1.18rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
-          The sovereign, declarative operating system engineered for high-consequence enterprise infrastructure.
-          Built on a cryptographically immutable base, Exultia Linux continuously monitors its running workloads,
+          The sovereign, declarative operating system engineered for high-consequence enterprise infrastructure. 
+          <strong style={{ color: "#FFFFFF" }}> Free and open-source for humanity.</strong> Built on a cryptographically immutable base, Exultia Linux continuously monitors its running workloads,
           applies surgical zero-downtime hotfixes with <strong style={{ color: "#22D3EE" }}>sub-second runtime execution</strong>, and provides
           a guaranteed <strong style={{ color: "#34D399" }}>&lt;50ms deterministic rollback SLA</strong> with zero dropped TCP sockets.
         </p>
@@ -58,7 +58,7 @@ export default function ExultiaLinuxProductPage() {
               fontWeight: 700
             }}
           >
-            Deploy Virtual Appliance →
+            Download Free OS Image →
           </a>
           <a 
             href="#interactive-telemetry" 

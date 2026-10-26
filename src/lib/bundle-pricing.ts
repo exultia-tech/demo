@@ -52,50 +52,52 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
   {
     id: "community",
     name: "Community Sovereign",
-    tagline: "Open-source foundational cyber defense for researchers & solo developers",
+    tagline: "Free & open-source OS foundation for individuals, researchers & homelabs",
     priceMonthly: 0,
     priceAnnual: 0,
     annualBilledTotal: 0,
-    description: "Zero-cost baseline security telemetry, safe vulnerability probes, and local hermetic compiler.",
+    description: "100% Free & Open-Source Exultia Linux OS with local Kinetic hotpatching, community threat intelligence, and zero telemetry.",
     highlights: [
-      "Open access to 110+ vulnerability registries in Vantage",
+      "100% Free & Open-Source Exultia Linux OS (Bare-metal & microVMs)",
+      "Resident Kinetic™ local in-memory hotpatching daemon with zero socket drops",
+      "Immutable declarative /nix/store base with sub-50ms atomic rollback SLA",
+      "Open access to 110+ vulnerability registries in Vantage (Daily CVE sync)",
       "Safe non-destructive BAS banner probes in Valkyrie",
       "5 default chaos inoculation modules in Eris",
-      "Manual hotpatch inspection & verified rollback scripts in Praxis",
       "Zero-telemetry hermetic workstation compiler in PureIDE",
       "CIS-hardened baseline OCI container recipes in PureOS",
       "Full CompTIA Security+, CySA+, CC exam prep banks in Axiom"
     ],
     engineCapabilities: {
       vantage: "Public CVE search, CISA KEV feeds, and CVSS score breakdowns",
-      praxis: "Manual hotpatch verification and plain/JSON firewall block generators",
+      praxis: "Local hotpatch verification and plain/JSON firewall block generators",
       eris: "5 single-container chaos scenarios (Log4Shell, RegreSSHion, query injection)",
       valkyrie: "5 safe non-destructive banner & protocol handshake canary probes",
       pureide: "Single local developer seat with hermetic compiler and telemetry stripping",
       pureos: "Standard CIS baseline container images and public vulnerability scanners",
       axiom: "Complete exam question banks with instant in-browser score feedback"
     },
-    ctaLabel: "Get Started Free",
+    ctaLabel: "Download Free OS",
     isPopular: false
   },
   {
     id: "pro",
     name: "Professional Operator",
-    tagline: "Full closed-loop cyber sovereignty for solo security engineers & operators",
+    tagline: "Continuous autonomous threat intelligence stream & live managed hotpatches",
     badge: "MOST POPULAR",
     priceMonthly: 120,
     priceAnnual: 100,
     annualBilledTotal: 1200,
-    description: "Unlock all 7 engines in unison: automated threat detection, adversary emulation, proof probing, hotpatch remediation, and cryptographic attestation.",
+    description: "Funds continuous 24/7 zero-day research, dedicated microVM verification compute, and live autonomous hotpatch streaming.",
     highlights: [
-      "Real-time Vantage threat streams, zero-day warnings & 300 req/min API",
-      "Autonomous Praxis patch streaming daemon & sub-second rollbacks",
-      "Full 7+ CVE Eris chaos catalog & 5-container Docker attack range",
-      "Full 10+ Vantage CVE Valkyrie probes with SHA-256 attestation tokens",
-      "Isolated PureIDE cloud build runners & automated CycloneDX SBOMs",
+      "Real-time Vantage Zero-Day Priority Stream (110+ registries continuously parsed)",
+      "Autonomous Praxis patch streaming daemon: live in-memory host hotpatching in <350ms",
+      "Dedicated Eris & Valkyrie microVM proving grounds with HMAC attestation tokens",
+      "Automated CycloneDX SBOMs & zero-telemetry PureIDE cloud runners",
+      "Guaranteed <50ms deterministic rollback SLA across all active workloads",
       "Zero-trust hardened PureOS variants with cryptographic provenance",
       "Axiom verifiable SHA-256 certificates & CSV/JSON student transcript exports",
-      "Consolidated unified access to all 7 sovereign defense tools in one plan"
+      "Unified access to all 8 sovereign defense engines & platforms"
     ],
     engineCapabilities: {
       vantage: "Real-time threat feed streams, zero-day early warnings, and 300 req/min API quota",
@@ -106,26 +108,26 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
       pureos: "Zero-trust hardened OS variants, automated SBOM recipes, and advanced CI/CD templates",
       axiom: "Verifiable SHA-256 certificates, course history transcripts (CSV/JSON), and score sync API"
     },
-    ctaLabel: "Unlock Professional",
+    ctaLabel: "Unlock Professional ($100/mo)",
     isPopular: true
   },
   {
     id: "enterprise",
     name: "Enterprise Fleet",
-    tagline: "Fleet-wide multi-node orchestration, compliance attestation & institutional LMS",
+    tagline: "Multi-node progressive canary orchestration, compliance SLA & institutional scale",
     badge: "FLEET & COMPLIANCE",
     priceMonthly: 600,
     priceAnnual: 500,
     annualBilledTotal: 6000,
-    description: "Multi-node fleet adversary orchestration, air-gapped CI/CD, SLSA Level 3 signed manifests, compliance reports, and deep LMS integrations.",
+    description: "Central Praxis fleet manager for multi-node cluster rollouts, air-gapped CI/CD, SLSA Level 3 signed manifests, and compliance audit exports.",
     highlights: [
-      "Commercial redistributable Vantage feeds & real-time SIEM webhooks",
-      "Phased multi-ring Praxis rollout (Ring 0 -> Ring 1 -> Fleet) & Cosign SLSA L3",
+      "Central Praxis Fleet Manager: progressive canary ring rollouts (Ring 0 -> Ring 1 -> Fleet)",
+      "Cosign OIDC SLSA Level 3 signed manifests & automated SOC2/HIPAA audit logs",
       "Multi-node fleet chaos orchestrator & custom zero-day adversary studio",
-      "Continuous CI/CD Valkyrie perimeter scanning & executive PDF/Markdown reports",
-      "Strict airgap signing, offline cryptographic cosign & enterprise build runners",
+      "Commercial redistributable Vantage feeds & real-time SIEM webhooks (Splunk/Sentinel)",
+      "Strict air-gap signing, offline cryptographic KMS & satellite mirror appliances",
       "Institutional Axiom LMS embedding (Canvas, Blackboard, Moodle) with SCORM/LTI",
-      "Organization volume entitlements, priority SLA, and audit logging exports"
+      "Organization volume node entitlements, priority SLA, and dedicated architect escalation"
     ],
     engineCapabilities: {
       vantage: "Commercial redistributable feed, real-time enterprise SIEM webhooks (Splunk/Sentinel/QRadar), and automated CISO briefing generator",
