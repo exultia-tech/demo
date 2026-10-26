@@ -293,33 +293,6 @@ export default function Navbar() {
                       </div>
                     </Link>
 
-                    {/* PRODUCT 1B: PURE PACKAGE CATALOG */}
-                    <Link 
-                      href="/products/pure-catalog" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: pathname.startsWith("/products/pure-catalog") ? "rgba(16, 185, 129, 0.18)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0, fontSize: "1.75rem", lineHeight: 1 }}>
-                        📦
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Pure Catalog
-                          <span style={{ fontSize: "0.6rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>ZERO-CVE</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Negative-admission registry: 0 disclosed CVE packages</div>
-                      </div>
-                    </Link>
 
                     {/* PRODUCT 2: Vantage */}
                     <Link 

@@ -7,7 +7,7 @@ import DaedelusClientView from "./DaedelusClientView";
 export const metadata: Metadata = {
   title: "Daedelus | Sovereign Developer Platform & Clean-Room Artifact Forge",
   description:
-    "The unified sovereign developer ecosystem: air-gapped workstations, locked hermetic blueprints, negative-admission zero-CVE packages, distroless OCI containers, and autonomous retroactive self-healing.",
+    "The unified sovereign developer ecosystem: air-gapped workstations, locked hermetic blueprints, negative-admission zero-CVE packages, distroless OCI containers, and cryptographic supply-chain verification.",
 };
 
 export default function DaedelusPage() {
@@ -39,8 +39,8 @@ export default function DaedelusPage() {
         {/* Subtitle */}
         <p className="hero-subtitle" style={{ maxWidth: "840px", margin: "0 auto 2.5rem auto", fontSize: "1.18rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
           The sovereign developer platform and clean-room artifact forge.
-          Engineered to eradicate software supply chain vulnerabilities at every layer:
-          from <strong style={{ color: "#FFFFFF" }}>air-gapped workstations</strong>, to <strong style={{ color: "#34D399" }}>negative-admission zero-CVE packages</strong>, to <strong style={{ color: "#22D3EE" }}>hardened distroless OCI containers</strong> with continuous retroactive self-healing.
+          Engineered to eradicate software supply chain vulnerabilities at the developer edge:
+          from <strong style={{ color: "#FFFFFF" }}>air-gapped workstations</strong>, to <strong style={{ color: "#34D399" }}>negative-admission zero-CVE packages</strong>, to <strong style={{ color: "#22D3EE" }}>hardened distroless OCI containers</strong> ready for immutable deployment.
         </p>
 
         {/* Quick Highlights Counter */}
