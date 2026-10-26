@@ -21,7 +21,10 @@ import {
   FileCode2,
   Terminal,
   Activity,
-  Server
+  Server,
+  Code2,
+  Box,
+  Package
 } from "lucide-react";
 
 export default function HomeCommandDeck() {
@@ -213,15 +216,53 @@ export default function HomeCommandDeck() {
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.4rem", flexWrap: "wrap" }}>
                 <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>Daedelus</h3>
                 <span style={{ fontSize: "0.72rem", background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", border: "1px solid rgba(59, 130, 246, 0.3)", padding: "2px 8px", borderRadius: "4px", fontWeight: 700, fontFamily: "var(--font-mono, monospace)" }}>
-                  DEVELOPER PLATFORM &amp; REGISTRY GATEKEEPER
+                  DEVELOPER, CONTAINER &amp; PACKAGE FORGE
                 </span>
               </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1rem 0" }}>
-                Daedelus secures the software authoring environment. It provides <strong>PureIDE</strong>—reproducible, air-gapped developer builds of standard tools (VS Code, Zed, Neovim) stripped of vendor telemetry and cloud tracking. Paired with the <strong>Zero-CVE Catalog</strong>, it acts as a negative-admission registry proxy for npm, PyPI, and Cargo, intercepting and blocking dependencies with known vulnerabilities before they are ever installed on developer laptops.
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1.25rem 0" }}>
+                Daedelus serves as the unified pre-production forge, securing every layer of the developer edge before code ever reaches production. It formally unites three tightly integrated subcomponents:
               </p>
+
+              {/* 3 Subcomponents Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
+                {/* Subcomponent A: IDE (PureIDE) */}
+                <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.25)", borderRadius: "10px", padding: "1rem" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#60A5FA", marginBottom: "0.35rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Code2 size={16} />
+                    IDE &bull; PureIDE
+                  </div>
+                  <p style={{ fontSize: "0.82rem", color: "#CBD5E1", lineHeight: 1.45, margin: 0 }}>
+                    Air-gapped, reproducible developer workstations (VS Code, Zed, Neovim) stripped of vendor telemetry, tracking beacons, and unauthorized cloud sync.
+                  </p>
+                </div>
+
+                {/* Subcomponent B: Container (PureOS) */}
+                <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(6, 182, 212, 0.25)", borderRadius: "10px", padding: "1rem" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#22D3EE", marginBottom: "0.35rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Box size={16} />
+                    Container &bull; PureOS
+                  </div>
+                  <p style={{ fontSize: "0.82rem", color: "#CBD5E1", lineHeight: 1.45, margin: 0 }}>
+                    Hardened, distroless OCI container images stripped of shells, package managers, and root daemons, signed with SLSA Level 3 cryptographic provenance.
+                  </p>
+                </div>
+
+                {/* Subcomponent C: Package (Zero-CVE Catalog) */}
+                <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(16, 185, 129, 0.25)", borderRadius: "10px", padding: "1rem" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#34D399", marginBottom: "0.35rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Package size={16} />
+                    Package &bull; Zero-CVE Catalog
+                  </div>
+                  <p style={{ fontSize: "0.82rem", color: "#CBD5E1", lineHeight: 1.45, margin: 0 }}>
+                    Negative-admission upstream registry proxy for npm, PyPI, and Cargo that blocks dependencies with active disclosures from entering build pipelines.
+                  </p>
+                </div>
+              </div>
+
               <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.85rem", color: "#CBD5E1", borderTop: "1px solid rgba(255, 255, 255, 0.06)", paddingTop: "0.75rem" }}>
-                <span><strong>Developer Privacy:</strong> 100% telemetry-free</span>
-                <span><strong>Admission Policy:</strong> Zero open CVEs permitted</span>
+                <span><strong>Workstation Privacy:</strong> 100% telemetry-free</span>
+                <span><strong>Container Format:</strong> Distroless OCI &bull; SLSA Level 3</span>
+                <span><strong>Package Admission:</strong> Zero open CVEs</span>
               </div>
             </div>
           </div>
@@ -319,36 +360,7 @@ export default function HomeCommandDeck() {
             </div>
           </div>
 
-          {/* Component 6: PureOS */}
-          <div style={{
-            background: "rgba(255, 255, 255, 0.02)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "16px",
-            padding: "2rem",
-            display: "grid",
-            gridTemplateColumns: "60px 1fr",
-            gap: "1.5rem",
-            alignItems: "flex-start"
-          }}>
-            <div style={{ flexShrink: 0, marginTop: "4px" }}>
-              <PureOsIcon size={48} />
-            </div>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.4rem", flexWrap: "wrap" }}>
-                <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>PureOS</h3>
-                <span style={{ fontSize: "0.72rem", background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "2px 8px", borderRadius: "4px", fontWeight: 700, fontFamily: "var(--font-mono, monospace)" }}>
-                  DISTROLESS CONTAINER BASES
-                </span>
-              </div>
-              <p style={{ color: "#94A3B8", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1rem 0" }}>
-                For workloads destined for containers and Kubernetes clusters, PureOS supplies ultra-minimal distroless OCI container images. Stripped of shells, package managers, and extraneous utilities, they present a drastically reduced attack surface with cryptographic SLSA Level 3 provenance and Cosign verification.
-              </p>
-              <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.85rem", color: "#CBD5E1", borderTop: "1px solid rgba(255, 255, 255, 0.06)", paddingTop: "0.75rem" }}>
-                <span><strong>Format:</strong> OCI Distroless compliant</span>
-                <span><strong>Attestation:</strong> Cosign &amp; SLSA Level 3 signed</span>
-              </div>
-            </div>
-          </div>
+
 
         </div>
       </section>
@@ -411,10 +423,10 @@ export default function HomeCommandDeck() {
                 Stage 4 &bull; Gate Upstream
               </div>
               <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#FFFFFF", margin: "4px 0 6px 0" }}>
-                Daedelus &amp; PureOS
+                Daedelus
               </div>
               <p style={{ fontSize: "0.88rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-                Quarantines the vulnerable package from developer package managers and regenerates distroless containers with clean dependencies.
+                Quarantines the vulnerable package across developer IDEs (PureIDE), negative-admission package proxies, and rebuilt distroless containers (PureOS).
               </p>
             </div>
 
