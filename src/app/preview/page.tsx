@@ -1,23 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { 
-  Shield, 
   Lock, 
-  ArrowRight, 
-  CheckCircle2, 
-  Sparkles, 
-  Cpu, 
-  Terminal, 
   Key, 
-  Zap, 
-  RefreshCw, 
-  Globe, 
-  Building2,
-  ChevronRight,
-  ShieldCheck,
-  Palette
+  ArrowRight, 
+  RefreshCw
 } from "lucide-react";
 import { ExultiaLogo } from "@/components/BrandIcons";
 import { useDoomTheme, DOOM_PALETTES, type DoomPalette } from "@/context/DoomThemeContext";
@@ -39,7 +27,7 @@ export default function PreviewHoldingPage() {
       if (autoKey) {
         window.location.href = `/api/preview/unlock?key=${encodeURIComponent(autoKey)}`;
       } else if (errParam === "invalid_key") {
-        setError("Invalid authorization passkey. Please check your credentials or request an Enterprise VIP pass.");
+        setError("Invalid authorization passkey. Please check your credentials or request an evaluator pass.");
       }
     }
   }, []);
@@ -57,9 +45,9 @@ export default function PreviewHoldingPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setError(data.error || "Access denied. Invalid operator passkey.");
+        setError(data.error || "Access denied. Invalid authorization passkey.");
       } else {
-        setUnlockedTier(data.tier || "operator");
+        setUnlockedTier(data.tier || "enterprise");
         setTimeout(() => {
           window.location.href = data.redirect || "/";
         }, 600);
@@ -72,16 +60,6 @@ export default function PreviewHoldingPage() {
     }
   };
 
-  const scrollToPortal = () => {
-    const el = document.getElementById("access-portal");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-      setTimeout(() => {
-        passkeyInputRef.current?.focus();
-      }, 500);
-    }
-  };
-
   return (
     <div style={{
       minHeight: "100vh",
@@ -91,7 +69,7 @@ export default function PreviewHoldingPage() {
       position: "relative",
       overflowX: "hidden",
     }}>
-      {/* Top Header Navigation - Consistent with Exultia DOOM HUD */}
+      {/* ── LOCKED DOWN TOP HEADER (No site navigation links) ── */}
       <header style={{
         position: "sticky",
         top: 0,
@@ -99,18 +77,18 @@ export default function PreviewHoldingPage() {
         backdropFilter: "blur(16px)",
         background: "rgba(3, 6, 8, 0.88)",
         borderBottom: "1px solid var(--border-color)",
-        padding: "0.9rem 1.5rem",
+        padding: "0.85rem 1.5rem",
       }}>
         <div style={{
-          maxWidth: "1280px",
+          maxWidth: "1120px",
           margin: "0 auto",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
         }}>
-          {/* Logo & Brand Lockup */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          {/* Brand Lockup */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <ExultiaLogo size={42} glow={false} />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
@@ -143,9 +121,8 @@ export default function PreviewHoldingPage() {
             </div>
           </div>
 
-          {/* Theme Palette Switcher & Passkey Button */}
+          {/* Theme Palette Switcher & Status Pill */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {/* Palette Switcher */}
             <div style={{
               display: "flex",
               alignItems: "center",
@@ -164,12 +141,12 @@ export default function PreviewHoldingPage() {
                     onClick={() => setPalette(key)}
                     title={`Switch to ${pal.name} theme`}
                     style={{
-                      width: "14px",
-                      height: "14px",
+                      width: "13px",
+                      height: "13px",
                       borderRadius: "50%",
                       background: pal.hex,
                       border: active ? "2px solid #FFFFFF" : "1px solid rgba(0,0,0,0.4)",
-                      boxShadow: active ? `0 0 10px ${pal.glow}` : "none",
+                      boxShadow: active ? `0 0 8px ${pal.glow}` : "none",
                       cursor: "pointer",
                       padding: 0,
                       transform: active ? "scale(1.2)" : "scale(1)",
@@ -180,158 +157,95 @@ export default function PreviewHoldingPage() {
               })}
             </div>
 
-            <button
-              onClick={scrollToPortal}
-              className="btn-secondary"
-              style={{
-                padding: "0.55rem 1rem",
-                fontSize: "0.78rem",
-                letterSpacing: "0.08em",
-              }}
-            >
-              <Key size={13} style={{ marginRight: "6px", color: "var(--accent-primary)" }} />
-              ENTER PASSKEY
-            </button>
+            <span className="doom-badge" style={{ color: "#FBBF24", borderColor: "rgba(245, 158, 11, 0.35)", background: "rgba(245, 158, 11, 0.12)" }}>
+              <Lock size={11} style={{ marginRight: "4px" }} />
+              GATEWAY LOCKED
+            </span>
           </div>
         </div>
       </header>
 
-      {/* Main Overview Body */}
-      <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "3.5rem 1.5rem 6rem 1.5rem", position: "relative", zIndex: 1 }}>
+      {/* ── MAIN CONTENT CONTAINER (Matching HomeCommandDeck) ── */}
+      <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "1.5rem 1rem 5rem 1rem" }}>
         
-        {/* HERO SECTION */}
-        <section style={{ textAlign: "center", maxWidth: "900px", margin: "0 auto 3.5rem auto" }}>
+        {/* ── HERO: SELF-HEALING LINUX LEAD (Same as Homepage) ── */}
+        <section style={{ textAlign: "center", marginBottom: "3.5rem", paddingTop: "1.5rem" }}>
           
-          <div style={{ marginBottom: "1.25rem" }}>
-            <span className="doom-badge">
-              <Sparkles size={12} style={{ marginRight: "4px" }} />
-              SYSTEM ARCHITECTURE OVERVIEW // ZERO-TRUST LINUX DEFENSE
-            </span>
-          </div>
-
-          <h1 style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2.1rem, 4.8vw, 3.4rem)",
-            fontWeight: 900,
+          <h1 style={{ 
+            fontSize: "clamp(2.8rem, 6.2vw, 4.5rem)", 
+            fontWeight: 800, 
+            color: "#FFFFFF", 
+            letterSpacing: "-0.03em", 
+            marginBottom: "0.85rem",
             lineHeight: 1.15,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            color: "#FFFFFF",
-            textShadow: "0 0 20px var(--accent-glow)",
-            marginBottom: "1.25rem",
+            fontFamily: "var(--font-display)",
           }}>
-            Autonomous Threat Remediation &amp; Self-Healing Linux
+            Autonomous &amp; Accessible
+            <span style={{ 
+              display: "block", 
+              color: "var(--accent-primary, #00E5FF)",
+              fontWeight: 800
+            }}>
+              Self-Healing Linux.
+            </span>
           </h1>
 
           <p style={{
-            fontSize: "clamp(1.05rem, 2vw, 1.25rem)",
-            color: "var(--text-muted)",
-            lineHeight: 1.65,
-            maxWidth: "780px",
-            margin: "0 auto 2.5rem auto",
-            fontFamily: "var(--font-body)",
+            fontSize: "clamp(1.15rem, 2.4vw, 1.55rem)",
+            fontWeight: 600,
+            color: "var(--accent-primary, #00E5FF)",
+            fontFamily: "var(--font-mono, monospace)",
+            margin: "0 auto 1.5rem auto",
+            letterSpacing: "-0.01em",
+            textShadow: "0 0 24px var(--accent-glow)",
           }}>
-            Exultia bridges vulnerability intelligence and automated execution — compiling surgical in-memory mitigations, staging deterministic updates, and executing sub-second atomic rollbacks across production Linux fleets with zero service downtime.
+            The duct tape is built right into the code.
           </p>
 
-          {/* Quick Metrics Bar */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "1rem",
+          <p style={{ 
+            color: "#94A3B8", 
+            fontSize: "1.15rem", 
+            maxWidth: "720px", 
+            margin: "0 auto 2.5rem auto", 
+            lineHeight: 1.6 
           }}>
-            {[
-              {
-                num: "0.69ms",
-                label: "Sub-Second Rollback",
-                sub: "Deterministic Btrfs / ZFS Snapshots",
-              },
-              {
-                num: "6,400+",
-                label: "Live Threat Feeds",
-                sub: "CISA KEV, OSV & Errata Normalized",
-              },
-              {
-                num: "SLSA L3",
-                label: "Cryptographic Provenance",
-                sub: "Ed25519 & Cosign Signed Binaries",
-              },
-              {
-                num: "100%",
-                label: "Zero-Agent Native",
-                sub: "Statically Compiled • No Background SaaS",
-              },
-            ].map((m, i) => (
-              <div key={i} className="doom-hud-panel" style={{
-                padding: "1.4rem 1rem",
-                textAlign: "center",
-                marginBottom: 0,
-              }}>
-                <div style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "1.9rem",
-                  fontWeight: 900,
-                  color: "var(--accent-primary)",
-                  textShadow: "0 0 14px var(--accent-glow)",
-                  lineHeight: 1,
-                  marginBottom: "6px",
-                }}>
-                  {m.num}
-                </div>
-                <div style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "0.82rem",
-                  fontWeight: 800,
-                  color: "var(--text-main)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}>
-                  {m.label}
-                </div>
-                <div style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.72rem",
-                  color: "var(--text-dim)",
-                  marginTop: "4px",
-                }}>
-                  {m.sub}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+            A lightweight daemon that drops onto any Linux machine. Audits listening sockets, restores baselines, and applies zero-downtime in-memory hotpatches every 60 seconds.
+          </p>
 
-        {/* ACCESS PORTAL - PASSKEY AUTHENTICATION */}
-        <section id="access-portal" style={{
-          maxWidth: "560px",
-          margin: "0 auto 5rem auto",
-        }}>
-          <div className="doom-hud-panel" style={{
-            padding: "2.5rem 2rem",
-            marginBottom: 0,
+          {/* ── PASSKEY AUTHENTICATION CARD (Replaces download links & console simulator) ── */}
+          <div style={{
+            maxWidth: "580px",
+            margin: "0 auto 3rem auto",
+            background: "rgba(15, 23, 42, 0.75)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "14px",
+            padding: "2.25rem 2rem",
+            boxShadow: "0 15px 35px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0, 0, 0, 0.5)",
+            textAlign: "left",
+            backdropFilter: "blur(14px)",
           }}>
-            <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-              <span className="doom-badge" style={{ marginBottom: "0.75rem" }}>
+            <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+              <span className="doom-badge" style={{ marginBottom: "0.6rem" }}>
                 <Lock size={12} style={{ marginRight: "4px" }} />
-                OPERATOR &amp; ENTERPRISE VIP GATEWAY
+                OPERATOR &amp; ENTERPRISE PREVIEW GATEWAY
               </span>
               <h2 style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "1.45rem",
+                fontSize: "1.35rem",
                 fontWeight: 800,
                 color: "#FFFFFF",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
-                margin: "0.5rem 0 0.4rem 0",
+                margin: "0.4rem 0 0.25rem 0",
               }}>
                 Enter Authorization Passkey
               </h2>
               <p style={{
                 fontSize: "0.85rem",
-                color: "var(--text-muted)",
+                color: "#94A3B8",
                 lineHeight: 1.5,
               }}>
-                Authenticate with your preview passkey to enter the live workspace with full enterprise access and interactive defense tools.
+                Enter an authorized preview passkey to unlock the full platform, private interactive tools, and enterprise fleet features.
               </p>
             </div>
 
@@ -340,10 +254,10 @@ export default function PreviewHoldingPage() {
                 background: "rgba(220, 38, 38, 0.15)",
                 border: "1px solid rgba(220, 38, 38, 0.4)",
                 color: "#FCA5A5",
-                padding: "0.85rem 1rem",
-                borderRadius: "2px",
+                padding: "0.75rem 1rem",
+                borderRadius: "4px",
                 fontSize: "0.82rem",
-                marginBottom: "1.25rem",
+                marginBottom: "1rem",
                 fontFamily: "var(--font-mono)",
                 lineHeight: 1.4,
               }}>
@@ -356,19 +270,19 @@ export default function PreviewHoldingPage() {
                 background: "rgba(0, 229, 255, 0.15)",
                 border: "1px solid var(--accent-primary)",
                 color: "var(--accent-primary)",
-                padding: "0.85rem 1rem",
-                borderRadius: "2px",
+                padding: "0.75rem 1rem",
+                borderRadius: "4px",
                 fontSize: "0.84rem",
-                marginBottom: "1.25rem",
+                marginBottom: "1rem",
                 fontFamily: "var(--font-mono)",
                 textAlign: "center",
               }}>
-                ✓ Authorization verified. Provisioning {unlockedTier.toUpperCase()} session...
+                ✓ Authorization verified. Provisioning Enterprise session...
               </div>
             )}
 
             <form onSubmit={handleUnlock}>
-              <div style={{ position: "relative", marginBottom: "1.25rem" }}>
+              <div style={{ position: "relative", marginBottom: "1rem" }}>
                 <Key size={16} style={{
                   position: "absolute",
                   left: "1rem",
@@ -388,7 +302,7 @@ export default function PreviewHoldingPage() {
                     padding: "0.85rem 1rem 0.85rem 2.75rem",
                     background: "rgba(0, 0, 0, 0.65)",
                     border: "1px solid var(--border-color)",
-                    borderRadius: "2px",
+                    borderRadius: "4px",
                     color: "var(--text-main)",
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.9rem",
@@ -432,226 +346,320 @@ export default function PreviewHoldingPage() {
 
             <div style={{
               marginTop: "1.25rem",
-              paddingTop: "1rem",
+              paddingTop: "0.9rem",
               borderTop: "1px solid rgba(255, 255, 255, 0.08)",
               textAlign: "center",
-              fontSize: "0.75rem",
-              color: "var(--text-dim)",
+              fontSize: "0.74rem",
+              color: "#64748B",
               fontFamily: "var(--font-mono)",
               lineHeight: 1.5,
             }}>
-              Evaluator passkeys grant instant authenticated access across the suite without credit card entry. Contact your Exultia representative for credential distribution.
+              Private preview access is strictly restricted. Evaluator credentials are provided directly by Exultia security representatives.
             </div>
           </div>
         </section>
 
-        {/* CLOSED-LOOP AUTONOMOUS DEFENSE CYCLE */}
-        <section style={{ marginBottom: "5rem" }}>
+        {/* ── HOW IT WORKS: THE AUTONOMOUS DAEMON 4-STAGE LOOP (From Homepage) ── */}
+        <section id="how-it-works" style={{ marginBottom: "5rem" }}>
+          
           <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-            <span className="doom-badge" style={{ marginBottom: "0.5rem" }}>
-              CLOSED-LOOP OPERATIONAL PARADIGM
-            </span>
-            <h2 style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "1.85rem",
-              fontWeight: 800,
-              color: "#FFFFFF",
-              textTransform: "uppercase",
-              textShadow: "0 0 16px var(--accent-glow)",
-              marginTop: "0.5rem",
-            }}>
-              Autonomous 4-Step Remediation Cycle
+            <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", margin: 0, fontFamily: "var(--font-display)" }}>
+              HOW IT WORKS
             </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>
-              How Exultia detects, isolates, synthesizes, and verifies Linux threats in continuous real-time loops.
+            <p style={{ color: "#94A3B8", fontSize: "0.95rem", marginTop: "0.5rem" }}>
+              Continuous real-time threat ingestion, non-destructive validation, in-memory hotpatching, and sub-second rollback.
             </p>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "1.25rem",
-          }}>
-            {[
-              {
-                step: "01",
-                title: "Threat Ingestion",
-                desc: "Continuously polls 6,400+ vulnerability databases (CISA KEV, NVD, OSV, national CERTs) and calculates active socket exposure.",
-              },
-              {
-                step: "02",
-                title: "Patch Synthesis",
-                desc: "Generates targeted binary errata mitigations and hardened configuration baselines tailored to target kernels in <0.1ms.",
-              },
-              {
-                step: "03",
-                title: "Live Execution",
-                desc: "Safely stages updates across a 10% canary host ring with automated verification gates and zero dropped network sockets.",
-              },
-              {
-                step: "04",
-                title: "Sub-Second Rollback",
-                desc: "If any behavioral fault occurs, instantly triggers sub-second deterministic rollback (0.69ms) to cryptographic pre-image state.",
-              },
-            ].map((st, i) => (
-              <div key={i} className="doom-hud-panel" style={{
-                padding: "2rem 1.5rem",
-                marginBottom: 0,
-              }}>
+          {/* 4 Sequential Steps (Exact Structure from Homepage) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "960px", margin: "0 auto" }}>
+            
+            {/* Stage 1: Detect */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.55)",
+              border: "1px solid rgba(192, 132, 252, 0.25)",
+              borderRadius: "14px",
+              padding: "1.5rem 1.75rem",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1.75rem",
+              flexWrap: "wrap"
+            }}>
+              <div style={{ minWidth: "190px", flexShrink: 0 }}>
                 <div style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "1.8rem",
-                  fontWeight: 900,
-                  color: "var(--accent-primary)",
-                  marginBottom: "0.75rem",
-                  opacity: 0.9,
-                }}>
-                  {st.step}
-                </div>
-                <h3 style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "1.1rem",
-                  fontWeight: 800,
-                  color: "#FFFFFF",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.74rem",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: "#C084FC",
+                  background: "rgba(192, 132, 252, 0.12)",
+                  border: "1px solid rgba(192, 132, 252, 0.3)",
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  fontWeight: 700,
                   textTransform: "uppercase",
-                  marginBottom: "0.5rem",
-                  letterSpacing: "0.04em",
+                  marginBottom: "0.4rem"
                 }}>
-                  {st.title}
+                  Stage 01 &bull; Detection
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#FFFFFF", margin: "0 0 0.3rem 0", fontFamily: "var(--font-display)" }}>
+                  Threat Detection
                 </h3>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", lineHeight: 1.6 }}>
-                  {st.desc}
-                </p>
+                <div style={{ fontSize: "0.8rem", color: "#94A3B8", fontFamily: "var(--font-mono, monospace)" }}>
+                  <code>exultia-vantage-sync.timer</code>
+                </div>
               </div>
-            ))}
+
+              <div style={{ flex: 1, minWidth: "260px" }}>
+                <p style={{ fontSize: "0.95rem", color: "#CBD5E1", lineHeight: 1.6, margin: "0 0 0.85rem 0" }}>
+                  Ingests CVE disclosures, CISA KEVs, and vendor advisories across 110+ authoritative feeds in under 60 seconds. Directly correlates affected package binary hashes against active TCP/UDP listening sockets. If a vulnerable library is sitting dormant on disk with zero bound network sockets, we don&apos;t page your on-call engineer at 3:14 AM to panic over a theoretical risk.
+                </p>
+                <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.6rem" }}>
+                  <span>&bull; <strong>Detection Latency:</strong> 110+ feeds synchronized in &lt;60s</span>
+                  <span>&bull; <strong>Active Correlation:</strong> Targets actual bound sockets (zero frantic grep commands)</span>
+                  <span>&bull; <strong>Speed Advantage:</strong> Finds exposed workloads weeks before vendor advisories clear your corporate spam filter</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Connector 1 -> 2 */}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "16px", margin: "-4px 0" }}>
+              <div style={{ width: "2px", height: "100%", background: "linear-gradient(180deg, #C084FC 0%, #F87171 100%)", opacity: 0.6 }} />
+            </div>
+
+            {/* Stage 2: Validate */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.55)",
+              border: "1px solid rgba(248, 113, 113, 0.25)",
+              borderRadius: "14px",
+              padding: "1.5rem 1.75rem",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1.75rem",
+              flexWrap: "wrap"
+            }}>
+              <div style={{ minWidth: "190px", flexShrink: 0 }}>
+                <div style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.74rem",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: "#F87171",
+                  background: "rgba(248, 113, 113, 0.12)",
+                  border: "1px solid rgba(248, 113, 113, 0.3)",
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  marginBottom: "0.4rem"
+                }}>
+                  Stage 02 &bull; Validation
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#FFFFFF", margin: "0 0 0.3rem 0", fontFamily: "var(--font-display)" }}>
+                  Exploit Validation
+                </h3>
+                <div style={{ fontSize: "0.8rem", color: "#94A3B8", fontFamily: "var(--font-mono, monospace)" }}>
+                  <code>exultia test --canary --sandbox</code>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minWidth: "260px" }}>
+                <p style={{ fontSize: "0.95rem", color: "#CBD5E1", lineHeight: 1.6, margin: "0 0 0.85rem 0" }}>
+                  Before touching live process memory, the daemon spins up an ephemeral 10-minute microVM sandbox mirroring your exact runtime and engages its internal twin validation harnesses: non-destructive cryptographic canary probes that mathematically verify exploit viability without delivering harmful payloads, and hermetic sandbox stress-testing against race conditions.
+                </p>
+                <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.6rem" }}>
+                  <span>&bull; <strong>Canary Verification:</strong> Non-destructive HMAC handshake canary proves weaponization</span>
+                  <span>&bull; <strong>Kinetic Sandbox:</strong> In-sandbox validation verifies patch resilience under load</span>
+                  <span>&bull; <strong>Safety:</strong> Ephemeral microVM with 10m auto-destruct (0 host footprint)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Connector 2 -> 3 */}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "16px", margin: "-4px 0" }}>
+              <div style={{ width: "2px", height: "100%", background: "linear-gradient(180deg, #F87171 0%, #34D399 100%)", opacity: 0.6 }} />
+            </div>
+
+            {/* Stage 3: Fix */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.55)",
+              border: "1px solid rgba(52, 211, 153, 0.25)",
+              borderRadius: "14px",
+              padding: "1.5rem 1.75rem",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1.75rem",
+              flexWrap: "wrap"
+            }}>
+              <div style={{ minWidth: "190px", flexShrink: 0 }}>
+                <div style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.74rem",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: "#34D399",
+                  background: "rgba(52, 211, 153, 0.12)",
+                  border: "1px solid rgba(52, 211, 153, 0.3)",
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  marginBottom: "0.4rem"
+                }}>
+                  Stage 03 &bull; Remediation
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#FFFFFF", margin: "0 0 0.3rem 0", fontFamily: "var(--font-display)" }}>
+                  In-Memory Hotpatch
+                </h3>
+                <div style={{ fontSize: "0.8rem", color: "#94A3B8", fontFamily: "var(--font-mono, monospace)" }}>
+                  <code>exultia-daemon.service</code>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minWidth: "260px" }}>
+                <p style={{ fontSize: "0.95rem", color: "#CBD5E1", lineHeight: 1.6, margin: "0 0 0.85rem 0" }}>
+                  Compiles surgical in-memory trampolines and injects them directly into running process virtual memory in &lt;350ms. Neutralizes the vulnerable branch instantaneously with 0 dropped TCP sockets and zero service restarts—patching the vulnerability and writing cryptographic audit receipts with zero operational disruption.
+                </p>
+                <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.6rem" }}>
+                  <span>&bull; <strong>Downtime:</strong> 0 dropped TCP connections</span>
+                  <span>&bull; <strong>Execution:</strong> Applied in &lt;350ms with zero process restarts</span>
+                  <span>&bull; <strong>Zero Bureaucracy:</strong> Neutralizes vulnerabilities before change advisory boards convene</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Connector 3 -> 4 */}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "16px", margin: "-4px 0" }}>
+              <div style={{ width: "2px", height: "100%", background: "linear-gradient(180deg, #34D399 0%, #00E5FF 100%)", opacity: 0.6 }} />
+            </div>
+
+            {/* Stage 4: Rollback */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.55)",
+              border: "1px solid rgba(0, 229, 255, 0.25)",
+              borderRadius: "14px",
+              padding: "1.5rem 1.75rem",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1.75rem",
+              flexWrap: "wrap"
+            }}>
+              <div style={{ minWidth: "190px", flexShrink: 0 }}>
+                <div style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.74rem",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: "#00E5FF",
+                  background: "rgba(0, 229, 255, 0.12)",
+                  border: "1px solid rgba(0, 229, 255, 0.3)",
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  marginBottom: "0.4rem"
+                }}>
+                  Stage 04 &bull; Rollback
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#FFFFFF", margin: "0 0 0.3rem 0", fontFamily: "var(--font-display)" }}>
+                  Deterministic Rollback
+                </h3>
+                <div style={{ fontSize: "0.8rem", color: "#94A3B8", fontFamily: "var(--font-mono, monospace)" }}>
+                  <code>atomic snapshot restore</code>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minWidth: "260px" }}>
+                <p style={{ fontSize: "0.95rem", color: "#CBD5E1", lineHeight: 1.6, margin: "0 0 0.85rem 0" }}>
+                  Takes a cryptographic pre-image checkpoint before touching a single byte, arming a 120-second watchdog timer. If post-remediation socket canaries or application health checks fail to acknowledge the watchdog, the daemon unlinks the trampoline and restores baseline state in under 15ms.
+                </p>
+                <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.6rem" }}>
+                  <span>&bull; <strong>Rollback Engine:</strong> Sub-15ms deterministic atomic revert (0.69ms on Btrfs/ZFS)</span>
+                  <span>&bull; <strong>Watchdog Safety:</strong> Hardware &amp; systemd 120s failsafe auto-revert</span>
+                  <span>&bull; <strong>Forensic Hygiene:</strong> Leaves zero orphaned artifacts or corrupted state</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
-        {/* ENTERPRISE COMPLIANCE & SECURITY HIGHLIGHTS */}
-        <section className="doom-hud-panel" style={{
-          padding: "2.75rem 2rem",
-          marginBottom: "3rem",
+        {/* ── SOVEREIGNTY (From Homepage) ── */}
+        <section style={{ 
+          textAlign: "center", 
+          borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
+          paddingTop: "3.5rem",
+          background: "linear-gradient(180deg, transparent 0%, rgba(0, 229, 255, 0.02) 100%)",
+          borderRadius: "16px",
+          paddingBottom: "1.5rem"
         }}>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "2.5rem",
-            alignItems: "center",
-          }}>
-            <div>
-              <span className="doom-badge" style={{ marginBottom: "1rem" }}>
-                <ShieldCheck size={12} style={{ marginRight: "4px" }} />
-                HIGH-ASSURANCE CORPORATE INFRASTRUCTURE
-              </span>
-              <h2 style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "1.75rem",
-                fontWeight: 800,
-                color: "#FFFFFF",
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                margin: "0.5rem 0 0.75rem 0",
-              }}>
-                Built for Restricted Enterprise Gateways
-              </h2>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-                Fully compliant with strict enterprise network inspection proxies and SSL inspection firewalls including Zscaler Internet Access, Cisco Umbrella, and Palo Alto Prisma.
-              </p>
-              <button
-                onClick={scrollToPortal}
-                className="btn-secondary"
-                style={{
-                  padding: "0.7rem 1.4rem",
-                  fontSize: "0.82rem",
-                }}
-              >
-                <span>ENTER PREVIEW CREDENTIALS</span>
-                <ChevronRight size={15} style={{ marginLeft: "6px" }} />
-              </button>
-            </div>
+          <h3 style={{ fontSize: "1.45rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.75rem", fontFamily: "var(--font-display)" }}>
+            Built for True Technical Sovereignty
+          </h3>
+          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0 auto 2.25rem auto", lineHeight: 1.65 }}>
+            High-consequence infrastructure must remain transparent, deterministic, and verifiable. 
+            Engineered to defend workloads on any Linux distribution without telemetry, vendor lock-in, or proprietary traps.
+          </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              {[
-                { label: "Strict HSTS", sub: "Preload & Subdomains", val: "31.5M sec" },
-                { label: "Content Security Policy", sub: "Strict XSS Isolation", val: "Enforced" },
-                { label: "NIST SP 800-207", sub: "Zero-Trust Architecture", val: "Compliant" },
-                { label: "Air-Gapped Ops", sub: "Zero SaaS Egress", val: "Supported" },
-              ].map((c, ci) => (
-                <div key={ci} style={{
-                  background: "rgba(0, 0, 0, 0.5)",
-                  border: "1px solid var(--border-color)",
-                  borderRadius: "2px",
-                  padding: "1.15rem",
-                }}>
-                  <div style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "1.15rem",
-                    fontWeight: 900,
-                    color: "var(--accent-primary)",
-                    marginBottom: "3px",
-                  }}>
-                    {c.val}
-                  </div>
-                  <div style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    color: "var(--text-main)",
-                    textTransform: "uppercase",
-                  }}>
-                    {c.label}
-                  </div>
-                  <div style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.7rem",
-                    color: "var(--text-dim)",
-                    marginTop: "2px",
-                  }}>
-                    {c.sub}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div style={{ display: "inline-flex", gap: "1.75rem", color: "#64748B", fontSize: "0.85rem", fontFamily: "var(--font-mono, monospace)", flexWrap: "wrap", justifyContent: "center" }}>
+            <span>No Telemetry</span>
+            <span>&bull;</span>
+            <span>No Vendor Lock-In</span>
+            <span>&bull;</span>
+            <span>Deterministic Reproducible Builds</span>
+            <span>&bull;</span>
+            <span>Deterministic Atomic Rollback</span>
           </div>
         </section>
 
       </main>
 
-      {/* FOOTER */}
+      {/* ── FOOTER (Locked Down, Zero External Navigation) ── */}
       <footer style={{
-        borderTop: "1px solid var(--border-color)",
-        background: "rgba(3, 6, 8, 0.9)",
-        padding: "2.5rem 1.5rem 2rem 1.5rem",
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+        background: "rgba(5, 8, 15, 0.6)",
+        backdropFilter: "blur(8px)",
+        padding: "2rem 1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "0.5rem",
+        marginTop: "auto",
         textAlign: "center",
         fontSize: "0.78rem",
-        color: "var(--text-dim)",
+        color: "var(--text-muted)",
         fontFamily: "var(--font-mono)",
       }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginBottom: "0.85rem" }}>
-            <ExultiaLogo size={24} glow={false} />
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, color: "#FFFFFF", fontSize: "0.88rem", letterSpacing: "0.08em" }}>
-              EXULTIA TECHNOLOGIES
-            </span>
-          </div>
-          <p style={{ margin: "0 0 1rem 0", maxWidth: "600px", marginInline: "auto", lineHeight: 1.5, color: "var(--text-muted)" }}>
-            Proprietary and Confidential. Autonomous Threat Remediation, Real-Time Vulnerability Intelligence, and Continuous Self-Healing for Linux.
-          </p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "1.25rem", fontSize: "0.75rem", flexWrap: "wrap" }}>
-            <span>© {new Date().getFullYear()} Exultia Technologies, PBC. All rights reserved.</span>
-            <span>•</span>
-            <Link href="/faq" style={{ color: "var(--accent-primary)", textDecoration: "none", fontWeight: 700 }}>
-              FAQ
-            </Link>
-            <span>•</span>
-            <Link href="/wiki" style={{ color: "var(--accent-primary)", textDecoration: "none", fontWeight: 700 }}>
-              Research Wiki
-            </Link>
-            <span>•</span>
-            <span style={{ color: "var(--accent-primary)", cursor: "pointer", fontWeight: 700 }} onClick={scrollToPortal}>
-              Passkey Portal
-            </span>
-          </div>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          color: "var(--accent-primary)",
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          fontSize: "0.72rem",
+          marginBottom: "0.25rem",
+        }}>
+          <Lock size={12} />
+          <span>Restricted Preview Environment</span>
+        </div>
+
+        <div style={{
+          fontSize: "0.75rem",
+          color: "var(--text-dim)",
+          letterSpacing: "0.05em",
+          lineHeight: 1.6,
+        }}>
+          &copy; {new Date().getFullYear()} Exultia Technologies, PBC. All Rights Reserved.<br />
+          <span style={{ opacity: 0.7, fontSize: "0.7rem" }}>
+            Autonomous Threat Remediation, Real-Time Vulnerability Intelligence, and Continuous Self-Healing for Linux.
+          </span>
         </div>
       </footer>
     </div>

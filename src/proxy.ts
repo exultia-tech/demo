@@ -8,7 +8,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SITE_CONFIG } from "./config/site-config";
-import { OPERATOR_COOKIE_NAME, DEFAULT_OPERATOR_KEY, DEFAULT_ENTERPRISE_KEY } from "./app/api/preview/unlock/route";
+import { OPERATOR_COOKIE_NAME, isValidPassphrase, DEFAULT_OPERATOR_KEY } from "./app/api/preview/unlock/route";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -39,9 +39,6 @@ export function proxy(request: NextRequest) {
   const isPreviewMode = !isExplicitlyDisabled;
 
   if (isPreviewMode) {
-    const expectedKey = (process.env.OPERATOR_PREVIEW_KEY || DEFAULT_OPERATOR_KEY).trim();
-    const expectedEnterpriseKey = (process.env.ENTERPRISE_PREVIEW_KEY || DEFAULT_ENTERPRISE_KEY).trim();
-
     // Support multiple authorization bypass vectors for CLI / API & Browser access:
     // 1. Header: X-Operator-Key: <key>
     // 2. Header: Authorization: Bearer <key>
@@ -60,15 +57,10 @@ export function proxy(request: NextRequest) {
     const operatorCookie = request.cookies.get(OPERATOR_COOKIE_NAME)?.value?.trim();
 
     const providedKey = headerKey || bearerKey || queryKey || operatorCookie;
-    const isEnterpriseMatch = Boolean(
-      providedKey && (providedKey === expectedEnterpriseKey || providedKey === "enterprise-vip")
-    );
-    const isOperatorAuthorized = Boolean(
-      providedKey && (providedKey === expectedKey || isEnterpriseMatch)
-    );
+    const isAuthorized = Boolean(providedKey && isValidPassphrase(providedKey));
 
-    // If accessed via query param with enterprise key, redirect to unlock to install Enterprise session cookie
-    if (queryKey && isEnterpriseMatch && !pathname.startsWith("/api/preview")) {
+    // If accessed via query param with valid key on page routes, redirect to unlock to install cookies
+    if (queryKey && isValidPassphrase(queryKey) && !pathname.startsWith("/api")) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/api/preview/unlock";
       redirectUrl.searchParams.set("key", queryKey);
@@ -77,11 +69,11 @@ export function proxy(request: NextRequest) {
     }
 
     // If operator is authenticated, allow full access to all pages and APIs
-    if (isOperatorAuthorized) {
+    if (isAuthorized) {
       const response = NextResponse.next();
       // If authorized via header or query param, ensure cookie is set for session persistence
-      if (!operatorCookie && (providedKey === expectedKey || isEnterpriseMatch)) {
-        response.cookies.set(OPERATOR_COOKIE_NAME, expectedKey, {
+      if (!operatorCookie && providedKey) {
+        response.cookies.set(OPERATOR_COOKIE_NAME, providedKey, {
           httpOnly: false,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
