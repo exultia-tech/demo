@@ -52,7 +52,7 @@ function SubscriptionContent() {
     if (multiTier === "enterprise") return "enterprise";
     if (multiTier === "pro") return "enterprise";
 
-    const engines = ["pureide", "uvi", "praxis", "pureos", "axiom", "eris", "valkyrie"];
+    const engines = ["pureide", "uvi", "praxis", "pureos", "axiom"];
     const engineTiers = engines.map(e => getUserTier(e));
     if (engineTiers.includes("enterprise")) return "enterprise";
     if (engineTiers.includes("pro") || engineTiers.includes("legal")) return "enterprise";

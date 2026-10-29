@@ -24,8 +24,7 @@ import {
   PraxisIcon, 
   PureOsIcon, 
   AxiomIcon,
-  ErisIcon,
-  ValkyrieIcon 
+  ExultiaLinuxIcon
 } from "@/components/BrandIcons";
 
 interface CustomerOverviewProps {
@@ -41,8 +40,6 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   const praxisTier = getUserTier("praxis");
   const pureosTier = getUserTier("pureos");
   const axiomTier = getUserTier("axiom");
-  const erisTier = getUserTier("eris");
-  const valkyrieTier = getUserTier("valkyrie");
 
   // Compute unified platform tier
   const platformTier = (() => {
@@ -50,14 +47,14 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
     if (p === "enterprise" || p === "pro") return p;
     const m = getUserTier("multipass");
     if (m === "enterprise" || m === "pro") return m;
-    const pTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier, erisTier, valkyrieTier];
+    const pTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier];
     if (pTiers.includes("enterprise")) return "enterprise";
     if (pTiers.includes("pro") || pTiers.includes("legal")) return "pro";
     return "community";
   })();
 
   // Calculate unlocked capabilities percentage across the full 7-product ecosystem
-  const productTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier, erisTier, valkyrieTier];
+  const productTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier];
   let unlockedScore = platformTier === "enterprise" ? 100 : platformTier === "pro" ? 85 : 35;
 
   const quickLaunchers = [
@@ -66,8 +63,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
     { id: "praxis", name: "Praxis", desc: "Auto Remediation", icon: PraxisIcon, url: "/app/praxis", color: "#F59E0B", tier: praxisTier },
     { id: "pureos", name: "Daedelus Containers", desc: "Distroless OCI Containers", icon: PureOsIcon, url: "/app/daedelus?mode=container", color: "#10B981", tier: pureosTier },
     { id: "axiom", name: "Axiom", desc: "LMS Exam Simulator", icon: AxiomIcon, url: "/app/axiom", color: "#F43F5E", tier: axiomTier },
-    { id: "eris", name: "Eris", desc: "Proving Ground", icon: ErisIcon, url: "/app/eris", color: "#EAB308", tier: erisTier },
-    { id: "valkyrie", name: "Valkyrie", desc: "On-Demand Pentest", icon: ValkyrieIcon, url: "/app/valkyrie", color: "#06B6D4", tier: valkyrieTier },
+    { id: "exultia-linux", name: "Portable Daemon", desc: "60s Self-Healing Linux", icon: ExultiaLinuxIcon, url: "/products/exultia-linux", color: "#00E5FF", tier: "community" },
   ];
 
   const products = [
@@ -126,42 +122,6 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
       primaryAction: { label: "Open Praxis Console", tab: "praxis" }
     },
     {
-      id: "valkyrie",
-      name: "Valkyrie Pentesting",
-      category: "On-Demand BAS",
-      icon: ValkyrieIcon,
-      tier: valkyrieTier,
-      color: "#06B6D4",
-      bgGradient: "linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0.7) 100%)",
-      borderColor: "rgba(6, 182, 212, 0.3)",
-      badgeColor: "#67E8F9",
-      description: "On-demand exploitability verification with safe non-destructive probes and signed SHA-256 HMAC attestations.",
-      features: [
-        { label: "Critical CVE Verification Probes", unlocked: true },
-        { label: "Cryptographic HMAC Attestations", unlocked: valkyrieTier !== "free" },
-        { label: "Unlimited Fleet Telemetry & Reports", unlocked: valkyrieTier === "enterprise" }
-      ],
-      primaryAction: { label: "Open Valkyrie Pentest", tab: "valkyrie" }
-    },
-    {
-      id: "eris",
-      name: "Eris Proving Ground",
-      category: "Chaos & Adversary Sandbox",
-      icon: ErisIcon,
-      tier: erisTier,
-      color: "#EAB308",
-      bgGradient: "linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(15, 23, 42, 0.7) 100%)",
-      borderColor: "rgba(234, 179, 8, 0.3)",
-      badgeColor: "#FDE047",
-      description: "Deliberately non-compliant configurations and vulnerable container sandboxes with automated safety watchdog timers.",
-      features: [
-        { label: "Curated Inoculation Modules", unlocked: true },
-        { label: "Docker Vulnerability Range", unlocked: erisTier !== "free" },
-        { label: "Custom Threat Simulations & Cron", unlocked: erisTier === "enterprise" }
-      ],
-      primaryAction: { label: "Open Eris Proving Ground", tab: "eris" }
-    },
-    {
       id: "pureos",
       name: "PureOS Hardened Containers",
       category: "Secure Linux Base",
@@ -218,7 +178,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
             </div>
             <h2 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
               {platformTier === "enterprise"
-                ? "Enterprise Fleet Sovereign • All 7 Engines Unlocked"
+                ? "Enterprise Fleet Sovereign • All Engines Unlocked"
                 : platformTier === "pro"
                 ? "Professional Operator • Full Closed-Loop Unlocked"
                 : "Community Sovereign • Baseline Defense Active"}
@@ -338,7 +298,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               Sovereignty Multi-Product Discount Active
             </div>
             <div style={{ color: "#CBD5E1", fontSize: "0.75rem", lineHeight: 1.4 }}>
-              Unlock <strong>30% off</strong> for 1 companion product, <strong>40% off</strong> for 2 companions, and <strong>50% off</strong> when bundling Vantage, Praxis, Eris, and Valkyrie.
+              Unlock <strong>30% off</strong> for 1 companion product, <strong>40% off</strong> for 2 companions, and <strong>50% off</strong> when bundling Vantage, Praxis, Daedelus, and Axiom.
             </div>
           </div>
         </div>

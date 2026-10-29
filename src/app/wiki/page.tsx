@@ -124,7 +124,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         "2. Threat Intelligence Standard (STIX/TAXII): Standardizes on STIX 2.1 JSON delivered over TAXII 2.1 HTTPS REST APIs with a dual-channel pipeline (Vantage Upstream primary + Corporate Local override/supplemental).",
         "3. Multi-Ring Canary Engine: Phased deployment stages (Ring 0 Canary 2%-10% -> Ring 1 Staging 25% -> Ring 2 Broad Fleet) with automated rollback triggers on error spikes.",
         "4. Non-Blocking Lock Handling: Checks apt/yum locks non-destructively, logs DEFERRED_LOCK_BUSY with exponential backoff, and executes Tier 1 hotpatches lock-free.",
-        "5. Self-Healing & In-Memory Trampoline Pipeline: 4-phase loop: STIX signature verification, atomic state snapshot in /var/lib/exultia/snapshots/, non-destructive Valkyrie canary handshake, and in-memory hotpatch injection with 120-second watchdog fallback.",
+        "5. Self-Healing & In-Memory Trampoline Pipeline: 4-phase loop: STIX signature verification, atomic state snapshot in /var/lib/exultia/snapshots/, non-destructive cryptographic canary handshake, and in-memory hotpatch injection with 120-second watchdog fallback.",
         "6. Upstream Quarantine Killswitch: Instant broadcast halting admissions and downgrading broken or compromised vendor packages fleet-wide."
       ],
       capabilities: [

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, DaedelusIcon, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, DaedelusIcon, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -33,17 +33,15 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // Axiom and Eris active tab state synchronized with URL search param
+  // Axiom active tab state synchronized with URL search param
   const [axiomTab, setAxiomTab] = useState<string>("syllabus");
-  const [erisTab, setErisTab] = useState<string>("inoculator");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
       const tab = search.get("tab");
-      if (tab) {
-        if (pathname?.startsWith("/app/axiom")) setAxiomTab(tab);
-        if (pathname?.startsWith("/app/eris") || pathname?.startsWith("/app/perdition") || pathname?.startsWith("/app/crucible")) setErisTab(tab);
+      if (tab && pathname?.startsWith("/app/axiom")) {
+        setAxiomTab(tab);
       }
     }
   }, [pathname]);
@@ -52,18 +50,9 @@ export default function Navbar() {
     const handleAxiomTab = (e: any) => {
       if (e.detail) setAxiomTab(e.detail);
     };
-    const handleErisTab = (e: any) => {
-      if (e.detail) setErisTab(e.detail);
-    };
     window.addEventListener("axiom-tab-change", handleAxiomTab);
-    window.addEventListener("eris-tab-change", handleErisTab);
-    window.addEventListener("perdition-tab-change", handleErisTab);
-    window.addEventListener("crucible-tab-change", handleErisTab);
     return () => {
       window.removeEventListener("axiom-tab-change", handleAxiomTab);
-      window.removeEventListener("eris-tab-change", handleErisTab);
-      window.removeEventListener("perdition-tab-change", handleErisTab);
-      window.removeEventListener("crucible-tab-change", handleErisTab);
     };
   }, []);
 
@@ -104,23 +93,14 @@ export default function Navbar() {
     pathname.startsWith("/app/axiom")
   );
 
-  const isErisContext = !isIsolated && (
-    pathname.startsWith("/app/eris") ||
-    pathname.startsWith("/app/perdition") ||
-    pathname.startsWith("/app/crucible")
-  );
 
-  const isValkyrieContext = !isIsolated && (
-    pathname.startsWith("/app/valkyrie") ||
-    pathname.startsWith("/products/valkyrie")
-  );
 
   const isExultiaLinuxContext = !isIsolated && (
     pathname.startsWith("/products/exultia-linux")
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext;
+  const hasSubnav = isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -209,7 +189,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext ? "active" : ""}`}
+                className={`nav-link ${isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -882,88 +862,6 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#FDA4AF", fontWeight: 700 }}>
                 Plans &amp; Pricing
-              </Link>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION 7: ERIS SUBMENU */}
-          {isErisContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24", borderColor: "rgba(245, 158, 11, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <ErisIcon size={16} glow={false} />
-                Eris Lab
-              </span>
-
-              <Link 
-                href="/app/eris?tab=inoculator" 
-                onClick={() => {
-                  setErisTab("inoculator");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "inoculator" }));
-                }}
-                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "inoculator" ? "active-red" : ""}`}
-                style={{ fontWeight: 600 }}>
-                🔥 Chaos Inoculator
-              </Link>
-              <Link 
-                href="/app/eris?tab=containers" 
-                onClick={() => {
-                  setErisTab("containers");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "containers" }));
-                }}
-                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "containers" ? "active-red" : ""}`}
-                style={{ fontWeight: 600 }}>
-                🐳 Vulnerable Containers
-              </Link>
-              <Link 
-                href="/app/eris?tab=walkthrough" 
-                onClick={() => {
-                  setErisTab("walkthrough");
-                  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("eris-tab-change", { detail: "walkthrough" }));
-                }}
-                className={`submenu-link ${(pathname === "/app/eris" || pathname === "/app/perdition" || pathname === "/app/crucible") && erisTab === "walkthrough" ? "active-red" : ""}`}
-                style={{ fontWeight: 600 }}>
-                📋 Validation Guide
-              </Link>
-              <Link 
-                href="/app/praxis?erisRemediate=true" 
-                className="submenu-link"
-                style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                <span>⚡</span> Remediate in Praxis &rarr;
-              </Link>
-            </div>
-          )}
-
-          {/* SUBMENU OPTION 8: VALKYRIE SUBMENU */}
-          {isValkyrieContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(6, 182, 212, 0.15)", color: "#67E8F9", borderColor: "rgba(6, 182, 212, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <ValkyrieIcon size={16} glow={false} />
-                Valkyrie Pentest
-              </span>
-
-              <Link 
-                href="/app/valkyrie" 
-                className={`submenu-link ${pathname === "/app/valkyrie" ? "active-cyan" : ""}`}
-                style={{ fontWeight: 600 }}>
-                🎯 Pentest Console
-              </Link>
-              <Link 
-                href="/app/praxis?valkyrieVerify=true" 
-                className="submenu-link"
-                style={{ color: "#34D399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                <span>⚡</span> Hotpatch in Praxis &rarr;
-              </Link>
-              <Link 
-                href="/app/eris" 
-                className="submenu-link"
-                style={{ color: "#FBBF24", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                <span>🔥</span> Inoculate in Eris &rarr;
-              </Link>
-              <Link 
-                href="/account/subscription?product=valkyrie" 
-                className="submenu-link"
-                style={{ color: "#67E8F9", fontWeight: 700 }}>
-                Bundle Plans (30-50% Off)
               </Link>
             </div>
           )}
