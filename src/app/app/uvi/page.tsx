@@ -26,9 +26,6 @@ import {
 } from "@/lib/threat-feed-data";
 
 export default function ThreatFeedPage() {
-  // Feed type: threat intelligence, OS patch errata, or both
-  const VENDOR_CAT = "Vendor Security Disclosures";
-  const [streamMode, setStreamMode] = useState<"THREAT" | "PATCH" | "BOTH">("BOTH");
   // CVSS score visibility toggle (scores always use classic CVSS rendering)
   const [showScores, setShowScores] = useState(true);
   const ratingMode = "classic" as "observational" | "classic";
@@ -54,40 +51,29 @@ export default function ThreatFeedPage() {
   const [feedDirectorySearch, setFeedDirectorySearch] = useState("");
   const [feedDirectoryCategory, setFeedDirectoryCategory] = useState<string>("ALL");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  // Alphabetized feeds list for sidebar
-  const alphabetizedFeeds = useMemo(() => {
-    return [...UVI_PUBLIC_FEED_SOURCES].sort((a, b) => a.name.localeCompare(b.name));
+
+  // Dedicated Threat Feeds (Vendor OS patch management separated into dedicated Argent feed)
+  const threatFeedsList = useMemo(() => {
+    return UVI_PUBLIC_FEED_SOURCES.filter(f => f.category !== "Vendor Security Disclosures");
   }, []);
 
-  const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = [
-    { id: "ALL", label: "All Feeds", icon: "🌐", count: UVI_PUBLIC_FEED_SOURCES.length },
-    { id: "Vendor Security Disclosures", label: "OS & Vendor Patch Errata", icon: "📦", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vendor Security Disclosures").length },
-    { id: "Research, Bug Bounty & Community Disclosures", label: "Research & Bounties", icon: "🔬", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Research, Bug Bounty & Community Disclosures").length },
-    { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Malware, C2 & Botnets").length },
-    { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Phishing & Fraud").length },
-    { id: "IP Reputation, Scanners & Network Telemetry", label: "IP Telemetry", icon: "🌪️", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "IP Reputation, Scanners & Network Telemetry").length },
-    { id: "Vulnerabilities & Exploitation", label: "Vulnerabilities", icon: "🚨", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Vulnerabilities & Exploitation").length },
-    { id: "Multi-Indicator Hubs & Aggregators", label: "Threat Hubs", icon: "👽", count: UVI_PUBLIC_FEED_SOURCES.filter(f => f.category === "Multi-Indicator Hubs & Aggregators").length }
-  ];
+  // Alphabetized threat feeds list for sidebar
+  const alphabetizedFeeds = useMemo(() => {
+    return [...threatFeedsList].sort((a, b) => a.name.localeCompare(b.name));
+  }, [threatFeedsList]);
 
-  // Feed type filter (Threats / Patches / Both) drives sidebar + filter options
-  const modeFeeds = useMemo(() => alphabetizedFeeds.filter(f =>
-    streamMode === "BOTH" ? true : streamMode === "PATCH" ? f.category === VENDOR_CAT : f.category !== VENDOR_CAT
-  ), [alphabetizedFeeds, streamMode]);
-  const modeCategories = FEED_CATEGORIES.filter(c =>
-    c.id !== "ALL" && (streamMode === "BOTH" || (streamMode === "PATCH") === (c.id === VENDOR_CAT))
-  );
-  const changeStreamMode = (mode: "THREAT" | "PATCH" | "BOTH") => {
-    handleFilterChange(() => {
-      setStreamMode(mode);
-      setFeedDirectoryCategory("ALL");
-      setSelectedSourceFeed("ALL");
-      if (mode === "PATCH") {
-        setFeedScope("ALL");
-        setSelectedDomain("ALL");
-      }
-    });
-  };
+  const FEED_CATEGORIES: { id: string; label: string; icon: string; count: number }[] = useMemo(() => [
+    { id: "ALL", label: "All Threat Feeds", icon: "🌐", count: threatFeedsList.length },
+    { id: "Research, Bug Bounty & Community Disclosures", label: "Research & Bounties", icon: "🔬", count: threatFeedsList.filter(f => f.category === "Research, Bug Bounty & Community Disclosures").length },
+    { id: "Malware, C2 & Botnets", label: "Malware & C2", icon: "☣️", count: threatFeedsList.filter(f => f.category === "Malware, C2 & Botnets").length },
+    { id: "Phishing & Fraud", label: "Phishing & Fraud", icon: "🎣", count: threatFeedsList.filter(f => f.category === "Phishing & Fraud").length },
+    { id: "IP Reputation, Scanners & Network Telemetry", label: "IP Telemetry", icon: "🌪️", count: threatFeedsList.filter(f => f.category === "IP Reputation, Scanners & Network Telemetry").length },
+    { id: "Vulnerabilities & Exploitation", label: "Vulnerabilities", icon: "🚨", count: threatFeedsList.filter(f => f.category === "Vulnerabilities & Exploitation").length },
+    { id: "Multi-Indicator Hubs & Aggregators", label: "Threat Hubs", icon: "👽", count: threatFeedsList.filter(f => f.category === "Multi-Indicator Hubs & Aggregators").length }
+  ], [threatFeedsList]);
+
+  const modeFeeds = alphabetizedFeeds;
+  const modeCategories = useMemo(() => FEED_CATEGORIES.filter(c => c.id !== "ALL"), [FEED_CATEGORIES]);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -184,15 +170,8 @@ export default function ThreatFeedPage() {
         if (feedScope === "NON_CVE") params.set("scope", "non-cve");
         if (feedScope === "INFORMATIONAL") params.set("scope", "informational");
 
-        const effectiveCategory = feedDirectoryCategory !== "ALL"
-          ? feedDirectoryCategory
-          : streamMode === "PATCH"
-            ? VENDOR_CAT
-            : streamMode === "THREAT"
-              ? FEED_CATEGORIES.filter(c => c.id !== "ALL" && c.id !== VENDOR_CAT).map(c => c.id).join("|")
-              : null;
-        if (effectiveCategory) {
-          params.set("category", effectiveCategory);
+        if (feedDirectoryCategory !== "ALL") {
+          params.set("category", feedDirectoryCategory);
         }
 
         if (selectedDomain !== "ALL") {
@@ -274,15 +253,19 @@ export default function ThreatFeedPage() {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy, feedDirectoryCategory, streamMode, showScores]);
+  }, [searchQuery, feedScope, ratingMode, selectedSeverity, selectedDomain, selectedSourceFeed, kevOnly, page, pageSize, sortBy, feedDirectoryCategory, showScores]);
 
-  // Check for initial URL query parameters on mount (e.g. ?category=Vendor+Security+Disclosures from Argent redirect or links)
+  // Check for initial URL query parameters on mount (redirect legacy Vendor Security Disclosures links to Argent)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
       const catParam = searchParams.get("category");
       if (catParam) {
-        setFeedDirectoryCategory(catParam); if (catParam === VENDOR_CAT) { setStreamMode("PATCH"); setFeedDirectoryCategory("ALL"); }
+        if (catParam === "Vendor Security Disclosures" || catParam.toLowerCase().includes("vendor")) {
+          window.location.replace("/app/argent");
+          return;
+        }
+        setFeedDirectoryCategory(catParam);
       }
       const queryParam = searchParams.get("query") || searchParams.get("q");
       if (queryParam) {
@@ -511,7 +494,7 @@ export default function ThreatFeedPage() {
                   cursor: "pointer",
                   fontSize: "1rem"
                 }}
-                title={`View All ${UVI_PUBLIC_FEED_SOURCES.length} Feeds Directory Modal`}
+                title={`View All ${threatFeedsList.length} Threat Feeds Directory Modal`}
               >
                 🌐
               </button>
@@ -532,7 +515,7 @@ export default function ThreatFeedPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
                     <span style={{ fontSize: "1rem" }}>🌐</span>
                     <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "0.02em" }}>
-                      {streamMode === "PATCH" ? "Patch Feeds" : streamMode === "THREAT" ? "Threat Feeds" : "All Feeds"}
+                      Threat Intelligence Feeds
                     </span>
                     <span style={{
                       fontSize: "0.68rem",
@@ -573,29 +556,25 @@ export default function ThreatFeedPage() {
                 </div>
               </div>
 
-              {/* Feed type toggle: Threats / Patches / Both */}
-              <div style={{ padding: "0.65rem 0.85rem", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <div style={{ display: "flex", background: "rgba(10, 14, 23, 0.9)", padding: "0.2rem", borderRadius: "9px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                  {([["THREAT", "Threats"], ["PATCH", "Patches"], ["BOTH", "Both"]] as const).map(([id, label]) => (
-                    <button
-                      key={id}
-                      onClick={() => changeStreamMode(id)}
-                      style={{
-                        flex: 1,
-                        padding: "0.4rem 0.3rem",
-                        borderRadius: "7px",
-                        border: "none",
-                        background: streamMode === id ? (id === "PATCH" ? "rgba(16, 185, 129, 0.25)" : id === "THREAT" ? "rgba(239, 68, 68, 0.22)" : "rgba(59, 130, 246, 0.25)") : "transparent",
-                        color: streamMode === id ? "#F8FAFC" : "#94A3B8",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
+              {/* Dedicated Argent Cross-Link Notice */}
+              <div style={{ padding: "0.6rem 0.85rem", borderBottom: "1px solid rgba(255, 255, 255, 0.06)", background: "rgba(16, 185, 129, 0.05)" }}>
+                <Link 
+                  href="/app/argent"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    textDecoration: "none",
+                    fontSize: "0.74rem",
+                    color: "#34D399",
+                    fontWeight: 600
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>📦</span> OS Vendor Errata &amp; Patches
+                  </span>
+                  <span style={{ color: "#A7F3D0", fontSize: "0.7rem", fontWeight: 700 }}>Open Argent &rarr;</span>
+                </Link>
               </div>
 
               {/* Main Threat & Target Search (Controls Center Feed) */}
@@ -801,16 +780,16 @@ export default function ThreatFeedPage() {
               style={{
                 padding: "0.45rem 0.7rem",
                 background: "rgba(10, 14, 23, 0.95)",
-                border: feedDirectoryCategory === "Vendor Security Disclosures" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.14)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
                 borderRadius: "8px",
-                color: feedDirectoryCategory === "Vendor Security Disclosures" ? "#6EE7B7" : "#F8FAFC",
+                color: "#F8FAFC",
                 fontSize: "0.85rem",
                 outline: "none",
                 cursor: "pointer",
                 width: "100%"
               }}
             >
-              <option value="ALL">🌐 {streamMode === "PATCH" ? "All Patch Streams" : streamMode === "THREAT" ? "All Threat Streams" : "All Streams (Threat + Patch)"}</option>
+              <option value="ALL">🌐 All Threat Streams</option>
               {modeCategories.map(cat => (
                 <option key={cat.id} value={cat.id}>
                   {cat.icon} {cat.label} ({cat.count} feeds)
@@ -818,8 +797,6 @@ export default function ThreatFeedPage() {
               ))}
             </select>
           </div>
-
-          {streamMode !== "PATCH" && (<>
           {/* Unified Operational Domain Dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
@@ -877,7 +854,7 @@ export default function ThreatFeedPage() {
               <option value="INFORMATIONAL">📡 Informational Disclosures & Vector Research ({informationalDisclosuresCount.toLocaleString()})</option>
             </select>
           </div>
-          </>)}
+
 
           {/* Severity Dropdown (Only in Classic CVSS Mode) */}
           {showScores && (
@@ -1031,7 +1008,7 @@ export default function ThreatFeedPage() {
                       justifyContent: "center",
                       lineHeight: 1
                     }}>🌐</span>
-                    <span>{streamMode === "PATCH" ? "All Patch Feeds" : streamMode === "THREAT" ? "All Threat Feeds" : "All Feeds Combined"}</span>
+                    <span>All Threat Feeds Combined</span>
                   </div>
                   <span style={{
                     fontSize: "0.68rem",

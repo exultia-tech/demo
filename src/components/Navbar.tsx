@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, DaedelusIcon, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, DaedelusIcon, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ExultiaLinuxIcon, ArgentIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -99,8 +99,13 @@ export default function Navbar() {
     pathname.startsWith("/products/exultia-linux")
   );
 
+  const isArgentContext = !isIsolated && (
+    pathname.startsWith("/app/argent") ||
+    pathname.startsWith("/argent")
+  );
+
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext;
+  const hasSubnav = isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext || isArgentContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -297,6 +302,34 @@ export default function Navbar() {
                           <span style={{ fontSize: "0.6rem", background: "rgba(168, 85, 247, 0.2)", color: "#C084FC", border: "1px solid rgba(168, 85, 247, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>24,388 CVES</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Real-time STIX/TAXII radar &amp; pre-baked offline advisory database</div>
+                      </div>
+                    </Link>
+
+                    {/* CORE 3: Argent OS Patch Feed */}
+                    <Link 
+                      href="/app/argent" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isArgentContext ? "rgba(16, 185, 129, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <ArgentIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Argent OS Patch Feed
+                          <span style={{ fontSize: "0.6rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>27 DISTROS</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Multi-distro vendor errata, regular package updates &amp; zero-downtime hotfixes</div>
                       </div>
                     </Link>
 
@@ -781,6 +814,28 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#C084FC", fontWeight: 700 }}>
                 Plans & Pricing
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 3: ARGENT SUBMENU */}
+          {isArgentContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <ArgentIcon size={16} glow={false} />
+                Argent OS Patch Feed
+              </span>
+
+              <Link 
+                href="/app/argent" 
+                className={`submenu-link ${pathname === "/app/argent" || pathname === "/argent" ? "active-emerald" : ""}`}>
+                Patch Stream &amp; Errata
+              </Link>
+              <Link 
+                href="/app/uvi" 
+                className="submenu-link"
+                style={{ color: "#C084FC", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>🚨</span> Vantage Threat Radar &rarr;
               </Link>
             </div>
           )}
