@@ -163,7 +163,7 @@ const FAQ_DATA: FaqItem[] = [
     shortSummary: "Don't take our word for it. Test live interactive simulators in the Wiki and run our reproducible quick-start guides right now.",
     answer: [
       "We completely understand your skepticism. The cybersecurity market is saturated with marketing buzzwords, pitch decks, and vaporware. That is why we built reproducible proof directly into the platform so you can verify our claims directly with zero sales gatekeeping:",
-      "1. Interactive Simulators on the Research Wiki: Visit the Exultia Research Wiki (/wiki?tab=simulator) right now. Every single one of the 7 defense engines includes an interactive, in-browser lab simulator. You can execute simulated in-memory hotpatching with real-time disassembly trampolines (Praxis), trigger non-destructive BAS exploitability probes (Valkyrie), query live filtered threat telemetry across 110+ registries (Vantage), and spin up chaos attack vectors (Eris).",
+      "1. Interactive Simulators on the Research Wiki: Visit the Exultia Research Wiki (/wiki?tab=simulator) right now. Our defense engines include interactive, in-browser lab simulators. You can execute simulated in-memory hotpatching with real-time disassembly trampolines (Praxis), query live filtered threat telemetry across 110+ registries (Vantage), and test sub-second deterministic rollbacks with Kinetic.",
       "2. Executable Quick-Start Guides: In the Research Wiki (/wiki?tab=quickstart), every product features copy-pasteable CLI commands. You can download the compiled standalone binary via `curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o praxis` and run `praxis test`. It executes a real synthetic mutation on your system, takes a pre-image SHA-256 snapshot, and verifies a deterministic atomic rollback.",
       "3. Free Community Sovereign Tier ($0 Forever): You do not need to sign a contract, talk to a salesperson, or provide a credit card. Deploy the free tier on 1 host node, pull CIS Benchmark Level 2 containers from PureOS, and query the real-time CISA KEV feed from Vantage.",
       "4. Cryptographic Attestations: Every mitigation payload and container image is signed with Cosign SLSA Level 3 provenance keys that you can inspect and verify independently using open-source tooling."
@@ -190,8 +190,8 @@ const FAQ_DATA: FaqItem[] = [
     answer: [
       "No. While Vantage aggregates public vulnerability feeds (such as NIST NVD, CISA KEV, and Linux vendor errata) alongside private feeds, the entire kinetic defense and remediation execution engine is custom proprietary systems code:",
       "• Praxis Hotpatch Engine: Synthesizes in-memory trampolines, Ansible canary plays, and hardware firewall ACLs directly. Vulnerability scanners merely report issues; Praxis actively remediates them.",
-      "• Valkyrie BAS: Injects non-destructive, HMAC-signed canary handshakes to mathematically prove exploitability before remediation.",
-      "• Eris Chaos Lab: Programmatically spins up isolated 5-container Docker ranges with automated 10-minute auto-destruct watchdog timers.",
+      "• Kinetic Engine: Orchestrates sub-second deterministic rollbacks (0.69ms on Btrfs/ZFS) and automated canary staging without requiring server reboots.",
+      "• Argent Package Manager: Synthesizes multi-distro vendor errata fixes and general patch management bundles with SLSA Level 3 cryptographic provenance.",
       "• PureIDE: Air-gapped developer compiler with kernel-level network egress gating and automated CycloneDX SBOM cosigning.",
       "Open-source scanners only alert you to problems; Exultia is a closed-loop platform that automates live remediation and verification."
     ]
@@ -283,7 +283,7 @@ const FAQ_DATA: FaqItem[] = [
     answer: [
       "Unlike passive scanners that only inspect file version numbers, Exultia provides active closed-loop verification:",
       "1. Dynamic Runtime Inspection: The daemon inspects active listening sockets (`ss -tulpn`), verified inode versions, process memory mappings, and live sysctl parameters to confirm that the vulnerable code path is no longer reachable.",
-      "2. Synthetic Canary Probes (Valkyrie): For network daemons, an internal loopback probe transmits a safe, non-destructive synthetic test vector matching the CVE exploit signature. If the service sanitizes or rejects the vector cleanly rather than exhibiting vulnerable behavior, remediation is cryptographically confirmed.",
+      "2. Synthetic Canary Probes: For network daemons, an internal loopback probe transmits a safe, non-destructive synthetic test vector matching the CVE exploit signature. If the service sanitizes or rejects the vector cleanly rather than exhibiting vulnerable behavior, remediation is cryptographically confirmed.",
       "3. Cryptographic Attestation Receipts: Every successful remediation generates an Ed25519-signed verification receipt in `/var/log/exultia/attestations/` containing before/after SHA-256 checksums, kernel details, and OpenVEX `fixed` status for your compliance auditors."
     ]
   },
@@ -298,7 +298,7 @@ const FAQ_DATA: FaqItem[] = [
       "Instead of confusing teams with dozens of fragmented vendor tools and acronyms, Exultia solves infrastructure security through two unified, non-fragmented pillars:",
       "1. Pillar 01 • The Threat Feed (Vantage UVI): Continuously aggregates, normalizes, and cryptographically signs vulnerability intelligence across 110+ authoritative registries (24,388 global advisories + 12,993 CISA KEV records). Supports live STIX 2.1 / TAXII 2.1 and comes pre-baked as an offline catalog for zero-internet patching.",
       "2. Pillar 02 • The Self-Healing Remediator: A 60-second autonomous daemon for Linux. It continuously audits listening sockets, detects kernel sysctl drift, injects surgical in-memory trampolines with zero dropped TCP connections, snapshots system state, and rolls back if health checks fail.",
-      "Other specialized tools—such as Daedelus (air-gapped workstations, distroless containers, and zero-CVE packages), Eris chaos ranges, Valkyrie BAS verification, and Axiom certification simulator—are organized into our Developer Ecosystem & Supporting Tools section for teams with full-lifecycle edge needs."
+      "Other specialized tools—such as Daedelus (air-gapped workstations, distroless containers, and zero-CVE packages), Kinetic orchestration, and Axiom certification simulator—are organized into our Developer Ecosystem & Supporting Tools section for teams with full-lifecycle edge needs."
     ]
   },
   {
@@ -340,7 +340,7 @@ const FAQ_DATA: FaqItem[] = [
       "Exultia replaces this delay with an autonomous 60-second machine-speed loop:",
       "1. Ingest (<5s): Daemon checks the signed UVI threat feed (local pre-baked catalog or authenticated STIX 2.1 / TAXII 2.1 upstream).",
       "2. Correlate (<10s): Immediately correlates all 24,388 advisories against active TCP/UDP listening sockets, loaded kernel modules, and installed package binaries.",
-      "3. Verify (<15s): Validates exploitability non-destructively using Valkyrie HMAC canary handshakes without weaponized payloads.",
+      "3. Verify (<15s): Validates exploitability non-destructively using cryptographic canary verification probes without weaponized payloads.",
       "4. Hotpatch (<25s): Injects surgical in-memory bytecode trampolines or reapplies hardened kernel sysctls with zero dropped TCP connections and zero service restarts.",
       "5. Protect & Watchdog (<60s): Creates an atomic rollback state checkpoint on Linux, arming a 120-second watchdog timer."
     ]
@@ -370,28 +370,29 @@ const FAQ_DATA: FaqItem[] = [
     ]
   },
   {
-    id: "valkyrie-canary",
+    id: "kinetic-rollback-safety",
     category: "product",
-    question: "How does Valkyrie prove exploitability without risking system downtime or denial of service?",
-    shortSummary: "Valkyrie uses safe canary handshakes containing signed HMAC tokens rather than weaponized payloads.",
+    question: "How does Exultia Kinetic achieve sub-second deterministic rollbacks without rebooting?",
+    shortSummary: "Kinetic leverages atomic Btrfs/ZFS snapshots and state checkpoints to restore baselines in <1ms (0.69ms verified).",
     answer: [
-      "Traditional penetration tests fire weaponized exploits that risk buffer overflows, thread deadlocks, or unintended kernel panics.",
-      "Valkyrie takes a completely different, non-destructive approach called Canary BAS (Breach & Attack Simulation):",
-      "• Safe Handshakes: Valkyrie tests whether the target service accepts and processes the specific trigger condition without delivering harmful shellcode.",
-      "• Cryptographic Proof: The probe injects a unique HMAC-SHA256 token. If the service returns the designated protocol response, exploitability is mathematically confirmed.",
-      "• Zero Disruption: Probes run safely against active production clusters with zero service interruption and generate an immutable attestation token proving vulnerability existence."
+      "Traditional server backup and recovery tools require entire machine reboots or slow filesystem restores that lead to costly downtime.",
+      "Kinetic takes an atomic, hardware-accelerated approach to system state safety:",
+      "• Sub-Second Atomic Rollbacks: Kinetic captures a pre-image state snapshot before applying any patch. In benchmark testing, deterministic rollback completes in 0.69ms on Btrfs and under 4ms on standard ext4 journaling.",
+      "• Canary Ring Deployment: Orchestrates progressive deployments across a 10% canary host ring with automated verification gates before wide fleet promotion.",
+      "• Zero-Agent Architecture: Runs as a native compiled binary with direct SSH and Ansible integration—no heavy background agents required."
     ]
   },
   {
-    id: "eris-chaos-range",
+    id: "argent-patch-management",
     category: "product",
-    question: "How does Eris safely emulate live exploits without risk of host escape or lateral movement?",
-    shortSummary: "Ephemeral multi-container Docker Compose ranges with dropped Linux capabilities and 10m watchdog timers.",
+    question: "How does Argent handle general patch management across heterogeneous Linux fleets?",
+    shortSummary: "Argent continuously maps security errata from major Linux distributions into cryptographically signed update bundles.",
     answer: [
-      "Eris allows security teams to intentionally inoculate their environments by simulating real attacks inside tightly confined sandboxes:",
-      "• Complete Kernel Isolation: Eris containers run with dropped root capabilities (`CAP_SYS_ADMIN` disabled), unprivileged user namespaces, and read-only root filesystems.",
-      "• Network Air-Gapping: Sandboxes run on isolated virtual bridge interfaces with no route to your production networks or external gateways.",
-      "• 10-Minute Auto-Kill Watchdog: An independent host watchdog timer forcibly terminates, unlinks, and purges all ephemeral containers after 10 minutes, preventing orphaned ranges or resource starvation."
+      "Enterprise fleets rarely run a single Linux distribution; they manage a mix of Ubuntu, Debian, RHEL, AlmaLinux, Rocky, and Alpine.",
+      "Argent unifies patch management without vendor lock-in:",
+      "• Universal Errata Normalization: Maps upstream vendor security advisories and CVE fixes into a unified, cryptographically verified catalog.",
+      "• Staged Transaction Safety: Packages are staged in isolated cache buffers and verified against SLSA Level 3 Ed25519 signatures before system package managers execute installs.",
+      "• Air-Gap Data Diode Support: Pre-baked update bundles can be transferred across secure data diodes to keep air-gapped systems fully patched."
     ]
   },
   {
@@ -500,7 +501,7 @@ const FAQ_DATA: FaqItem[] = [
     shortSummary: "Yes. All daemons, container ranges, and patch compilers run completely self-contained and offline.",
     answer: [
       "Yes. Exultia was designed from inception for sovereign, air-gapped, and defense-grade environments:",
-      "• Self-Contained Binaries: The Vantage resident daemon, in-memory patch compiler, and Valkyrie prober require no continuous connection to external servers.",
+      "• Self-Contained Binaries: The Vantage resident daemon, Kinetic orchestrator, and in-memory patch compiler require no continuous connection to external servers.",
       "• Pre-Baked Intelligence: Includes 24,388 advisories and 12,993 CISA KEV records directly on the local filesystem.",
       "• Data Diode Sync: When updates are needed, delta catalogs can be exported into offline signed `.bundle` packages and imported across secure data diodes.",
       "• Cosign Signature Verification: Offline bundles include cryptographic Cosign signatures that are validated locally against your organization's public key before deployment."
@@ -1425,12 +1426,12 @@ export default function FaqPage() {
           Praxis
         </Link>
         <span style={{ color: "#334155" }}>&bull;</span>
-        <Link href="/app/eris" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
-          Eris
+        <Link href="/argent" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
+          Argent
         </Link>
         <span style={{ color: "#334155" }}>&bull;</span>
-        <Link href="/app/valkyrie" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
-          Valkyrie
+        <Link href="/products/exultia-linux" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
+          Kinetic
         </Link>
         <span style={{ color: "#334155" }}>&bull;</span>
         <Link href="/products/daedelus" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>

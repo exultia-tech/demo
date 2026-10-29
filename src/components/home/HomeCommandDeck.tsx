@@ -50,7 +50,7 @@ sudo ./install.sh
 
 # 3. Instant Day-Zero Offline Commands (Zero internet connection needed):
 exultia audit                  # Full security compliance audit against 24,388 advisories
-exultia test --valkyrie --eris # Ephemeral microVM exploit verification & chaos inoculation
+exultia test --canary --sandbox # Ephemeral microVM exploit verification & sandbox validation
 exultia fix                    # Auto-remediate all drifted controls & take safety snapshot
 exultia search rust            # Sub-millisecond offline UVI catalog query`
     },
@@ -92,14 +92,14 @@ allow_kernel_patch = false
 allow_network_filter = true
 stability_override = true
 
-[valkyrie_probe]
+[canary_probe]
 enabled = true
 canary_timeout = "10s"
 non_destructive = true
 
-[eris_inoculation]
+[sandbox_validation]
 enabled = true
-chaos_cycles = 5
+canary_cycles = 5
 microvm_sandbox_ttl = "10m"`
     },
     systemd_service: {
@@ -135,10 +135,10 @@ set -euo pipefail
 echo "[EXULTIA] Auditing active network sockets..."
 exultia audit --pre-baked-uvi=/var/lib/exultia/uvi.db
 
-# 2. Engage Valkyrie proof-of-exploit probe & Eris chaos inoculation
-echo "[EXULTIA:valkyrie] Testing exploit viability via HMAC canary handshake..."
-echo "[EXULTIA:eris] Stress-testing candidate hotpatch against fault chaos..."
-exultia test --valkyrie --eris --timeout=10m
+# 2. Engage non-destructive canary probe & sandbox validation
+echo "[EXULTIA:canary] Testing exploit viability via HMAC canary handshake..."
+echo "[EXULTIA:sandbox] Stress-testing candidate hotpatch against fault safety..."
+exultia test --canary --sandbox --timeout=10m
 
 # 3. Apply surgical in-memory patch or sysctl baseline restore
 echo "[EXULTIA] Applying verified in-memory trampoline (<350ms)..."
@@ -471,17 +471,17 @@ systemctl is-active --quiet exultia.service && echo "[EXULTIA] Node secured and 
                 Exploit Validation
               </h3>
               <div style={{ fontSize: "0.8rem", color: "#94A3B8", fontFamily: "var(--font-mono, monospace)" }}>
-                <code>exultia test --valkyrie --eris</code>
+                <code>exultia test --canary --sandbox</code>
               </div>
             </div>
 
             <div style={{ flex: 1, minWidth: "260px" }}>
               <p style={{ fontSize: "0.95rem", color: "#CBD5E1", lineHeight: 1.6, margin: "0 0 0.85rem 0" }}>
-                Before touching live process memory, the daemon spins up an ephemeral 10-minute microVM sandbox mirroring your exact runtime and engages its internal twin validation harnesses: <strong>Valkyrie</strong>, which fires safe, non-destructive protocol probes with cryptographic HMAC handshakes to mathematically verify exploit viability, and <strong>Eris</strong>, which stress-tests the candidate hotpatch against fault chaos and race conditions. Because nothing ruins a Tuesday quite like an alert scanner declaring a &ldquo;CVSS 10.0 CRITICAL&rdquo; on a disabled test utility nobody has executed since 2019.
+                Before touching live process memory, the daemon spins up an ephemeral 10-minute microVM sandbox mirroring your exact runtime and engages its internal twin validation harnesses: non-destructive cryptographic canary probes that mathematically verify exploit viability without delivering harmful payloads, and hermetic sandbox stress-testing against race conditions. Because nothing ruins a Tuesday quite like an alert scanner declaring a &ldquo;CVSS 10.0 CRITICAL&rdquo; on a disabled test utility nobody has executed since 2019.
               </p>
               <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.82rem", color: "#94A3B8", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "0.6rem" }}>
-                <span>&bull; <strong>Valkyrie Engine:</strong> Non-destructive HMAC handshake canary proves weaponization</span>
-                <span>&bull; <strong>Eris Inoculation:</strong> In-sandbox chaos simulation verifies patch resilience under load</span>
+                <span>&bull; <strong>Canary Verification:</strong> Non-destructive HMAC handshake canary proves weaponization</span>
+                <span>&bull; <strong>Kinetic Sandbox:</strong> In-sandbox validation verifies patch resilience under load</span>
                 <span>&bull; <strong>Safety:</strong> Ephemeral microVM with 10m auto-destruct (0 host footprint)</span>
               </div>
             </div>

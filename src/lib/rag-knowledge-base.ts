@@ -283,7 +283,8 @@ One unified subscription unlocks access to all 7 sovereign defense engines witho
 #### Complete Sovereign Suite:
 - **Vantage:** Universal vulnerability intelligence feed synchronizing 110+ global registries.
 - **Praxis:** Surgical zero-downtime hotpatch compiler and POSIX-compliant remediation script generator.
-- **Kinetic:** Sub-second deterministic rollback daemon with pre-image cryptographic snapshotting.
+- **Kinetic:** Sub-second deterministic rollback daemon (<1ms) with pre-image cryptographic snapshotting.
+- **Argent:** Multi-distro vendor errata synthesizer and sovereign general patch manager.
 - **Eris:** Intentional vulnerability proving ground and 5-container Docker attack range with 10-minute auto-destruct watchdogs.
 - **Valkyrie:** Non-destructive BAS exploitability prober with HMAC-SHA256 cryptographic attestation tokens.
 - **PureIDE:** Air-gapped hermetic workstation IDE (unified in Daedelus) with cgroup kernel network boundaries.
@@ -393,7 +394,7 @@ Because of this lean, focused engineering model:
     sourceUrl: '/wiki',
     topic: 'closed-loop',
     category: 'architecture',
-    tags: ['closed-loop', 'ooda', 'architecture', 'engines', 'synergy', 'vantage', 'eris', 'valkyrie', 'praxis'],
+    tags: ['closed-loop', 'ooda', 'architecture', 'engines', 'synergy', 'vantage', 'argent', 'kinetic', 'praxis'],
     keywords: [
       'closed loop', 'closed-loop', 'ooda', 'architecture', 'observe', 'orient', 'decide', 'act',
       'cycle', 'how it works', 'flow', 'explain how closed-loop defense works'
@@ -406,23 +407,23 @@ Traditional security separates scanning, pen-testing, and remediation into disco
   1. OBSERVE (Vantage)   --> 110+ authoritative feeds (CISA KEV, NIST NVD, Linux Errata)
           │
           ▼
-  2. ORIENT (Eris)       --> Programmatically provisions isolated 5-container Docker range
+  2. ORIENT (Argent)     --> Normalizes vendor errata & synthesizes targeted package fixes
           │
           ▼
-  3. DECIDE (Valkyrie)   --> Injects safe, non-destructive HMAC-signed canary exploit probe
+  3. DECIDE (Kinetic)    --> Validates exploitability non-destructively via canary testing
           │
           ▼
   4. ACT (Praxis/Kinetic)--> Deploys in-memory drop-in sentinel with sub-second rollback
 \`\`\`
 
 - **Observe (Vantage):** Ingests and scores zero-days in real-time.
-- **Orient (Eris):** Spins up a sandboxed environment matching the adversary's conditions with a 10-minute auto-destruct watchdog.
-- **Decide (Valkyrie):** Proves exploitability mathematically with HMAC tokens without causing denial of service.
+- **Orient (Argent):** Analyzes target Linux distributions and resolves deterministic patch dependencies.
+- **Decide (Kinetic):** Proves exploitability non-destructively using canary verification without causing denial of service.
 - **Act (Praxis & Kinetic):** Synthesizes and applies the hotfix in <250ms (<40ms typical) with zero service reboot and instant deterministic rollback. Read more in our [**Interactive FAQ**](/faq).`,
     suggestions: [
       'Is in-memory hotpatching safe?',
-      'How does Valkyrie prove exploitability without crashing services?',
-      'What are the 7 core engines?',
+      'How does Kinetic sub-second rollback work?',
+      'What are the core platform engines?',
       'Where can I run the Bullshit Validator?'
     ]
   },
@@ -540,7 +541,7 @@ Answers to critical operational questions regarding production safety and fleet 
 - **Backported Fixes:** Vantage normalizes Debian Security Trackers, Ubuntu USN, and Red Hat RHSA errata. If a vendor backports a CVE fix into an existing package release string, Vantage marks it \`RESOLVED_BY_BACKPORT\` and leaves it untouched.
 - **Multi-Ring Canary Rollouts:** Updates are never blasted simultaneously. Phased rings: **Ring 0 (Canary 2%-10%, 15m gate)** -> **Ring 1 (Staging 25%, 2h soak)** -> **Ring 2 (Broad Fleet 65%-75%)**. Automated health-check failure triggers instant rollback.
 - **Client-Side Ring Configuration:** Configurable via \`/etc/exultia/kinetic.toml\` (\`[rollout] ring = 0\`), CLI (\`sudo kinetic config set rollout.ring 0\`), or Kubernetes Helm DaemonSet node labels.
-- **Active Remediation Verification:** Closed-loop verification with active socket inspection, memory mapping audit, synthetic loopback exploit probes (Valkyrie), and signed OpenVEX attestation receipts.
+- **Active Remediation Verification:** Closed-loop verification with active socket inspection, memory mapping audit, synthetic loopback exploit probes, and signed OpenVEX attestation receipts.
 - **Downtime Liability & SLA:** Standard commercial software terms apply. SLA guarantees 99.9% uptime for the Vantage Threat Feed API; we reject reckless "1-hour patch" claims that bypass formal regression testing.
 - **Broken Upstream Patch Killswitch:** Immediate global \`QUARANTINE_REVOCATION\` broadcast blocks admissions in minutes. Canary nodes autonomously execute clean package downgrades.
 - **Threat Feed Sync Monitoring:** Monitored via Prometheus (\`exultia_feed_last_sync_timestamp_seconds\`), systemd watchdog, and automatic fallback to 24,388 pre-baked local advisories.`,
