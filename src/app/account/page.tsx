@@ -14,8 +14,7 @@ import {
   Copy, 
   Trash2, 
   Plus, 
-  Sparkles, 
-  Layers, 
+  Sparkles,  
   ExternalLink, 
   RefreshCw,
   Clock,
@@ -35,7 +34,6 @@ import {
   Check
 } from "lucide-react";
 import { PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
-import CustomerOverview from "@/components/account/CustomerOverview";
 import ProductSuiteConfig from "@/components/account/ProductSuiteConfig";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
 import AdminConsole from "@/components/account/AdminConsole";
@@ -60,7 +58,6 @@ interface SubscriptionItem {
 }
 
 type AccountTab = 
-  | "overview" 
   | "profile" 
   | "subscriptions" 
   | "security" 
@@ -84,7 +81,7 @@ function AccountPageContent() {
   } = useAuth();
 
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<AccountTab>("overview");
+  const [activeTab, setActiveTab] = useState<AccountTab>("profile");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isAdmin = Boolean(
@@ -134,7 +131,6 @@ function AccountPageContent() {
   useEffect(() => {
     if (tabParam) {
       const validTabs: AccountTab[] = [
-        "overview", 
         "profile", 
         "subscriptions", 
         "security", 
@@ -143,8 +139,8 @@ function AccountPageContent() {
         "workflows", 
         "admin"
       ];
-      if (tabParam === "personas" || tabParam === "eris" || tabParam === "valkyrie") {
-        setActiveTab("overview");
+      if (tabParam === "overview" || tabParam === "personas" || tabParam === "eris" || tabParam === "valkyrie") {
+        setActiveTab("profile");
       } else if (["pureide", "uvi", "praxis", "pureos", "axiom", "kinetic", "config"].includes(tabParam)) {
         setActiveTab("config");
       } else if (validTabs.includes(tabParam as AccountTab)) {
@@ -361,12 +357,6 @@ function AccountPageContent() {
 
   // Header meta titles for the active tab view
   const tabMetadata: Record<AccountTab, { title: string; subtitle: string; actionLabel?: string; actionHref?: string; onActionClick?: () => void }> = {
-    overview: {
-      title: "Hub & Fleet Overview",
-      subtitle: "Unified telemetry status, active workstation licenses, and security credentials.",
-      actionLabel: "Manage Plans",
-      actionHref: "/account/subscription"
-    },
     profile: {
       title: "Profile & Identity Credentials",
       subtitle: "Personal identity details, authenticated email address, and security access keys.",
@@ -419,7 +409,7 @@ function AccountPageContent() {
     }
   };
 
-  const currentMeta = tabMetadata[activeTab] || tabMetadata.overview;
+  const currentMeta = tabMetadata[activeTab] || tabMetadata.profile;
 
   return (
     <div className="console-workbench fade-in">
@@ -457,18 +447,6 @@ function AccountPageContent() {
         <div className="console-sidebar-group">
           {!sidebarCollapsed && <span className="console-sidebar-label">Account & Identity</span>}
           
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "overview" ? "active" : ""}`}
-            onClick={() => setActiveTab("overview")}
-            title="Hub & Overview"
-          >
-            <Layers size={16} />
-            {!sidebarCollapsed && <span>Hub & Overview</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">Hub</span>
-            )}
-          </button>
 
           <button 
             type="button"
@@ -740,17 +718,6 @@ function AccountPageContent() {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* VIEW 1: HUB & FLEET OVERVIEW */}
-        {/* ========================================================================= */}
-        {activeTab === "overview" && (
-          <div className="fade-in">
-            <CustomerOverview 
-              onSelectTab={setActiveTab} 
-              onOpenUpgradeModal={() => setActiveTab("subscriptions")} 
-            />
-          </div>
-        )}
 
         {/* ========================================================================= */}
         {/* VIEW 2: PROFILE & IDENTITY CREDENTIALS */}

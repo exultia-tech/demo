@@ -4,8 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { 
-  ShieldCheck, 
-  Sparkles, 
+  ShieldCheck,  
   Lock, 
   ArrowRight, 
   CheckCircle2, 
@@ -256,54 +255,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
         </div>
       </div>
 
-      {/* ── SOVEREIGNTY BUNDLE CALLOUT BANNER ─────────────────────────────── */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%)",
-        border: "1px solid rgba(234, 179, 8, 0.35)",
-        borderRadius: "14px",
-        padding: "1rem 1.25rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "rgba(234, 179, 8, 0.2)", display: "grid", placeItems: "center" }}>
-            <Sparkles size={20} color="#FBBF24" />
-          </div>
-          <div>
-            <div style={{ color: "#FDE047", fontWeight: 800, fontSize: "0.85rem", letterSpacing: "-0.01em" }}>
-              Sovereignty Multi-Product Discount Active
-            </div>
-            <div style={{ color: "#CBD5E1", fontSize: "0.75rem", lineHeight: 1.4 }}>
-              Unlock <strong>30% off</strong> for 1 companion product, <strong>40% off</strong> for 2 companions, and <strong>50% off</strong> when bundling Vantage, Praxis, and Daedelus.
-            </div>
-          </div>
-        </div>
-
-        <Link
-          href="/account/subscription"
-          style={{
-            padding: "6px 14px",
-            background: "rgba(234, 179, 8, 0.2)",
-            border: "1px solid rgba(234, 179, 8, 0.5)",
-            borderRadius: "8px",
-            color: "#FEF08A",
-            fontSize: "0.75rem",
-            fontWeight: 800,
-            textDecoration: "none",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "5px"
-          }}
-        >
-          <span>Calculate Bundle Savings</span>
-          <ArrowRight size={12} />
-        </Link>
-      </div>
-
-      {/* ── 7-PRODUCT UNCLUTTERED WORKSPACE TILES ─────────────────────────── */}
+      {/* ── PRODUCT CONSOLES & CAPABILITIES ─────────────────────────── */}
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <div>
