@@ -379,7 +379,7 @@ export default function PreviewHoldingPage() {
                 <input
                   ref={passkeyInputRef}
                   type="password"
-                  placeholder="Enter Passkey (e.g. exultia-preview-2026)"
+                  placeholder="Enter authorization passkey"
                   value={passkey}
                   onChange={(e) => setPasskey(e.target.value)}
                   required
