@@ -30,13 +30,13 @@ import {
   CreditCard,
   LogOut,
   ChevronRight,
+  Sliders,
   ShieldCheck,
   Check
 } from "lucide-react";
-import { PureIdeIcon, VantageIcon, AxiomIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
+import { PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import CustomerOverview from "@/components/account/CustomerOverview";
-import PureIdeCustomerTools from "@/components/account/PureIdeCustomerTools";
-import UviCustomerTools from "@/components/account/UviCustomerTools";
+import ProductSuiteConfig from "@/components/account/ProductSuiteConfig";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
 import AdminConsole from "@/components/account/AdminConsole";
 
@@ -64,11 +64,7 @@ type AccountTab =
   | "profile" 
   | "subscriptions" 
   | "security" 
-  | "pureide" 
-  | "uvi" 
-  | "praxis" 
-  | "pureos" 
-  | "axiom" 
+  | "config" 
   | "tokens" 
   | "workflows" 
   | "admin";
@@ -142,19 +138,15 @@ function AccountPageContent() {
         "profile", 
         "subscriptions", 
         "security", 
-        "pureide", 
-        "uvi", 
-        "praxis", 
-        "pureos", 
-        "axiom", 
+        "config", 
         "tokens", 
         "workflows", 
         "admin"
       ];
       if (tabParam === "personas" || tabParam === "eris" || tabParam === "valkyrie") {
         setActiveTab("overview");
-      } else if (tabParam === "kinetic") {
-        setActiveTab("praxis");
+      } else if (["pureide", "uvi", "praxis", "pureos", "axiom", "kinetic", "config"].includes(tabParam)) {
+        setActiveTab("config");
       } else if (validTabs.includes(tabParam as AccountTab)) {
         setActiveTab(tabParam as AccountTab);
       }
@@ -393,35 +385,11 @@ function AccountPageContent() {
       actionLabel: "Update Password",
       onActionClick: () => setActiveTab("profile")
     },
-    pureide: {
-      title: "Daedelus IDE Workstation",
-      subtitle: "Hermetic containerized compiler, air-gapped developer binaries, and workstation telemetry.",
-      actionLabel: "Launch IDE Console →",
-      actionHref: "/app/daedelus?mode=ide"
-    },
-    uvi: {
-      title: "Vantage Threat Intelligence",
-      subtitle: "Universal vulnerability disclosures, CISA KEV feeds, and automated advisory sync.",
-      actionLabel: "Open Vantage Feed →",
-      actionHref: "/app/uvi"
-    },
-    praxis: {
-      title: "Praxis Autonomous Remediation & Hotpatching",
-      subtitle: "Autonomous zero-downtime hotfix streaming, canary rollouts, deterministic CVE fix scripts, and hardware firewall ACL compiler.",
-      actionLabel: "Launch Praxis Console →",
-      actionHref: "/app/praxis"
-    },
-    pureos: {
-      title: "Daedelus Distroless Containers",
-      subtitle: "CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures.",
-      actionLabel: "Browse Container Forge →",
-      actionHref: "/app/daedelus?mode=container"
-    },
-    axiom: {
-      title: "Axiom Certification & LMS",
-      subtitle: "15,000+ question cybersecurity certification simulator with LMS REST API endpoints.",
-      actionLabel: "Open Exam Simulator →",
-      actionHref: "/app/axiom"
+    config: {
+      title: "Product Suite Configuration",
+      subtitle: "Unified controls for Daedelus workstations, Vantage threat feeds, Praxis remediation, and hardened container policies.",
+      actionLabel: "Launch Workstation",
+      actionHref: "/app/daedelus"
     },
     tokens: {
       title: "API Access Tokens (PAT)",
@@ -536,72 +504,20 @@ function AccountPageContent() {
           </button>
         </div>
 
-        {/* Group 2: Product Suite Consoles */}
+        {/* Group 2: Unified Product Suite Controls */}
         <div className="console-sidebar-group">
           {!sidebarCollapsed && <span className="console-sidebar-label">Product Suite</span>}
           
           <button 
             type="button"
-            className={`console-sidebar-item ${activeTab === "pureide" ? "active" : ""}`}
-            onClick={() => setActiveTab("pureide")}
-            title="PureIDE Workstation"
+            className={`console-sidebar-item ${activeTab === "config" ? "active" : ""}`}
+            onClick={() => setActiveTab("config")}
+            title="Product Suite Configuration"
           >
-            <PureIdeIcon size={16} />
-            {!sidebarCollapsed && <span>PureIDE Compiler</span>}
+            <Sliders size={16} />
+            {!sidebarCollapsed && <span>Suite Configuration</span>}
             {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("pureide").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "uvi" ? "active" : ""}`}
-            onClick={() => setActiveTab("uvi")}
-            title="Vantage Threat Intel"
-          >
-            <VantageIcon size={16} />
-            {!sidebarCollapsed && <span>Vantage Threat Feed</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("uvi").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "praxis" ? "active" : ""}`}
-            onClick={() => setActiveTab("praxis")}
-            title="Praxis Autonomous Remediation & Hotpatching"
-          >
-            <PraxisIcon size={16} />
-            {!sidebarCollapsed && <span>Praxis Remediation</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("praxis").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "pureos" ? "active" : ""}`}
-            onClick={() => setActiveTab("pureos")}
-            title="PureOS Hardened Containers"
-          >
-            <PureOsIcon size={16} />
-            {!sidebarCollapsed && <span>PureOS Containers</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("pureos").toUpperCase()}</span>
-            )}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "axiom" ? "active" : ""}`}
-            onClick={() => setActiveTab("axiom")}
-            title="Axiom Accreditation"
-          >
-            <AxiomIcon size={16} />
-            {!sidebarCollapsed && <span>Axiom LMS Prep</span>}
-            {!sidebarCollapsed && (
-              <span className="console-sidebar-badge">{getSubTier("axiom").toUpperCase()}</span>
+              <span className="console-sidebar-badge">CONTROLS</span>
             )}
           </button>
         </div>
@@ -1315,118 +1231,6 @@ function AccountPageContent() {
               </div>
 
               {/* CARD 3: PRAXIS (absorbed kinetic hotpatching) */}
-
-              {/* CARD 4: AXIOM */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("axiom") !== "free" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <AxiomIcon size={32} glow={false} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Exam Simulator & LMS API</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("axiom") !== "free" ? "rgba(244, 63, 94, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("axiom") !== "free" ? "#FDA4AF" : "#94A3B8",
-                    border: getSubTier("axiom") !== "free" ? "1px solid rgba(244, 63, 94, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("axiom")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  15,000+ question cybersecurity certification simulator with full question bank and LMS API.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#F43F5E" />
-                    <span>
-                      {getSubTier("axiom") === "enterprise" 
-                        ? "Enterprise LMS Simulator Feed (Enterprise)" 
-                        : getSubTier("axiom") === "pro" 
-                        ? "Pro Exports & API Queries (Pro)" 
-                        : "Web Exam Simulator (Free)"}
-                    </span>
-                  </div>
-
-                  {getSubTier("axiom") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=axiom"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=axiom"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("axiom")}
-                        disabled={updatingSubProduct === "axiom"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* CARD 5: PRAXIS */}
               <div style={{
                 background: "rgba(15, 23, 42, 0.7)",
@@ -1700,83 +1504,11 @@ function AccountPageContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 5: PUREIDE WORKSTATION TOOLS */}
+        {/* VIEW 5: UNIFIED PRODUCT SUITE CONFIGURATION */}
         {/* ========================================================================= */}
-        {activeTab === "pureide" && (
+        {activeTab === "config" && (
           <div className="fade-in">
-            <PureIdeCustomerTools />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* VIEW 6: Vantage THREAT INTEL */}
-        {/* ========================================================================= */}
-        {activeTab === "uvi" && (
-          <div className="fade-in">
-            <UviCustomerTools />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* VIEW 7: PRAXIS AUTONOMOUS REMEDIATION & HOTPATCHING */}
-        {/* ========================================================================= */}
-        {activeTab === "praxis" && (
-          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
-            <PraxisIcon size={64} glow={true} className="mx-auto mb-4" />
-            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Praxis Autonomous Remediation & Hotpatching</h2>
-            <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
-              Autonomous zero-downtime hotfix stream daemon, canary rollouts, sub-second deterministic rollbacks, and hardware firewall ACL compiler.
-            </p>
-            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/praxis" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F59E0B, #D97706)", fontWeight: 700 }}>
-                Launch Praxis Console →
-              </Link>
-              <Link href="/account/subscription?product=praxis" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
-                Manage Praxis Tier
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* VIEW 8: AXIOM LMS PREP */}
-        {/* ========================================================================= */}
-        {activeTab === "axiom" && (
-          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(244, 63, 94, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
-            <AxiomIcon size={64} glow={true} className="mx-auto mb-4" />
-            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>Axiom LMS Integration & Exam Simulator</h2>
-            <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
-              15,000+ question bank covering CISSP, CompTIA Security+, CEH, and AWS Security. Enterprise subscribers enjoy SCORM/LMS grade sync endpoints.
-            </p>
-            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/axiom" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #F43F5E, #E11D48)", fontWeight: 700 }}>
-                Launch Exam Simulator →
-              </Link>
-              <Link href="/account/subscription?product=axiom" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
-                Manage Axiom Tier
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* VIEW 10: PUREOS HARDENED CONTAINERS */}
-        {/* ========================================================================= */}
-        {activeTab === "pureos" && (
-          <div className="fade-in" style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(16, 185, 129, 0.4)", borderRadius: "18px", padding: "2.5rem 2rem", textAlign: "center" }}>
-            <PureOsIcon size={64} glow={true} className="mx-auto mb-4" />
-            <h2 style={{ color: "white", fontSize: "1.5rem", marginBottom: "0.75rem", fontWeight: 800 }}>PureOS Hardened Containers</h2>
-            <p style={{ color: "#94A3B8", maxWidth: "600px", margin: "0 auto 1.5rem auto", lineHeight: 1.5, fontSize: "0.9rem" }}>
-              CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures for airgap and zero-trust workloads.
-            </p>
-            <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/daedelus?mode=container" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #10B981, #059669)", fontWeight: 700 }}>
-                Browse Container Forge →
-              </Link>
-              <Link href="/account/subscription?product=pureos" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
-                Manage PureOS Tier
-              </Link>
-            </div>
+            <ProductSuiteConfig />
           </div>
         )}
 

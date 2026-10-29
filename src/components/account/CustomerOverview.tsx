@@ -23,7 +23,6 @@ import {
   VantageIcon, 
   PraxisIcon, 
   PureOsIcon, 
-  AxiomIcon,
   ExultiaLinuxIcon
 } from "@/components/BrandIcons";
 
@@ -39,7 +38,6 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   const uviTier = getUserTier("uvi");
   const praxisTier = getUserTier("praxis");
   const pureosTier = getUserTier("pureos");
-  const axiomTier = getUserTier("axiom");
 
   // Compute unified platform tier
   const platformTier = (() => {
@@ -47,14 +45,14 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
     if (p === "enterprise" || p === "pro") return p;
     const m = getUserTier("multipass");
     if (m === "enterprise" || m === "pro") return m;
-    const pTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier];
+    const pTiers = [pureIdeTier, uviTier, praxisTier, pureosTier];
     if (pTiers.includes("enterprise")) return "enterprise";
     if (pTiers.includes("pro") || pTiers.includes("legal")) return "pro";
     return "community";
   })();
 
   // Calculate unlocked capabilities percentage across the full 7-product ecosystem
-  const productTiers = [pureIdeTier, uviTier, praxisTier, pureosTier, axiomTier];
+  const productTiers = [pureIdeTier, uviTier, praxisTier, pureosTier];
   let unlockedScore = platformTier === "enterprise" ? 100 : platformTier === "pro" ? 85 : 35;
 
   const quickLaunchers = [
@@ -62,7 +60,6 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
     { id: "uvi", name: "Vantage", desc: "Threat Intel Feed", icon: VantageIcon, url: "/app/uvi", color: "#8B5CF6", tier: uviTier },
     { id: "praxis", name: "Praxis", desc: "Auto Remediation", icon: PraxisIcon, url: "/app/praxis", color: "#F59E0B", tier: praxisTier },
     { id: "pureos", name: "Daedelus Containers", desc: "Distroless OCI Containers", icon: PureOsIcon, url: "/app/daedelus?mode=container", color: "#10B981", tier: pureosTier },
-    { id: "axiom", name: "Axiom", desc: "LMS Exam Simulator", icon: AxiomIcon, url: "/app/axiom", color: "#F43F5E", tier: axiomTier },
     { id: "exultia-linux", name: "Portable Daemon", desc: "60s Self-Healing Linux", icon: ExultiaLinuxIcon, url: "/products/exultia-linux", color: "#00E5FF", tier: "community" },
   ];
 
@@ -83,7 +80,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
         { label: "Cloud Build Acceleration", unlocked: pureIdeTier !== "free" },
         { label: "Hardware Cosign Key Enclave", unlocked: pureIdeTier === "enterprise" }
       ],
-      primaryAction: { label: "Open PureIDE", tab: "pureide" }
+      primaryAction: { label: "Configure Workstation", tab: "config" }
     },
     {
       id: "uvi",
@@ -101,7 +98,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
         { label: "High-Throughput API Streams", unlocked: uviTier !== "free" },
         { label: "Bulk Parquet & JSON Dumps", unlocked: uviTier === "enterprise" }
       ],
-      primaryAction: { label: "Open Vantage Feed", tab: "uvi" }
+      primaryAction: { label: "Configure Feeds", tab: "config" }
     },
     {
       id: "praxis",
@@ -119,7 +116,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
         { label: "Firewall & SIEM Exporters", unlocked: praxisTier !== "free" },
         { label: "Enterprise Fleet Orchestration", unlocked: praxisTier === "enterprise" }
       ],
-      primaryAction: { label: "Open Praxis Console", tab: "praxis" }
+      primaryAction: { label: "Configure Remediation", tab: "config" }
     },
     {
       id: "pureos",
@@ -137,26 +134,8 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
         { label: "Distroless & Daily Zero-Day Sync", unlocked: pureosTier !== "free" },
         { label: "Private Registry Proxy & Enclave", unlocked: pureosTier === "enterprise" }
       ],
-      primaryAction: { label: "Open PureOS Catalog", tab: "pureos" }
+      primaryAction: { label: "Configure Containers", tab: "config" }
     },
-    {
-      id: "axiom",
-      name: "Axiom Simulator & LMS",
-      category: "Certification Platform",
-      icon: AxiomIcon,
-      tier: axiomTier,
-      color: "#F43F5E",
-      bgGradient: "linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(15, 23, 42, 0.7) 100%)",
-      borderColor: "rgba(244, 63, 94, 0.3)",
-      badgeColor: "#FDA4AF",
-      description: "15,000+ question cybersecurity certification simulator with attack/defense terminal labs.",
-      features: [
-        { label: "15K+ Question Exam Engine", unlocked: true },
-        { label: "Interactive Terminal Labs", unlocked: axiomTier !== "free" },
-        { label: "Dedicated LMS API & SCORM", unlocked: axiomTier === "enterprise" }
-      ],
-      primaryAction: { label: "Open Axiom Simulator", tab: "axiom" }
-    }
   ];
 
   return (
@@ -298,7 +277,7 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
               Sovereignty Multi-Product Discount Active
             </div>
             <div style={{ color: "#CBD5E1", fontSize: "0.75rem", lineHeight: 1.4 }}>
-              Unlock <strong>30% off</strong> for 1 companion product, <strong>40% off</strong> for 2 companions, and <strong>50% off</strong> when bundling Vantage, Praxis, Daedelus, and Axiom.
+              Unlock <strong>30% off</strong> for 1 companion product, <strong>40% off</strong> for 2 companions, and <strong>50% off</strong> when bundling Vantage, Praxis, and Daedelus.
             </div>
           </div>
         </div>
