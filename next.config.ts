@@ -5,6 +5,47 @@ const antiFramingHeaders = [
   { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
 ];
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://paypal.com https://*.paypal.com https://paypalobjects.com https://*.paypalobjects.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https://paypalobjects.com https://*.paypalobjects.com https://paypal.com https://*.paypal.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "connect-src 'self' https://paypal.com https://*.paypal.com https://paypalobjects.com https://*.paypalobjects.com",
+  "frame-src 'self' https://paypal.com https://*.paypal.com",
+  "form-action 'self' https://paypal.com https://*.paypal.com",
+  "frame-ancestors 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+].join("; ");
+
+const globalSecurityHeaders = [
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=31536000; includeSubDomains; preload",
+  },
+  {
+    key: "X-Content-Type-Options",
+    value: "nosniff",
+  },
+  {
+    key: "X-Frame-Options",
+    value: "SAMEORIGIN",
+  },
+  {
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
+  {
+    key: "Content-Security-Policy",
+    value: contentSecurityPolicy,
+  },
+];
+
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/kinetic/download': ['./public/downloads/kinetic/**/*'],
@@ -12,6 +53,11 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Global strict corporate security headers (Zscaler / Cisco Umbrella compliant)
+      {
+        source: "/:path*",
+        headers: globalSecurityHeaders,
+      },
       // Exam simulator & results live on the Axiom page; block all embedding
       { source: "/app/axiom", headers: antiFramingHeaders },
       { source: "/app/axiom/:path*", headers: antiFramingHeaders },
