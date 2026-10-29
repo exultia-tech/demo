@@ -26,14 +26,12 @@ import {
   Scale,
   GitBranch,
   ShieldAlert,
-  CreditCard,
   LogOut,
   ChevronRight,
   Sliders,
   ShieldCheck,
   Check
 } from "lucide-react";
-import { PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon } from "@/components/BrandIcons";
 import ProductSuiteConfig from "@/components/account/ProductSuiteConfig";
 import GitHubWorkflowsTab from "@/components/account/GitHubWorkflowsTab";
 import AdminConsole from "@/components/account/AdminConsole";
@@ -59,7 +57,6 @@ interface SubscriptionItem {
 
 type AccountTab = 
   | "profile" 
-  | "subscriptions" 
   | "security" 
   | "config" 
   | "tokens" 
@@ -90,6 +87,11 @@ function AccountPageContent() {
     user?.email?.toLowerCase() === "admin@exultia.tech"
   );
 
+  const isEnterprise = Boolean(
+    isAdmin ||
+    user?.subscriptions?.some(s => s.status === "active" && (s.tier?.toLowerCase() === "enterprise" || s.tier?.toLowerCase() === "developer"))
+  );
+
   // Profile Form State
   const [name, setName] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -99,7 +101,6 @@ function AccountPageContent() {
   // Subscriptions State
   const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>([]);
   const [loadingSubs, setLoadingSubs] = useState(false);
-  const [updatingSubProduct, setUpdatingSubProduct] = useState<string | null>(null);
 
   // Tokens State
   const [tokens, setTokens] = useState<ApiTokenItem[]>([]);
@@ -132,14 +133,13 @@ function AccountPageContent() {
     if (tabParam) {
       const validTabs: AccountTab[] = [
         "profile", 
-        "subscriptions", 
         "security", 
         "config", 
         "tokens", 
         "workflows", 
         "admin"
       ];
-      if (tabParam === "overview" || tabParam === "personas" || tabParam === "eris" || tabParam === "valkyrie") {
+      if (tabParam === "overview" || tabParam === "subscriptions" || tabParam === "plans" || tabParam === "personas" || tabParam === "eris" || tabParam === "valkyrie") {
         setActiveTab("profile");
       } else if (["pureide", "uvi", "praxis", "pureos", "axiom", "kinetic", "config"].includes(tabParam)) {
         setActiveTab("config");
@@ -266,28 +266,6 @@ function AccountPageContent() {
     }
   };
 
-  const handleDowngradeToFree = async (product: string) => {
-    if (!confirm(`Are you sure you want to downgrade ${product.toUpperCase()} to the Free Community plan?`)) return;
-    setUpdatingSubProduct(product);
-    try {
-      const res = await fetch("/api/user/subscription", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product, tier: "free", billingCycle: "annual" }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        await refreshUser();
-        loadSubscriptions();
-      } else {
-        alert(data.error || "Failed to downgrade subscription");
-      }
-    } catch (e) {
-      console.error("Subscription downgrade error:", e);
-    } finally {
-      setUpdatingSubProduct(null);
-    }
-  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -348,24 +326,11 @@ function AccountPageContent() {
     );
   }
 
-  const getSubTier = (prod: string) => {
-    const s = subscriptions.find(sub => sub.product === prod);
-    return s ? s.tier : "free";
-  };
-
-  const activePaidSubsCount = subscriptions.filter(s => s.status === "active" && s.tier !== "free").length;
-
   // Header meta titles for the active tab view
   const tabMetadata: Record<AccountTab, { title: string; subtitle: string; actionLabel?: string; actionHref?: string; onActionClick?: () => void }> = {
     profile: {
       title: "Profile & Identity Credentials",
       subtitle: "Personal identity details, authenticated email address, and security access keys."
-    },
-    subscriptions: {
-      title: "Plans & Licensing Entitlements",
-      subtitle: "Pro Single-User and Enterprise Volume licenses across the Exultia platform suite.",
-      actionLabel: "Plan Matrix →",
-      actionHref: "/account/subscription"
     },
     security: {
       title: "Enclave Security & Attestation",
@@ -384,8 +349,7 @@ function AccountPageContent() {
       subtitle: "Programmatic bearer tokens for CLI compilers, automated ingest scripts, and REST endpoints.",
       actionLabel: "+ Generate New Token",
       onActionClick: () => {
-        const isEnt = Boolean(user.role === "admin" || user.subscriptions?.some(s => s.status === "active" && (s.tier.toLowerCase() === "enterprise" || s.tier.toLowerCase() === "developer")));
-        if (!isEnt) {
+        if (!isEnterprise) {
           alert("Programmatic API tokens and enhanced integrations are exclusive to Enterprise subscribers. Free accounts are limited to basic account management.");
           return;
         }
@@ -454,19 +418,6 @@ function AccountPageContent() {
           >
             <UserIcon size={16} />
             {!sidebarCollapsed && <span>Profile & Credentials</span>}
-          </button>
-
-          <button 
-            type="button"
-            className={`console-sidebar-item ${activeTab === "subscriptions" ? "active" : ""}`}
-            onClick={() => setActiveTab("subscriptions")}
-            title="Plans & Subscriptions"
-          >
-            <CreditCard size={16} />
-            {!sidebarCollapsed && <span>Plans & Subscriptions</span>}
-            {!sidebarCollapsed && activePaidSubsCount > 0 && (
-              <span className="console-sidebar-badge">{activePaidSubsCount} Paid</span>
-            )}
           </button>
 
           <button 
@@ -580,7 +531,7 @@ function AccountPageContent() {
                   {user.name || user.email}
                 </div>
                 <div style={{ fontSize: "0.68rem", color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {user.role === "admin" ? "Root Administrator" : `${activePaidSubsCount > 0 ? "Licensed Subscriber" : "Community Free"}`}
+                  {user.role === "admin" ? "Root Administrator" : (isEnterprise ? "Enterprise Member" : "Free Plan")}
                 </div>
               </div>
               <button 
@@ -784,9 +735,9 @@ function AccountPageContent() {
                     </div>
                   </div>
                   <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "0.85rem", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                    <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Active Tiers</div>
-                    <div style={{ fontSize: "0.92rem", fontWeight: 700, color: "#34D399", marginTop: "2px" }}>
-                      {activePaidSubsCount} Paid / 6 Total
+                    <div style={{ fontSize: "0.72rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 600 }}>Account Tier</div>
+                    <div style={{ fontSize: "0.92rem", fontWeight: 700, color: isEnterprise ? "#34D399" : "#94A3B8", marginTop: "2px" }}>
+                      {isEnterprise ? "ENTERPRISE" : "FREE"}
                     </div>
                   </div>
                 </div>
@@ -957,446 +908,6 @@ function AccountPageContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 3: PLANS & SUBSCRIPTIONS */}
-        {/* ========================================================================= */}
-        {activeTab === "subscriptions" && (
-          <div className="fade-in">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.25rem", marginBottom: "1.5rem" }}>
-              
-              {/* CARD 1: PUREIDE */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("pureide") !== "free" ? "1px solid rgba(59, 130, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <PureIdeIcon size={32} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>PureIDE</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Workstation Compiler</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("pureide") !== "free" ? "rgba(59, 130, 246, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("pureide") !== "free" ? "#93C5FD" : "#94A3B8",
-                    border: getSubTier("pureide") !== "free" ? "1px solid rgba(59, 130, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("pureide")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Zero-trust developer environment compiler with automated telemetry stripping and airgap signing.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#60A5FA" />
-                    <span>
-                      {getSubTier("pureide") === "enterprise" ? "Hermetic Airgap Cosigning (Enterprise)" : (getSubTier("pureide") === "pro" ? "Priority Cloud Builds (Pro)" : "Community Build Triggers (Free)")}
-                    </span>
-                  </div>
-
-                  {getSubTier("pureide") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=pureide"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=pureide"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("pureide")}
-                        disabled={updatingSubProduct === "pureide"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CARD 2: Vantage */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("uvi") !== "free" ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <VantageIcon size={32} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Vantage Feed</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Threat Intelligence</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("uvi") !== "free" ? "rgba(139, 92, 246, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("uvi") !== "free" ? "#C084FC" : "#94A3B8",
-                    border: getSubTier("uvi") !== "free" ? "1px solid rgba(139, 92, 246, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("uvi")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Universal vulnerability intelligence catalog aggregating CISA KEV, MSRC, OSV, and zero-day disclosures.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#C084FC" />
-                    <span>
-                      {getSubTier("uvi") === "enterprise" ? "Streaming Webhooks & Raw Dumps (Enterprise)" : (getSubTier("uvi") === "pro" ? "Realtime API & KEV Feeds (Pro)" : "Web UI Feed Access (Community)")}
-                    </span>
-                  </div>
-
-                  {getSubTier("uvi") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=uvi"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=uvi"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("uvi")}
-                        disabled={updatingSubProduct === "uvi"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CARD 3: PRAXIS (absorbed kinetic hotpatching) */}
-              {/* CARD 5: PRAXIS */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("praxis") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <PraxisIcon size={32} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>CVE Threat Remediation</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("praxis") !== "free" ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("praxis") !== "free" ? "#FDE68A" : "#94A3B8",
-                    border: getSubTier("praxis") !== "free" ? "1px solid rgba(245, 158, 11, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("praxis")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Automated threat remediation scripts and patch generators mapped directly to vulnerability disclosures.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#F59E0B" />
-                    <span>
-                      {getSubTier("praxis") === "enterprise" ? "Fleet Airgap Auto-Patch (Enterprise)" : (getSubTier("praxis") === "pro" ? "Automated Shell Fix Scripts (Pro)" : "Public Fix Index (Community)")}
-                    </span>
-                  </div>
-
-                  {getSubTier("praxis") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=praxis"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=praxis"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("praxis")}
-                        disabled={updatingSubProduct === "praxis"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CARD 6: PUREOS */}
-              <div style={{
-                background: "rgba(15, 23, 42, 0.7)",
-                border: getSubTier("pureos") !== "free" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.85rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <PureOsIcon size={32} />
-                    <div>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>PureOS Containers</h3>
-                      <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Hardened Linux Registry</div>
-                    </div>
-                  </div>
-                  <span style={{
-                    fontSize: "0.68rem",
-                    background: getSubTier("pureos") !== "free" ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.08)",
-                    color: getSubTier("pureos") !== "free" ? "#6EE7B7" : "#94A3B8",
-                    border: getSubTier("pureos") !== "free" ? "1px solid rgba(16, 185, 129, 0.5)" : "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontWeight: 800,
-                    textTransform: "uppercase"
-                  }}>
-                    {getSubTier("pureos")}
-                  </span>
-                </div>
-
-                <p style={{ color: "#94A3B8", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "1rem" }}>
-                  Immutable minimal developer containers with kernel lockdown and verifiable supply chain signatures.
-                </p>
-
-                <div style={{ marginTop: "auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.85rem", fontSize: "0.75rem", color: "#CBD5E1" }}>
-                    <CheckCircle2 size={13} color="#10B981" />
-                    <span>
-                      {getSubTier("pureos") === "enterprise" ? "Custom Hardened Fleet Images (Enterprise)" : (getSubTier("pureos") === "pro" ? "Authenticated OCI Pulls (Pro)" : "Base Container Pulls (Community)")}
-                    </span>
-                  </div>
-
-                  {getSubTier("pureos") === "free" ? (
-                    <Link
-                      href="/account/subscription?product=pureos"
-                      className="btn-primary"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        textDecoration: "none",
-                        borderRadius: "8px",
-                        width: "100%",
-                        textAlign: "center"
-                      }}
-                    >
-                      Upgrade Plan →
-                    </Link>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      <Link
-                        href="/account/subscription?product=pureos"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "8px 10px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.15)",
-                          borderRadius: "8px",
-                          color: "#FFFFFF",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textDecoration: "none",
-                          textAlign: "center"
-                        }}
-                      >
-                        Manage Plan
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDowngradeToFree("pureos")}
-                        disabled={updatingSubProduct === "pureos"}
-                        style={{
-                          padding: "8px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.25)",
-                          borderRadius: "8px",
-                          color: "#FCA5A5",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          textAlign: "center"
-                        }}
-                      >
-                        Downgrade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
         {/* VIEW 4: ENCLAVE SECURITY & HARDWARE ATTESTATION */}
         {/* ========================================================================= */}
         {activeTab === "security" && (
@@ -1464,7 +975,7 @@ function AccountPageContent() {
         {/* ========================================================================= */}
         {activeTab === "tokens" && (
           <div className="fade-in">
-            {!Boolean(user.role === "admin" || user.subscriptions?.some(s => s.status === "active" && (s.tier.toLowerCase() === "enterprise" || s.tier.toLowerCase() === "developer"))) && (
+            {!isEnterprise && (
               <div style={{
                 background: "rgba(245, 158, 11, 0.12)",
                 border: "1px solid rgba(245, 158, 11, 0.35)",
