@@ -34,6 +34,31 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/products/praxis",
+        destination: "/app/patches",
+        permanent: false,
+      },
+      {
+        source: "/products/valkyrie",
+        destination: "/app/valkyrie",
+        permanent: false,
+      },
+      {
+        source: "/products/eris",
+        destination: "/app/eris",
+        permanent: false,
+      },
+      {
+        source: "/daedelus",
+        destination: "/products/daedelus",
+        permanent: false,
+      },
+      {
+        source: "/account/tokens",
+        destination: "/account?tab=tokens",
+        permanent: false,
+      },
+      {
         source: "/research",
         destination: "/wiki",
         permanent: false,

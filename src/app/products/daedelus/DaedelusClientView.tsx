@@ -161,8 +161,19 @@ const CONTAINERS: OciContainer[] = [
   }
 ];
 
+import { useSearchParams } from "next/navigation";
+
 export default function DaedelusClientView() {
-  const [activeTab, setActiveTab] = useState<"blueprints" | "packages" | "containers" | "simulator">("blueprints");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const validTab = tabParam === "blueprints" || tabParam === "packages" || tabParam === "containers" || tabParam === "simulator" ? tabParam : null;
+  const [activeTab, setActiveTab] = useState<"blueprints" | "packages" | "containers" | "simulator">(validTab || "blueprints");
+
+  React.useEffect(() => {
+    if (validTab) {
+      setActiveTab(validTab);
+    }
+  }, [validTab]);
   
   // Package filtering state
   const [selectedEcosystem, setSelectedEcosystem] = useState<string>("all");
@@ -321,7 +332,7 @@ export default function DaedelusClientView() {
               </p>
             </div>
             <Link
-              href="/app/pureide"
+              href="/app/daedelus?mode=ide"
               className="btn-primary"
               style={{
                 padding: "1rem 2.25rem",
@@ -336,7 +347,7 @@ export default function DaedelusClientView() {
               }}
             >
               <Play size={18} fill="currentColor" />
-              Open Daedelus Console →
+              Launch IDE Builder →
             </Link>
           </div>
 
@@ -435,6 +446,53 @@ export default function DaedelusClientView() {
             <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "700px", margin: "0 auto" }}>
               Negative-admission proxy for npm, PyPI, Cargo, and APT. Every artifact admitted has 0 active CVEs and an automated SLA for retroactive zero-day eviction.
             </p>
+          </div>
+
+          {/* Header Action Banner */}
+          <div 
+            style={{ 
+              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%)",
+              border: "1px solid rgba(16, 185, 129, 0.35)",
+              borderRadius: "20px",
+              padding: "1.75rem 2.5rem",
+              marginBottom: "2.5rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1.5rem"
+            }}
+          >
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(16, 185, 129, 0.2)", padding: "4px 12px", borderRadius: "999px", marginBottom: "0.5rem" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399" }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6EE7B7", letterSpacing: "0.06em", textTransform: "uppercase" }}>Zero-CVE Admission</span>
+              </div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.3rem 0" }}>
+                Interactive Clean Package Catalog &amp; Proxy
+              </h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "680px", margin: 0 }}>
+                Explore live OpenVEX attestations, hotpatched vulnerabilities, and configure edge proxies for npm, pip, and cargo.
+              </p>
+            </div>
+            <Link
+              href="/app/daedelus?mode=package"
+              className="btn-primary"
+              style={{
+                padding: "0.95rem 2rem",
+                fontSize: "1rem",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                boxShadow: "0 0 25px rgba(16, 185, 129, 0.4)",
+                fontWeight: 800
+              }}
+            >
+              <Package size={18} />
+              Open Package Console →
+            </Link>
           </div>
 
           {/* Search & Ecosystem Filter Bar */}
@@ -567,6 +625,53 @@ export default function DaedelusClientView() {
             <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "700px", margin: "0 auto" }}>
               Engineered for production Kubernetes clusters and microVM hypervisors. Stripped of shells, package managers, and vulnerable utilities.
             </p>
+          </div>
+
+          {/* Header Action Banner */}
+          <div 
+            style={{ 
+              background: "linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%)",
+              border: "1px solid rgba(139, 92, 246, 0.35)",
+              borderRadius: "20px",
+              padding: "1.75rem 2.5rem",
+              marginBottom: "2.5rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1.5rem"
+            }}
+          >
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(139, 92, 246, 0.2)", padding: "4px 12px", borderRadius: "999px", marginBottom: "0.5rem" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#C084FC" }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#D8B4FE", letterSpacing: "0.06em", textTransform: "uppercase" }}>Distroless OCI Forge</span>
+              </div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.3rem 0" }}>
+                Interactive Container Configurator &amp; SBOM Generator
+              </h3>
+              <p style={{ color: "#94A3B8", fontSize: "0.95rem", maxWidth: "680px", margin: 0 }}>
+                Configure base distroless images, select hardening profiles, scan packages for CVEs, and generate live Dockerfiles with CycloneDX SBOMs.
+              </p>
+            </div>
+            <Link
+              href="/app/daedelus?mode=container"
+              className="btn-primary"
+              style={{
+                padding: "0.95rem 2rem",
+                fontSize: "1rem",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)",
+                boxShadow: "0 0 25px rgba(139, 92, 246, 0.4)",
+                fontWeight: 800
+              }}
+            >
+              <Server size={18} />
+              Open Container Forge →
+            </Link>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "1.5rem" }}>
@@ -735,7 +840,7 @@ registry = "sparse+https://registry.exultia.tech/cargo/"`}
               <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Retroactive Self-Healing</h3>
             </div>
             <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              When a package is admitted today but compromised tomorrow, Daedelus taints the package immediately, synthesizes the Next-Best Non-Vulnerable candidate, verifies ABI parity, and deploys fixes in &lt;50ms.
+              When a package is admitted today but compromised tomorrow, Daedelus taints the package immediately, synthesizes the Next-Best Non-Vulnerable candidate, verifies ABI parity, and deploys fixes with sub-second deterministic rollback.
             </p>
           </div>
 

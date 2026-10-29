@@ -66,7 +66,8 @@ Natural-language executive consultation and vulnerability risk briefing.
 
 ---
 
-### 3. Eris (Adversary Emulation & Chaos Lab)
+### 3. Eris (Adversary Emulation & Chaos Testing Harness)
+*Internal chaos and deliberate misconfiguration harness used by the Kinetic Resident Daemon to verify automated remediation loops.*
 
 #### `POST /api/eris/generate`
 Compiles an on-demand inoculation script with auto-rollback watchdog.
@@ -95,7 +96,8 @@ Returns raw compiled POSIX shell script suitable for piping directly into `sh`.
 
 ---
 
-### 4. Valkyrie (Non-Destructive Canary BAS)
+### 4. Valkyrie (Non-Destructive Canary BAS Prober)
+*Internal canary handshake engine utilized by the Kinetic Resident Daemon to confirm exploitability without downtime.*
 
 #### `POST /api/valkyrie/probe`
 Executes an on-demand non-destructive canary probe against a target endpoint.
@@ -197,13 +199,24 @@ Creates a new forensic tracking case with statutory deadlines.
 
 ---
 
-### 9. PureIDE & PureOS
+### 9. Daedelus (Workstations, Containers & Packages)
 
 #### `GET /api/pureide/versions`
 Certified compiler and toolchain versions for hermetic builds.
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/pureide/versions"
+  ```
+
+#### `GET /api/pureos/images`
+Hardened CIS Level 2 distroless container images, tags, and Cosign digests.
+- **Example cURL**:
+  ```bash
+  curl -s "https://exultia.tech/api/pureos/images"
+  ```
 
 #### `POST /api/pureide/events`
-Telemetry logging for hermetic build sandboxes.
+Audit event logging for hermetic build sandboxes.
 
 ---
 

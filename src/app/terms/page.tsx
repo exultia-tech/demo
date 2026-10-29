@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Exultia Technologies",
+  title: "Terms of Service | Exultia Technologies, PBC",
   description:
-    "Terms of Service for Exultia Technologies products and services, including the support model, service levels, acceptable use, licensing, warranties, and liability.",
+    "Terms of Service for Exultia Technologies, PBC products and services, including the support model, service levels, acceptable use, licensing, warranties, liability, and Master Services Agreement alignment.",
 };
 
-const LAST_UPDATED = "October 23, 2026";
+const LAST_UPDATED = "October 29, 2026";
 
 type Section = {
   id: string;
@@ -20,7 +20,7 @@ const SECTIONS: Section[] = [
     id: "acceptance",
     title: "1. Acceptance of Terms",
     body: [
-      "These Terms of Service (the \"Terms\") form a binding agreement between you (\"you\" or \"Customer\") and Exultia Technologies (\"Exultia,\" \"we,\" \"us,\" or \"our\"). They govern your access to and use of our websites, APIs, software, and services, including Vantage, Praxis, PureIDE, PureOS, and Axiom (collectively, the \"Services\").",
+      "These Terms of Service (the \"Terms\") form a binding agreement between you (\"you\" or \"Customer\") and Exultia Technologies, PBC (\"Exultia,\" \"we,\" \"us,\" or \"our\"), a public benefit corporation organized under the laws of the State of Georgia. They govern your access to and use of our websites, APIs, software, and services, including Vantage, Praxis, Daedelus, and Axiom (collectively, the \"Services\").",
       "By creating an account, purchasing a subscription, downloading software, calling our APIs, or otherwise using the Services, you agree to these Terms. If you are using the Services on behalf of an organization, you represent that you have authority to bind that organization, and \"you\" includes that organization. If you do not agree, do not use the Services.",
     ],
   },
@@ -28,7 +28,7 @@ const SECTIONS: Section[] = [
     id: "services",
     title: "2. The Services",
     body: [
-      "Exultia provides cybersecurity software and intelligence, including aggregated threat and vulnerability data, operating system patch advisories, remediation and hotpatch content, hardened development environments, container images, and security education materials.",
+      "Exultia provides cybersecurity software and intelligence, including aggregated threat and vulnerability data, operating system patch advisories, remediation and hotpatch content, hardened development environments, container images, binary packages, and security education materials.",
       "Much of our software is designed to be self-hosted and run in your own environment. We may add, change, or discontinue features at any time. We will make reasonable efforts to give notice of material changes that reduce the core functionality of a paid plan.",
     ],
   },
@@ -48,7 +48,7 @@ const SECTIONS: Section[] = [
         "You may cancel at any time; cancellation takes effect at the end of the current billing period. Except where required by law or stated in writing, fees are non-refundable and no credit is given for partial periods.",
         "Fees are exclusive of taxes. You are responsible for all applicable sales, use, VAT, and similar taxes, other than taxes on our net income.",
         "We may change pricing on at least 30 days' notice before your next renewal. Continued use after the effective date constitutes acceptance.",
-        "Enterprise customers may be invoiced on negotiated terms (for example, Net-30). Late amounts may accrue interest at the lesser of 1.5% per month or the maximum rate permitted by law, and we may suspend access for accounts that remain overdue.",
+        "Enterprise customers may be invoiced on negotiated terms under our standard Master Services Agreement (Form MSA-2026-EX) with Net-30 invoicing via ACH, Wire Transfer, or Corporate Credit Card. Late amounts may accrue interest at the lesser of 1.5% per month or the maximum rate permitted by law, and we may suspend access for accounts that remain overdue.",
       ] },
     ],
   },
@@ -57,9 +57,10 @@ const SECTIONS: Section[] = [
     title: "5. License and Restrictions",
     body: [
       "Subject to these Terms and payment of applicable fees, Exultia grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Services and any software we provide for your internal business or personal security purposes, within the limits of your plan (including seat, host, and rate limits).",
-      "Exultia Linux and associated software distributions aggregate standard open-source components (including the Linux kernel, systemd, glibc, and system utilities) governed by their respective licenses (such as GPLv2, GPLv3, and LGPL). In accordance with open-source licensing standards and the 'mere aggregation' doctrine, third-party open-source components are subject to their upstream terms. Exultia's proprietary technologies—including the Kinetic™ Hotfix Engine, Sentinel Daemons, Vantage™ Threat Intelligence Feeds, and remediation playbooks—remain the proprietary and confidential property of Exultia Technologies Inc.",
+      "The Exultia daemon and associated software utilities operate alongside standard open-source components (including the Linux kernel, systemd, glibc, and system utilities) governed by their respective licenses (such as GPLv2, GPLv3, and LGPL). In accordance with open-source licensing standards and the 'mere aggregation' doctrine, third-party open-source components are subject to their upstream terms. Exultia's proprietary technologies—including Exultia™, Vantage™, Praxis™, Daedelus™, Kinetic™ Hotfix Engine, and Axiom™—remain the proprietary and confidential property of Exultia Technologies, PBC.",
       "You agree not to:",
       { list: [
+        "Offline Cryptographic Licensing and Never-Brick Architecture: Offline Ed25519 license keys delivered for self-hosted nodes are verified locally. Consistent with Section 2 of our standard Master Services Agreement, software contains no remote kill-switches, and transient network failure, disconnection, or billing true-up delays will never halt, disable, or brick active host defenses.",
         "resell, sublicense, or redistribute the Services, data feeds, or derived datasets except as your plan expressly allows;",
         "scrape, mirror, or bulk-extract data in a manner that circumvents rate limits, access controls, or plan restrictions;",
         "reverse engineer, decompile, or attempt to derive source code from non-open-source components, except where law permits despite this restriction;",
@@ -89,35 +90,40 @@ const SECTIONS: Section[] = [
     body: [
       "Exultia is a lean, independent cybersecurity lab. We prioritize deterministic code, self-hosted deployment, and sub-second atomic rollbacks, and we are deliberately transparent about our support model:",
       { list: [
-        "No human SLAs or 24/7 paging. Standard SaaS and Enterprise subscriptions do not include contractual human uptime commitments, response-time guarantees (for example, one-hour response), or 24/7 on-call phone paging. We will not promise human availability that we cannot sustain.",
-        "Autonomous and self-verifying software. Our software (Vantage, Praxis, PureIDE, PureOS, and Axiom) is engineered to be self-hosted and self-verifying, with built-in test harnesses and rapid rollback to reduce the risk of production downtime.",
-        "24/7 AI support and documentation. Routine technical assistance, installation commands, license sizing, and error explanations are provided around the clock by our autonomous AI Support Agent and our published documentation. Reproducible defects are tracked transparently through our public issue tracker.",
-        "Custom agreements. Organizations that require legally binding uptime SLAs, on-site personnel, or custom software development must enter into a separately negotiated Master Services Agreement (MSA) with bespoke retainer pricing. Unless and until such an agreement is signed by both parties, no service level commitment applies.",
+        "Threat Feed SLA and Host Autonomy. As set forth in Section 3 of our Master Services Agreement (Form MSA-2026-EX), Exultia guarantees 99.9% monthly availability for hosted threat feed APIs and real-time advisory synchronization. Standard self-hosted software deployed on Customer-managed nodes operates autonomously offline with zero outbound network dependencies.",
+        "No human SLAs on standard subscriptions. Routine technical assistance, installation commands, license sizing, and error explanations are provided around the clock by our autonomous AI Support Agent and published documentation. Dedicated human response SLAs or bespoke on-site engineers require an executed Master Services Agreement with retainer pricing.",
+        "Autonomous and self-verifying software. Our software (Vantage, Praxis, Daedelus, and Axiom) is engineered to be self-hosted and self-verifying, with built-in test harnesses and sub-second deterministic rollback to reduce the risk of production downtime.",
+        "Master Services Agreement (MSA). Enterprise fleet deployments exceeding 100 hosts operate under our transparent, standard Master Services Agreement (Form MSA-2026-EX), which supersedes these Terms with respect to covered fleet commitments.",
       ] },
       "Hosted components are provided on a commercially reasonable efforts basis. We may perform scheduled or emergency maintenance and are not responsible for downtime caused by factors outside our reasonable control, including upstream data-source outages, internet or cloud-provider failures, and force majeure events.",
     ],
   },
   {
     id: "data-accuracy",
-    title: "8. Threat Data, Advisories, and Remediation Content",
+    title: "8. Threat Data, Advisories, and Remediation Boundaries",
     body: [
-      "Threat intelligence, vulnerability records, severity scores, patch advisories, and remediation or hotpatch content are aggregated from third-party and public sources and from our own analysis. They are provided for informational purposes and may be incomplete, delayed, or inaccurate.",
-      "You are solely responsible for evaluating and testing any advisory, script, patch, configuration, or firewall rule before deploying it, and for maintaining backups and rollback plans. Automated remediation can affect system availability and behavior. You apply it at your own risk and discretion.",
+      "Threat intelligence, vulnerability records, severity scores, patch advisories, and remediation content are aggregated from verified registries, vendor disclosures, and our proprietary analysis.",
+      { list: [
+        "Exact Surgical Remediation. In accordance with Section 4.1 of our Master Services Agreement, Exultia executes deterministic, mathematically verified remediation actions strictly tailored to isolate, mitigate, or patch identified vulnerabilities and threat vectors. Exultia does exactly what is required to fix the security issue—nothing more, nothing less.",
+        "No Environmental Impact Liability. In accordance with Section 4.2 of our Master Services Agreement, Exultia is not responsible or liable for any downstream, collateral, operational, or environmental impacts resulting from legitimate security remediation actions or defensive posture adjustments.",
+        "Customer Responsibility for Environmental Adaptability. It is Customer's sole responsibility to ensure that Customer's operating environment, application runtime, dependencies, microservices, and orchestration configurations are adaptable and resilient to required security updates, configuration changes, port/socket isolation, and patched software binaries.",
+        "Customer Environment and Deployment Control. Exultia does not administer, manage, or control Customer's internal host infrastructure, orchestrators, or local execution pipelines. Consequently, Exultia cannot and shall not be held responsible or liable for remediation deployment speed, execution timing, or scheduling latency on Customer-administered environments.",
+      ] },
     ],
   },
   {
     id: "customer-content",
     title: "9. Your Content and Data",
     body: [
-      "You retain all rights in the data, configurations, and materials you submit to the Services (\"Customer Content\"). You grant Exultia a limited license to host, process, and transmit Customer Content solely to provide and secure the Services, and to improve them in aggregated, de-identified form. You represent that you have the rights necessary to submit Customer Content and that doing so does not violate any law or third-party right.",
-      "Where software is self-hosted, Customer Content remains in your environment and is not transmitted to Exultia except as required for license verification or features you explicitly enable.",
+      "You retain all rights in the data, configurations, and materials you submit to the Services (\"Customer Content\"). Where software is self-hosted, Customer Content remains strictly within your environment and is never transmitted to Exultia.",
+      "Zero-Telemetry Warranty. In accordance with Section 6 of our Master Services Agreement, Exultia warrants that Customer source code, proprietary algorithms, memory snapshots, and local environment variables are NEVER transmitted to Exultia. All threat matching, patch verification, and Daedelus container and workstation builds occur strictly within Customer's local computing perimeter.",
     ],
   },
   {
     id: "ip",
     title: "10. Intellectual Property",
     body: [
-      "The Services, including their software, design, documentation, trademarks, and aggregated datasets, are owned by Exultia or its licensors and are protected by intellectual property laws. Except for the limited rights expressly granted in these Terms, no rights are transferred to you. If you provide feedback or suggestions, you grant us a perpetual, irrevocable, royalty-free license to use them without obligation to you.",
+      "The Services, including their software, design, documentation, trademarks (including Exultia™, Vantage™, Praxis™, Daedelus™, Kinetic™, and Axiom™), and aggregated datasets, are owned by Exultia Technologies, PBC or its licensors and are protected by United States and international intellectual property laws. Except for the limited rights expressly granted in these Terms, no rights or titles are transferred to you. If you provide feedback or suggestions, you grant us a perpetual, irrevocable, royalty-free license to use them without obligation to you.",
     ],
   },
   {
@@ -168,7 +174,7 @@ const SECTIONS: Section[] = [
     id: "privacy",
     title: "17. Privacy",
     body: [
-      "We collect only the information needed to operate the Services, such as account details, billing information, license activity, and service telemetry, and we do not embed advertising trackers in our software. We use reasonable administrative and technical safeguards but cannot guarantee absolute security of data transmitted over the internet.",
+      "We enforce a strict Zero-Telemetry policy: our self-hosted software daemons, Daedelus workstations, and runtime hooks transmit zero telemetry, analytics, or behavioral tracking to Exultia or any third party. We collect only administrative and billing data needed to operate user accounts, such as email addresses, payment transactions managed securely by PCI-compliant payment processors, and cryptographic license generation records. We use industry-standard administrative and technical safeguards to protect account information.",
     ],
   },
   {
@@ -182,7 +188,7 @@ const SECTIONS: Section[] = [
     id: "governing-law",
     title: "19. Governing Law and Disputes",
     body: [
-      "These Terms are governed by the laws of the United States and the state in which Exultia maintains its principal place of business, without regard to conflict-of-laws principles. The parties agree to first attempt in good faith to resolve any dispute informally. Any dispute not resolved informally will be brought exclusively in the state or federal courts located in that state, and each party consents to personal jurisdiction and venue there. To the extent permitted by law, each party waives any right to a jury trial and to participate in a class or representative action.",
+      "These Terms are governed by the laws of the State of Georgia and the United States, without regard to conflict-of-laws principles. The parties agree to first attempt in good faith to resolve any dispute informally. Any dispute not resolved informally will be brought exclusively in the state or federal courts located in Georgia, and each party consents to personal jurisdiction and venue there. To the extent permitted by law, each party waives any right to a jury trial and to participate in a class or representative action.",
     ],
   },
   {
@@ -190,7 +196,7 @@ const SECTIONS: Section[] = [
     title: "20. General Provisions",
     body: [
       { list: [
-        "Entire agreement. These Terms, together with any order form or MSA signed by both parties, are the entire agreement regarding the Services and supersede all prior understandings. A signed MSA controls over these Terms in the event of conflict.",
+        "Entire agreement. These Terms, together with any order form or Master Services Agreement (Form MSA-2026-EX) signed by both parties, are the entire agreement regarding the Services and supersede all prior understandings. An executed MSA controls over these Terms in the event of conflict.",
         "Changes. We may update these Terms from time to time. Material changes will be posted on this page with a new \"Last updated\" date and, where practical, communicated by email or in-product notice. Continued use after changes take effect constitutes acceptance.",
         "Severability. If any provision is held unenforceable, the remaining provisions remain in full effect.",
         "No waiver. Failure to enforce any provision is not a waiver of our right to do so later.",

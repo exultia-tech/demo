@@ -424,7 +424,8 @@ export function generateCbomShellScriptBlock(cbom: PraxisCbomPayload): string {
  * so users can select any Vantage finding and run it through the Praxis hotpatch / canary flow.
  */
 export function convertAdvisoryToPatchItem(advisory: any): PatchFeedItem {
-  const uviId = advisory.uviId || 'UVI-2026-00000000';
+  const rawId = advisory.uviId || advisory.cveId || '2026-00000000';
+  const uviId = rawId.startsWith('UVI-') ? rawId : `UVI-${rawId}`;
   const cveId = advisory.cveList?.[0] || advisory.cveId || uviId;
   const pkg = advisory.affectedTargets?.[0]?.product || advisory.affectedPackages?.[0] || 'system-package';
   const fixedVer = advisory.affectedTargets?.[0]?.fixedInVersion || 'vendor-fixed';

@@ -14,7 +14,7 @@ import {
 
 interface FaqItem {
   id: string;
-  category: "skepticism" | "product" | "deployment" | "pricing";
+  category: "skepticism" | "product" | "deployment" | "pricing" | "ciso-reality";
   question: string;
   shortSummary: string;
   answer: string[];
@@ -25,42 +25,137 @@ interface OutlineSection {
   number: string;
   title: string;
   description: string;
-  category: "skepticism" | "product" | "deployment" | "pricing";
+  category: "skepticism" | "product" | "deployment" | "pricing" | "ciso-reality";
 }
 
 const OUTLINE_SECTIONS: OutlineSection[] = [
   {
-    id: "skepticism",
+    id: "ciso-reality",
     number: "1.0",
+    title: "Autonomous Daemon Remediation vs. Alert Fatigue",
+    description: "Why autonomous in-memory hotpatching replaces manual triage tickets, how the portable daemon eliminates alert fatigue, and why real-time remediation stops zero-days before change advisory boards can convene.",
+    category: "ciso-reality"
+  },
+  {
+    id: "skepticism",
+    number: "2.0",
     title: "Skepticism & Operational Safety",
     description: "Direct answers to technical doubts, memory integrity, telemetry boundaries, and reproducible verification.",
     category: "skepticism"
   },
   {
     id: "product",
-    number: "2.0",
-    title: "Product & Architecture",
-    description: "Deep dive into the 7 defense engines, non-destructive CANARY BAS probes, and isolated chaos environments.",
+    number: "3.0",
+    title: "Product & Architecture: The Two Core Pillars",
+    description: "The Threat Feed (Vantage UVI), the 60-second autonomous self-healing Linux daemon, pre-baked offline catalog, and supporting developer tools.",
     category: "product"
   },
   {
     id: "deployment",
-    number: "3.0",
-    title: "Deployment & Air-Gap Operations",
-    description: "Air-gapped data diodes, supported Linux distributions, container runtimes, and deterministic rollback mechanics.",
+    number: "4.0",
+    title: "Deployment & Linux Architecture",
+    description: "Pre-baked offline threat catalogs (24k+ advisories), portable Linux daemon, air-gapped data diodes, and deterministic rollback.",
     category: "deployment"
   },
   {
     id: "pricing",
-    number: "4.0",
+    number: "5.0",
     title: "Pricing, Licensing & Sovereign Tiers",
-    description: "Transparent pricing breakdown: Community ($0 forever), Professional ($100/mo), and Enterprise ($500/mo).",
+    description: "Transparent 2-tier model: Community Sovereign ($0 forever) and Enterprise Fleet ($25/node or $500/mo flat cap for 25 hosts).",
     category: "pricing"
   }
 ];
 
 const FAQ_DATA: FaqItem[] = [
-  // ── 1.0 SKEPTICISM & OPERATIONAL SAFETY ──────────────────────────────────────
+  // ── 1.0 AUTONOMOUS DAEMON REMEDIATION VS. ALERT FATIGUE ───────────────────────────
+  {
+    id: "daemon-vs-alert-forwarding",
+    category: "ciso-reality",
+    question: "Why deploy an autonomous in-memory daemon instead of an alerting platform that notifies our SOC team?",
+    shortSummary: "Because alerting an on-call engineer at 3:14 AM does not patch a socket. The Exultia daemon applies verified in-memory trampolines in under 350ms.",
+    answer: [
+      "Traditional security tools excel at one thing: creating work for people who are already overwhelmed. When an advisory drops, the typical workflow is an automated scanner filing a ticket, an analyst assigning it to an infrastructure engineer, and an emergency meeting scheduled for Tuesday.",
+      "The Exultia daemon does not forward alerts or request meetings. It validates whether the vulnerable binary is actually executing, inspects whether listening sockets are bound, tests the patch in an ephemeral microVM sandbox, and applies an in-memory trampoline in <350ms with zero dropped connections.",
+      "The vulnerability is neutralized before an engineer's phone can even buzz on their nightstand—eliminating nocturnal fire drills while executive leadership is still busy coordinating commercial real estate to move the entire cybersecurity division down the street from the CISO's house."
+    ]
+  },
+  {
+    id: "why-engineers-prefer-daemons",
+    category: "ciso-reality",
+    question: "Why do systems and DevOps engineers prefer resident daemons over traditional vulnerability dashboards?",
+    shortSummary: "Because solving problems at the machine level destroys alert fatigue and prevents 7:00 AM emergency triage calls.",
+    answer: [
+      "Vulnerability dashboards generate endless homework. Engineers spend dozens of hours every month explaining why a 'Critical 10.0' CVSS score in an unused test utility on an internal build server does not constitute an operational emergency.",
+      "The Exultia daemon operates on ground truth: it only intervenes when vulnerable code paths are actively mapped in memory or bound to listening interfaces. If an issue is real, it fixes it atomically and leaves an Ed25519-signed receipt.",
+      "DevOps engineers get their weekends back, while security officers get mathematical proof of remediation instead of unread PDF attachments."
+    ]
+  },
+  {
+    id: "exultia-vs-vulnerability-scanners",
+    category: "ciso-reality",
+    question: "What is the fundamental difference between an enterprise vulnerability scanner and the Exultia daemon?",
+    shortSummary: "A scanner charges six figures to tell you your infrastructure is exposed. Exultia's resident daemon neutralizes the threat in under 60 seconds.",
+    answer: [
+      "An enterprise vulnerability scanner crawls your subnets, flags thousands of packages based purely on static package version strings, generates a 120-page spreadsheet, and leaves your servers completely exposed while you read it.",
+      "Exultia combines the Vantage threat intelligence stream with a resident host daemon. It doesn't generate spreadsheets—it isolates the threat, verifies ABI compatibility, injects surgical in-memory trampolines, and maintains system availability.",
+      "One is an alarm clock that rings indefinitely during a fire; the other is an automated fire suppression system."
+    ]
+  },
+  {
+    id: "daemon-and-package-managers",
+    category: "ciso-reality",
+    question: "How does the daemon hotpatch running processes without conflicting with system package managers (apt, dnf, apk)?",
+    shortSummary: "In-memory trampolines patch running processes instantly. Upstream distro packages can be upgraded whenever your normal schedule allows.",
+    answer: [
+      "Traditional package updates overwrite binaries on disk, requiring process restarts or full host reboots. If OpenSSH or glibc has a critical zero-day, upgrading via apt or dnf drops active sessions or forces a restart.",
+      "The Exultia daemon leaves disk packages untouched while applying non-destructive in-memory trampolines to running executables in <350ms. Zero active TCP sockets or child processes are terminated.",
+      "When your scheduled maintenance window arrives weeks later, your standard apt, dnf, or apk command applies the vendor package cleanly—and the Exultia daemon transparently unhooks its memory trampoline upon verifying the updated binary hash."
+    ]
+  },
+  {
+    id: "soc-team-evolution",
+    category: "ciso-reality",
+    question: "What happens to manual alert triage workflows when the daemon handles tier-1 patching?",
+    shortSummary: "Security teams shift from human alert-routers to proactive architecture, threat modeling, and adversary emulation.",
+    answer: [
+      "When an autonomous daemon handles rapid detection, sandbox validation, and live in-memory remediation in 60 seconds, engineers no longer need to copy CVE identifiers from security consoles into bug trackers.",
+      "This eliminates the tedious triage loop and allows security teams to focus on high-impact initiatives: architectural threat modeling, zero-trust network policies, and active purple-team emulation.",
+      "Human expertise is too valuable to spend copying and pasting version numbers between dashboards."
+    ]
+  },
+  {
+    id: "siem-dashboard-integration",
+    category: "ciso-reality",
+    question: "Can the Exultia daemon stream events to our existing SIEM and observability pipelines?",
+    shortSummary: "Yes. Exultia exports structured Syslog, STIX 2.1 JSON, and Webhook payloads to Splunk, Elastic, Datadog, and Sentinel.",
+    answer: [
+      "Yes. The resident daemon emits real-time structured telemetry over Syslog, STIX 2.1 JSON, or encrypted webhooks.",
+      "The key difference is the nature of the events: legacy agents emit 'Warning: vulnerability detected, action required,' whereas Exultia emits 'Notice: CVE-2024-6387 detected in sshd; in-memory trampoline verified and active; 0 sockets dropped; cryptographic verification ID: #9f82a1.' Security teams receive closed-loop verification logs rather than open action items."
+    ]
+  },
+  {
+    id: "compliance-checklist-theater",
+    category: "ciso-reality",
+    question: "How does the autonomous daemon satisfy SOC 2, ISO 27001, and Change Advisory Board requirements?",
+    shortSummary: "By generating cryptographic, immutable Ed25519-signed remediation receipts for every hotpatch and state change.",
+    answer: [
+      "Traditional audit compliance relies on subjective spreadsheets, annual policy attestations, and hoping tickets were closed on time.",
+      "Exultia provides cryptographic proof. Every self-healing intervention produces an Ed25519-signed receipt detailing pre-patch binary SHA-256 hashes, in-memory patch memory ranges, microVM sandbox results, and atomic rollback checkpoint IDs.",
+      "When auditors or Change Advisory Boards review patch compliance, they receive mathematically verifiable proof that vulnerabilities were neutralized without human delay or configuration drift."
+    ]
+  },
+  {
+    id: "tooling-sprawl",
+    category: "ciso-reality",
+    question: "Why do so many enterprise security initiatives fail to reduce actual incident rates despite dozens of installed agents?",
+    shortSummary: "Agent sprawl creates telemetry noise and CPU overhead without providing execution-level remediation.",
+    answer: [
+      "Most enterprise security tools are observation agents: they inspect memory or sniff packets, send telemetry to a SaaS cloud, and trigger an alert when an anomaly occurs. When twenty different agents do this simultaneously, server CPU spikes, logs overflow, and engineers experience alert blindness.",
+      "Exultia was designed under a sovereign engineering philosophy: zero telemetry, zero mandatory cloud dependencies, and active local remediation. The daemon doesn't just watch code fail; it repairs execution flow in memory and keeps services online."
+    ]
+  },
+
+  // ── 2.0 SKEPTICISM & OPERATIONAL SAFETY ──────────────────────────────────────
   {
     id: "vaporware-proof",
     category: "skepticism",
@@ -104,14 +199,14 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "suspicious-pricing",
     category: "skepticism",
-    question: "Isn't $100/mo suspiciously cheap for a platform claiming to replace multi-thousand-dollar enterprise suites?",
+    question: "Why is Exultia's pricing so transparent and radically lower than legacy multi-thousand-dollar enterprise suites?",
     shortSummary: "Modern systems engineering eliminates the massive sales overhead and cloud ingestion bloat of legacy vendors.",
     answer: [
       "Traditional enterprise cybersecurity suites typically carry significant overhead from multi-tiered sales structures, enterprise commission plans, and centralized cloud ingestion architectures where customers pay high markups on storage and compute.",
       "Exultia was engineered from day one on lean, modern systems principles:",
       "1. Compiled Native Binaries: Lightweight native daemons engineered for minimal memory and CPU footprints compared to heavy Java or Electron agent runtimes.",
       "2. Zero Telemetry Cloud Costs: Because customer source code and internal operational data are never stored in our cloud, we avoid heavy multi-tenant cloud infrastructure costs and don't pass those markups to you.",
-      "3. Unified Architecture: By unifying all 7 tools into a single codebase, we eliminate the engineering friction of maintaining 7 separate product companies.",
+      "3. Unified Architecture: By unifying our tools into a cohesive native stack (Vantage, Praxis, Daedelus, and Axiom), we eliminate the engineering friction of maintaining fragmented product silos.",
       "You are paying directly for security engineering and vulnerability intelligence—not bloated sales overhead and vendor markups."
     ]
   },
@@ -155,21 +250,123 @@ const FAQ_DATA: FaqItem[] = [
       "In air-gapped environments, the feed can be synchronized via internal mirrors or file transfers across data diodes with offline Cosign signature verification."
     ]
   },
+  {
+    id: "will-this-randomly-reboot",
+    category: "skepticism",
+    question: "Will this randomly reboot my production server?",
+    shortSummary: "Never. The daemon is architecturally forbidden from invoking reboot or shutdown syscalls; restarts are strictly deferred to your maintenance windows.",
+    answer: [
+      "No. Exultia's resident daemon is architecturally forbidden from invoking `reboot`, `systemctl reboot`, `init 6`, or `shutdown` under any circumstance.",
+      "• Live In-Memory Mitigations: Tier 1 hotpatches, eBPF filters, and kernel sysctls apply immediately in memory without restarting daemons or dropping TCP connections.",
+      "• Package Upgrades: When a Tier 2 package update replaces binaries or libraries (e.g. glibc or kernel modules), the daemon touches standard notification flags (`/var/run/reboot-required` on Debian/Ubuntu or `needs-restarting -r` on RHEL) and logs telemetry to Prometheus.",
+      "• Operator Controlled Maintenance: Actual node restarts remain 100% under your control, executed during scheduled maintenance windows or orchestrated by your cluster drain controllers (such as kured or Cluster Autoscaler)."
+    ]
+  },
+  {
+    id: "network-drop-mid-update",
+    category: "skepticism",
+    question: "If the network drops mid-update, is my machine bricked?",
+    shortSummary: "No. Updates use two-phase transactional staging; payloads are cryptographically verified in an isolated cache before any mutation begins.",
+    answer: [
+      "No. Exultia operates on a strict two-phase transactional commit model:",
+      "1. Download & Verify in Staging: Patch payloads and package archives are downloaded into an isolated staging buffer (`/var/cache/exultia/staging/`). They are fully validated against SLSA Level 3 Cosign Ed25519 signatures and SHA-256 pre-hashes BEFORE any system state changes occur.",
+      "2. Zero-Impact Interruption: If your WAN drops at 99%, the staging payload is invalidated and discarded. The running system remains completely untouched.",
+      "3. Transactional Package Safety: For OS packages, standard package manager transaction journals (`dpkg --configure -a` or `rpm/dnf` transaction rollbacks) prevent half-installed or broken states.",
+      "4. Offline Fallback: The daemon has 24,388 advisories stored locally in SQLite, so offline hosts continue operating normally."
+    ]
+  },
+  {
+    id: "how-do-i-know-vulnerability-gone",
+    category: "skepticism",
+    question: "How do I know the vulnerability is actually gone?",
+    shortSummary: "Closed-loop verification: active loopback probing, process memory inspection, and signed OpenVEX attestation receipts.",
+    answer: [
+      "Unlike passive scanners that only inspect file version numbers, Exultia provides active closed-loop verification:",
+      "1. Dynamic Runtime Inspection: The daemon inspects active listening sockets (`ss -tulpn`), verified inode versions, process memory mappings, and live sysctl parameters to confirm that the vulnerable code path is no longer reachable.",
+      "2. Synthetic Canary Probes (Valkyrie): For network daemons, an internal loopback probe transmits a safe, non-destructive synthetic test vector matching the CVE exploit signature. If the service sanitizes or rejects the vector cleanly rather than exhibiting vulnerable behavior, remediation is cryptographically confirmed.",
+      "3. Cryptographic Attestation Receipts: Every successful remediation generates an Ed25519-signed verification receipt in `/var/log/exultia/attestations/` containing before/after SHA-256 checksums, kernel details, and OpenVEX `fixed` status for your compliance auditors."
+    ]
+  },
 
-  // ── 2.0 PRODUCT & ARCHITECTURE ──────────────────────────────────────────────
+  // ── 2.0 PRODUCT & ARCHITECTURE: THE TWO CORE PILLARS ───────────────────────
+  {
+    id: "two-core-pillars",
+    category: "product",
+    question: "What does Exultia actually do, and what are its Two Core Pillars?",
+    shortSummary: "Exultia is structured around two clear pillars: The Threat Feed (here is what's broken in the world) and The Remediator (here is what checks and fixes it).",
+    answer: [
+      "Instead of confusing teams with dozens of fragmented vendor tools and acronyms, Exultia solves infrastructure security through two unified, non-fragmented pillars:",
+      "1. Pillar 01 • The Threat Feed (Vantage UVI): Continuously aggregates, normalizes, and cryptographically signs vulnerability intelligence across 110+ authoritative registries (24,388 global advisories + 12,993 CISA KEV records). Supports live STIX 2.1 / TAXII 2.1 and comes pre-baked as an offline catalog for zero-internet patching.",
+      "2. Pillar 02 • The Self-Healing Remediator: A 60-second autonomous daemon for Linux. It continuously audits listening sockets, detects kernel sysctl drift, injects surgical in-memory trampolines with zero dropped TCP connections, snapshots system state, and rolls back if health checks fail.",
+      "Other specialized tools—such as Daedelus (air-gapped workstations, distroless containers, and zero-CVE packages), Eris chaos ranges, Valkyrie BAS verification, and Axiom certification simulator—are organized into our Developer Ecosystem & Supporting Tools section for teams with full-lifecycle edge needs."
+    ]
+  },
+  {
+    id: "why-portable-daemon",
+    category: "product",
+    question: "Why did Exultia choose a portable daemon instead of forcing users to install a custom Linux distribution?",
+    shortSummary: "Don't wipe your machines or migrate distributions. A portable daemon gives existing Linux fleets 60s self-healing immediately.",
+    answer: [
+      "Corporate environments already run hundreds of thousands of battle-tested Linux servers across bare metal, virtual machines, and cloud instances.",
+      "Forcing an enterprise to re-image their entire bare-metal fleet or migrate distributions just to get threat remediation is an operational nightmare that takes years of Change Advisory Board meetings.",
+      "By engineering Exultia as a portable, statically-compiled native daemon, any existing Linux machine becomes autonomously self-healing in 60 seconds with a single curl command or offline tarball extraction:",
+      "• Zero OS Re-imaging: Works seamlessly on top of your existing package manager, kernel, and systemd service manager.",
+      "• Pre-Baked Offline Intelligence: Includes the complete 24,388 UVI advisory database directly inside the archive—ready to patch Day Zero without an internet connection.",
+      "• Universal Linux Support: Runs as a native systemd service with eBPF observability and cgroups sandbox isolation on both x86_64 and aarch64.",
+      "In short: deploy the remediator directly onto your existing Linux infrastructure and make it self-healing in 60 seconds."
+    ]
+  },
+  {
+    id: "exultia-linux-explained",
+    category: "product",
+    question: "What is Exultia and how does its 60-second self-healing runtime operate?",
+    shortSummary: "An autonomous Linux remediation runtime with systemd integration, eBPF telemetry, STIX 2.1 dual ingestion, and atomic rollbacks.",
+    answer: [
+      "Exultia is an autonomous threat remediation runtime built for Linux that leverages in-memory livepatching and atomic state checkpoints for deterministic self-healing:",
+      "1. Linux Foundation & Runtime: Statically compiled native daemon with zero runtime dependencies. Operates seamlessly under systemd or container entrypoints, utilizing eBPF for real-time socket and kernel event observability.",
+      "2. STIX 2.1 / TAXII 2.1 Dual Ingestion: Subscribes to two distinct channels: Vantage Upstream (primary signed system updates and global threat intel) and Corporate Local (supplemental client SIEM IoCs and network blacklists with client-local UUID tagging).",
+      "3. Automated Sandbox Verification: When deep system patches arrive, Exultia clones configuration state to an isolated systemd sandbox, runs unit tests and canary verification probes, and executes live enforcement with a 120-second watchdog timer fallback.",
+      "4. Corporate Integration & Stability Override: Built-in conflict resolution guarantees corporate feeds cannot break OS stability or blacklist critical update endpoints, while restricting corporate modifications strictly to network filters (nftables/iptables) and user services.",
+      "5. Sovereign & Free: The Exultia Community Edition is free forever under the Sovereign Community license with zero external telemetry, no vendor lock-in, and complete air-gap readiness."
+    ]
+  },
   {
     id: "closed-loop-explained",
     category: "product",
-    question: "What is the closed-loop defense model, and how do the 7 engines interact?",
-    shortSummary: "Continuous detection, adversary emulation, non-destructive pentesting, and automated in-memory hotpatching.",
+    question: "How does the 60-second autonomous remediation loop operate?",
+    shortSummary: "Continuous detection, active socket correlation, non-destructive verification, in-memory hotpatching, and snapshot rollbacks.",
     answer: [
-      "Traditional cybersecurity separates vulnerability management into fragmented steps: a scanner finds an issue, a security analyst reviews it, a penetration tester validates it, and DevOps schedules a patch weeks later.",
-      "Exultia automates this entire lifecycle into a machine-speed OODA (Observe-Orient-Decide-Act) closed loop:",
-      "1. Vantage (Detect): Ingests zero-day advisories from 110+ registries (CISA KEV, NIST, Linux errata).",
-      "2. Eris (Emulate): Spins up an ephemeral container range replicating the exact adversary vulnerability conditions.",
-      "3. Valkyrie (Verify): Injects a safe non-destructive canary probe to mathematically prove exploitability.",
-      "4. Praxis (Remediate): Compiles and applies an in-memory bytecode hotpatch, snapshotting state for immediate rollback.",
-      "5. Foundations: PureIDE, PureOS, and Axiom provide air-gapped workstations, pre-hardened container images, and certified workforce training."
+      "Traditional cybersecurity separates vulnerability management into fragmented steps: a scanner finds an issue, an analyst logs a Jira ticket, a penetration tester validates it weeks later, and DevOps schedules a maintenance window.",
+      "Exultia replaces this delay with an autonomous 60-second machine-speed loop:",
+      "1. Ingest (<5s): Daemon checks the signed UVI threat feed (local pre-baked catalog or authenticated STIX 2.1 / TAXII 2.1 upstream).",
+      "2. Correlate (<10s): Immediately correlates all 24,388 advisories against active TCP/UDP listening sockets, loaded kernel modules, and installed package binaries.",
+      "3. Verify (<15s): Validates exploitability non-destructively using Valkyrie HMAC canary handshakes without weaponized payloads.",
+      "4. Hotpatch (<25s): Injects surgical in-memory bytecode trampolines or reapplies hardened kernel sysctls with zero dropped TCP connections and zero service restarts.",
+      "5. Protect & Watchdog (<60s): Creates an atomic rollback state checkpoint on Linux, arming a 120-second watchdog timer."
+    ]
+  },
+  {
+    id: "validate-misconfigurations",
+    category: "product",
+    question: "How can I test and validate that the Vantage daemon actually fixes new issues and misconfigurations?",
+    shortSummary: "Intentionally drift a kernel sysctl or misconfigure a parameter; within 60 seconds Vantage detects the drift, restores baseline, and commits an audit log.",
+    answer: [
+      "You do not have to wait for an external attacker to verify Exultia in action. You can test and validate the autonomous loop right now in three simple steps:",
+      "1. Intentionally Drift a Sysctl: Run `sudo sysctl net.ipv4.ip_forward=1` on your Linux host.",
+      "2. Observe the Background Daemon: Within 60 seconds, the resident Vantage daemon detects the configuration drift against its baseline threat policies.",
+      "3. Automated Self-Healing: The daemon automatically restores the secure baseline (`net.ipv4.ip_forward=0`), commits an atomic rollback snapshot, and writes an audit entry to `/var/log/exultia/remediation.log`.",
+      "4. Manual Terminal Execution: If you don't want to wait for the 60-second cycle, you can run `vantage fix` or `vantage check` in your terminal at any time for an immediate sweep."
+    ]
+  },
+  {
+    id: "check-entire-uvi-catalog",
+    category: "product",
+    question: "Does Vantage check the entire UVI threat feed, or only recent CVEs from 2023 and 2024?",
+    shortSummary: "Vantage correlates against all 24,388 advisories dating back to historical disclosures; the UI defaults to active sockets to prevent alert fatigue.",
+    answer: [
+      "Vantage checks the complete Unified Vulnerability Intelligence (UVI) feed, not just recent 2023 or 2024 disclosures.",
+      "The database encompasses 24,388 comprehensive vulnerability advisories spanning historical disclosures through today's zero-days, combined with 12,993 CISA Known Exploited Vulnerabilities (KEV) records.",
+      "Why did you see mostly recent CVEs in the interactive dashboard? By default, the UI view applies a filter that highlights vulnerabilities correlating with active listening sockets and running services on the local host to prevent alert fatigue. Running `vantage scan --all` or executing the background audit checks your entire package tree against the complete 24k+ catalog."
     ]
   },
   {
@@ -210,8 +407,92 @@ const FAQ_DATA: FaqItem[] = [
       "• Cryptographic Attestation: Automatically generates CycloneDX SBOMs and signs built binaries with Cosign SLSA Level 3 attestations."
     ]
   },
+  {
+    id: "praxis-legacy-unix-posix",
+    category: "product",
+    question: "What is Praxis, and how does it support legacy Unix systems that need strict POSIX compliance?",
+    shortSummary: "Praxis generates zero-dependency POSIX shell remediations and hardware ACLs for vintage systems. If you're still running the Unix system that managed Jurassic Park (1993), we've got you covered.",
+    answer: [
+      "While the Exultia daemon is the flagship autonomous remediation engine for modern Linux, many enterprise infrastructure backbones still rely on vintage, battle-hardened Unix systems—IBM AIX, Oracle Solaris, HP-UX, older BSDs, and minimal POSIX embedded boards where systemd and eBPF simply don't exist.",
+      "Praxis was engineered specifically for these environments:",
+      "• Pure POSIX Compliance: Emits self-contained, zero-dependency /bin/sh hardening scripts that execute cleanly under legacy Bourne shell, KornShell (ksh88/ksh93), and standard POSIX runtimes without requiring modern Python, Perl, or glibc.",
+      "• Zero-Downtime Tier 1 Hotpatching: Generates surgical kernel sysctl overrides, drop-in config patches, and memory safety guards that apply without restarting critical production daemons.",
+      "• Agentless Hardware Firewall ACLs: For systems too ancient or delicate to touch directly, Praxis compiles real-time network mitigation access-lists for Cisco IOS, Palo Alto EDL, Fortinet, and Juniper edge firewalls.",
+      "• Jurassic Park (1993) Certified: If you happen to still be running Silicon Graphics IRIX on an SGI Crimson to operate your park's electric fences (\"It's a UNIX system! I know this!\"), Praxis ensures your legacy infrastructure stays fortified against modern threat vectors without breaking your 30-year uptime."
+    ]
+  },
+  {
+    id: "backported-security-fixes",
+    category: "product",
+    question: "How do you handle backported security fixes?",
+    shortSummary: "Distribution-aware tracking: we correlate upstream CVEs with Debian Security Tracker, Ubuntu USN, and Red Hat RHSA build strings.",
+    answer: [
+      "Enterprise Linux distributions (Ubuntu, Debian, RHEL, Rocky, Alma, SUSE) rarely bump major version numbers when patching vulnerabilities. Instead, they backport security fixes into the existing package release string (e.g. `1.18.0-0ubuntu1.4` fixes a CVE that affects upstream `1.18.0`).",
+      "Exultia handles backports natively through distribution-specific intelligence feeds:",
+      "1. Upstream & Distro Correlation: Vantage continuously ingests and cross-references official Debian Security Trackers, Ubuntu USN (Ubuntu Security Notices), Red Hat RHSA/RHBA errata, and vendor OVAL definitions.",
+      "2. Release Epoch & Revision Parsing: The daemon evaluates the exact distro release epoch, debian/ubuntu revision string, and package changelogs (`apt-cache changelog` or `rpm -q --changelog`).",
+      "3. Accurate Status Assessment: If a package contains the backported patch, Vantage marks it `RESOLVED_BY_BACKPORT` and excludes it from remediation. It never attempts unnecessary or conflicting package replacements on vendor-maintained branches."
+    ]
+  },
+  {
+    id: "broken-vendor-patch-killswitch",
+    category: "product",
+    question: "If Canonical or RedHat ships a broken patch, how quickly can you stop it?",
+    shortSummary: "Minutes. Global quarantine broadcasts propagate over our priority feed, instantly triggering admission blocks or autonomous downgrades.",
+    answer: [
+      "If an upstream OS maintainer or open-source registry releases a broken patch, regression, or backdoored package (such as the `xz-utils` backdoor CVE-2024-3094), Exultia provides instant mitigation:",
+      "1. Global Quarantine Broadcast: Exultia publishes a signed `QUARANTINE_REVOCATION` directive to the global Vantage threat feed within minutes of discovery.",
+      "2. Fleet-Wide Admission Halt: Connected daemons poll the feed and block admission or installation of that package immediately across all hosts.",
+      "3. Autonomous Canary Rollback / Downgrade: If a canary host has already installed the buggy package, the daemon detects the quarantine notice and executes a clean downgrade (`apt-get install --allow-downgrades package=previous_version` or `dnf downgrade`) or unlinks the hotpatch.",
+      "4. Local Operator Quarantine: Operators can also trigger local immediate halts anytime with `sudo kinetic quarantine add <package-name-or-cve>`."
+    ]
+  },
 
-  // ── 3.0 DEPLOYMENT & AIR-GAP OPERATIONS ─────────────────────────────────────
+  // ── 3.0 DEPLOYMENT & UNIVERSAL PIPELINE ─────────────────────────────────────
+  {
+    id: "prebaked-offline-catalog",
+    category: "deployment",
+    question: "Does the OS image come with the full UVI feed pre-downloaded for offline patching?",
+    shortSummary: "Yes. All 24,388 advisories and 12,993 CISA KEV records are pre-baked into the image—you can patch against the entire catalog before connecting to the internet.",
+    answer: [
+      "Yes. Both the Exultia OS installation media (ISO and QCOW2) and the Universal Linux pipeline archive come pre-loaded with the entire Unified Vulnerability Intelligence (UVI) catalog.",
+      "• Day-Zero Air-Gap Patching: You can boot a bare-metal machine or VM in a classified facility or air-gapped data center, run `vantage fix` (or let the resident daemon run), and remediate thousands of known vulnerabilities before ever connecting an Ethernet cable or Wi-Fi antenna.",
+      "• Zero Post-Install Internet Stall: Standard operating systems leave your system exposed while requiring huge package metadata downloads (`apt update`, `dnf update`, or `pkg update`) immediately after boot. Exultia ships with 100% of threat definitions, patch recipes, and kernel baseline rules pre-compiled in `/var/db/vantage/catalog/`.",
+      "• Cryptographic Integrity: Every advisory is signed with Cosign SLSA Level 3 provenance keys that can be verified completely offline against Exultia's public key."
+    ]
+  },
+  {
+    id: "universal-linux-pipeline",
+    category: "deployment",
+    question: "Can I install the Exultia remediation pipeline on my existing Linux servers?",
+    shortSummary: "Yes. The portable binary installs on Linux via a single curl command or offline tarball with zero kernel re-compiles or re-imaging.",
+    answer: [
+      "Yes! Exultia is engineered specifically for organizations running existing Linux server fleets across cloud, on-premises, and edge:",
+      "• Portable Single-Binary Engine: Statically compiled native executable (`exultia`) with zero external runtime dependencies.",
+      "• Native Service Integration: Ships with a production systemd service unit and watchdog timer for automatic supervisor management.",
+      "• One-Command Install: `curl -fsSL https://get.exultia.org | sudo sh` installs the binary, registers the systemd service, and starts the 60-second autonomous remediation loop.",
+      "• Air-Gapped Tarball: Download `exultia-linux-amd64.tar.gz` (58.4 MB), transfer it across your data diode, and unpack it to get the daemon and all 24,388 pre-baked UVI advisories immediately.",
+      "• Zero Infrastructure Disruption: Performs threat detection, listening socket correlation, and automated in-memory/sysctl remediation on your existing Linux servers without reformatting or reinstalling."
+    ]
+  },
+  {
+    id: "tier1-tier2-deployment",
+    category: "deployment",
+    question: "Do I need to rebuild Linux, or can I deploy Exultia as a package or Kubernetes DaemonSet?",
+    shortSummary: "No kernel rebuilding needed. Deploy via Tier 1 (portable daemon, APT/DNF/APK packages, systemd) or Tier 2 (Kubernetes Helm chart and DaemonSet).",
+    answer: [
+      "You do not need to rebuild Linux or replace your operating system. Rebuilding a custom distribution introduces massive operational drag, hardware driver maintenance, and compliance hurdles. Instead, Exultia ships through two streamlined deployment tiers that drop cleanly into your existing architecture:",
+      "• Tier 1: Standalone Linux Hosts & VMs (Portable Daemon & Native Packages):",
+      "  - One-Line Installer: `curl -sSL https://exultia.tech/install.sh | sudo sh` installs the signed, statically linked binary to `/usr/local/bin/exultia`.",
+      "  - Native Package Managers: Managed repositories for Debian/Ubuntu (`apt install exultia-remediator`) and RHEL/Fedora/Rocky (`dnf install exultia-remediator`).",
+      "  - Supervisor Integration: Pre-configured systemd service with a 120-second watchdog supervisor for automatic fault recovery.",
+      "• Tier 2: Kubernetes Clusters (Helm Chart & DaemonSet):",
+      "  - Helm 3: `helm install exultia-remediator exultia/exultia-node-shield --namespace kube-system` rolls out automated node defense cluster-wide.",
+      "  - Zero-Helm Manifest: `kubectl apply -f https://exultia.tech/k8s/exultia-daemonset.yaml` for direct declarative deployment.",
+      "  - Cluster Observability: Includes eBPF host/container socket monitoring, cluster-wide canary verification, and Prometheus telemetry metrics on `:9100/metrics`.",
+      "• Turnkey Appliance (Secondary): For bare-metal hypervisors (QEMU/KVM/Proxmox), pre-built minimal QCOW2 and ISO images are also provided."
+    ]
+  },
   {
     id: "airgap-support",
     category: "deployment",
@@ -219,55 +500,137 @@ const FAQ_DATA: FaqItem[] = [
     shortSummary: "Yes. All daemons, container ranges, and patch compilers run completely self-contained and offline.",
     answer: [
       "Yes. Exultia was designed from inception for sovereign, air-gapped, and defense-grade environments:",
-      "• Self-Contained Binaries: The Kinetic daemon, Praxis hotpatch synthesizer, and Valkyrie prober require no continuous connection to Exultia cloud servers.",
-      "• Data Diode Sync: Advisory definitions and patch packages can be exported into offline `.bundle` files and imported across secure data diodes.",
+      "• Self-Contained Binaries: The Vantage resident daemon, in-memory patch compiler, and Valkyrie prober require no continuous connection to external servers.",
+      "• Pre-Baked Intelligence: Includes 24,388 advisories and 12,993 CISA KEV records directly on the local filesystem.",
+      "• Data Diode Sync: When updates are needed, delta catalogs can be exported into offline signed `.bundle` packages and imported across secure data diodes.",
       "• Cosign Signature Verification: Offline bundles include cryptographic Cosign signatures that are validated locally against your organization's public key before deployment."
     ]
   },
   {
     id: "supported-os",
     category: "deployment",
-    question: "Which operating systems, distributions, and container environments are supported?",
-    shortSummary: "Ubuntu, Debian, RHEL, AlmaLinux, Rocky, Alpine Linux, Docker, containerd, and Kubernetes.",
+    question: "Which operating systems, architectures, and container environments are supported?",
+    shortSummary: "Linux (x86_64 and aarch64), bare-metal servers, virtual machines, cloud instances, Docker, and Kubernetes.",
     answer: [
-      "Exultia supports all major modern enterprise Linux distributions and container platforms:",
-      "• Distributions: Ubuntu (20.04, 22.04, 24.04 LTS), Debian (11, 12), RHEL / Rocky Linux / AlmaLinux (8, 9), Alpine Linux (3.18+), and Arch Linux.",
-      "• Architectures: Full support for both x86_64 (AMD64) and aarch64 (ARM64 / AWS Graviton).",
+      "Exultia is designed to run seamlessly across all Linux environments:",
+      "• Linux Operating Systems: Full compatibility with modern Linux kernels (5.4+) across all server environments—cloud instances, on-premises bare metal, and virtual machines.",
+      "• Architectures: Full native support for both x86_64 (AMD64) and aarch64 (ARM64 / AWS Graviton).",
       "• Container Platforms: Docker Engine, containerd, CRI-O, and Kubernetes (EKS, GKE, AKS, and bare-metal Talos/k3s/RKE2).",
-      "• PureOS Containers: Minimal, CIS-benchmarked distroless container images available for immediate drop-in replacement across Node.js, Go, Python, and Rust runtimes."
+      "• Hardened Container Recipes: Pre-hardened, CIS-benchmarked distroless container images available for immediate drop-in replacement across Node.js, Go, Python, and Rust runtimes."
     ]
   },
   {
     id: "rollback-mechanics",
     category: "deployment",
-    question: "How does the deterministic rollback command actually work on a live host?",
-    shortSummary: "Pre-flight memory snapshots allow instant unlinking of trampoline hooks without service restarts.",
+    question: "How does the deterministic rollback mechanism work on Linux?",
+    shortSummary: "Atomic configuration state checkpoints and dynamic memory trampoline unlinking with zero dropped TCP connections.",
     answer: [
-      "When Praxis hotpatches a running process or service, it commits an atomic memory snapshot and filesystem delta before modifying any active instructions.",
-      "To execute a rollback:",
-      "1. Execute `sudo kinetic rollback --latest` (or target a specific CVE, e.g. `sudo kinetic rollback --cve=CVE-2024-4577`).",
-      "2. The Kinetic kernel driver immediately unlinks the memory trampoline hook, restoring the original function pointer offsets.",
-      "3. Pre-flight file permissions and binary hashes are verified against the snapshot manifest.",
-      "4. The entire reversal unlinks the hook immediately with zero daemon restarts and zero dropped client connections."
+      "Exultia provides deterministic, non-destructive rollback mechanics designed natively for Linux systems:",
+      "• In-Memory Trampoline Unlinking: When an in-memory hotpatch is applied, Exultia registers an atomic memory restore descriptor. Running `sudo exultia rollback --cve=CVE-2024-4577` immediately unlinks the hook and restores original execution flow with zero dropped connections.",
+      "• State Snapshot Restores: Prior to mutating kernel sysctls or system configuration files, the daemon commits a cryptographic pre-image checkpoint in `/var/lib/exultia/snapshots/`. If health checks fail or an operator triggers a rollback, baseline state is restored in under 15ms.",
+      "• Watchdog Safety Loop: Every remediation action arms a hardware and systemd watchdog timer. If post-remediation canary tests fail to ping the supervisor within 120 seconds, the daemon automatically reverts to the previous safe checkpoint.",
+      "This guarantees zero-data-loss rollback without human guesswork or service downtime."
+    ]
+  },
+  {
+    id: "apt-yum-lock-held",
+    category: "deployment",
+    question: "What happens if another process is holding the apt/yum lock?",
+    shortSummary: "Non-blocking detection: we never force-kill package locks; we yield with exponential backoff or apply Tier 1 in-memory hotpatches directly.",
+    answer: [
+      "The resident daemon treats package manager lockfiles (`/var/lib/dpkg/lock-frontend`, `/var/lib/apt/lists/lock`, or `/var/run/yum.pid`) with strict non-destructive deference:",
+      "1. Non-Blocking Inspection: Before attempting any Tier 2 package operations, the daemon checks lock status via non-blocking `fcntl` file locks. It never issues `kill -9` against running package managers or deletes active `.lock` files.",
+      "2. State Deferral & Jittered Backoff: If an administrator or unattended-upgrades holds the lock, the daemon emits status `DEFERRED_LOCK_BUSY`, logs the active holding PID to journald, and enters a randomized 30s–120s backoff.",
+      "3. Lock-Free Tier 1 Execution: Crucially, Tier 1 mitigations (in-memory hotpatches, eBPF socket filters, and kernel sysctls) bypass APT and YUM entirely, securing vulnerable network daemons instantly even if the host's package manager is locked or stalled."
+    ]
+  },
+  {
+    id: "blast-radius-everywhere",
+    category: "deployment",
+    question: "Does this blast the update everywhere all at once?",
+    shortSummary: "Never. Automated progressive multi-ring canary deployments enforce soak windows and automated rollbacks on error.",
+    answer: [
+      "No. Fleet-wide simultaneous updates ('big bang deployments') are an anti-pattern that violates basic infrastructure resilience. Exultia uses multi-ring progressive canary rollouts by default:",
+      "• Ring 0 (Canary - 2% to 10%): Initial patch rollout is isolated to designated canary hosts. The daemon monitors service availability, HTTP error rates, and systemd journal anomalies across a 15-minute verification gate.",
+      "• Ring 1 (Staging / Cautious - 25%): After Ring 0 confirms stability, the patch advances to staging nodes with a 2-hour soak period.",
+      "• Ring 2 (Broad Fleet - 65% to 75%): Full rollout proceeds across the rest of the fleet only when Rings 0 and 1 pass all automated checks with zero regressions.",
+      "• Automated Abort & Rollback: If canary health checks detect latency spikes or process crashes, the rollout aborts immediately and the canary hosts automatically restore their pre-remediation checkpoints."
+    ]
+  },
+  {
+    id: "configure-ring-testing-client",
+    category: "deployment",
+    question: "How does the customer configure ring testing from the client?",
+    shortSummary: "Declarative configuration in /etc/exultia/kinetic.toml, CLI commands (kinetic ring), or Kubernetes node labels in Helm.",
+    answer: [
+      "Ring membership and progressive deployment stages are fully configurable from the local host, automation scripts, or Kubernetes manifests:",
+      "1. Local Configuration File (`/etc/exultia/kinetic.toml`):",
+      "  ```toml",
+      "  [rollout]",
+      "  ring = 0  # 0=Canary, 1=Staging (2h soak), 2=Broad Fleet",
+      "  auto_promote = true",
+      "  health_check_command = \"/usr/local/bin/app-health-check.sh\"",
+      "  health_check_timeout_seconds = 60",
+      "  max_journal_error_rate = 5",
+      "  ```",
+      "2. Client CLI Commands:",
+      "  • Assign node ring: `sudo kinetic config set rollout.ring 0`",
+      "  • Inspect ring status: `sudo kinetic ring status`",
+      "  • Promote manually: `sudo kinetic ring promote --cve=UVI-2024-4577`",
+      "3. Kubernetes Helm DaemonSet Deployment:",
+      "  • Target rings dynamically via node labels: `helm install exultia exultia/exultia-node-shield --set rollout.ring=canary --set nodeSelector.\"exultia.org/ring\"=canary`",
+      "4. Custom Health Check Validation: Before any canary node self-promotes to the next ring, it runs your configured validation script to ensure business logic remains 100% operational."
+    ]
+  },
+  {
+    id: "feed-sync-watchdog",
+    category: "deployment",
+    question: "How do we know if your vulnerability feed stops syncing?",
+    shortSummary: "Prometheus metrics on :9100/metrics, journald alerts, and seamless fallback to the local pre-baked catalog.",
+    answer: [
+      "Exultia provides multiple redundant observability mechanisms to alert your team if threat feed synchronization fails:",
+      "1. Prometheus Metrics: The daemon exports telemetry at `:9100/metrics` (or `:9090`), including `exultia_feed_last_sync_timestamp_seconds`, `exultia_feed_sync_status (1=OK, 0=FAIL)`, and `exultia_feed_records_total`.",
+      "2. Standard Prometheus Alert Rule:",
+      "  ```yaml",
+      "  - alert: ExultiaFeedSyncStalled",
+      "    expr: time() - exultia_feed_last_sync_timestamp_seconds > 7200",
+      "    for: 15m",
+      "    labels: { severity: warning }",
+      "    annotations: { summary: 'Host has not synced threat feed in over 2 hours' }",
+      "  ```",
+      "3. Systemd Journal Logging: Sync failures emit structured warnings (`[WARN] UVI Feed sync failed: connection refused`) ingestible by Datadog, Splunk, or Vector.",
+      "4. Zero Downtime Fallback: If your network or upstream CDN is unreachable, the daemon continues defending against its local SQLite database of 24,388 advisories without interruption."
     ]
   },
 
-  // ── 4.0 PRICING, LICENSING & SOVEREIGN TIERS ─────────────────────────────────
+  // ── 5.0 PRICING, LICENSING & SOVEREIGN TIERS ─────────────────────────────────
   {
     id: "single-subscription",
     category: "pricing",
-    question: "Do I really get full access to all 7 platform engines with a single $100/mo subscription?",
-    shortSummary: "Yes. An active Professional Operator subscription unlocks all 7 defense engines with zero add-on fees.",
+    question: "How does Exultia pricing work? What are the two tiers?",
+    shortSummary: "A clean 2-tier architecture: Community Sovereign ($0 forever) and Enterprise Fleet ($25/node or $500/mo flat for 25 hosts).",
     answer: [
-      "Yes. Unlike legacy vendors that charge separate licensing fees for threat feeds, vulnerability scanners, pentest tools, container registries, and training simulators, Exultia provides the entire ecosystem under one unified platform subscription.",
-      "Your $100/mo ($1,200/year) Professional Operator subscription includes:",
-      "• Unlimited Praxis in-memory hotpatching and atomic rollbacks",
-      "• Full Vantage threat intelligence across 110+ authoritative registries",
-      "• Private Eris chaos sandbox testing ranges",
-      "• Valkyrie on-demand breach & attack simulation prober",
-      "• PureIDE air-gap compiler and PureOS CIS-hardened container images",
-      "• Axiom certification exam simulator with verifiable SHA-256 certs",
-      "There are no per-engine add-ons, no hidden data ingestion fees, and no surprise overages."
+      "We eliminated fragmented, multi-tiered add-on pricing in favor of a straightforward 2-tier model designed for developers and enterprise platform engineers:",
+      "1. Community Sovereign ($0 forever): Designed for individuals, researchers, and homelabs. Includes the full autonomous Linux self-healing daemon, pre-baked 24,388 offline CVE database, local in-memory hotpatching, sub-100ms atomic rollbacks, and zero outbound telemetry.",
+      "2. Enterprise Fleet: Engineered for production clusters, Kubernetes fleets, and institutional compliance. Includes continuous 24/7 Vantage Priority Feed streaming, live Praxis hotpatch streaming, central multi-ring progressive canary rollouts, Cosign SLSA-3 attestation receipts, and SIEM webhooks (Splunk/Sentinel).",
+      "Pricing for Enterprise Fleet is transparent and capped:",
+      "• Sub-25 Hosts: $25 / node / month ($20 / node / mo billed annually)",
+      "• 25-Host Fleet Cap: Flat rate of $500 / month ($6,000 billed annually, or $600/mo billed monthly) covering all 25 nodes",
+      "• 25+ Scale Fleets: Base $500/mo flat cap + $15 / additional node / month ($12 / node / mo billed annually)",
+      "There are no per-engine add-ons, no hidden data ingestion taxes, and no proprietary lock-in."
+    ]
+  },
+  {
+    id: "license-management",
+    category: "pricing",
+    question: "How does Enterprise License Management work, and what is your zero-lockout architecture?",
+    shortSummary: "Offline-first Ed25519 cryptographic token at /etc/exultia/license.key with a strict zero-lockout architecture. Zero phone-home DRM, zero production halts, and 30-day soft grace periods.",
+    answer: [
+      "Exultia Enterprise License Management is engineered on offline-first cryptographic integrity and a strict zero-lockout architecture—zero phone-home DRM, zero production halts, and zero telemetry exfiltration:",
+      "1. Offline Ed25519 Token (Cryptographic Keyfile): Lives at `/etc/exultia/license.key`. Verified entirely offline by the daemon binary using an embedded root public key in <1ms. Works in air-gapped SCIF enclaves with zero cloud dependencies and zero phone-home DRM.",
+      "2. K8s & Systemd Ready (Helm Secrets & Systemd): Inject directly into Kubernetes via standard secrets (`exultia-license`) or `--set licenseKey=...` in our official Helm chart, or roll out to Linux hosts via Ansible, Puppet, Terraform, or Cloud-Init.",
+      "3. Privacy-Preserving Hash (Anonymized Machine-ID): Node identity is computed as `HMAC-SHA256(machine-id, salt)`. Exultia never collects internal hostnames, private IPs, environment variables, or container payloads.",
+      "4. Never-Brick Policy (Autoscale Grace Period): Autoscaling spikes (e.g. 32 nodes on a 25-node plan) or credit card renewals never disable defense or halt daemons. A 30-day soft grace period ensures 100% operational uptime while billing true-ups happen calmly. Lapsed licenses gracefully fall back to Community Sovereign mode where local UVI catalog and local hotpatching remain operational; live priority feed streaming pauses. Nothing ever crashes, bricks, or locks your servers."
     ]
   },
   {
@@ -277,9 +640,10 @@ const FAQ_DATA: FaqItem[] = [
     shortSummary: "The Community plan is free forever for security researchers, students, and open-source developers.",
     answer: [
       "The Community Sovereign tier ($0 forever) provides core defense capabilities for individual practitioners:",
-      "• Full public Vantage threat feed access (aggregating NIST NVD, CISA KEV, and open CVE feeds)",
-      "• Pre-built community distroless container base images from PureOS",
-      "• Basic Valkyrie non-destructive canary probes",
+      "• Exultia Portable Linux Remediator: Full autonomous self-healing daemon with systemd watchdog and 60-second remediation loop",
+      "• Full offline air-gapped catalog containing 24,388 pre-baked UVI vulnerability advisories",
+      "• Full public Vantage threat feed access (24,388 advisories + 12,993 CISA KEV records)",
+      "• Pre-baked offline catalog for zero-internet patching out of the box",
       "• Free cybersecurity certification question bank practice modules via Axiom",
       "No credit card is required to create a community account and start exploring the platform."
     ]
@@ -287,24 +651,53 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: "enterprise-features",
     category: "pricing",
-    question: "What extra capabilities are included in the Enterprise Fleet plan ($500/mo)?",
-    shortSummary: "Multi-cluster orchestration, custom patch authoring, SCORM/LTI LMS APIs, and 24/7 priority SLA.",
+    question: "What extra capabilities are included in the Enterprise Fleet plan ($500/mo base)?",
+    shortSummary: "Multi-cluster progressive canaries, live patch streaming, Cosign SLSA-3 receipts, SCORM/LTI LMS APIs, and priority escalation.",
     answer: [
-      "The Enterprise Fleet tier ($500/mo or custom annual invoicing) is engineered for multi-team organizations, universities, and mission-critical infrastructure:",
-      "• Multi-Node Cluster Orchestration: Centrally orchestrate hotpatching across hundreds of Kubernetes nodes and server clusters.",
-      "• Custom Hotpatch Authoring: Author and audit proprietary trampoline patches for internal, proprietary enterprise binaries.",
-      "• Institutional LMS Integration: SCORM and LTI 1.3 deep-linking API for embedding Axiom certification exams into university and corporate LMS systems.",
-      "• Private Cosign Audit Keys: Cryptographically sign patch manifests using your organization's private HSM / KMS keys.",
-      "• Dedicated 24/7 SLA: Direct escalation access to senior systems security engineers with guaranteed response SLAs."
+      "The Enterprise Fleet tier ($500/mo flat for 25 hosts, or $25/node) is engineered for production clusters, universities, and mission-critical infrastructure:",
+      "• Central Progressive Canary Rollouts: Phased ring progression (Ring 0 canary -> Ring 1 staging -> Full fleet) with automated rollback triggers.",
+      "• Continuous 24/7 Vantage Priority Feed: Continuous live zero-day ingestion with sub-350ms autonomous hotpatch streaming.",
+      "• Kubernetes DaemonSet & Helm: Enterprise packaging with automated secret mounting and node health metrics.",
+      "• Institutional LMS Integration: SCORM and LTI 1.3 deep-linking API for embedding Axiom certification exams into corporate LMS systems.",
+      "• Cosign SLSA Level 3 Signatures: Cryptographically sign patch manifests using your organization's private HSM / KMS keys.",
+      "• Priority Engineering Escalation: Direct escalation access to senior systems security engineers for architecture and incident response."
     ]
   },
   {
     id: "sales-demo",
     category: "pricing",
-    question: "Can I get a sales demo?",
-    shortSummary: "Find the most technical person you know, send them a link to our wiki, and tell them to follow the instructions.",
+    question: "Do I have to do a sales demo, steak dinner, or talk to an SDR to upgrade to Enterprise?",
+    shortSummary: "Never. Scaling up requires zero 'no-obligation' steak dinners and zero booth pitches from hot blonde girls at InfoSec conventions. Pay what you want—enterprise unlocks automatically at $500/mo.",
     answer: [
-      "Sure. Find the most technical person you know, send them a link to our wiki, and tell them to follow the instructions and report their results back to you."
+      "No. Exultia does not have a bloated enterprise sales department, and we will never invite you to a 90-minute 'no-obligation' steak dinner to qualify your Q4 security budget over a lukewarm filet mignon at Ruth's Chris.",
+      "Zero aggressive badge-scanning or elevator pitches from that InfoSec convention hottie hired to extract your corporate email so their SDR team can stalk your LinkedIn for six months.",
+      "Our model is simple: pay what you feel like paying. If you run a homelab or small team, run the full autonomous daemon for free or pay per-node. The moment your allocation crosses 25 nodes (or $500/mo), the server automatically activates your full Enterprise Fleet entitlements via your Ed25519 token in milliseconds.",
+      "If you want to evaluate the software: find the most technical person you know, send them a link to our wiki, and tell them to follow the instructions and report their results back to you."
+    ]
+  },
+  {
+    id: "downtime-liability",
+    category: "pricing",
+    question: "If your automation breaks my custom application, who pays for the downtime?",
+    shortSummary: "Standard enterprise software terms apply; our architecture prevents downtime upfront via canary rings and instant rollbacks.",
+    answer: [
+      "Consistent with standard enterprise software and infrastructure practices (identical to terms from Canonical, Red Hat, Microsoft, or AWS), Exultia provides software under standard commercial terms without open-ended financial liability for consequential third-party application downtime.",
+      "However, Exultia's architecture is engineered from the ground up to prevent application downtime before it can ever manifest:",
+      "1. Non-Destructive Tier 1 Hotpatching: Praxis in-memory trampolines and sysctl guards specifically patch vulnerable entry-point decoders and kernel buffers without touching your proprietary business rules or internal databases.",
+      "2. Ring 0 Canary Isolation: Updates are gated behind canary rings (2%–10% of hosts), ensuring any edge-case incompatibilities are caught on non-critical nodes without impacting broad production traffic.",
+      "3. Sub-15ms Pre-Image Rollback: Every mutation creates an atomic snapshot in `/var/lib/exultia/snapshots/`. If canary health checks detect latency spikes or errors, the daemon automatically reverts state within 15 milliseconds.",
+      "4. Hardware & Systemd Watchdogs: 120-second supervisor watchdogs guarantee autonomous rollback if an application health check fails to ping healthy status."
+    ]
+  },
+  {
+    id: "remediation-timeframe-sla",
+    category: "pricing",
+    question: "Do you guarantee remediation within a certain timeframe (SLA)?",
+    shortSummary: "We guarantee 99.9% uptime for our Vantage Threat Feed and streaming API; we do not make reckless response-time claims before patches are formally verified.",
+    answer: [
+      "Exultia provides a strictly audited 99.9% availability SLA for the Vantage Threat Feed API, real-time priority distribution network, and STIX/TAXII endpoints.",
+      "We deliberately do not offer reckless, unprovable '1-hour zero-day patch' marketing SLAs. Legitimate, non-destructive vulnerability remediation requires formal verification, binary safety auditing, and ABI regression testing across target distributions. Rushing unverified binary modifications into customer production kernels creates severe systemic risk.",
+      "Instead, hotpatches and verified package advisories are streamed continuously to your fleet the millisecond they clear our automated verification matrix, typically within hours of public disclosure."
     ]
   },
   {
@@ -321,11 +714,19 @@ const FAQ_DATA: FaqItem[] = [
 export default function FaqPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
+    "two-core-pillars": true,
+    "why-portable-daemon": true,
+    "praxis-legacy-unix-posix": true,
+    "closed-loop-explained": true,
+    "validate-misconfigurations": true,
+    "prebaked-offline-catalog": true,
+    "universal-linux-pipeline": true,
+    "tier1-tier2-deployment": true,
+    "daemon-vs-alert-forwarding": true,
+    "why-engineers-prefer-daemons": true,
+    "daemon-and-package-managers": true,
     "vaporware-proof": true,
     "memory-safety": true,
-    "rebranded-wrapper": true,
-    "closed-loop-explained": true,
-    "airgap-support": true,
     "single-subscription": true,
     "sales-demo": true,
     "whitelabel-pipeline": true
@@ -722,7 +1123,7 @@ export default function FaqPage() {
                 transition: "all 0.15s ease"
               }}
             >
-              <span>Platform Plans ($100/mo)</span>
+              <span>Platform Plans & Licensing</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -995,7 +1396,7 @@ export default function FaqPage() {
               textDecoration: "none"
             }}
           >
-            <span>Platform Plans ($100/mo)</span>
+            <span>Platform Plans & Licensing</span>
           </Link>
         </div>
       </footer>
@@ -1032,12 +1433,8 @@ export default function FaqPage() {
           Valkyrie
         </Link>
         <span style={{ color: "#334155" }}>&bull;</span>
-        <Link href="/products/pure-ide" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
-          PureIDE
-        </Link>
-        <span style={{ color: "#334155" }}>&bull;</span>
-        <Link href="/app/pureos" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
-          PureOS
+        <Link href="/products/daedelus" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>
+          Daedelus
         </Link>
         <span style={{ color: "#334155" }}>&bull;</span>
         <Link href="/app/axiom" style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}>

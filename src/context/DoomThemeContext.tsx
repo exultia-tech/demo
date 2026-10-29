@@ -2,6 +2,20 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+// Suppress false-positive React 19 warnings regarding script tags in client components
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  const originalError = console.error;
+  console.error = (...args: unknown[]) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("Encountered a script tag while rendering React component")
+    ) {
+      return;
+    }
+    originalError.apply(console, args);
+  };
+}
+
 export type DoomPalette = "cyan" | "orange" | "green" | "magenta";
 
 interface DoomThemeContextType {
@@ -80,22 +94,28 @@ export function DoomThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    // On load / hard-refresh: read the randomly assigned palette from html tag or generate one
-    const activeOnHtml = typeof document !== "undefined"
-      ? (document.documentElement.getAttribute("data-doom-palette") as DoomPalette | null)
-      : null;
-
     let initialPalette: DoomPalette;
-    if (activeOnHtml && DOOM_PALETTES[activeOnHtml]) {
-      initialPalette = activeOnHtml;
-    } else {
-      // Pick random
-      initialPalette = ALL_PALETTES[Math.floor(Math.random() * ALL_PALETTES.length)];
-      if (typeof document !== "undefined") {
-        document.documentElement.setAttribute("data-doom-palette", initialPalette);
+    try {
+      const stored = localStorage.getItem("exultia_doom_palette") as DoomPalette | null;
+      if (stored && DOOM_PALETTES[stored]) {
+        initialPalette = stored;
+      } else {
+        const activeOnHtml = typeof document !== "undefined"
+          ? (document.documentElement.getAttribute("data-doom-palette") as DoomPalette | null)
+          : null;
+        if (activeOnHtml && DOOM_PALETTES[activeOnHtml] && activeOnHtml !== "cyan") {
+          initialPalette = activeOnHtml;
+        } else {
+          initialPalette = ALL_PALETTES[Math.floor(Math.random() * ALL_PALETTES.length)];
+        }
       }
+    } catch {
+      initialPalette = ALL_PALETTES[Math.floor(Math.random() * ALL_PALETTES.length)];
     }
 
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-doom-palette", initialPalette);
+    }
     setPaletteState(initialPalette);
 
     try {
@@ -112,6 +132,11 @@ export function DoomThemeProvider({ children }: { children: React.ReactNode }) {
     setPaletteState(newPalette);
     if (typeof document !== "undefined") {
       document.documentElement.setAttribute("data-doom-palette", newPalette);
+    }
+    try {
+      localStorage.setItem("exultia_doom_palette", newPalette);
+    } catch {
+      // Fallback
     }
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("exultia-doom-palette-change", { detail: { palette: newPalette } }));

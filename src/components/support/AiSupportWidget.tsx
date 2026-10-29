@@ -49,12 +49,12 @@ export default function AiSupportWidget() {
 How can I help you today? I provide architectural answers, CLI commands, pricing estimates, and technical verification directly grounded in our specifications:
 - **Architecture & OODA:** Sub-250ms closed-loop defense and zero outbound telemetry.
 - **CLI & Rollbacks:** Kinetic daemon setup and 14ms deterministic rollbacks.
-- **Pricing & Plans:** $100/mo unified platform and linear per-host fleet pricing.
+- **Pricing & Plans:** $0 Community Edition, $500/mo Enterprise Flat Cap, and linear per-host fleet pricing.
 - **Verification:** The public [Bullshit Validator](https://github.com/exultia-tech/demo) test fleet or our [Interactive FAQ](/faq).`,
       suggestions: [
         "How do I run the Bullshit Validator?",
         "How does deterministic rollback work?",
-        "What is included in the $100/mo plan?",
+        "What is included in the Enterprise Fleet plan?",
         "Why zero outbound telemetry?"
       ],
       sources: [

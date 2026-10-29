@@ -23,7 +23,9 @@ export async function POST(req: Request) {
 
     // Pay-what-you-want dynamic entitlement unlocking:
     if (paidAmount !== null) {
-      if (paidAmount >= 399 || tier === 'enterprise') {
+      if (product === 'platform' || product === 'multipass') {
+        resolvedTier = paidAmount > 0 || tier === 'enterprise' ? 'enterprise' : 'community';
+      } else if (paidAmount >= 399 || tier === 'enterprise') {
         resolvedTier = 'enterprise';
       } else if (paidAmount >= 49 || tier === 'pro') {
         resolvedTier = 'pro';

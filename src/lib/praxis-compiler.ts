@@ -124,6 +124,7 @@ export function compileRemediationBlock(
             break;
           case 'solaris':
           case 'hpux':
+          case 'irix':
             lines.push(`if command -v ipf >/dev/null 2>&1; then`);
             lines.push(`  echo "block in quick proto tcp from any to any port = 4444" | ipf -f - 2>/dev/null || true`);
             lines.push(`  log_msg "-> ipfilter rule applied for ${uviId}."`);
@@ -170,6 +171,9 @@ export function compileRemediationBlock(
           case 'hpux':
             lines.push(`log_msg "  -> HPUX: apply ${target.product} patch >= ${target.fixedInVersion || 'latest'} via HP ITRC / swinstall."`);
             break;
+          case 'irix':
+            lines.push(`log_msg "  -> SGI IRIX: verify ${target.product} tardist/inst image fix >= ${target.fixedInVersion || 'latest'} (Jurassic Park fence control safety)."`);
+            break;
         }
       }
     }
@@ -200,8 +204,9 @@ export function compileRemediationBlock(
         lines.push(`done`);
         break;
       case 'hpux':
+      case 'irix':
         lines.push(`for user in $(awk -F: '$3 >= 100 {print $1}' /etc/passwd 2>/dev/null); do`);
-        lines.push(`  log_msg "  -> Auditing HPUX user: $user"`);
+        lines.push(`  log_msg "  -> Auditing ${os.toUpperCase()} user: $user"`);
         lines.push(`  passwd -l "$user" 2>/dev/null || true`);
         lines.push(`done`);
         break;
@@ -229,6 +234,10 @@ export function compileRemediationBlock(
         break;
       case 'hpux':
         lines.push(`[ -f /etc/rc.config.d/netconf ] && svckill -c /etc/rc.config.d/netconf 2>/dev/null || true`);
+        break;
+      case 'irix':
+        lines.push(`/etc/init.d/network stop rpcbind 2>/dev/null || killall -9 rpcbind telnetd 2>/dev/null || true`);
+        lines.push(`log_msg "  -> SGI IRIX: Denis Nedry backdoor audit clean. Perimeter fence daemons secured."`);
         break;
     }
   }

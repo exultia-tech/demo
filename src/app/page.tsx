@@ -5,8 +5,8 @@ import FeedPrefetch from "@/components/FeedPrefetch";
 import HomeCommandDeck from "@/components/home/HomeCommandDeck";
 
 export const metadata: Metadata = {
-  title: "Exultia Technologies | Closed-Loop Autonomous Cyber Defense",
-  description: "Autonomous threat intelligence, adversary emulation, live exploit verification, and sub-second deterministic hotpatching with cryptographic attestation.",
+  title: "Autonomous & Accessible Self-Healing Linux",
+  description: "Autonomous & Accessible Self-Healing Linux. Portable threat remediation daemon, 60-second autonomous self-healing loop, and real-time vulnerability feed integration.",
 };
 
 export default function HomePage() {

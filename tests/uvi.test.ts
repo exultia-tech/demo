@@ -62,12 +62,19 @@ describe("UVI / Vantage Module: Universal Vulnerability Index", () => {
       expect(CONSOLIDATED_UVI_ADVISORIES.length).toBeGreaterThan(0);
       for (const adv of CONSOLIDATED_UVI_ADVISORIES.slice(0, 50)) {
         expect(adv.uviId).toBeDefined();
+        expect(adv.uviId.startsWith("UVI-")).toBe(true);
         expect(adv.title.length).toBeGreaterThan(0);
         expect(["CRITICAL", "HIGH", "MEDIUM", "LOW"]).toContain(adv.severity);
         expect(adv.cvssScore).toBeGreaterThanOrEqual(0);
         expect(adv.cvssScore).toBeLessThanOrEqual(10);
         expect(adv.ideBuildImpact).toBeDefined();
       }
+    });
+
+    it("should strictly enforce UVI- prefix across all threat feed items", () => {
+      CONSOLIDATED_UVI_ADVISORIES.forEach(adv => {
+        expect(adv.uviId).toMatch(/^UVI-/);
+      });
     });
   });
 });

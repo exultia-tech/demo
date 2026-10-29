@@ -88,6 +88,7 @@ const OS_OPTIONS = [
   { value: 'aix',     label: 'IBM AIX' },
   { value: 'hpux',    label: 'HP-UX' },
   { value: 'solaris', label: 'Oracle Solaris' },
+  { value: 'irix',    label: 'SGI IRIX 6.5 (Jurassic Park 1993 Ready)' },
 ];
 
 const FIREWALL_FORMATS = [
@@ -196,11 +197,12 @@ export default function PraxisPage() {
       if (ids.length > 0) {
         // If we don't have matching objects from storage, seed placeholders
         for (const id of ids) {
-          if (!entries.some(e => e.uviId === id)) {
+          const normId = id.startsWith('UVI-') ? id : `UVI-${id}`;
+          if (!entries.some(e => e.uviId === normId)) {
             entries.push({
-              uviId: id,
+              uviId: normId,
               cveId: id,
-              title: `Targeted Advisory ${id} (Vantage Ingestion)`,
+              title: `Targeted Advisory ${normId} (Vantage Ingestion)`,
               severity: 'HIGH',
               cvssScore: 8.5,
               affectedPackages: ['system-runtime'],
@@ -229,9 +231,10 @@ export default function PraxisPage() {
     // Ingest Valkyrie On-Demand Pentest Remediation
     const cveParam = params.get('cve') || params.get('valkyrieRemediate');
     if (cveParam) {
-      if (!entries.some(e => e.cveId === cveParam || e.uviId === cveParam)) {
+      const normCveUvi = cveParam.startsWith('UVI-') ? cveParam : `UVI-${cveParam}`;
+      if (!entries.some(e => e.cveId === cveParam || e.uviId === normCveUvi)) {
         entries.push({
-          uviId: cveParam,
+          uviId: normCveUvi,
           cveId: cveParam,
           title: `Valkyrie Pentest Finding: ${cveParam}`,
           severity: 'CRITICAL',
@@ -500,7 +503,7 @@ export default function PraxisPage() {
             </h1>
           </div>
           <p style={{ fontSize: '0.9rem', color: '#94A3B8', margin: 0 }}>
-            Autonomous remediation &amp; hardening engine
+            Total POSIX compliance &amp; legacy Unix remediation engine &bull; Zero external dependencies (Yes, even Jurassic Park 1993 certified)
           </p>
         </div>
 

@@ -80,6 +80,9 @@ curl -fsSL "https://exultia.tech/api/patches/feed?format=bash&os=rocky" | less
 
 Kinetic includes an autonomous background runner that periodically polls the patch feed, applies critical hotfixes, probes canary health, and automatically rolls back if health metrics degrade.
 
+> [!NOTE]
+> For the complete deep-dive engineering specification of all daemon internal routines, signal traps, non-blocking lock algorithms, multi-ring canary gating, and Prometheus telemetry metrics, see the **[Kinetic Resident Daemon Technical Specification](./kinetic-daemon.md)**.
+
 #### Launch Daemon via CLI
 ```bash
 kinetic daemon --interval 3600 --ring 0 --feed-url "https://exultia.tech/api/patches/feed"

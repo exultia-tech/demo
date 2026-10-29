@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     if (!user) {
       const isHtml = request.headers.get('accept')?.includes('text/html');
       if (isHtml) {
-        return NextResponse.redirect(new URL('/login?error=auth_required&redirect=/app/pureide', request.url));
+        return NextResponse.redirect(new URL('/login?error=auth_required&redirect=/app/daedelus?mode=ide', request.url));
       }
       return NextResponse.json({ error: 'Authentication required to download builds. Please sign in.' }, { status: 401 });
     }

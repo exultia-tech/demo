@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ExultiaLogo, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
+import { ExultiaLogo, DaedelusIcon, PureIdeIcon, VantageIcon, PraxisIcon, PureOsIcon, AxiomIcon, ErisIcon, PerditionIcon, CrucibleIcon, ValkyrieIcon, ExultiaLinuxIcon } from "@/components/BrandIcons";
 import AuthModal from "@/components/auth/AuthModal";
 import PaymentModal from "@/components/billing/PaymentModal";
 import AdminImpersonationBanner from "@/components/admin/AdminImpersonationBanner";
@@ -78,11 +78,13 @@ export default function Navbar() {
   const threatFeedStats = isStandaloneRoute ? "/app/uvi/standalone/stats" : "/app/uvi/stats";
 
   // Determine subnav contexts
-  const isSecureIdeContext = !isIsolated && (
-    pathname === "/app/pureide" || 
+  const isDaedelusContext = !isIsolated && (
     pathname === "/app/daedelus" ||
+    pathname === "/app/pureide" || 
+    pathname === "/app/pureos" ||
     pathname.startsWith("/products/daedelus") ||
     pathname.startsWith("/products/pure-ide") || 
+    pathname.startsWith("/products/pure-os") || 
     pathname.startsWith("/products/pure-catalog") ||
     pathname.startsWith("/docs") ||
     pathname.startsWith("/products/secure-ide")
@@ -96,11 +98,6 @@ export default function Navbar() {
   const isPraxisContext = !isIsolated && (
     pathname.startsWith("/app/praxis") || 
     pathname.startsWith("/products/praxis")
-  );
-
-  const isPureOsContext = !isIsolated && (
-    pathname.startsWith("/app/pureos") ||
-    pathname.startsWith("/products/pure-os")
   );
 
   const isAxiomContext = !isIsolated && (
@@ -123,7 +120,7 @@ export default function Navbar() {
   );
 
   // The horizontal subnav appears once a user visits any of the product pages
-  const hasSubnav = isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext;
+  const hasSubnav = isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext;
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
@@ -212,7 +209,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isSecureIdeContext || isThreatFeedContext || isPraxisContext || isPureOsContext || isAxiomContext || isErisContext || isValkyrieContext ? "active" : ""}`}
+                className={`nav-link ${isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isErisContext || isValkyrieContext || isExultiaLinuxContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -223,7 +220,7 @@ export default function Navbar() {
                 }}
                 onClick={() => setIsProductsOpen(!isProductsOpen)}
               >
-                Platform Engines
+                Platform
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isProductsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}>
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
@@ -247,129 +244,27 @@ export default function Navbar() {
                     border: "1px solid rgba(255, 255, 255, 0.12)",
                     borderRadius: "14px",
                     padding: "8px 6px",
-                    minWidth: "320px",
+                    minWidth: "340px",
                     boxShadow: "0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px rgba(6, 182, 212, 0.15)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "2px"
                   }}>
+                    {/* SECTION 1: CORE PLATFORM */}
                     <div style={{
-                      padding: "6px 12px 8px",
+                      padding: "6px 12px 6px",
                       borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
                       marginBottom: "4px"
                     }}>
                       <div style={{ fontSize: "0.72rem", fontWeight: 800, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        Closed-Loop Ecosystem
+                        Core Platform
                       </div>
-                      <div style={{ fontSize: "0.78rem", color: "#94A3B8" }}>
-                        8 interconnected sovereign defense engines &amp; platforms
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                        The Threat Feed &bull; The Thing That Fixes Stuff
                       </div>
                     </div>
-                    {/* PRODUCT 1: DAEDELUS (SOVEREIGN IDE & ZERO-CVE CATALOG) */}
-                    <Link 
-                      href="/products/daedelus" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: (pathname.startsWith("/products/daedelus") || isSecureIdeContext) ? "rgba(59, 130, 246, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <PureIdeIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Daedelus
-                          <span style={{ fontSize: "0.6rem", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", border: "1px solid rgba(59, 130, 246, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>DEV PLATFORM</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Sovereign air-gapped IDEs &amp; Zero-CVE negative-admission catalog</div>
-                      </div>
-                    </Link>
 
-
-                    {/* PRODUCT 2: Vantage */}
-                    <Link 
-                      href="/app/uvi/stats" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isThreatFeedContext ? "rgba(139, 92, 246, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <VantageIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Vantage</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Universal threat feed aggregating 110+ global registries</div>
-                      </div>
-                    </Link>
-
-                    {/* PRODUCT 3: Praxis (Autonomous Remediation & Hotpatching Engine) */}
-                    <Link 
-                      href="/app/praxis" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isPraxisContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <PraxisIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Autonomous hotpatches, canary rollouts &amp; firewall ACLs</div>
-                      </div>
-                    </Link>
-
-                    {/* PRODUCT 5: PureOS */}
-                    <Link 
-                      href="/products/pure-os" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isPureOsContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <PureOsIcon size={32} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>PureOS</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Pre-hardened OS container catalogue</div>
-                      </div>
-                    </Link>
-
-                    {/* PRODUCT 5B: Exultia Linux (Sovereign Operating System) */}
+                    {/* CORE 1: Exultia OS & Universal Pipeline */}
                     <Link 
                       href="/products/exultia-linux" 
                       onClick={() => setIsProductsOpen(false)}
@@ -390,14 +285,84 @@ export default function Navbar() {
                       </div>
                       <div>
                         <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Exultia Linux
-                          <span style={{ fontSize: "0.6rem", background: "rgba(6, 182, 212, 0.2)", color: "#22D3EE", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>SOVEREIGN OS</span>
+                          Portable Exultia Daemon
+                          <span style={{ fontSize: "0.6rem", background: "rgba(0, 229, 255, 0.2)", color: "#00E5FF", border: "1px solid rgba(0, 229, 255, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>60s REMEDIATOR</span>
                         </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Declarative OS with autonomous Kinetic™ hotpatching</div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Single-binary autonomous threat remediation for Linux</div>
                       </div>
                     </Link>
 
-                    {/* PRODUCT 6: Axiom */}
+                    {/* CORE 2: Vantage Threat Feed */}
+                    <Link 
+                      href="/app/uvi" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isThreatFeedContext ? "rgba(139, 92, 246, 0.15)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <VantageIcon size={32} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Vantage Threat Feed
+                          <span style={{ fontSize: "0.6rem", background: "rgba(168, 85, 247, 0.2)", color: "#C084FC", border: "1px solid rgba(168, 85, 247, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>24,388 CVES</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Real-time STIX/TAXII radar &amp; pre-baked offline advisory database</div>
+                      </div>
+                    </Link>
+
+                    {/* SECTION 2: DEVELOPER TOOLS & EXTENDED ECOSYSTEM */}
+                    <div style={{
+                      padding: "10px 12px 4px",
+                      borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                      marginTop: "6px",
+                      marginBottom: "2px"
+                    }}>
+                      <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "#94A3B8", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        Developer Tools &amp; Ecosystem
+                      </div>
+                    </div>
+
+                    {/* TOOL 1: Daedelus (Sovereign Developer Forge) */}
+                    <Link 
+                      href="/products/daedelus" 
+                      onClick={() => setIsProductsOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "12px",
+                        padding: "10px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        transition: "background 0.15s ease",
+                        background: isDaedelusContext ? "rgba(16, 185, 129, 0.18)" : "transparent"
+                      }}
+                      className="dropdown-item"
+                    >
+                      <div style={{ flexShrink: 0 }}>
+                        <DaedelusIcon size={30} glow={false} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                          Daedelus
+                          <span style={{ fontSize: "0.6rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>IDE • OCI • PKG</span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>
+                          Unified clean-room developer workstations, distroless containers &amp; zero-CVE packages
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* TOOL 3: Axiom (Cyber Workforce Simulator) */}
                     <Link 
                       href="/app/axiom" 
                       onClick={() => setIsProductsOpen(false)}
@@ -405,8 +370,8 @@ export default function Navbar() {
                         display: "flex",
                         alignItems: "flex-start",
                         gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
                         background: isAxiomContext ? "rgba(244, 63, 94, 0.15)" : "transparent"
@@ -414,67 +379,36 @@ export default function Navbar() {
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <AxiomIcon size={32} glow={false} />
+                        <AxiomIcon size={26} glow={false} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>Axiom</div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Cybersecurity exam simulator & LMS API</div>
+                        <div style={{ fontSize: "0.84rem", fontWeight: 700, color: "#FFFFFF" }}>Axiom Simulator</div>
+                        <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: "1px" }}>Scenario-based cybersecurity certification exam simulator</div>
                       </div>
                     </Link>
 
-                    {/* PRODUCT 7: Eris (Chaos Range & Intentional Vulnerability Lab) */}
+                    {/* TOOL 4: Praxis (Legacy Unix & Total POSIX Engine) */}
                     <Link 
-                      href="/app/eris" 
+                      href="/app/praxis" 
                       onClick={() => setIsProductsOpen(false)}
                       style={{
                         display: "flex",
                         alignItems: "flex-start",
                         gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
                         textDecoration: "none",
                         transition: "background 0.15s ease",
-                        background: isErisContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
+                        background: isPraxisContext ? "rgba(245, 158, 11, 0.15)" : "transparent"
                       }}
                       className="dropdown-item"
                     >
                       <div style={{ flexShrink: 0 }}>
-                        <ErisIcon size={32} glow={false} />
+                        <PraxisIcon size={26} glow={false} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Eris
-                          <span style={{ fontSize: "0.6rem", background: "rgba(245, 158, 11, 0.2)", color: "#FBBF24", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>CHAOS LAB / RANGE</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Goddess of chaos &amp; strife: adversary emulation, intentional vulnerabilities &amp; test containers</div>
-                      </div>
-                    </Link>
-
-                    {/* PRODUCT 8: Valkyrie (On-Demand Pentest & Exploitability Verification) */}
-                    <Link 
-                      href="/app/valkyrie" 
-                      onClick={() => setIsProductsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        transition: "background 0.15s ease",
-                        background: isValkyrieContext ? "rgba(6, 182, 212, 0.15)" : "transparent"
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div style={{ flexShrink: 0 }}>
-                        <ValkyrieIcon size={32} glow={false} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                          Valkyrie
-                          <span style={{ fontSize: "0.6rem", background: "rgba(6, 182, 212, 0.2)", color: "#67E8F9", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>PENTEST ON-DEMAND</span>
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>On-demand breach &amp; attack simulation, Vantage CVE probes &amp; verification</div>
+                        <div style={{ fontSize: "0.84rem", fontWeight: 700, color: "#FFFFFF" }}>Praxis POSIX Engine</div>
+                        <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: "1px" }}>Total POSIX compliance &amp; legacy Unix remediation (AIX, Solaris, IRIX)</div>
                       </div>
                     </Link>
 
@@ -822,36 +756,24 @@ export default function Navbar() {
       {/* TIER 2: HORIZONTAL PRODUCT SUBMENU */}
       {hasSubnav && (
         <div className="product-submenu-bar">
-          {/* SUBMENU OPTION 1: PUREIDE SUBMENU (Hidden in Isolated Mode) */}
-          {isSecureIdeContext && (
+          {/* SUBMENU OPTION 1: DAEDELUS SUBMENU */}
+          {isDaedelusContext && (
             <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", borderColor: "rgba(59, 130, 246, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <PureIdeIcon size={16} glow={false} />
+              <span className="product-context-badge" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <DaedelusIcon size={16} glow={false} />
                 Daedelus
               </span>
 
               <Link 
                 href="/products/daedelus" 
-                className={`submenu-link ${pathname === "/products/daedelus" || pathname === "/products/pure-ide" ? "active-blue" : ""}`}>
+                className={`submenu-link ${pathname === "/products/daedelus" ? "active-emerald" : ""}`}>
                 Platform Overview
               </Link>
               <Link 
-                href="/products/daedelus?tab=catalog" 
-                className={`submenu-link ${pathname === "/products/pure-catalog" ? "active-emerald" : ""}`}
-                style={{ fontWeight: 600, color: "#34D399" }}>
-                Zero-CVE Catalog
-              </Link>
-              <Link 
-                href="/app/pureide" 
-                className={`submenu-link ${pathname === "/app/pureide" || pathname === "/app/daedelus" ? "active-blue" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Builder Console
-              </Link>
-              <Link 
-                href="/account/subscription?product=pureide" 
-                className="submenu-link"
-                style={{ color: "#93C5FD", fontWeight: 700 }}>
-                Plans &amp; Pricing
+                href="/app/daedelus" 
+                className={`submenu-link ${pathname === "/app/daedelus" ? "active-blue" : ""}`}
+                style={{ fontWeight: 700, color: "#67E8F9" }}>
+                Builder Console ↗
               </Link>
             </div>
           )}
@@ -905,33 +827,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SUBMENU OPTION 5: PureOS SUBMENU */}
-          {isPureOsContext && (
-            <div className="product-submenu-group">
-              <span className="product-context-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24", borderColor: "rgba(245, 158, 11, 0.3)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <PureOsIcon size={16} glow={false} />
-                PureOS
-              </span>
 
-              <Link 
-                href="/products/pure-os" 
-                className={`submenu-link ${pathname === "/products/pure-os" ? "active-amber" : ""}`}>
-                Overview
-              </Link>
-              <Link 
-                href="/app/pureos" 
-                className={`submenu-link ${pathname === "/app/pureos" ? "active-amber" : ""}`}
-                style={{ fontWeight: 600 }}>
-                Catalogue
-              </Link>
-              <Link 
-                href="/account/subscription?product=pureos" 
-                className="submenu-link"
-                style={{ color: "#FBBF24", fontWeight: 700 }}>
-                Plans & Pricing
-              </Link>
-            </div>
-          )}
 
           {/* SUBMENU OPTION 6: AXIOM SUBMENU */}
           {isAxiomContext && (
@@ -1068,6 +964,35 @@ export default function Navbar() {
                 className="submenu-link"
                 style={{ color: "#67E8F9", fontWeight: 700 }}>
                 Bundle Plans (30-50% Off)
+              </Link>
+            </div>
+          )}
+
+          {/* SUBMENU OPTION 9: EXULTIA PORTABLE DAEMON SUBMENU */}
+          {isExultiaLinuxContext && (
+            <div className="product-submenu-group">
+              <span className="product-context-badge" style={{ background: "rgba(0, 229, 255, 0.15)", color: "#67E8F9", borderColor: "rgba(0, 229, 255, 0.35)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <ExultiaLinuxIcon size={16} glow={false} />
+                Portable Daemon
+              </span>
+
+              <Link 
+                href="/products/exultia-linux" 
+                className={`submenu-link ${pathname === "/products/exultia-linux" ? "active-cyan" : ""}`}
+                style={{ fontWeight: 600 }}>
+                ⚡ Universal Pipeline &amp; Downloads
+              </Link>
+              <Link 
+                href="/app/uvi" 
+                className="submenu-link"
+                style={{ color: "#8B5CF6", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>📡</span> Correlate Vantage Feed &rarr;
+              </Link>
+              <Link 
+                href="/faq#ciso-reality" 
+                className="submenu-link"
+                style={{ color: "#F59E0B", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <span>🎯</span> Autonomous Remediation vs. Triage
               </Link>
             </div>
           )}

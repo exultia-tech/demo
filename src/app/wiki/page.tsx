@@ -3,16 +3,13 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
-  PureIdeIcon, 
+  DaedelusIcon,
   VantageIcon, 
   PraxisIcon, 
-  PureOsIcon, 
   AxiomIcon,
-  ErisIcon,
-  ValkyrieIcon
+  ExultiaLinuxIcon
 } from "@/components/BrandIcons";
 import ProductSimulators from "@/components/research/ProductSimulators";
-import DefenseCockpit from "@/components/research/DefenseCockpit";
 import { 
   Search, 
   Terminal, 
@@ -76,6 +73,97 @@ interface ProductWiki {
 }
 
 const WIKI_PRODUCTS: ProductWiki[] = [
+  {
+    id: "exultia-linux",
+    name: "Exultia Autonomous Remediation Daemon",
+    tagline: "Single-Binary Autonomous Threat Remediation Runtime for Linux with 60-Second Self-Healing",
+    icon: <ExultiaLinuxIcon size={36} glow={false} />,
+    accentColor: "#F59E0B",
+    specDoc: "kinetic-daemon.md",
+    quickStart: {
+      title: "Deploying Exultia on Linux & Kubernetes",
+      description: "Deploy autonomous threat remediation via Tier 1 (one-line curl installer, native deb/rpm/apk packages, systemd service) or Tier 2 (Kubernetes Helm chart & DaemonSet).",
+      steps: [
+        {
+          label: "1. Tier 1: Linux Daemon One-Line Install & systemd Service",
+          command: "curl -fsSL https://get.exultia.org | sudo sh\nsudo systemctl status exultia.service",
+          codeLang: "bash",
+          details: "Installs the statically compiled native daemon into /usr/local/bin/ with pre-baked 24k+ UVI database, registers a hardened systemd unit, and arms the watchdog supervisor."
+        },
+        {
+          label: "2. Tier 2: Kubernetes Node Remediation (Helm Chart or DaemonSet)",
+          command: "# Option A: Deploy via Helm 3 (Enterprise Clusters)\nhelm repo add exultia https://charts.exultia.tech\nhelm repo update\nhelm install exultia-remediator exultia/exultia-node-shield \\\n  --namespace kube-system \\\n  --set offlineDatabase.enabled=true \\\n  --set loopInterval=60s \\\n  --set eBPF.socketTracing=true\n\n# Option B: Raw kubectl apply DaemonSet\nkubectl apply -f https://exultia.tech/k8s/exultia-daemonset.yaml",
+          codeLang: "bash",
+          details: "Deploys Exultia as a privileged DaemonSet across all Kubernetes worker nodes (EKS, GKE, AKS, Talos, k3s) for cluster-wide automated threat remediation."
+        },
+        {
+          label: "3. Dual-Channel Threat Ingestion Configuration",
+          command: "# Configure dual-channel STIX 2.1 endpoints\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = \"https://taxii.exultia.org/taxii2/exultia-feed\"\nauth_token = \"exultia_pki_verified\"\n\n[corporate_local]\nurl = \"https://siem.internal.corp/taxii2/indicators\"\nnamespace_uuid = \"client-local-550e8400-e29b-41d4-a716-446655440000\"\nEOF\n\nsudo systemctl restart exultia",
+          codeLang: "bash",
+          details: "Deploy dual-channel STIX 2.1 / TAXII 2.1 ingestion directly into /etc/exultia/ with zero external runtime dependencies."
+        },
+        {
+          label: "4. Verify Active Remediation & Socket Correlation",
+          command: "exultia status\nexultia feed --summary",
+          codeLang: "bash",
+          details: "Inspect active listening sockets, correlated CVEs, in-memory hotpatch trampolines, and cryptographic STIX signatures."
+        },
+        {
+          label: "5. Watchdog, eBPF & Prometheus Telemetry Verification",
+          command: "systemctl status exultia-watchdog.timer\ncurl -s http://localhost:9100/metrics | grep exultia_remediations_total\njournalctl -u exultia -f",
+          codeLang: "bash",
+          details: "Audit the 120-second watchdog timer fail-safe configuration, Prometheus metrics (:9100/metrics), and real-time eBPF socket monitoring logs."
+        }
+      ]
+    },
+    productDetails: {
+      overview: "Exultia is an autonomous threat remediation runtime built for Linux that combines the pre-baked 24k+ UVI vulnerability database with an in-memory hotpatch engine, non-blocking lock deferral, multi-ring canary rollouts, and atomic rollback mechanisms. It deploys across two primary architectures: Tier 1 as a lightweight portable daemon or native package (APT/DNF/APK) under systemd for standalone hosts, and Tier 2 as a Kubernetes DaemonSet / Helm chart for cloud-native clusters. Operates on standard Linux hosts without OS re-imaging, kernel re-compiles, or dropped TCP connections.",
+      architectureTitle: "Linux Native In-Memory Remediation & STIX/TAXII Pipeline",
+      architecturePoints: [
+        "1. Linux Foundation & Runtime: Statically compiled native daemon (x86_64 / aarch64) with zero external runtime dependencies. Operates natively under systemd with eBPF real-time socket and kernel event observability.",
+        "2. Threat Intelligence Standard (STIX/TAXII): Standardizes on STIX 2.1 JSON delivered over TAXII 2.1 HTTPS REST APIs with a dual-channel pipeline (Vantage Upstream primary + Corporate Local override/supplemental).",
+        "3. Multi-Ring Canary Engine: Phased deployment stages (Ring 0 Canary 2%-10% -> Ring 1 Staging 25% -> Ring 2 Broad Fleet) with automated rollback triggers on error spikes.",
+        "4. Non-Blocking Lock Handling: Checks apt/yum locks non-destructively, logs DEFERRED_LOCK_BUSY with exponential backoff, and executes Tier 1 hotpatches lock-free.",
+        "5. Self-Healing & In-Memory Trampoline Pipeline: 4-phase loop: STIX signature verification, atomic state snapshot in /var/lib/exultia/snapshots/, non-destructive Valkyrie canary handshake, and in-memory hotpatch injection with 120-second watchdog fallback.",
+        "6. Upstream Quarantine Killswitch: Instant broadcast halting admissions and downgrading broken or compromised vendor packages fleet-wide."
+      ],
+      capabilities: [
+        { title: "STIX 2.1 / TAXII 2.1 Dual Ingestion", desc: "Ingests CISA & FS-ISAC standardized IoCs and mitigation rules across global Exultia and local corporate SIEM feeds." },
+        { title: "In-Memory Hotpatching", desc: "Injects surgical bytecode trampolines into running processes with zero dropped TCP connections and zero process restarts." },
+        { title: "Multi-Ring Canary Rollouts", desc: "Isolates initial updates to Ring 0 canary hosts with soak gates and automated rollback triggers." },
+        { title: "Non-Blocking Lock Deference", desc: "Never kills package managers or deletes lockfiles; defers with backoff while applying Tier 1 hotpatches lock-free." },
+        { title: "Upstream Quarantine Killswitch", desc: "Immediately blocks admission and triggers autonomous downgrades if an upstream vendor releases a broken patch." },
+        { title: "Systemd Watchdog Rollback", desc: "Systemd watchdog timer triggers automated checkpoint restore if post-patch telemetry fails within 120s." },
+        { title: "Zero Involuntary Reboots", desc: "Architecturally forbidden from rebooting hosts; flags /var/run/reboot-required for maintenance windows." },
+        { title: "eBPF Kernel Observability", desc: "Streamlined low-overhead eBPF probes actively trace listening socket states and process lifecycle events." }
+      ],
+      specifications: [
+        { label: "Target Operating System", value: "Linux (x86_64 / aarch64, Kernel 5.4+)" },
+        { label: "Runtime Dependencies", value: "Zero (Statically linked native binary)" },
+        { label: "Supervisor Integration", value: "Native systemd service & 120s watchdog timer" },
+        { label: "Rollout Control", value: "Multi-Ring progressive canary (Ring 0, 1, 2) via /etc/exultia/kinetic.toml" },
+        { label: "Lock Management", value: "Non-blocking fcntl check with DEFERRED_LOCK_BUSY exponential backoff" },
+        { label: "Reboot Policy", value: "Zero involuntary reboots (telemetry flagging only)" },
+        { label: "Observability Layer", value: "eBPF real-time socket tracing + Prometheus :9100/metrics" },
+        { label: "Threat Standard", value: "STIX 2.1 JSON (CISA & FS-ISAC compliant IoCs and mitigation objects)" },
+        { label: "Transport Protocol", value: "TAXII 2.1 HTTPS REST API (Unidirectional pull)" },
+        { label: "Self-Healing Engine", value: "In-memory trampoline hotpatching + /var/lib/exultia/snapshots/ pre-images" },
+        { label: "Rollback Speed", value: "Sub-15ms deterministic restoration verified by SHA-256 pre/post hashes" }
+      ]
+    },
+    apiEndpoints: [
+      {
+        method: "GET",
+        path: "/api/exultia/status",
+        summary: "Inspect host health, active hotpatches, and rollback generation",
+        authRequired: false,
+        responses: [
+          { status: 200, description: "Operating system status", example: { host: "exultia-node-1", generation: 42, hotpatchesActive: 3, rollbackReady: true } }
+        ],
+        curlExample: "curl -s http://localhost:3000/api/exultia/status | jq ."
+      }
+    ]
+  },
   {
     id: "vantage",
     name: "Vantage",
@@ -328,19 +416,19 @@ const WIKI_PRODUCTS: ProductWiki[] = [
   {
     id: "praxis",
     name: "Praxis",
-    tagline: "Autonomous Zero-Downtime Hotpatching, Canary Stream & Hardware ACL Compiler",
+    tagline: "Total POSIX Compliance, Legacy Unix Remediation & Hardware ACL Compiler",
     icon: <PraxisIcon size={36} />,
     accentColor: "#F59E0B",
     specDoc: "praxis.md",
     quickStart: {
-      title: "Autonomous Fleet Hotpatching in 60 Seconds",
-      description: "Praxis transforms threat intelligence into automated operational response with Tier 1 live-memory hotfixes and hardware firewall ACLs.",
+      title: "Total POSIX Compliance & Fleet Hotpatching in 60 Seconds",
+      description: "Praxis transforms threat intelligence into automated operational response with pure zero-dependency POSIX shell scripts, Tier 1 live-memory hotfixes, and hardware firewall ACLs for vintage and modern systems alike.",
       steps: [
         {
-          label: "1. Download Multi-Arch Standalone Binary (Linux / POSIX)",
+          label: "1. Download Multi-Arch Standalone Binary or Pure POSIX Shell",
           command: "curl -fsSL https://exultia.tech/api/kinetic/download?platform=linux -o /usr/local/bin/praxis\nchmod +x /usr/local/bin/praxis",
           codeLang: "bash",
-          details: "Self-contained universal executable with zero external runtime dependencies."
+          details: "Self-contained universal executable or pure /bin/sh script with zero external runtime dependencies."
         },
         {
           label: "2. Execute Self-Contained Validation Gate",
@@ -363,23 +451,26 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       ]
     },
     productDetails: {
-      overview: "Praxis eliminates emergency maintenance windows and costly infrastructure reboots by applying cryptographic Tier 1 hotfixes to active memory and runtime daemons, combined with hardware firewall ACL generation.",
-      architectureTitle: "Autonomous Remediation & Hotpatching Engine",
+      overview: "Praxis eliminates emergency maintenance windows and costly infrastructure reboots by applying cryptographic Tier 1 hotfixes to active memory, generating hardware firewall ACLs, and compiling 100% POSIX-compliant /bin/sh hardening scripts. Engineered for administrators running legacy Unix architectures (IBM AIX, HP-UX, Oracle Solaris, older BSDs, and minimal embedded targets) where modern systemd or eBPF are unavailable. If you happen to still be running the same Unix system that managed Jurassic Park in 1993, Praxis has you covered.",
+      architectureTitle: "Autonomous Remediation & Total POSIX Engine",
       architecturePoints: [
-        "Tier 1 Hot-Mitigations: Dynamic kernel sysctl, drop-in configs, systemctl reloads, and iptables filters with guaranteed zero downtime.",
-        "Tier 2 Atomic Package Upgrades: Distro-native package manager commands (APT, DNF, APK) for scheduled permanent reconciliation.",
-        "Hardware Firewall ACLs: Compiles real-time blocklists for Cisco IOS, Palo Alto EDL, Fortinet, and Juniper SRX.",
-        "Deterministic Pre-Image Engine: Automatically snapshots mutated files in ~/.praxis/snapshots with SHA-256 integrity verification."
+        "Total POSIX.1 Compliance: Generates zero-dependency /bin/sh scripts compatible with vintage KornShell (ksh88/93), Bourne shell, and legacy POSIX runtimes without requiring modern Python, Perl, or glibc.",
+        "Tier 1 Hot-Mitigations: Dynamic kernel sysctl, drop-in configs, process signal handling, and network filters with guaranteed zero downtime.",
+        "Hardware Firewall ACLs: Compiles real-time blocklists for Cisco IOS, Palo Alto EDL, Fortinet, and Juniper SRX to protect delicate vintage nodes agentlessly.",
+        "Deterministic Pre-Image Engine: Automatically snapshots mutated files in ~/.praxis/snapshots with SHA-256 integrity verification and sub-second rollback."
       ],
       capabilities: [
         { title: "Sub-Second Rollback", desc: "Instantly reverts system state if canary health probes detect latency or error spikes." },
+        { title: "Vintage Unix & POSIX Certified", desc: "Runs without dependencies on AIX, HP-UX, Solaris, BSD, and ancient Unix boxes without modifying the base runtime." },
         { title: "SLSA Level 3 Provenance", desc: "Every mitigation payload is cryptographically signed using Cosign keyless OIDC." },
         { title: "Hardware Firewall Integration", desc: "Generates production ACL rules for enterprise edge devices." }
       ],
       specifications: [
-        { label: "Supported Operating Systems", value: "Ubuntu, Debian, Rocky Linux, RHEL, Alpine, FreeBSD, AIX, Solaris" },
-        { label: "Local Rollback Benchmark", value: "14ms atomic restore via /var/lib/kinetic/snapshots/" },
-        { label: "Automation Engines", value: "Ansible, AWX, Terraform, Shell, Systemd" }
+        { label: "Supported Operating Systems", value: "Linux, IBM AIX, HP-UX, Oracle Solaris, BSD, POSIX.1 Unix, SGI IRIX (Jurassic Park certified)" },
+        { label: "Runtime Dependencies", value: "Zero (Pure /bin/sh or static multi-arch binary)" },
+        { label: "Compatibility Standard", value: "POSIX.1-2008 / Single UNIX Specification (SUSv4)" },
+        { label: "Local Rollback Benchmark", value: "14ms atomic restore via /var/lib/praxis/snapshots/" },
+        { label: "Automation Engines", value: "Ansible, Shell (/bin/sh, ksh, bash), Systemd, Init, Cron" }
       ]
     },
     apiEndpoints: [
@@ -436,53 +527,64 @@ const WIKI_PRODUCTS: ProductWiki[] = [
     ]
   },
   {
-    id: "pureide",
-    name: "PureIDE",
-    tagline: "Zero-Trust Hermetic Developer Workstation & Certified Toolchain Builder",
-    icon: <PureIdeIcon size={36} />,
-    accentColor: "#3B82F6",
-    specDoc: "pureide.md",
+    id: "daedelus",
+    name: "Daedelus",
+    tagline: "Unified Clean-Room Developer Workstations, CIS Level 2 Distroless Containers & 0-CVE Dependencies",
+    icon: <DaedelusIcon size={36} />,
+    accentColor: "#10B981",
+    specDoc: "daedelus.md",
     quickStart: {
-      title: "Hermetic Builds & Toolchain Verification",
-      description: "Run reproducible compilations in an isolated, zero-egress sandbox with certified compilers.",
+      title: "Clean-Room Workstations, Distroless Containers & 0-CVE Packages in 60 Seconds",
+      description: "Deploy air-gapped developer workstations, pull CIS Level 2 distroless base images, or route package admissions through edge proxies.",
       steps: [
         {
-          label: "1. Inspect Hermetic Toolchain Versions",
+          label: "1. Inspect Hermetic Toolchains & Container Base Images",
           command: "curl -s \"https://exultia.tech/api/pureide/versions\" | jq .",
           codeLang: "bash",
-          details: "Verifies GCC, Clang, Rustc, and Go certified compiler versions."
+          details: "Verifies GCC, Clang, Rustc, and Go certified compiler versions alongside distroless OCI bases."
         },
         {
-          label: "2. Trigger Local Hermetic Build Gate",
-          command: "pureide build --hermetic --verify-slsa",
+          label: "2. Pull Hardened Daedelus Distroless Container",
+          command: "docker pull registry.exultia.tech/pureos/base:2026.1-hardened",
           codeLang: "bash",
-          details: "Executes air-gapped bit-for-bit reproducible compilation."
+          details: "Pulls zero-shell, zero-package-manager container image verified with Cosign SLSA Level 3 signatures."
+        },
+        {
+          label: "3. Configure Developer Edge Negative Admission Proxy",
+          command: "export NPM_CONFIG_REGISTRY=https://pkg.exultia.tech/npm/\nexport PIP_INDEX_URL=https://pkg.exultia.tech/pypi/simple/",
+          codeLang: "bash",
+          details: "Transparently intercepts malicious lifecycle scripts, typo-squats, and unvetted upstream zero-days."
         }
       ]
     },
     productDetails: {
-      overview: "PureIDE guarantees software supply-chain integrity through hermetic compilation sandboxes, zero external telemetry leakage, and bit-for-bit reproducible artifact builds.",
-      architectureTitle: "Hermetic Sandbox Architecture",
+      overview: "Daedelus consolidates developer supply-chain security into a unified tripartite engine: (1) Hermetic Developer Workstations with kernel cgroup egress clamps, (2) CIS Benchmark Level 2 Distroless Container Runtimes with Cosign keyless attestations, and (3) Clean-Room 0-CVE Package Pipelines with automated negative admission blocking.",
+      architectureTitle: "Daedelus Architecture",
       architecturePoints: [
-        "Zero-Egress Policy: Network interfaces are isolated during build phases to prevent dependency poisoning.",
-        "Reproducible Compilers: Certified builds of GCC 14, Clang 18, Rust 1.81, and Go 1.23.",
-        "NIST SP 800-218 (SSDF) Compliance: End-to-end provenance generation with in-toto attestations."
+        "1. Hermetic Workstation Isolation: Clamps network interfaces at the kernel cgroup boundary during build phases, eliminating supply-chain telemetry leaks and malicious postinstall beaconing.",
+        "2. CIS Level 2 Distroless Containers: Stripped of package managers, debugging shells, and extraneous binaries (< 12MB footprint), achieving 0 baseline CVEs across vulnerability scanners.",
+        "3. Edge Negative Admission: Upstream proxy intercepting npm, PyPI, and Crates.io packages, cryptographically validating OpenVEX non-exploitability before artifacts hit developer disk.",
+        "4. End-to-End Cryptographic Provenance: In-toto attestations, CycloneDX SBOMs, and Cosign keyless signatures generated automatically for all outputs (SLSA Level 3)."
       ],
       capabilities: [
-        { title: "Hermetic Compilation", desc: "Builds produce bit-identical binaries across disparate build nodes." },
-        { title: "Zero Telemetry Leaks", desc: "Zero outbound network connections during active coding sessions." },
-        { title: "Supply Chain Attestation", desc: "In-toto and Cosign attestations generated automatically." }
+        { title: "Hermetic Workstation Sandbox", desc: "Bit-identical compilations with zero outbound network egress during sensitive build steps." },
+        { title: "CIS Level 2 Distroless OCI", desc: "Immutable read-only container root filesystems compatible with Docker, Podman, and Kubernetes." },
+        { title: "0-CVE Package Catalog", desc: "Pre-vetted, attested packages with real-time negative admission blocking of known KEV items." },
+        { title: "Automated Provenance & SBOMs", desc: "Automatic CycloneDX v1.5 SBOM generation with in-toto attestation and Cosign signatures." }
       ],
       specifications: [
-        { label: "Supported Languages", value: "C/C++, Rust, Go, Python, TypeScript" },
-        { label: "Compliance Benchmark", value: "NIST SP 800-218 (SSDF) & SLSA Level 3" }
+        { label: "Modalities", value: "IDE Workstations, Distroless Containers, 0-CVE Package Proxy" },
+        { label: "Supported Languages & Toolchains", value: "C/C++, Rust, Go, Python, TypeScript, Node.js" },
+        { label: "Container Footprint", value: "< 12 MB compressed (0 CVEs baseline)" },
+        { label: "Compliance Benchmarks", value: "NIST SP 800-218 (SSDF), SLSA Level 3, CIS Level 2, DISA STIG" },
+        { label: "Registry Endpoint", value: "registry.exultia.tech/pureos" }
       ]
     },
     apiEndpoints: [
       {
         method: "GET",
         path: "/api/pureide/versions",
-        summary: "Retrieve certified hermetic toolchain versions",
+        summary: "Retrieve certified hermetic toolchain versions and compiler manifests",
         authRequired: false,
         responses: [
           {
@@ -492,54 +594,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
           }
         ],
         curlExample: 'curl -s "https://exultia.tech/api/pureide/versions"'
-      }
-    ]
-  },
-  {
-    id: "pureos",
-    name: "PureOS",
-    tagline: "Zero-Trust CIS-Hardened Container OS & Immutable Base Distro",
-    icon: <PureOsIcon size={36} />,
-    accentColor: "#10B981",
-    specDoc: "pureos.md",
-    quickStart: {
-      title: "Hardened Container Deployment in 60 Seconds",
-      description: "Pull and verify minimal attack surface base images cryptographically signed with Cosign keyless signatures.",
-      steps: [
-        {
-          label: "1. Pull Hardened PureOS Base Container",
-          command: "docker pull registry.exultia.tech/pureos/base:2026.1-hardened",
-          codeLang: "bash",
-          details: "Distroless, stripped-down base image with zero shell, zero package manager vulnerabilities."
-        },
-        {
-          label: "2. Verify Cosign Cryptographic Signature",
-          command: "cosign verify --key https://exultia.tech/keys/cosign.pub registry.exultia.tech/pureos/base:2026.1-hardened",
-          codeLang: "bash",
-          details: "Validates SLSA Level 3 provenance and build transparency log."
-        }
-      ]
-    },
-    productDetails: {
-      overview: "PureOS provides pre-hardened container base images and immutable OS distributions built to satisfy CIS Benchmark Level 2, DISA STIG, and US Federal zero-trust guidelines.",
-      architectureTitle: "Immutable Zero-Trust OS Architecture",
-      architecturePoints: [
-        "CIS Benchmark Level 2: Pre-configured kernel sysctl, noexec mounts, and strict seccomp/AppArmor profiles.",
-        "Zero Attack Surface: Stripped of unused binaries, package managers, and debugging shells in production targets.",
-        "Automated Advisory Synchronization: Base images recompiled automatically when Vantage flags upstream kernel vulnerabilities."
-      ],
-      capabilities: [
-        { title: "Immutable Root Filesystem", desc: "Read-only container root prevents runtime binary tampering." },
-        { title: "Cryptographic Provenance", desc: "Every layer is signed with Cosign and attested with SLSA Level 3." },
-        { title: "Universal Orchestration", desc: "Native compatibility with Kubernetes, Docker, Nomad, and Podman." }
-      ],
-      specifications: [
-        { label: "Base Footprint", value: "< 12 MB compressed" },
-        { label: "Compliance Benchmark", value: "CIS Benchmark Level 2 & DISA STIG" },
-        { label: "Registry Endpoint", value: "registry.exultia.tech/pureos" }
-      ]
-    },
-    apiEndpoints: [
+      },
       {
         method: "GET",
         path: "/api/pureos/images",
@@ -559,194 +614,20 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         curlExample: 'curl -s "https://exultia.tech/api/pureos/images"'
       }
     ]
-  },
-  {
-    id: "eris",
-    name: "Eris",
-    tagline: "Adversary Emulation, Intentional Vulnerability Proving Ground & Chaos Inoculation Lab",
-    icon: <ErisIcon size={36} glow={false} />,
-    accentColor: "#F59E0B",
-    specDoc: "eris.md",
-    quickStart: {
-      title: "Simulating Real-World Attack Vectors & Stress Testing",
-      description: "Generate self-contained reproducible bash/curl attack payloads with automated timed failsafe rollbacks.",
-      steps: [
-        {
-          label: "1. Query Eris Inoculation Catalog",
-          command: "curl -s \"https://exultia.tech/api/eris/inoculate\" | jq .",
-          codeLang: "bash",
-          details: "Inspect active CVE chaos scenarios (SSH RegreSSHion, XZ Backdoor, CUPS RCE, Log4Shell)."
-        },
-        {
-          label: "2. Compile Safe Verification Script",
-          command: "curl -X POST \"https://exultia.tech/api/eris/generate\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"cveId\": \"CVE-2024-6387\", \"intensity\": \"moderate\", \"failsafeMinutes\": 30}' \\\n  | jq -r .scriptContent > test_cve.sh",
-          codeLang: "bash",
-          details: "Generates idempotent, non-destructive test script with built-in rollback."
-        },
-        {
-          label: "3. Run Isolated Docker Compose Attack Range",
-          command: "docker compose -f range/docker-compose.yml up -d",
-          codeLang: "bash",
-          details: "Spins up 5-container attack simulation range for SOC/SIEM alert verification."
-        }
-      ]
-    },
-    productDetails: {
-      overview: "Named after the goddess of chaos and strife, Eris safely introduces deterministic real-world vulnerability scenarios into isolated test ranges to verify endpoint defenses, SIEM alerts, and Praxis autonomous remediation routines.",
-      architectureTitle: "Deterministic Chaos & Inoculation Engine",
-      architecturePoints: [
-        "7+ Canonical CVE Scenarios: SSH RegreSSHion (CVE-2024-6387), XZ Utils Backdoor (CVE-2024-3094), CUPS Remote Code Execution (CVE-2024-47176), Log4Shell (CVE-2021-44228), and more.",
-        "Guaranteed Reversibility: Every chaos inoculation script compiles with a cryptographically paired rollback routine and configurable failsafe auto-revert timer.",
-        "Multi-Container Docker Range: Ephemeral 5-container topology spanning target hosts, canary proxies, and mock C2 logging nodes.",
-        "Praxis Closed-Loop Bridge: Seamlessly trigger Praxis hotpatching to verify real-time mitigation against active attack vectors."
-      ],
-      capabilities: [
-        { title: "Failsafe Timed Auto-Rollback", desc: "Automated cron/systemd watchdog reverts mutations after test window (10m, 30m, 60m)." },
-        { title: "Raw Bash & Container Payloads", desc: "Download self-contained shell scripts or run in isolated Docker Compose attack ranges." },
-        { title: "Vantage Live Sync", desc: "Inoculation vectors stay synchronized with the latest Vantage KEV and high-severity feeds." }
-      ],
-      specifications: [
-        { label: "Chaos Scenarios", value: "7+ active CVE modules & multi-container compose ranges" },
-        { label: "Rollback Guarantee", value: "100% deterministic SHA-256 pre-image snapshots" },
-        { label: "Platform Availability", value: "Included in Unified Platform ($100/mo Pro, $500/mo Enterprise)" }
-      ]
-    },
-    apiEndpoints: [
-      {
-        method: "GET",
-        path: "/api/eris/inoculate",
-        summary: "Catalog of all registered intentional vulnerability inoculation modules",
-        authRequired: false,
-        responses: [
-          {
-            status: 200,
-            description: "Active inoculation vectors",
-            example: { count: 7, modules: [{ cveId: "CVE-2024-6387", name: "RegreSSHion Ingress Race Condition", severity: "CRITICAL" }] }
-          }
-        ],
-        curlExample: 'curl -s "https://exultia.tech/api/eris/inoculate"'
-      },
-      {
-        method: "POST",
-        path: "/api/eris/generate",
-        summary: "Synthesize executable bash inoculation payload with failsafe rollback timer",
-        authRequired: false,
-        requestBody: {
-          description: "Target CVE ID and rollback configuration",
-          schema: { cveId: "string", intensity: "string", failsafeMinutes: 30 }
-        },
-        responses: [
-          {
-            status: 200,
-            description: "Generated verification script",
-            example: { status: "success", scriptContent: "#!/usr/bin/env bash\n# Eris Inoculator..." }
-          }
-        ],
-        curlExample: 'curl -X POST "https://exultia.tech/api/eris/generate" -H "Content-Type: application/json" -d \'{"cveId":"CVE-2024-6387","intensity":"moderate"}\''
-      }
-    ]
-  },
-  {
-    id: "valkyrie",
-    name: "Valkyrie",
-    tagline: "On-Demand Breach & Attack Simulation, Vantage CVE Probes & Exploitability Verification",
-    icon: <ValkyrieIcon size={36} glow={false} />,
-    accentColor: "#06B6D4",
-    specDoc: "valkyrie.md",
-    quickStart: {
-      title: "On-Demand Penetration Testing in 60 Seconds",
-      description: "Trigger non-destructive BAS pentest probes mapped directly to Vantage CVE advisories, generating cryptographic attestation signatures and instant Praxis hotpatch recommendations.",
-      steps: [
-        {
-          label: "1. List Active Pentest Vectors",
-          command: "curl -s \"https://exultia.tech/api/valkyrie/probe\" | jq .",
-          codeLang: "bash",
-          details: "Inspect available attack vector modules (SSH handshake, HTTP header injection, TLS weak ciphers)."
-        },
-        {
-          label: "2. Execute On-Demand Host Probe",
-          command: "curl -X POST \"https://exultia.tech/api/valkyrie/probe\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"vectorId\": \"VALK-SSH-01\", \"targetUrl\": \"https://localhost:22\", \"intensity\": \"safe\"}'",
-          codeLang: "bash",
-          details: "Runs safe non-destructive verification check against specified endpoint."
-        },
-        {
-          label: "3. Export Cryptographic Attestation Token",
-          command: "curl -s \"https://exultia.tech/api/valkyrie/attestation?scanId=VALK-20261024-A1B2C3\" | jq .",
-          codeLang: "bash",
-          details: "Produces signed SHA-256 pentest attestation record for compliance audits."
-        }
-      ]
-    },
-    productDetails: {
-      overview: "Valkyrie is an enterprise on-demand breach and attack simulation (BAS) module that verifies whether vulnerabilities detected in your Vantage threat feed are truly exploitable in your active network and workload environments.",
-      architectureTitle: "Exploitability Verification & Attestation Architecture",
-      architecturePoints: [
-        "Safe Canary Probes: Non-destructive banner, protocol handshake, and fuzzing checks that verify exploit paths without causing service downtime.",
-        "Direct Vantage Correlation: Binds target CVE intelligence directly to real-time endpoint attack surface telemetry.",
-        "Bi-Directional Praxis Bridge: One click generates verified Praxis hotpatches to seal verified exploitable vectors.",
-        "Eris Attack Reproduction: Instant bridge to spin up isolated Eris chaos test containers replicating the exact vulnerable state."
-      ],
-      capabilities: [
-        { title: "On-Demand Pentest Engine", desc: "Perform immediate targeted security scans against specific CVEs across hosts, containers, and web endpoints." },
-        { title: "Cryptographic Attestation", desc: "Every scan outputs a SHA-256 signed attestation token for audit readiness (SOC 2, ISO 27001)." },
-        { title: "Unified Platform Member", desc: "Included in the $100/mo Pro and $500/mo Enterprise unified subscriptions alongside Vantage, Praxis, and Eris." }
-      ],
-      specifications: [
-        { label: "Supported Attack Vectors", value: "SSH, HTTP/REST, TLS/SSL, DNS, Docker Socket, Kubernetes API" },
-        { label: "Attestation Algorithm", value: "HMAC-SHA256 with timestamped cryptographic nonce" },
-        { label: "Platform Availability", value: "Included in Unified Platform ($100/mo Pro, $500/mo Enterprise)" }
-      ]
-    },
-    apiEndpoints: [
-      {
-        method: "GET",
-        path: "/api/valkyrie/probe",
-        summary: "Query available pentest vectors and recent verification scan records",
-        authRequired: false,
-        responses: [
-          {
-            status: 200,
-            description: "Vectors catalog and scan history",
-            example: { count: 5, vectors: [{ id: "VALK-SSH-01", name: "SSH Insecure Banner & Protocol Handshake", severity: "HIGH" }] }
-          }
-        ],
-        curlExample: 'curl -s "https://exultia.tech/api/valkyrie/probe"'
-      },
-      {
-        method: "POST",
-        path: "/api/valkyrie/probe",
-        summary: "Execute simulated breach and attack verification scan against a target endpoint",
-        authRequired: false,
-        requestBody: {
-          description: "Target probe vector and endpoint configuration",
-          schema: { vectorId: "string", targetUrl: "string", intensity: "safe" }
-        },
-        responses: [
-          {
-            status: 200,
-            description: "Verification scan results",
-            example: { status: "success", scanId: "VALK-20261024-A1B2C3", targetUrl: "https://localhost:22", result: "PASSED_HARDENED" }
-          }
-        ],
-        curlExample: 'curl -X POST "https://exultia.tech/api/valkyrie/probe" -H "Content-Type: application/json" -d \'{"vectorId":"VALK-SSH-01","targetUrl":"https://localhost:22","intensity":"safe"}\''
-      }
-    ]
   }
 ];
 
 const PRODUCT_SUBTITLES: Record<string, string> = {
+  "exultia-linux": "Autonomous Resident Remediator",
   vantage: "Threat Ingestion & Feed",
   praxis: "Autonomous Hotpatch & Rollback",
-  eris: "Chaos Inoculation Testing",
-  valkyrie: "Binary Hardening & Defense",
-  pureide: "Dual-Kernel Web IDE",
-  pureos: "Isolated MicroVM Host OS",
-  axiom: "Forensic Redaction Engine"
+  daedelus: "Secure IDEs, Containers & Packages",
+  axiom: "Security Certification Exam Simulator"
 };
 
 export default function ResearchWikiPage() {
   const [activeProductId, setActiveProductId] = useState<string>("vantage");
-  const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis" | "cockpit">("simulator");
+  const [activeTab, setActiveTab] = useState<"simulator" | "details" | "quickstart" | "api" | "all-apis">("simulator");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -759,7 +640,7 @@ export default function ResearchWikiPage() {
       if (productParam && WIKI_PRODUCTS.some(p => p.id === productParam.toLowerCase())) {
         setActiveProductId(productParam.toLowerCase());
       }
-      if (tabParam && ["simulator", "details", "quickstart", "api", "all-apis", "cockpit"].includes(tabParam)) {
+      if (tabParam && ["simulator", "details", "quickstart", "api", "all-apis"].includes(tabParam)) {
         setActiveTab(tabParam as any);
       }
     }
@@ -860,7 +741,7 @@ export default function ResearchWikiPage() {
               marginTop: "0.4rem",
               marginBottom: 0
             }}>
-              Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, forensic redaction engines, and explore architectural specifications and enterprise REST API schemas.
+              Unified systems engineering hub: test live compilers, threat feeds, zero-downtime hotfix rollbacks, exam simulators, and explore architectural specifications and enterprise REST API schemas.
             </p>
           </div>
         </div>
@@ -1239,37 +1120,6 @@ export default function ResearchWikiPage() {
                 flexDirection: "column",
                 gap: "6px"
               }}>
-                <button
-                  onClick={() => {
-                    setActiveTab("cockpit");
-                    if (typeof window !== "undefined") {
-                      window.history.pushState(null, "", "/wiki?tab=cockpit");
-                    }
-                  }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "9px 12px",
-                    borderRadius: "8px",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    color: activeTab === "cockpit" ? "#22D3EE" : "#FFFFFF",
-                    background: activeTab === "cockpit" ? "rgba(6, 182, 212, 0.2)" : "rgba(6, 182, 212, 0.08)",
-                    border: activeTab === "cockpit" ? "1px solid #06B6D4" : "1px solid rgba(6, 182, 212, 0.25)",
-                    cursor: "pointer",
-                    marginBottom: "0.5rem",
-                    transition: "all 0.15s ease",
-                    width: "100%",
-                    textAlign: "left"
-                  }}
-                >
-                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Activity size={15} color="#00E5FF" />
-                    <span>Defense Cockpit</span>
-                  </span>
-                  <span style={{ fontSize: "0.62rem", background: "rgba(0, 229, 255, 0.2)", color: "#67E8F9", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>LIVE LAB</span>
-                </button>
 
                 <div style={{
                   fontSize: "0.7rem",
@@ -1431,28 +1281,12 @@ export default function ResearchWikiPage() {
             </span>
             <span style={{ color: "#64748B" }}>/</span>
             <span style={{ color: activeProduct.accentColor, fontWeight: 600 }}>
-              {activeTab === "cockpit" ? "Autonomous Closed-Loop Defense Cockpit" :
-               activeTab === "simulator" ? "Interactive Lab Simulator" :
+              {activeTab === "simulator" ? "Interactive Lab Simulator" :
                activeTab === "details" ? "Architecture & Specs" :
                activeTab === "quickstart" ? "Quick-Start Guide" :
                `API & cURL Reference (${activeProduct.apiEndpoints.length})`}
             </span>
           </div>
-
-        {/* TAB -1: CLOSED-LOOP DEFENSE COCKPIT */}
-        {activeTab === "cockpit" && (
-          <div style={{ marginBottom: "2rem" }}>
-            <div style={{ marginBottom: "1.25rem" }}>
-              <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                Autonomous Closed-Loop Defense Cockpit
-              </h2>
-              <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                Interactive live simulation of the full OODA loop: Detect (Vantage) &rarr; Emulate (Eris) &rarr; Verify (Valkyrie) &rarr; Remediate (Kinetic).
-              </p>
-            </div>
-            <DefenseCockpit />
-          </div>
-        )}
 
         {/* TAB 0: INTERACTIVE LAB SIMULATOR */}
         {activeTab === "simulator" && (
@@ -1593,7 +1427,7 @@ export default function ResearchWikiPage() {
               </div>
 
               <h4 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "0.75rem" }}>
-                Operational Specifications & SLAs
+                Operational & Technical Specifications
               </h4>
               <div style={{
                 background: "#080C14",

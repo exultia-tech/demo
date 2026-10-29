@@ -85,7 +85,7 @@ Welcome! I am Exultia Support (**Autonomous Technical Intel** / Exultia Technica
 
 #### Key Technical Foundations:
 - **Zero Vaporware Guarantee:** Run \`git clone --depth=1 https://github.com/exultia-tech/demo.git && cd demo && python3 validate.py\` to test our sub-second rollback engine and SLSA Level 3 checksums locally in ~5 seconds.
-- **Unified Cyber Sovereignty Platform ($100/mo):** Unlocks all 7 defense engines (Vantage, Praxis, Eris, Valkyrie, PureIDE, PureOS, Axiom) with zero fragmented add-ons.
+- **Unified Cyber Sovereignty Platform:** Unlocks the full sovereign defense stack (Vantage, Praxis, Daedelus, and Axiom) with zero fragmented add-ons.
 - **Deterministic Sub-Second Rollback:** \`sudo kinetic rollback --cve=...\` restores pre-image SHA-256 state in 14ms (<100ms SLA) with zero host reboot.
 - **Unidirectional Zero Telemetry:** Strict outbound silence with zero cloud exfiltration; full offline support for air-gapped SCIF environments.
 - **Sales Demo Policy:** *"Find the most technical person you know, send them a link to our repo, and tell them to follow the instructions."*
@@ -95,7 +95,7 @@ What specific technical subsystem, CVE mitigation, or architectural topic can I 
         'Can I get a sales demo?',
         'How do I run the Bullshit Validator?',
         'Is in-memory hotpatching safe?',
-        'What is included in the $100/mo platform plan?'
+        'What is included in the Enterprise Fleet plan?'
       ],
       sources: [
         { title: 'The Bullshit Validator', doc: 'https://github.com/exultia-tech/demo', url: 'https://github.com/exultia-tech/demo' },

@@ -18,6 +18,7 @@ import {
   Zap
 } from "lucide-react";
 import { 
+  DaedelusIcon,
   PureIdeIcon, 
   VantageIcon, 
   PraxisIcon, 
@@ -60,10 +61,10 @@ export default function CustomerOverview({ onSelectTab, onOpenUpgradeModal }: Cu
   let unlockedScore = platformTier === "enterprise" ? 100 : platformTier === "pro" ? 85 : 35;
 
   const quickLaunchers = [
-    { id: "pureide", name: "PureIDE", desc: "Airgap Compiler", icon: PureIdeIcon, url: "/app/pureide", color: "#3B82F6", tier: pureIdeTier },
+    { id: "pureide", name: "Daedelus IDE", desc: "Airgap Workstations", icon: DaedelusIcon, url: "/app/daedelus?mode=ide", color: "#06B6D4", tier: pureIdeTier },
     { id: "uvi", name: "Vantage", desc: "Threat Intel Feed", icon: VantageIcon, url: "/app/uvi", color: "#8B5CF6", tier: uviTier },
     { id: "praxis", name: "Praxis", desc: "Auto Remediation", icon: PraxisIcon, url: "/app/praxis", color: "#F59E0B", tier: praxisTier },
-    { id: "pureos", name: "PureOS", desc: "Hardened OCI", icon: PureOsIcon, url: "/app/pureos", color: "#10B981", tier: pureosTier },
+    { id: "pureos", name: "Daedelus Containers", desc: "Distroless OCI Containers", icon: PureOsIcon, url: "/app/daedelus?mode=container", color: "#10B981", tier: pureosTier },
     { id: "axiom", name: "Axiom", desc: "LMS Exam Simulator", icon: AxiomIcon, url: "/app/axiom", color: "#F43F5E", tier: axiomTier },
     { id: "eris", name: "Eris", desc: "Proving Ground", icon: ErisIcon, url: "/app/eris", color: "#EAB308", tier: erisTier },
     { id: "valkyrie", name: "Valkyrie", desc: "On-Demand Pentest", icon: ValkyrieIcon, url: "/app/valkyrie", color: "#06B6D4", tier: valkyrieTier },

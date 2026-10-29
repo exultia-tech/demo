@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Axiom - Exultia Dashboard",
-  description: "Exultia Axiom global exam simulator and open-source security education framework.",
+  description: "Exultia Axiom global exam simulator and sovereign security education framework.",
   robots: {
     index: false,
     follow: false,

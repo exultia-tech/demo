@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2026 Exultia Technologies Inc. All rights reserved.
+ * Copyright (c) 2026 Exultia Technologies, PBC. All rights reserved.
  * Proprietary and Confidential.
  *
  * Vantage Threat Intelligence & Autonomous CVE Remediation Feed API.

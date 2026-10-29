@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import JsonLd from '@/components/seo/JsonLd';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getCveRecord, getAllCveRecords, generateHardenedBashScript } from '@/lib/cve-directory';
@@ -89,10 +90,7 @@ export default async function CveDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[#08090b] text-[#f1f5f9] font-mono selection:bg-[#06b6d4]/30 selection:text-[#38bdf8]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd id={`cve-jsonld-${item.cveId}`} data={jsonLd} />
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">

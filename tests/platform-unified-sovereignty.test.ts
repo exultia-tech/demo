@@ -2,17 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { 
   EXULTIA_PLATFORM_TIERS, 
   getPlatformTier, 
+  calculateEnterpriseFleetPrice,
   VALKYRIE_BASE_TIERS, 
   calculateBundleDiscount,
   getDiscountedProductPrice 
 } from '../src/lib/bundle-pricing';
 import { AiSupportEngine } from '../src/lib/ai-support-engine';
 
-describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 3-Tier Model', () => {
-  it('should define the exact 3 unified platform tiers', () => {
-    expect(EXULTIA_PLATFORM_TIERS.length).toBe(3);
+describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 2-Tier Fleet Model', () => {
+  it('should define the exact 2 unified platform tiers (Community Sovereign and Enterprise Fleet)', () => {
+    expect(EXULTIA_PLATFORM_TIERS.length).toBe(2);
 
-    const [community, pro, enterprise] = EXULTIA_PLATFORM_TIERS;
+    const [community, enterprise] = EXULTIA_PLATFORM_TIERS;
 
     // Community
     expect(community.id).toBe('community');
@@ -21,18 +22,42 @@ describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 3-Tier Mod
     expect(community.annualBilledTotal).toBe(0);
     expect(community.highlights.length).toBeGreaterThanOrEqual(5);
 
-    // Pro ($120/mo or $100/mo annual)
-    expect(pro.id).toBe('pro');
-    expect(pro.priceMonthly).toBe(120);
-    expect(pro.priceAnnual).toBe(100);
-    expect(pro.annualBilledTotal).toBe(1200);
-    expect(pro.isPopular).toBe(true);
-
-    // Enterprise ($600/mo or $500/mo annual)
+    // Enterprise Fleet ($500/mo flat for 25 hosts, or $25/node sub-25)
     expect(enterprise.id).toBe('enterprise');
     expect(enterprise.priceMonthly).toBe(600);
     expect(enterprise.priceAnnual).toBe(500);
     expect(enterprise.annualBilledTotal).toBe(6000);
+    expect(enterprise.isPopular).toBe(true);
+  });
+
+  it('should calculate accurate Enterprise Fleet pricing across all node tiers', () => {
+    // Sub-25 hosts ($25/node monthly, $20/node annual)
+    const singleNodeAnnual = calculateEnterpriseFleetPrice(1, 'annual');
+    expect(singleNodeAnnual.monthlyRate).toBe(20);
+    expect(singleNodeAnnual.annualTotal).toBe(240);
+
+    const tenNodesMonthly = calculateEnterpriseFleetPrice(10, 'monthly');
+    expect(tenNodesMonthly.monthlyRate).toBe(250); // 10 * 25
+
+    const tenNodesAnnual = calculateEnterpriseFleetPrice(10, 'annual');
+    expect(tenNodesAnnual.monthlyRate).toBe(200); // 10 * 20
+
+    // Exact 25 hosts flat fleet cap ($500/mo annual, $600/mo monthly)
+    const twentyFiveAnnual = calculateEnterpriseFleetPrice(25, 'annual');
+    expect(twentyFiveAnnual.monthlyRate).toBe(500);
+    expect(twentyFiveAnnual.isCappedAtFlatRate).toBe(true);
+    expect(twentyFiveAnnual.annualTotal).toBe(6000);
+
+    const twentyFiveMonthly = calculateEnterpriseFleetPrice(25, 'monthly');
+    expect(twentyFiveMonthly.monthlyRate).toBe(600);
+    expect(twentyFiveMonthly.isCappedAtFlatRate).toBe(true);
+
+    // 25+ scale fleet ($500 base + $12/node annual or $600 base + $15/node monthly)
+    const thirtyNodesAnnual = calculateEnterpriseFleetPrice(30, 'annual');
+    expect(thirtyNodesAnnual.monthlyRate).toBe(500 + (5 * 12)); // 560
+
+    const fiftyNodesMonthly = calculateEnterpriseFleetPrice(50, 'monthly');
+    expect(fiftyNodesMonthly.monthlyRate).toBe(600 + (25 * 15)); // 975
   });
 
   it('should cover all 7 sovereign defense engines across every tier', () => {
@@ -47,13 +72,14 @@ describe('Exultia Cyber Sovereignty Platform - Unified Architecture & 3-Tier Mod
   });
 
   it('should resolve tier objects via getPlatformTier safely', () => {
-    const pro = getPlatformTier('pro');
-    expect(pro.name).toBe('Professional Operator');
-    expect(pro.priceAnnual).toBe(100);
-
     const enterprise = getPlatformTier('enterprise');
     expect(enterprise.name).toBe('Enterprise Fleet');
     expect(enterprise.priceAnnual).toBe(500);
+
+    // Pro gracefully resolves to enterprise fleet
+    const pro = getPlatformTier('pro');
+    expect(pro.name).toBe('Enterprise Fleet');
+    expect(pro.priceAnnual).toBe(500);
 
     const community = getPlatformTier('community');
     expect(community.name).toBe('Community Sovereign');

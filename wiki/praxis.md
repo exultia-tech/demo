@@ -1,12 +1,12 @@
 # Exultia Praxis: Technical Documentation & API Reference
 
-**Tactical Adversary Emulation, Fleet Defense & Verified Remediation Playbooks**
+**POSIX Hotpatching, Vintage Unix Compatibility & Verified Remediation Playbook Compiler**
 
 ---
 
 ## 1. Quick-Start Guide
 
-Exultia Praxis bridges the gap between threat intelligence from Vantage and automated fleet execution, generating validated Ansible playbooks and simulation scenarios.
+Exultia Praxis eliminates emergency maintenance windows and costly infrastructure reboots by applying cryptographic Tier 1 hotfixes to active memory, generating hardware firewall ACLs, and compiling 100% POSIX-compliant `/bin/sh` hardening scripts. Engineered for modern Linux clusters as well as vintage Unix architectures (IBM AIX, HP-UX, Oracle Solaris, older BSDs) where systemd or eBPF are unavailable.
 
 ### Fetch Tactical Remediation Feed
 ```bash

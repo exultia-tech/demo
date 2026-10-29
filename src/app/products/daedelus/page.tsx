@@ -1,13 +1,13 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import { DaedelusIcon } from "@/components/BrandIcons";
 import DaedelusClientView from "./DaedelusClientView";
 
 export const metadata: Metadata = {
-  title: "Daedelus | Sovereign Developer Platform & Clean-Room Artifact Forge",
+  title: "Daedelus | Secure IDEs, Containers, and Packages",
   description:
-    "The unified sovereign developer ecosystem: air-gapped workstations, locked hermetic blueprints, negative-admission zero-CVE packages, distroless OCI containers, and cryptographic supply-chain verification.",
+    "The unified developer security ecosystem: air-gapped workstations, locked hermetic blueprints, negative-admission zero-CVE packages, distroless OCI containers, and cryptographic supply-chain verification.",
 };
 
 export default function DaedelusPage() {
@@ -38,7 +38,6 @@ export default function DaedelusPage() {
 
         {/* Subtitle */}
         <p className="hero-subtitle" style={{ maxWidth: "840px", margin: "0 auto 2.5rem auto", fontSize: "1.18rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
-          The sovereign developer platform and clean-room artifact forge.
           Engineered to eradicate software supply chain vulnerabilities at the developer edge:
           from <strong style={{ color: "#FFFFFF" }}>air-gapped workstations</strong>, to <strong style={{ color: "#34D399" }}>negative-admission zero-CVE packages</strong>, to <strong style={{ color: "#22D3EE" }}>hardened distroless OCI containers</strong> ready for immutable deployment.
         </p>
@@ -93,7 +92,9 @@ export default function DaedelusPage() {
 
       {/* ── CLIENT INTERACTIVE TABS & TESTBED ─────────────────────────────────── */}
       <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
-        <DaedelusClientView />
+        <Suspense fallback={<div style={{ textAlign: "center", padding: "3rem", color: "#94A3B8" }}>Loading Daedelus Workbench...</div>}>
+          <DaedelusClientView />
+        </Suspense>
       </section>
     </div>
   );

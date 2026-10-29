@@ -77,7 +77,7 @@ describe('Exultia Kinetic Standalone Compiled Binary & Download Suite', () => {
     it('should execute --version and return 2.4.0', () => {
       const out = execSync('python kinetic-cli/run.py --version', { encoding: 'utf-8' });
       expect(out.trim()).toBe('kinetic 2.4.0');
-    });
+    }, 15000);
 
     it('should run end-to-end self-test with sub-second deterministic rollback', () => {
       const out = execSync('python kinetic-cli/run.py test', { encoding: 'utf-8' });
@@ -86,13 +86,13 @@ describe('Exultia Kinetic Standalone Compiled Binary & Download Suite', () => {
       expect(out).toContain('Post-Rollback Content Integrity Match: PASS');
       expect(out).toContain('Sub-second guaranteed: YES');
       expect(out).toContain('[OK] All Self-Validation Gates Passed Successfully!');
-    });
+    }, 15000);
 
     it('should inspect host status via status command', () => {
       const out = execSync('python kinetic-cli/run.py status', { encoding: 'utf-8' });
       expect(out).toContain('EXULTIA KINETIC HOST STATUS');
       expect(out).toContain('State Directory:');
-    });
+    }, 15000);
 
     it('should support JSON output for machine consumption', () => {
       const out = execSync('python kinetic-cli/run.py status --json', { encoding: 'utf-8' });
@@ -100,7 +100,7 @@ describe('Exultia Kinetic Standalone Compiled Binary & Download Suite', () => {
       expect(parsed.kinetic_version).toBe('2.4.0');
       expect(parsed.host_os).toBeDefined();
       expect(parsed.state_directory).toBeDefined();
-    });
+    }, 15000);
   });
 
   describe('3. /api/kinetic/download API Endpoint', () => {

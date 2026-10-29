@@ -95,8 +95,10 @@ export async function syncUviThreatsToDb(force = false): Promise<ThreatSyncResul
       const chunk = advisories.slice(i, i + CHUNK_SIZE);
       const valuesToInsert = chunk.map((item: UviAdvisoryRecord) => {
         const obs = getRecordObservationalAssessment(item);
+        const normalizedUviId = item.uviId?.startsWith('UVI-') ? item.uviId : `UVI-${item.uviId || '2026-ADVISORY'}`;
+        const itemToSave = { ...item, uviId: normalizedUviId };
         return {
-          uviId: item.uviId,
+          uviId: normalizedUviId,
           legacyUviId: item.legacyUviId || null,
           title: item.title,
           headline: item.headline,
@@ -130,7 +132,7 @@ export async function syncUviThreatsToDb(force = false): Promise<ThreatSyncResul
           exposureHorizon: obs.exposureHorizon || null,
           publishedDate: item.publishedDate || '2026-09-01',
           lastUpdatedDate: item.lastUpdatedDate || '2026-09-01',
-          rawRecordJson: JSON.stringify(item),
+          rawRecordJson: JSON.stringify(itemToSave),
           ingestedAt: new Date()
         };
       });

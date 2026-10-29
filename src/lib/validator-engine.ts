@@ -1005,7 +1005,7 @@ export function formatReportAsText(report: FullValidatorReport): string {
     `  • 95th Percentile(p95): ${rb.p95LatencyMs.toFixed(4)} ms`,
     `  • 99th Percentile(p99): ${BOLD}${rb.p99LatencyMs.toFixed(4)} ms${RESET}`,
     `  • Min / Max Latency   : ${rb.minLatencyMs.toFixed(4)} ms / ${rb.maxLatencyMs.toFixed(4)} ms`,
-    `  • SLA Target (<50 ms) : ${GREEN}${rb.slaCompliancePercent}% compliance${RESET}`
+    `  • Benchmark Target (<50 ms) : ${GREEN}${rb.slaCompliancePercent}% compliance${RESET}`
   );
 
   // Step 4: Vantage Feed Handshake & Threat Sample Fleet Validation
@@ -1046,7 +1046,7 @@ export function formatReportAsText(report: FullValidatorReport): string {
     `  • Sampling Methodology       : ${cveGate.samplingOrder === "newest" ? "Newest-to-Oldest" : "Uniform Random Sample"}`,
     `  • Severity Breakdown         : ${cveGate.criticalCount} Critical, ${cveGate.highCount} High, ${cveGate.mediumCount} Medium`,
     `  • Verified Hotfix Coverage   : ${GREEN}${cveGate.mitigatedCount} / ${cveGate.totalEvaluated} (100.0%)${RESET}`,
-    `  • Deterministic Rollback     : ${GREEN}${cveGate.rollbackReadyCount} / ${cveGate.totalEvaluated} READY (Sub-50ms Atomic Reversion)${RESET}`,
+    `  • Deterministic Rollback     : ${GREEN}${cveGate.rollbackReadyCount} / ${cveGate.totalEvaluated} READY (Atomic Reversion)${RESET}`,
     `  • Zero-Downtime Feasibility  : ${GREEN}${cveGate.mitigatedCount} / ${cveGate.totalEvaluated} VERIFIED (Zero socket disruption)${RESET}`,
     `  • Mean Synthesis Latency     : ${cveGate.meanSynthesisLatencyMs.toFixed(4)} ms / patch\n`
   );

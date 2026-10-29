@@ -487,7 +487,13 @@ export async function queryThreatFeedFromDb(params: ThreatFeedQueryParams): Prom
       for (const row of dataRes.rows) {
         if (row.raw_record_json && typeof row.raw_record_json === 'string') {
           try {
-            advisories.push(JSON.parse(row.raw_record_json));
+            const parsed = JSON.parse(row.raw_record_json);
+            if (parsed && typeof parsed === 'object') {
+              if (parsed.uviId && !parsed.uviId.startsWith('UVI-')) {
+                parsed.uviId = `UVI-${parsed.uviId}`;
+              }
+              advisories.push(parsed);
+            }
           } catch {}
         }
       }

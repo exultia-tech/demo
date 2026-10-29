@@ -1,12 +1,15 @@
-# Exultia PureIDE & PureOS: Technical Documentation & API Reference
+# Exultia PureIDE & PureOS (Consolidated into Daedelus)
 
 **Zero-Trust Developer Workstation & Pre-Hardened Container Catalogue**
+
+> [!NOTE]
+> **Consolidation Notice**: PureIDE (hermetic workstations) and PureOS (hardened distroless runtimes) have been unified into **[Daedelus](./daedelus.md)** alongside the new 0-CVE Clean Package Catalog and developer edge negative admission proxy. Please refer to the primary [**Daedelus Technical Documentation**](./daedelus.md).
 
 ---
 
 ## 1. Quick-Start Guide
 
-PureIDE and PureOS provide reproducible, zero-trust developer environments and hardened container images engineered for defense, aerospace, and high-consequence computing.
+PureIDE and PureOS are now available as modalities within Daedelus:
 
 ### Pull a Hardened PureOS Base Container
 ```bash

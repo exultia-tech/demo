@@ -42,7 +42,11 @@ export async function POST(req: Request) {
         if (parts[4]) {
           const paidAmt = parseFloat(parts[4]);
           if (!isNaN(paidAmt)) {
-            finalTier = paidAmt >= 149 ? 'enterprise' : paidAmt >= 49 ? 'pro' : 'community';
+            if (finalProduct === 'platform' || finalProduct === 'multipass') {
+              finalTier = paidAmt > 0 ? 'enterprise' : 'community';
+            } else {
+              finalTier = paidAmt >= 149 ? 'enterprise' : paidAmt >= 49 ? 'pro' : 'community';
+            }
           }
         }
       }

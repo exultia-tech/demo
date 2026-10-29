@@ -307,7 +307,7 @@ export default function AxiomDashboard() {
               Exultia <span style={{ color: "#F43F5E" }}>Axiom</span>
             </h1>
             <p style={{ margin: "0.25rem 0 0 0", color: "#94A3B8", fontSize: "1.1rem" }}>
-              The Open-Source Security Education Framework
+              The Sovereign Security Education Framework
             </p>
           </div>
         </div>
@@ -818,7 +818,7 @@ export default function AxiomDashboard() {
                 </button>
               ) : (
                 <Link
-                  href="/account/tokens"
+                  href="/account?tab=tokens"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",

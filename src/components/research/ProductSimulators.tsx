@@ -22,6 +22,7 @@ import {
   Code2
 } from "lucide-react";
 import {
+  DaedelusIcon,
   PureIdeIcon,
   VantageIcon,
   KineticIcon,
@@ -40,6 +41,7 @@ interface ProductSimulatorsProps {
 
 export default function ProductSimulators({ productId, accentColor }: ProductSimulatorsProps) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [exultiaTerminalTab, setExultiaTerminalTab] = useState<"status" | "hotfix" | "rollback" | "audit">("status");
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -493,7 +495,7 @@ impl PraxisK8sClient {
       {/* ─────────────────────────────────────────────────────────────
           PRAXIS / KINETIC HOTPATCH SIMULATOR
       ───────────────────────────────────────────────────────────── */}
-      {(productId === "kinetic" || productId === "praxis") && (
+      {(productId === "kinetic" || productId === "praxis" || productId === "exultia-linux") && (
         <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "2rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -585,14 +587,14 @@ impl PraxisK8sClient {
       {/* ─────────────────────────────────────────────────────────────
           PUREIDE SIMULATOR
       ───────────────────────────────────────────────────────────── */}
-      {productId === "pureide" && (
+      {(productId === "pureide" || productId === "daedelus") && (
         <div style={{ background: "rgba(15, 23, 42, 0.7)", borderRadius: "16px", border: "1px solid rgba(59, 130, 246, 0.3)", padding: "2rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <PureIdeIcon size={32} />
+              {productId === "daedelus" ? <DaedelusIcon size={32} /> : <PureIdeIcon size={32} />}
               <div>
                 <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: 0, color: "#38BDF8" }}>
-                  PureIDE Hermetic Compiler &amp; Workstation Egress Sandbox
+                  {productId === "daedelus" ? "Daedelus: Secure Workstations, Containers & Packages" : "PureIDE Hermetic Compiler & Workstation Egress Sandbox"}
                 </h3>
                 <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
                   Auditing zero-telemetry compilation, supply-chain hook interception, and in-toto SLSA Level 3 provenance.

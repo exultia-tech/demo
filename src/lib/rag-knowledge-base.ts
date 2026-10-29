@@ -280,14 +280,14 @@ One unified subscription unlocks access to all 7 sovereign defense engines witho
 - **Professional Operator ($100 / mo billed annually or $120/mo):** 10 production hosts, autonomous hotpatching daemon with 14ms sub-second rollbacks, full 7+ CVE chaos attack range, 10+ pentest probes with HMAC attestations, and verifiable certs.
 - **Enterprise Fleet ($500 / mo billed annually or $600/mo):** Unlimited air-gap nodes, multi-node ring progression, commercial feeds, SIEM webhooks (Splunk/Sentinel), Cosign SLSA Level 3 manifests, and institutional LMS connectors.
 
-#### Complete 7-Engine Sovereign Suite:
+#### Complete Sovereign Suite:
 - **Vantage:** Universal vulnerability intelligence feed synchronizing 110+ global registries.
-- **Praxis:** Surgical zero-downtime hotpatch compiler and hardware firewall ACL generator.
+- **Praxis:** Surgical zero-downtime hotpatch compiler and POSIX-compliant remediation script generator.
 - **Kinetic:** Sub-second deterministic rollback daemon with pre-image cryptographic snapshotting.
 - **Eris:** Intentional vulnerability proving ground and 5-container Docker attack range with 10-minute auto-destruct watchdogs.
 - **Valkyrie:** Non-destructive BAS exploitability prober with HMAC-SHA256 cryptographic attestation tokens.
-- **PureIDE:** Air-gapped hermetic workstation IDE with cgroup kernel network boundaries.
-- **PureOS:** Minimal CIS Level 2 hardened runtime container distribution.
+- **PureIDE:** Air-gapped hermetic workstation IDE (unified in Daedelus) with cgroup kernel network boundaries.
+- **PureOS:** Minimal CIS Level 2 hardened runtime container distribution (unified in Daedelus).
 - **Axiom:** Operational cybersecurity certification exam simulator with Canvas/LTI LMS connectors.`,
     suggestions: [
       'How does Kinetic per-host pricing work?',
@@ -310,12 +310,12 @@ One unified subscription unlocks access to all 7 sovereign defense engines witho
     content: `### 🌐 Complete Exultia Product Suite Directory
 
 Exultia unites the following sovereign cyber defense engines:
-1. **PureIDE:** Air-gapped workstation sandbox with hermetic build containers and cgroup network boundaries.
+1. **PureIDE:** Air-gapped workstation sandbox with hermetic build containers and cgroup network boundaries (now unified within Daedelus).
 2. **Vantage:** Universal threat intelligence engine synchronizing 110+ global CVE feeds in real-time.
 3. **Kinetic:** Autonomous patch manager with sub-second deterministic rollbacks (<100ms) and cryptographic snapshot ledgers.
 4. **Argent:** General OS distribution package manager deploying vendor errata and security updates.
 5. **Praxis:** Autonomous surgical hotpatching engine compiling in-memory eBPF trampolines with zero downtime.
-6. **PureOS:** Minimal CIS Benchmark Level 2 hardened container base image with zero unnecessary packages.
+6. **PureOS:** Minimal CIS Benchmark Level 2 hardened container base image with zero unnecessary packages (now unified within Daedelus).
 7. **Axiom:** Autonomous practical examination platform with HMAC-signed digital credentialing and LMS connectors.`,
     suggestions: [
       'What is included in MultiPass?',
@@ -449,7 +449,7 @@ Exultia enforces strict sovereign privacy for sensitive and classified air-gappe
 - 💻 **PureIDE Workstation Isolation:** Network egress is clamped at the Linux kernel cgroup boundary during compilation tasks. See our [**Interactive FAQ**](/faq).`,
     suggestions: [
       'Can Exultia run in an air-gapped SCIF?',
-      'What is included in PureIDE?',
+      'What is included in Daedelus?',
       'How does the deterministic rollback command work?',
       'Is in-memory hotpatching safe?'
     ]
@@ -475,10 +475,10 @@ Exultia enforces strict sovereign privacy for sensitive and classified air-gappe
 Praxis does not execute arbitrary byte overwrites. It compiles deterministic trampoline micro-hooks with atomic swap mechanics and eBPF targeting solely the vulnerable logic (such as input sanitizers or URI argument decoders). Before injection, an atomic pre-image snapshot is recorded. If any process fault occurs, an automatic 14ms sub-second rollback restores baseline state instantly. Read details in our [**Interactive FAQ**](/faq).
 
 #### 2. Not an Open-Source or iptables Wrapper
-While Vantage ingests public registries (CISA KEV, NIST NVD), our kinetic remediation stack is 100% proprietary systems code. Praxis compiles in-memory trampolines with eBPF & XDP kernel hooks at Layer 7 rather than simple packet-dropping iptables or nftables wrappers. Valkyrie executes non-destructive HMAC-signed canary handshakes; Eris provisions isolated 5-container Docker ranges with 10-minute auto-destruct watchdogs; and PureIDE provides an air-gapped hermetic compiler.
+While Vantage ingests public registries (CISA KEV, NIST NVD), our kinetic remediation stack is 100% proprietary systems code. Praxis compiles in-memory trampolines with eBPF & XDP kernel hooks at Layer 7 rather than simple packet-dropping iptables or nftables wrappers. Daedelus provides an air-gapped hermetic compiler for workstations, distroless containers, and zero-CVE packages with integrated exploit canary probing and resilience inoculation.
 
-#### 3. Why All 7 Engines Cost Only $100/mo (Not a Toy)
-Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. You pay for pure systems security engineering. Inspect our [**Interactive FAQ**](/faq).`,
+#### 3. Why Our Fleet Economics Cost Only $25/Node, $100/mo Baseline, or $500/mo Cap (Not a Toy)
+Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward enterprise sales commissions, golf trips, and multi-gigabyte cloud telemetry pipelines. Built by an independent solo security researcher with automated deterministic tooling, Exultia uses compiled native binaries (<35MB RAM) with zero outbound cloud streaming. Whether scaling at $25/node, starting at a $100 baseline, or capping at $500/mo, you pay for pure systems security engineering. Inspect our [**Interactive FAQ**](/faq).`,
     suggestions: [
       'How do I run the Bullshit Validator?',
       'How does the closed-loop defense work?',
@@ -501,9 +501,9 @@ Legacy enterprise vendors charge $50,000+ because 70% of revenue goes toward ent
 
 Our interactive directory contains answers to **19 curated operational, engineering skepticism, and architectural questions** across 5 primary categories:
 
-- **Engineering Skepticism:** Addressing in-memory safety, eBPF trampoline verification, wrapper accusations, and the $100/mo economics.
+- **Engineering Skepticism:** Addressing in-memory safety, eBPF trampoline verification, wrapper accusations, and our lean solo economics.
 - **Architecture & Performance:** Explaining closed-loop OODA loop speeds (<250ms), zero outbound telemetry, and 14ms deterministic rollbacks.
-- **Licensing & Pricing:** Detailing our transparent $0 Community, $100/mo Pro, $500/mo Enterprise, and linear per-host fleet pricing.
+- **Licensing & Pricing:** Detailing our transparent $0 Community Edition, $500/mo Enterprise Fleet Cap, and linear per-host fleet pricing.
 - **Operations & Support:** Outlining our transparent solo security researcher model and no-human SLA policies.
 - **Verification & Proving Grounds:** Directing technical evaluators to the public [**github.com/exultia-tech/demo**](https://github.com/exultia-tech/demo) validation harness.
 
@@ -513,6 +513,43 @@ Explore all answers directly on our [**Interactive FAQ Page (/faq)**](/faq)!`,
       'How does the closed-loop defense work?',
       'Is in-memory hotpatching safe?',
       'What is included in MultiPass?'
+    ]
+  },
+  // 15. Daemon Operations, Lock Handling, Ring Testing & Safety
+  {
+    id: 'daemon-operations-faq',
+    title: 'Kinetic Resident Daemon Operations, Ring Testing, and Safety Guarantees',
+    sourceDoc: 'wiki/kinetic-daemon.md',
+    sourceUrl: '/faq',
+    topic: 'operations',
+    category: 'engine',
+    tags: ['daemon', 'apt', 'yum', 'lock', 'reboot', 'network', 'backport', 'canary', 'ring', 'testing', 'sla', 'killswitch', 'sync'],
+    keywords: [
+      'apt lock', 'yum lock', 'holding lock', 'randomly reboot', 'reboot server', 'network drop', 'bricked',
+      'backported', 'backport', 'blast radius', 'ring testing', 'configure ring', 'remediation gone',
+      'actually gone', 'verify vulnerability', 'who pays', 'downtime liability', 'guarantee remediation',
+      'sla', 'broken patch', 'stop patch', 'killswitch', 'quarantine', 'feed sync', 'stops syncing'
+    ],
+    content: `### ⚙️ Kinetic Daemon Operations, Ring Testing & Safety FAQ
+
+Answers to critical operational questions regarding production safety and fleet orchestration:
+
+- **Lockfile Contention (apt/yum):** The daemon performs non-blocking checks on \`/var/lib/dpkg/lock-frontend\` and \`/var/run/yum.pid\`. It never issues \`kill -9\` or breaks locks; instead, it logs \`DEFERRED_LOCK_BUSY\` and applies exponential backoff. Tier 1 in-memory hotpatches and sysctl mitigations apply without touching package managers.
+- **Zero Involuntary Reboots:** The daemon is architecturally forbidden from invoking reboot or shutdown syscalls. Tier 1 patches apply live in memory; Tier 2 package upgrades touch \`/var/run/reboot-required\` and defer restarts to your scheduled maintenance windows.
+- **Network Interruption Safety:** All updates use two-phase staging into \`/var/cache/exultia/staging/\`. Binaries are verified with Cosign SLSA Level 3 Ed25519 signatures before system state changes. Network drop at 99% discards cache with zero system mutation.
+- **Backported Fixes:** Vantage normalizes Debian Security Trackers, Ubuntu USN, and Red Hat RHSA errata. If a vendor backports a CVE fix into an existing package release string, Vantage marks it \`RESOLVED_BY_BACKPORT\` and leaves it untouched.
+- **Multi-Ring Canary Rollouts:** Updates are never blasted simultaneously. Phased rings: **Ring 0 (Canary 2%-10%, 15m gate)** -> **Ring 1 (Staging 25%, 2h soak)** -> **Ring 2 (Broad Fleet 65%-75%)**. Automated health-check failure triggers instant rollback.
+- **Client-Side Ring Configuration:** Configurable via \`/etc/exultia/kinetic.toml\` (\`[rollout] ring = 0\`), CLI (\`sudo kinetic config set rollout.ring 0\`), or Kubernetes Helm DaemonSet node labels.
+- **Active Remediation Verification:** Closed-loop verification with active socket inspection, memory mapping audit, synthetic loopback exploit probes (Valkyrie), and signed OpenVEX attestation receipts.
+- **Downtime Liability & SLA:** Standard commercial software terms apply. SLA guarantees 99.9% uptime for the Vantage Threat Feed API; we reject reckless "1-hour patch" claims that bypass formal regression testing.
+- **Broken Upstream Patch Killswitch:** Immediate global \`QUARANTINE_REVOCATION\` broadcast blocks admissions in minutes. Canary nodes autonomously execute clean package downgrades.
+- **Threat Feed Sync Monitoring:** Monitored via Prometheus (\`exultia_feed_last_sync_timestamp_seconds\`), systemd watchdog, and automatic fallback to 24,388 pre-baked local advisories.`,
+    suggestions: [
+      'Will this randomly reboot my production server?',
+      'What happens if another process is holding the apt/yum lock?',
+      'How does the customer configure ring testing from the client?',
+      'If the network drops mid-update, is my machine bricked?',
+      'How do you handle backported security fixes?'
     ]
   }
 ];
@@ -620,6 +657,12 @@ export class RagKnowledgeBase {
         chunk.id === 'technical-skepticism'
       ) {
         score += 95;
+      }
+      if (
+        (q.includes('apt lock') || q.includes('yum lock') || q.includes('reboot') || q.includes('network drop') || q.includes('backport') || q.includes('blast radius') || q.includes('ring test') || q.includes('ring') || q.includes('actually gone') || q.includes('who pays') || q.includes('killswitch') || q.includes('stops syncing')) &&
+        chunk.id === 'daemon-operations-faq'
+      ) {
+        score += 120;
       }
 
       // 3. Keyword / Tag overlap

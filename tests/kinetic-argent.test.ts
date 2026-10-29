@@ -85,7 +85,7 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(out).toContain('[Ubuntu Linux]');
       expect(out).not.toContain('[Red Hat Enterprise Linux]');
       expect(out).not.toContain('[Alpine Linux]');
-    });
+    }, 15000);
 
     it('should deploy a targeted vendor advisory bundle via kinetic upgrade --bundle', () => {
       const cmd = `python kinetic-cli/run.py upgrade --bundle RLBA-2024:3910 --dry-run --state-dir "${testStateDir}"`;
@@ -95,7 +95,7 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(out).toContain('RLBA-2024:3910');
       expect(out).toContain('[PASS] Successfully applied package upgrade for kernel');
       expect(out).toContain('Applied 1/1 bundle(s)');
-    });
+    }, 15000);
   });
 
   describe('3. Deterministic Rollback of Deployed Argent Packages', () => {

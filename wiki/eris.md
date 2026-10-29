@@ -5,6 +5,9 @@
 
 ---
 
+> [!NOTE]
+> **Internal Test Harness**: Eris operates as an internal chaos injection and adversary emulation engine embedded into the Exultia closed-loop testing framework and Kinetic resident daemon verification pipeline, rather than a standalone customer web module.
+
 ## 1. Quick-Start Guide
 
 Eris allows security teams and detection engineers to intentionally inoculate isolated endpoints with deliberate misconfigurations, simulated zero-days, and mock adversary beacons to validate that autonomous defense systems (Praxis and Valkyrie) trigger correctly.

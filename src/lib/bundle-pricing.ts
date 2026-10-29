@@ -23,7 +23,7 @@ export interface BundlePricingTier {
   isPopular: boolean;
 }
 
-export type PlatformTierId = "community" | "pro" | "enterprise";
+export type PlatformTierId = "community" | "enterprise" | "pro";
 
 export interface PlatformPricingTier {
   id: PlatformTierId;
@@ -48,24 +48,92 @@ export interface PlatformPricingTier {
   isPopular: boolean;
 }
 
+export interface EnterpriseFleetCalculation {
+  nodeCount: number;
+  monthlyRate: number;
+  annualTotal: number;
+  effectivePerNodeRate: number;
+  isCappedAtFlatRate: boolean;
+  savingsVsPerNode: number;
+  sub25Rate: number;
+  flat25Base: number;
+  additionalRate: number;
+}
+
+/**
+ * Calculates Enterprise Fleet pricing based on the 2-tier model:
+ * - Sub-25 hosts: $25 / node / mo ($20 / node / mo billed annually)
+ * - Fleet Cap (up to 25 hosts): $500 / month flat rate ($6,000 billed annually, or $600/mo billed monthly)
+ * - 25+ scale fleet: Base $500/mo + $15 / additional node / mo ($12 / node / mo annual)
+ */
+export function calculateEnterpriseFleetPrice(
+  nodeCount: number,
+  billingCycle: "monthly" | "annual" = "annual"
+): EnterpriseFleetCalculation {
+  const isAnnual = billingCycle === "annual";
+  const sub25Rate = isAnnual ? 20 : 25;
+  const flat25Base = isAnnual ? 500 : 600;
+  const additionalRate = isAnnual ? 12 : 15;
+
+  const validCount = Math.max(1, Math.floor(nodeCount));
+  let monthlyRate = 0;
+  let isCapped = false;
+  let savings = 0;
+
+  if (validCount < 25) {
+    const linearCost = validCount * sub25Rate;
+    if (linearCost >= flat25Base) {
+      monthlyRate = flat25Base;
+      isCapped = true;
+      savings = linearCost - flat25Base;
+    } else {
+      monthlyRate = linearCost;
+    }
+  } else if (validCount === 25) {
+    monthlyRate = flat25Base;
+    isCapped = true;
+    savings = (25 * sub25Rate) - flat25Base;
+  } else {
+    // 25+ hosts
+    const extraNodes = validCount - 25;
+    monthlyRate = flat25Base + (extraNodes * additionalRate);
+    savings = (validCount * sub25Rate) - monthlyRate;
+  }
+
+  const annualTotal = monthlyRate * 12;
+  const effectivePerNodeRate = Math.round((monthlyRate / validCount) * 100) / 100;
+
+  return {
+    nodeCount: validCount,
+    monthlyRate,
+    annualTotal,
+    effectivePerNodeRate,
+    isCappedAtFlatRate: isCapped,
+    savingsVsPerNode: Math.max(0, savings),
+    sub25Rate,
+    flat25Base,
+    additionalRate,
+  };
+}
+
 export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
   {
     id: "community",
     name: "Community Sovereign",
-    tagline: "Free & open-source OS foundation for individuals, researchers & homelabs",
+    tagline: "Free self-healing daemon for individuals, researchers & homelabs",
     priceMonthly: 0,
     priceAnnual: 0,
     annualBilledTotal: 0,
-    description: "100% Free & Open-Source Exultia Linux OS with local Kinetic hotpatching, community threat intelligence, and zero telemetry.",
+    description: "100% Free Community Edition Exultia resident daemon with local in-memory hotpatching, pre-baked 24,388 UVI offline database, and zero telemetry.",
     highlights: [
-      "100% Free & Open-Source Exultia Linux OS (Bare-metal & microVMs)",
-      "Resident Kinetic™ local in-memory hotpatching daemon with zero socket drops",
-      "Immutable declarative /nix/store base with sub-50ms atomic rollback SLA",
+      "100% Free Community Edition Exultia resident daemon (Any Linux distro, bare-metal & microVMs)",
+      "Resident local in-memory hotpatching daemon with zero socket drops",
+      "Non-invasive memory patch state machine with sub-15ms deterministic rollback",
+      "Pre-baked offline air-gapped catalog with 24,388 UVI vulnerability advisories",
       "Open access to 110+ vulnerability registries in Vantage (Daily CVE sync)",
-      "Safe non-destructive BAS banner probes in Valkyrie",
-      "5 default chaos inoculation modules in Eris",
-      "Zero-telemetry hermetic workstation compiler in PureIDE",
-      "CIS-hardened baseline OCI container recipes in PureOS",
+      "Integrated non-destructive exploit probing & resilience inoculation in resident daemon",
+      "Zero-telemetry hermetic workstation builder in Daedelus",
+      "CIS-hardened baseline OCI container & package generation in Daedelus",
       "Full CompTIA Security+, CySA+, CC exam prep banks in Axiom"
     ],
     engineCapabilities: {
@@ -73,77 +141,53 @@ export const EXULTIA_PLATFORM_TIERS: PlatformPricingTier[] = [
       praxis: "Local hotpatch verification and plain/JSON firewall block generators",
       eris: "5 single-container chaos scenarios (Log4Shell, RegreSSHion, query injection)",
       valkyrie: "5 safe non-destructive banner & protocol handshake canary probes",
-      pureide: "Single local developer seat with hermetic compiler and telemetry stripping",
-      pureos: "Standard CIS baseline container images and public vulnerability scanners",
+      pureide: "Single local developer seat with Daedelus secure workstation, container, and package builder",
+      pureos: "Standard CIS baseline container & package generation in Daedelus",
       axiom: "Complete exam question banks with instant in-browser score feedback"
     },
-    ctaLabel: "Download Free OS",
+    ctaLabel: "Download Free Daemon",
     isPopular: false
-  },
-  {
-    id: "pro",
-    name: "Professional Operator",
-    tagline: "Continuous autonomous threat intelligence stream & live managed hotpatches",
-    badge: "MOST POPULAR",
-    priceMonthly: 120,
-    priceAnnual: 100,
-    annualBilledTotal: 1200,
-    description: "Funds continuous 24/7 zero-day research, dedicated microVM verification compute, and live autonomous hotpatch streaming.",
-    highlights: [
-      "Real-time Vantage Zero-Day Priority Stream (110+ registries continuously parsed)",
-      "Autonomous Praxis patch streaming daemon: live in-memory host hotpatching in <350ms",
-      "Dedicated Eris & Valkyrie microVM proving grounds with HMAC attestation tokens",
-      "Automated CycloneDX SBOMs & zero-telemetry PureIDE cloud runners",
-      "Guaranteed <50ms deterministic rollback SLA across all active workloads",
-      "Zero-trust hardened PureOS variants with cryptographic provenance",
-      "Axiom verifiable SHA-256 certificates & CSV/JSON student transcript exports",
-      "Unified access to all 8 sovereign defense engines & platforms"
-    ],
-    engineCapabilities: {
-      vantage: "Real-time threat feed streams, zero-day early warnings, and 300 req/min API quota",
-      praxis: "Autonomous patch streaming daemon, sub-second rollback engine, sentinels, and hardware firewall filters",
-      eris: "Full 7+ CVE chaos catalog, custom timed failsafe rollbacks (10m, 30m, 60m), and 5-container Docker Compose range",
-      valkyrie: "Remote endpoint & Docker cluster network probing with cryptographic SHA-256 pentest attestation signatures",
-      pureide: "Isolated cloud pipeline builds, network egress sandboxing, and automated CycloneDX SBOMs",
-      pureos: "Zero-trust hardened OS variants, automated SBOM recipes, and advanced CI/CD templates",
-      axiom: "Verifiable SHA-256 certificates, course history transcripts (CSV/JSON), and score sync API"
-    },
-    ctaLabel: "Unlock Professional ($100/mo)",
-    isPopular: true
   },
   {
     id: "enterprise",
     name: "Enterprise Fleet",
-    tagline: "Multi-node progressive canary orchestration, compliance SLA & institutional scale",
+    tagline: "Production fleet hotpatching: $25/node under 25, or $500/mo flat cap for 25 hosts",
     badge: "FLEET & COMPLIANCE",
     priceMonthly: 600,
     priceAnnual: 500,
     annualBilledTotal: 6000,
-    description: "Central Praxis fleet manager for multi-node cluster rollouts, air-gapped CI/CD, SLSA Level 3 signed manifests, and compliance audit exports.",
+    description: "Full enterprise hotpatching engine: $25/node/mo for under 25 hosts, flat $500/mo for 25 hosts, or +$15/node beyond 25. Central progressive canary rollouts, air-gapped KMS, and SLSA Level 3 Cosign receipts.",
     highlights: [
-      "Central Praxis Fleet Manager: progressive canary ring rollouts (Ring 0 -> Ring 1 -> Fleet)",
-      "Cosign OIDC SLSA Level 3 signed manifests & automated SOC2/HIPAA audit logs",
-      "Multi-node fleet chaos orchestrator & custom zero-day adversary studio",
-      "Commercial redistributable Vantage feeds & real-time SIEM webhooks (Splunk/Sentinel)",
-      "Strict air-gap signing, offline cryptographic KMS & satellite mirror appliances",
-      "Institutional Axiom LMS embedding (Canvas, Blackboard, Moodle) with SCORM/LTI",
-      "Organization volume node entitlements, priority SLA, and dedicated architect escalation"
+      "Unlimited Access to Threat Feed API",
+      "Unlimited Use of Daedelus - build secure IDEs, containers, and packages",
+      "Unlimited Use of Praxis - generate POSIX-compliant scripts mapped to threat feed fixes",
+      "Unlimited Use of Axiom - general cybersecurity exam questions and LMS API",
+      "25-Host Flat Fleet Cap savings",
+      "Optional MSA terms for large enterprises",
+      "Offline cryptographic Ed25519 license key: zero phone-home DRM, zero production lockouts",
+      "Cosign OIDC SLSA Level 3 signed manifests & automated compliance audit logs",
+      "Real-time SIEM webhooks (Splunk, Sentinel, QRadar)",
+      "Soft-limit autoscale grace period: never bricks nodes or halts defenses on quota spikes"
     ],
     engineCapabilities: {
       vantage: "Commercial redistributable feed, real-time enterprise SIEM webhooks (Splunk/Sentinel/QRadar), and automated CISO briefing generator",
       praxis: "Phased multi-ring deployment orchestrator, Cosign OIDC SLSA Level 3 signed manifests, and fleet-wide emergency rollback",
       eris: "Multi-node fleet chaos orchestrator (Ansible/Terraform), custom zero-day studio, and continuous red/blue verification",
       valkyrie: "Continuous CI/CD perimeter probing, custom exploit canary builder, programmatic REST API, and executive compliance reports",
-      pureide: "Strict airgap signing, offline cryptographic cosign, immutable binary encapsulation, and enterprise build runners",
-      pureos: "Air-gapped deployment compatibility, signed cryptographic provenance, and organization fleet distribution",
+      pureide: "Strict airgap signing, offline cryptographic cosign, immutable binary encapsulation, and enterprise build runners in Daedelus",
+      pureos: "Air-gapped deployment compatibility, signed cryptographic provenance, and organization fleet distribution in Daedelus",
       axiom: "Live LMS simulator embedding (Canvas, Blackboard, Moodle), SCORM 1.2/2004 & LTI 1.3, multi-seat licensing, and gradebook passback"
     },
     ctaLabel: "Deploy Enterprise Fleet",
-    isPopular: false
+    isPopular: true
   }
 ];
 
 export function getPlatformTier(id: PlatformTierId): PlatformPricingTier {
+  if (id === "pro") {
+    // Backwards-compatible alias resolving to Enterprise Fleet
+    return EXULTIA_PLATFORM_TIERS.find(t => t.id === "enterprise") || EXULTIA_PLATFORM_TIERS[0];
+  }
   const match = EXULTIA_PLATFORM_TIERS.find(t => t.id === id);
   return match || EXULTIA_PLATFORM_TIERS[0];
 }

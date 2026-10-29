@@ -1,122 +1,60 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { ExultiaLinuxIcon, PureOsIcon, PraxisIcon, VantageIcon } from "@/components/BrandIcons";
+import { ExultiaLinuxIcon, PraxisIcon, VantageIcon } from "@/components/BrandIcons";
 import ExultiaLinuxClientView from "./ExultiaLinuxClientView";
 
 export const metadata: Metadata = {
-  title: "Exultia Linux | Sovereign Declarative Operating System",
+  title: "Exultia | Portable Autonomous Threat Remediation Daemon for Linux",
   description:
-    "The official sovereign Linux operating system with continuous autonomous vulnerability self-correction, retroactive package eviction & next-best clean re-synthesis, zero-downtime hotpatching, and guaranteed sub-50ms atomic rollbacks.",
+    "Portable autonomous threat remediation daemon for Linux. Pre-baked offline UVI feed, continuous 60-second self-healing loop, in-memory patch injection, and zero downtime.",
 };
 
 export default function ExultiaLinuxProductPage() {
   return (
-    <div className="fade-in" style={{ paddingBottom: "6rem" }}>
+    <div className="fade-in" style={{ paddingBottom: "3.5rem" }}>
       {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
-      <section className="hero-section" style={{ paddingTop: "3.5rem", paddingBottom: "4rem", textAlign: "center" }}>
+      <section className="hero-section" style={{ paddingTop: "2rem", paddingBottom: "1.25rem", textAlign: "center" }}>
         
-        {/* Status Pill Badge */}
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(6, 182, 212, 0.12)", border: "1px solid rgba(6, 182, 212, 0.35)", padding: "6px 16px", borderRadius: "999px", marginBottom: "1.75rem" }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#22D3EE", boxShadow: "0 0 10px #22D3EE" }} />
-          <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.82rem", fontWeight: 700, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            100% Free &amp; Open-Source OS • Kinetic™ Native • Declarative Immutability
-          </span>
-        </div>
 
         {/* Brand Icon & Glow */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
-          <ExultiaLinuxIcon size={76} glow={true} />
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+          <ExultiaLinuxIcon size={56} glow={true} />
         </div>
 
         {/* Title */}
-        <h1 className="hero-title" style={{ fontSize: "3.8rem", marginBottom: "1.25rem", letterSpacing: "-0.03em", lineHeight: 1.1 }}>
-          <span className="gradient-text" style={{ backgroundImage: "linear-gradient(135deg, #E0F2FE 0%, #38BDF8 40%, #22D3EE 70%, #10B981 100%)" }}>
-            Exultia Linux
+        <h1 className="hero-title" style={{ fontSize: "clamp(2.2rem, 4.2vw, 3.2rem)", marginBottom: "0.6rem", letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+          <span className="gradient-text" style={{ backgroundImage: "linear-gradient(135deg, #A5F3FC 0%, #00E5FF 40%, #0284C7 70%, #0369A1 100%)" }}>
+            The Portable Exultia Daemon for Linux
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="hero-subtitle" style={{ maxWidth: "820px", margin: "0 auto 2.5rem auto", fontSize: "1.18rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
-          The sovereign, declarative operating system engineered for high-consequence enterprise infrastructure. 
-          <strong style={{ color: "#FFFFFF" }}> Free and open-source for humanity.</strong> Built on a cryptographically immutable base, Exultia Linux continuously monitors its running workloads,
-          applies surgical zero-downtime hotfixes with <strong style={{ color: "#22D3EE" }}>sub-second runtime execution</strong>, and provides
-          a guaranteed <strong style={{ color: "#34D399" }}>&lt;50ms deterministic rollback SLA</strong> with zero dropped TCP sockets.
+        <p className="hero-subtitle" style={{ maxWidth: "820px", margin: "0 auto 1.25rem auto", fontSize: "1.02rem", lineHeight: 1.55, color: "var(--text-muted)" }}>
+          Don&apos;t wipe your servers or migrate distributions. The portable Exultia daemon drops directly onto your existing Linux infrastructure as a standalone binary, systemd service, container, or Kubernetes DaemonSet. 
+          Engineered with an autonomous 60-second remediation loop, offline <strong style={{ color: "#FFFFFF" }}>24,388 UVI threat advisories</strong>, in-memory surgical trampolines, and dual-channel <strong style={{ color: "#34D399" }}>STIX 2.1 / TAXII 2.1</strong> threat ingestion.
         </p>
 
         {/* CTA Button Array */}
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "3rem" }}>
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "1rem" }}>
           <a 
             href="#deployment-options" 
             className="btn-primary" 
             style={{ 
-              padding: "0.95rem 2.25rem", 
-              fontSize: "1rem", 
+              padding: "0.7rem 1.6rem", 
+              fontSize: "0.9rem", 
               textDecoration: "none", 
-              background: "linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)",
-              boxShadow: "0 0 25px rgba(6, 182, 212, 0.4)",
+              background: "linear-gradient(135deg, #0284C7 0%, #0369A1 100%)",
+              boxShadow: "0 0 20px rgba(0, 229, 255, 0.35)",
               fontWeight: 700
             }}
           >
-            Download Free OS Image →
+            Deploy Exultia Daemon →
           </a>
-          <a 
-            href="#interactive-telemetry" 
-            style={{ 
-              padding: "0.95rem 1.85rem", 
-              borderRadius: "10px", 
-              background: "rgba(255,255,255,0.06)", 
-              border: "1px solid rgba(255, 255, 255, 0.15)", 
-              color: "white", 
-              textDecoration: "none", 
-              fontWeight: 600, 
-              fontSize: "0.95rem",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>▶</span> View Live Sentinel Telemetry
-          </a>
-          <Link 
-            href="/account/subscription" 
-            style={{ 
-              padding: "0.95rem 1.85rem", 
-              borderRadius: "10px", 
-              background: "rgba(16, 185, 129, 0.15)", 
-              border: "1px solid rgba(16, 185, 129, 0.35)", 
-              color: "#34D399", 
-              textDecoration: "none", 
-              fontWeight: 700, 
-              fontSize: "0.95rem" 
-            }}
-          >
-            Fleet Enterprise Plans
-          </Link>
-        </div>
-
-        {/* Key Metrics Banner */}
-        <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", padding: "0 1rem" }}>
-          <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#38BDF8" }}>Sub-Second</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Local Runtime Hotfix (~300ms)</div>
-          </div>
-          <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#34D399" }}>0 Sockets</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Disrupted During Patching</div>
-          </div>
-          <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#FBBF24" }}>&lt; 50ms</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Deterministic Rollback SLA</div>
-          </div>
-          <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "1.25rem 1rem", borderRadius: "14px" }}>
-            <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "1.8rem", fontWeight: 900, color: "#A7F3D0" }}>0 Findings</div>
-            <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginTop: "4px" }}>Continuous Trivy Rootfs Audit</div>
-          </div>
         </div>
       </section>
 
-      {/* ── CLIENT INTERACTIVE VIEW (TERMINAL + COMPARISONS + FLAKE CODE) ─────── */}
+      {/* ── CLIENT INTERACTIVE VIEW ─────── */}
       <ExultiaLinuxClientView />
     </div>
   );

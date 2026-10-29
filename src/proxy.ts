@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2026 Exultia Technologies Inc. All rights reserved.
+ * Copyright (c) 2026 Exultia Technologies, PBC. All rights reserved.
  * Proprietary and Confidential.
  *
  * Exultia Edge Proxy, Route Security, and Private Preview Lockdown Gate.
@@ -14,11 +14,13 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Always allow assets, favicons, static files, and Next.js internals (never API routes)
-  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|txt|xml|py)$/i;
+  const STATIC_FILE_REGEX = /\.(ico|png|jpg|jpeg|svg|webp|css|js|woff2?|map|txt|xml|py|sh|gz|tar|db)$/i;
   if (
     !pathname.startsWith("/api") &&
     (pathname.startsWith("/_next") ||
       pathname.startsWith("/favicon") ||
+      pathname.startsWith("/releases") ||
+      pathname === "/install.sh" ||
       STATIC_FILE_REGEX.test(pathname))
   ) {
     return NextResponse.next();
@@ -28,6 +30,7 @@ export function proxy(request: NextRequest) {
   // When active (default: true during validation), NO OTHER PAGES OR APIS are accessible
   // to the public. Only authorized operators with the valid key can access the platform.
   const isExplicitlyDisabled =
+    process.env.NODE_ENV === "development" ||
     process.env.PRIVATE_PREVIEW_MODE === "false" ||
     process.env.PUBLIC_LAUNCH === "true" ||
     process.env.ALLOW_PUBLIC_ACCESS === "true" ||

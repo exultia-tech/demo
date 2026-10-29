@@ -21,23 +21,15 @@ Exultia unifies threat intelligence, adversary emulation, non-destructive pentes
                                │
                                ▼
    ┌────────────────────────────────────────────────────────┐
-   │                 2. ORIENT (ERIS)                       │
-   │  - Programmatic ephemeral chaos proving ground ranges  │
-   │  - Synthesizes exact adversary exploit preconditions    │
-   │  - Enforces 10-minute automated auto-destruct watchdog │
+   │            2. DECIDE & VALIDATE (CANARY PROBE)         │
+   │  - Embedded non-destructive canary verification        │
+   │  - HMAC-signed exploitability handshake sockets         │
+   │  - Zero risk of host crashes, deadlocks, or outages     │
    └───────────────────────────┬────────────────────────────┘
                                │
                                ▼
    ┌────────────────────────────────────────────────────────┐
-   │                 3. DECIDE (VALKYRIE)                   │
-   │  - On-demand non-destructive Canary BAS prober         │
-   │  - Mathematical proof of exploitability via HMAC token │
-   │  - Zero risk of crash, thread deadlocks, or outages    │
-   └───────────────────────────┬────────────────────────────┘
-                               │
-                               ▼
-   ┌────────────────────────────────────────────────────────┐
-   │           4. ACT (PRAXIS & KINETIC)                    │
+   │       3. ACT & SELF-HEAL (PRAXIS & KINETIC DAEMON)     │
    │  - Praxis: Synthesizes in-memory trampolines & playbooks│
    │  - Kinetic: Pre-flight snapshot & autonomous injection │
    │  - 14ms deterministic atomic rollback watchdog         │
@@ -45,26 +37,32 @@ Exultia unifies threat intelligence, adversary emulation, non-destructive pentes
                                │
                                ▼
    ┌────────────────────────────────────────────────────────┐
-   │          5. FOUNDATIONS (PUREIDE, PUREOS, AXIOM)       │
-   │  - PureIDE: Air-gapped workstation & compiler egress   │
-   │  - PureOS: CIS Level 2 distroless minimal container    │
-   │  - Axiom: Workforce assessment & certification engine  │
+   │                4. FOUNDATIONS (DAEDELUS)               │
+   │  - Modality 1: Hermetic IDE Workstations & cgroup clamp │
+   │  - Modality 2: CIS Level 2 Distroless Containers       │
+   │  - Modality 3: Clean-Room 0-CVE Edge Negative Admission│
+   └───────────────────────────┬────────────────────────────┘
+                               │
+                               ▼
+   ┌────────────────────────────────────────────────────────┐
+   │        5. HUMAN ASSURANCE & VERIFICATION (AXIOM)       │
+   │  - Adaptive workforce certification exam simulator     │
+   │  - Psychometric scoring, SCORM & LTI 1.3 LMS feeds     │
+   │  - Verifiable SHA-256 completion attestations          │
    └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. The 7 Core Defense Engines
+## 2. Core Defense Engines
 
 | # | Engine | Role in Closed Loop | Execution Form Factor | Primary Endpoint / Artifact |
 | :-: | :--- | :--- | :--- | :--- |
 | **1** | **Vantage** | **Observe:** Threat Intelligence Hub | Real-time REST stream & offline cache | `/api/threat-feed`, `modules/vantage/` |
-| **2** | **Eris** | **Orient:** Adversary Emulation Lab | Ephemeral Docker ranges & POSIX scripts | `/api/eris/generate`, `modules/eris/` |
-| **3** | **Valkyrie** | **Decide:** Non-Destructive Canary BAS | Python prober & HMAC handshake sockets | `/api/valkyrie/probe`, `modules/valkyrie/` |
-| **4** | **Praxis** | **Act (Compiler):** Remediation Synthesizer | POSIX hotpatch scripts & Ansible playbooks | `/api/praxis/generate`, `modules/praxis/` |
-| **5** | **Kinetic** | **Act (Runtime):** Host Execution Daemon | Compiled native binary (`x86_64`/ARM64) | `/api/kinetic/download`, `modules/kinetic/` |
-| **6** | **PureIDE & PureOS** | **Foundations:** Workstation & Runtimes | CIS distroless container & devcontainer | `/api/pureide/versions`, `modules/pureos-pureide/` |
-| **7** | **Axiom** | **Verification:** Workforce Certifications | LMS API simulator & verifiable credentials | `/api/axiom/exam`, `/api/axiom/export` |
+| **2** | **Praxis** | **Act (Compiler):** Remediation Synthesizer | POSIX hotpatch scripts & Ansible playbooks | `/api/praxis/generate`, `modules/praxis/` |
+| **3** | **Kinetic Daemon** | **Act (Runtime):** Host Execution Daemon | Compiled native binary (`x86_64`/ARM64) with embedded canary checks | `/api/kinetic/download`, `modules/kinetic/` |
+| **4** | **Daedelus** | **Foundations:** Sovereign Developer Forge | Clean-Room IDE, CIS Level 2 distroless containers & 0-CVE package proxy | `/app/daedelus`, `/api/pureide/versions` |
+| **5** | **Axiom** | **Verification:** Workforce Certifications | LMS API simulator & verifiable credentials | `/api/axiom/exam`, `/api/axiom/export` |
 
 ---
 
@@ -114,8 +112,7 @@ Every mitigation payload, container image, and threat advisory is signed using *
 
 ## 6. Unified Subscription Tiers
 
-Exultia avoids legacy vendor bloat by packaging all 7 engines into transparent platform tiers:
+Exultia avoids legacy vendor bloat and predatory enterprise sales traps by packaging autonomous defense capabilities into transparent platform tiers:
 
-- **Community Sovereign ($0 Forever)**: 1 host node, public Vantage feed, community distroless container images, basic Valkyrie canary probes, free Axiom exam practice questions.
-- **Professional Operator ($100/mo)**: Unlimited Praxis hotpatching, 110+ Vantage registries, private Eris chaos ranges, on-demand Valkyrie BAS probes, PureIDE air-gap compiler, and verifiable Axiom certifications.
-- **Enterprise Fleet ($500/mo)**: Multi-cluster Kubernetes orchestration, custom hotpatch authoring, SCORM/LTI 1.3 LMS APIs, private Cosign HSM keys, and 24/7 dedicated engineering SLA.
+- **Community Sovereign ($0 Forever)**: Single node deployment, full local autonomous Linux remediator, 24k+ pre-baked offline UVI vulnerability database, public Vantage threat feed, basic Daedelus builder, and free Axiom exam practice questions.
+- **Enterprise Fleet ($25/node under 25, or flat $500/mo for 25 nodes; +$15/node beyond 25)**: Central progressive canary rollouts (Ring 0/1/2), 24/7 continuous Vantage threat feed API, unlimited Daedelus (clean-room IDE workstations, distroless containers, and 0-CVE packages), unlimited Praxis (POSIX hotpatch compiler & playbooks), institutional Axiom LMS integration (SCORM / LTI 1.3), private Cosign SLSA Level 3 KMS signing, real-time SIEM webhooks (Splunk, Sentinel, QRadar), and offline Ed25519 cryptographic licensing with zero production lockout DRM.

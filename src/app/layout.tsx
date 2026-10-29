@@ -10,8 +10,8 @@ import PaymentModal from "@/components/billing/PaymentModal";
 import AiSupportWidget from "@/components/support/AiSupportWidget";
 
 export const metadata: Metadata = {
-  title: "Exultia Technologies | Practical. Transparent. Secure.",
-  description: "Software engineering environments, real-time threat intelligence feeds, and security automation built for verifiable integrity and transparency.",
+  title: "Exultia Technologies | Autonomous & Accessible Self-Healing Linux",
+  description: "Autonomous threat remediation, real-time vulnerability intelligence feeds, and continuous self-healing for Linux.",
 };
 
 export default function RootLayout({
@@ -21,13 +21,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" data-doom-palette="cyan" suppressHydrationWarning style={{ colorScheme: 'dark' }}>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var p=['cyan','orange','green','magenta'];var r=p[Math.floor(Math.random()*p.length)];document.documentElement.setAttribute('data-doom-palette',r);}catch(e){}})();`,
-          }}
-        />
-      </head>
       <body style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
         <DoomThemeProvider>
           <AuthProvider>

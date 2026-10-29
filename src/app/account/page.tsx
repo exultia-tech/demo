@@ -396,10 +396,10 @@ function AccountPageContent() {
       onActionClick: () => setActiveTab("profile")
     },
     pureide: {
-      title: "PureIDE Workstation",
+      title: "Daedelus IDE Workstation",
       subtitle: "Hermetic containerized compiler, air-gapped developer binaries, and workstation telemetry.",
-      actionLabel: "Launch PureIDE Console →",
-      actionHref: "/app/pureide"
+      actionLabel: "Launch IDE Console →",
+      actionHref: "/app/daedelus?mode=ide"
     },
     uvi: {
       title: "Vantage Threat Intelligence",
@@ -414,10 +414,10 @@ function AccountPageContent() {
       actionHref: "/app/praxis"
     },
     pureos: {
-      title: "PureOS Hardened Containers",
+      title: "Daedelus Distroless Containers",
       subtitle: "CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures.",
-      actionLabel: "Browse Container Catalog →",
-      actionHref: "/app/pureos"
+      actionLabel: "Browse Container Forge →",
+      actionHref: "/app/daedelus?mode=container"
     },
     axiom: {
       title: "Axiom Certification & LMS",
@@ -2028,8 +2028,8 @@ function AccountPageContent() {
               CIS Level 1 & 2 pre-hardened container images synchronized with Vantage threat disclosures for airgap and zero-trust workloads.
             </p>
             <div style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <Link href="/app/pureos" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #10B981, #059669)", fontWeight: 700 }}>
-                Browse Container Catalog →
+              <Link href="/app/daedelus?mode=container" className="btn-primary" style={{ padding: "0.75rem 1.5rem", textDecoration: "none", background: "linear-gradient(135deg, #10B981, #059669)", fontWeight: 700 }}>
+                Browse Container Forge →
               </Link>
               <Link href="/account/subscription?product=pureos" style={{ padding: "0.75rem 1.5rem", borderRadius: "10px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 700 }}>
                 Manage PureOS Tier

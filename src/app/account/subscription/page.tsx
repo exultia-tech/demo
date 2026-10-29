@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { 
   ShieldCheck, 
-  Sparkles, 
   Check, 
   ArrowRight, 
   Zap, 
@@ -17,28 +16,21 @@ import {
   Cpu,
   CheckCircle2,
   Users,
-  RotateCcw,
   Terminal,
   Layers,
-  Globe,
   Shield,
-  Activity,
   FileCode2,
-  Crosshair,
-  Server
+  Sparkles,
+  FileText
 } from "lucide-react";
-import { 
-  PureIdeIcon, 
-  VantageIcon, 
-  PraxisIcon, 
-  PureOsIcon, 
-  AxiomIcon,
-  ErisIcon,
-  ValkyrieIcon,
-  ExultiaLogo
-} from "@/components/BrandIcons";
 import PaymentModal from "@/components/billing/PaymentModal";
-import { EXULTIA_PLATFORM_TIERS, PlatformPricingTier, PlatformTierId } from "@/lib/bundle-pricing";
+import MsaPreviewModal from "@/components/billing/MsaPreviewModal";
+import { 
+  EXULTIA_PLATFORM_TIERS, 
+  PlatformPricingTier, 
+  PlatformTierId,
+  calculateEnterpriseFleetPrice 
+} from "@/lib/bundle-pricing";
 
 function SubscriptionContent() {
   const searchParams = useSearchParams();
@@ -46,22 +38,24 @@ function SubscriptionContent() {
   
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [isSwitchingFree, setIsSwitchingFree] = useState(false);
+  const [nodeCount, setNodeCount] = useState<number>(25);
+  const [isMsaModalOpen, setIsMsaModalOpen] = useState(false);
 
   // Compute current overarching platform tier
   const currentPlatformTier: PlatformTierId = (() => {
     if (!user) return "community";
     const directPlatformTier = getUserTier("platform");
     if (directPlatformTier === "enterprise") return "enterprise";
-    if (directPlatformTier === "pro") return "pro";
+    if (directPlatformTier === "pro") return "enterprise";
     
     const multiTier = getUserTier("multipass");
     if (multiTier === "enterprise") return "enterprise";
-    if (multiTier === "pro") return "pro";
+    if (multiTier === "pro") return "enterprise";
 
     const engines = ["pureide", "uvi", "praxis", "pureos", "axiom", "eris", "valkyrie"];
     const engineTiers = engines.map(e => getUserTier(e));
     if (engineTiers.includes("enterprise")) return "enterprise";
-    if (engineTiers.includes("pro") || engineTiers.includes("legal")) return "pro";
+    if (engineTiers.includes("pro") || engineTiers.includes("legal")) return "enterprise";
     return "community";
   })();
 
@@ -90,103 +84,86 @@ function SubscriptionContent() {
     const tierConfig = EXULTIA_PLATFORM_TIERS.find(t => t.id === tier);
     if (!tierConfig) return;
 
-    const price = billingCycle === "annual" ? tierConfig.priceAnnual : tierConfig.priceMonthly;
+    const fleetCalc = calculateEnterpriseFleetPrice(nodeCount, billingCycle);
+    const price = tier === "enterprise"
+      ? fleetCalc.monthlyRate
+      : (billingCycle === "annual" ? tierConfig.priceAnnual : tierConfig.priceMonthly);
 
     openPaymentModal({
       product: "platform",
       tier: tier,
       price,
       billingCycle,
-      planName: `Exultia Platform - ${tierConfig.name}`,
+      planName: tier === "enterprise"
+        ? `Exultia Platform - Enterprise Fleet (${nodeCount} Hosts)`
+        : `Exultia Platform - ${tierConfig.name}`,
     });
   };
 
-  const enginesList = [
-    { id: "vantage", name: "Vantage", category: "Threat Intelligence", desc: "110+ global registries & early zero-day feeds", icon: VantageIcon, color: "#8B5CF6" },
-    { id: "praxis", name: "Praxis", category: "Autonomous Remediation", desc: "Sub-second hotpatching & hardware firewall ACLs", icon: PraxisIcon, color: "#F59E0B" },
-    { id: "eris", name: "Eris", category: "Adversary Emulation", desc: "Intentional vulnerability labs & Docker attack ranges", icon: ErisIcon, color: "#EF4444" },
-    { id: "valkyrie", name: "Valkyrie", category: "On-Demand Pentest", desc: "Non-destructive BAS probes & SHA-256 attestations", icon: ValkyrieIcon, color: "#06B6D4" },
-    { id: "pureide", name: "PureIDE", category: "Hermetic Compiler", desc: "Zero-telemetry developer environment & egress gate", icon: PureIdeIcon, color: "#3B82F6" },
-    { id: "pureos", name: "PureOS", category: "Hardened OCI", desc: "CIS-benchmarked base container images & SBOMs", icon: PureOsIcon, color: "#10B981" },
-    { id: "axiom", name: "Axiom", category: "LMS Exam Simulator", desc: "Security certification simulator & SCORM/LTI API", icon: AxiomIcon, color: "#F43F5E" },
-  ];
 
   return (
     <div style={{ minHeight: "90vh", padding: "3rem 1.5rem", maxWidth: "1280px", margin: "0 auto" }}>
       
       {/* HERO SECTION */}
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <div style={{ 
-          display: "inline-flex", 
-          alignItems: "center", 
-          gap: "8px", 
-          background: "linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12))", 
-          border: "1px solid rgba(6, 182, 212, 0.35)", 
-          padding: "5px 14px", 
-          borderRadius: "999px", 
-          marginBottom: "1rem",
-          boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)"
-        }}>
-          <Sparkles size={14} color="#67E8F9" />
-          <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#A5F3FC", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Unified Platform Pricing
-          </span>
-        </div>
-
+      <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
         <h1 style={{ 
           fontSize: "clamp(2.2rem, 3.8vw, 3.2rem)", 
           fontWeight: 900, 
           color: "#FFFFFF", 
           letterSpacing: "-0.03em", 
-          marginBottom: "0.75rem",
+          marginBottom: "1.75rem",
           lineHeight: 1.15
         }}>
-          One Platform.
-          <span style={{ 
-            display: "block", 
-            background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #8B5CF6 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          }}>
-            All Seven Engines.
-          </span>
+          Affordable, Accessible Autonomy
         </h1>
 
-        <p style={{ color: "#94A3B8", fontSize: "1.15rem", maxWidth: "580px", margin: "0 auto", lineHeight: 1.5 }}>
-          Practical tools, predictable pricing.
-        </p>
-
-        {/* CURRENT TIER BADGE */}
-        {user && (
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "10px",
-            marginTop: "1.75rem",
-            background: "rgba(15, 23, 42, 0.8)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "12px",
-            padding: "8px 18px",
-            fontSize: "0.88rem"
-          }}>
-            <span style={{ color: "#94A3B8" }}>Your Current Platform Status:</span>
-            <span style={{ 
-              fontWeight: 800, 
-              color: currentPlatformTier === "enterprise" ? "#F59E0B" : currentPlatformTier === "pro" ? "#38BDF8" : "#10B981",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px"
-            }}>
-              <CheckCircle2 size={16} />
-              {currentPlatformTier === "enterprise" ? "Enterprise Fleet" : currentPlatformTier === "pro" ? "Professional Operator" : "Community Sovereign (Free Forever)"}
-            </span>
+        {/* ZERO-BULLSHIT ENTERPRISE GUARANTEE BANNER */}
+        <div style={{
+          maxWidth: "1000px",
+          margin: "0 auto 2.25rem auto",
+          background: "linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%)",
+          border: "1px solid rgba(139, 92, 246, 0.3)",
+          borderRadius: "16px",
+          padding: "1.5rem 1.75rem",
+          textAlign: "left",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.85rem" }}>
+            <span style={{ fontSize: "1.25rem" }}>🥩</span>
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+              The Zero-Bullshit Enterprise Guarantee
+            </h3>
           </div>
-        )}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
+            <div>
+              <h4 style={{ color: "#C4B5FD", fontSize: "0.88rem", fontWeight: 800, marginBottom: "0.25rem" }}>
+                • No &quot;No-Obligation&quot; Steak Dinners
+              </h4>
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.55, margin: 0 }}>
+                You will never have to sit through a 90-minute slide deck with an enterprise account executive trying to qualify your Q4 security budget over a lukewarm filet mignon at Ruth&apos;s Chris. Just dial your nodes or contribution.
+              </p>
+            </div>
+            <div>
+              <h4 style={{ color: "#60A5FA", fontSize: "0.88rem", fontWeight: 800, marginBottom: "0.25rem" }}>
+                • Zero Convention Booth Pitches
+              </h4>
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.55, margin: 0 }}>
+                Zero aggressive badge-scanning or elevator pitches from that InfoSec convention hottie hired to extract your corporate email so their SDR team can stalk your LinkedIn for six months.
+              </p>
+            </div>
+            <div>
+              <h4 style={{ color: "#34D399", fontSize: "0.88rem", fontWeight: 800, marginBottom: "0.25rem" }}>
+                • Zero &quot;Discovery Call&quot; Traps
+              </h4>
+              <p style={{ color: "#94A3B8", fontSize: "0.82rem", lineHeight: 1.55, margin: 0 }}>
+                You will never have to endure a 30-minute qualification interrogation with a junior BDR asking &quot;what keeps your CISO up at night&quot; before you are allowed to see software. If you want to evaluate us, send our docs to your most technical engineer and let them test it directly.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* BILLING TOGGLE */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginTop: "2.25rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
           <button
             onClick={() => setBillingCycle("monthly")}
             style={{
@@ -238,475 +215,531 @@ function SubscriptionContent() {
         </div>
       </div>
 
-      {/* 3-TIER PRICING GRID */}
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))", 
-        gap: "2rem",
-        marginBottom: "4.5rem",
-        alignItems: "stretch"
-      }}>
-        {EXULTIA_PLATFORM_TIERS.map((tier) => {
-          const isCurrent = currentPlatformTier === tier.id;
-          const displayPrice = billingCycle === "annual" ? tier.priceAnnual : tier.priceMonthly;
-          const isPro = tier.id === "pro";
-          const isEnterprise = tier.id === "enterprise";
+      {/* UNIFIED THRESHOLD & FLEET ALLOCATION CONSOLE */}
+      {(() => {
+        const isFree = nodeCount === 0;
+        const isPaid = nodeCount > 0;
+        const isEnterprisePlus = nodeCount > 100;
+        const isFleetCap = nodeCount >= 25 && !isEnterprisePlus;
+        const fleetCalc = calculateEnterpriseFleetPrice(Math.max(1, nodeCount), billingCycle);
+        const displayPrice = isFree ? 0 : fleetCalc.monthlyRate;
+        const fleetProgress = Math.min(100, Math.round((nodeCount / 25) * 100));
 
-          return (
-            <div 
-              key={tier.id}
-              style={{
-                position: "relative",
-                background: isPro 
-                  ? "linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%)" 
-                  : "rgba(10, 15, 26, 0.85)",
-                backdropFilter: "blur(16px)",
-                border: isPro 
-                  ? "2px solid #06B6D4" 
-                  : isEnterprise
-                  ? "1px solid rgba(139, 92, 246, 0.35)"
-                  : "1px solid rgba(255, 255, 255, 0.12)",
-                borderRadius: "20px",
-                padding: "2.25rem 2rem",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: isPro 
-                  ? "0 25px 50px -12px rgba(6, 182, 212, 0.25), 0 0 30px rgba(6, 182, 212, 0.15)" 
-                  : "0 10px 30px rgba(0, 0, 0, 0.5)",
-                transform: isPro ? "scale(1.02)" : "none",
-                transition: "transform 0.2s ease, border-color 0.2s ease"
-              }}
-            >
-              {/* BADGE */}
-              {tier.badge && (
-                <div style={{
-                  position: "absolute",
-                  top: "-13px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  background: isPro 
-                    ? "linear-gradient(135deg, #06B6D4, #3B82F6)" 
-                    : "linear-gradient(135deg, #8B5CF6, #6366F1)",
-                  color: "#FFFFFF",
-                  fontSize: "0.72rem",
-                  fontWeight: 900,
-                  letterSpacing: "0.1em",
-                  padding: "4px 16px",
-                  borderRadius: "999px",
-                  textTransform: "uppercase",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
-                  whiteSpace: "nowrap"
-                }}>
-                  {tier.badge}
-                </div>
+        return (
+          <div style={{
+            position: "relative",
+            background: isPaid 
+              ? "linear-gradient(180deg, rgba(20, 15, 38, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%)" 
+              : "rgba(10, 15, 26, 0.85)",
+            backdropFilter: "blur(16px)",
+            border: isEnterprisePlus
+              ? "2px solid #F472B6"
+              : isFleetCap
+              ? "2px solid #A78BFA"
+              : isPaid 
+              ? "2px solid #38BDF8" 
+              : "1px solid rgba(255, 255, 255, 0.15)",
+            borderRadius: "24px",
+            padding: "2.75rem 2.25rem",
+            marginBottom: "4.5rem",
+            boxShadow: isPaid 
+              ? (isEnterprisePlus
+                  ? "0 25px 50px -12px rgba(244, 114, 182, 0.25), 0 0 35px rgba(244, 114, 182, 0.15)"
+                  : isFleetCap 
+                  ? "0 25px 50px -12px rgba(139, 92, 246, 0.25), 0 0 35px rgba(139, 92, 246, 0.15)"
+                  : "0 25px 50px -12px rgba(56, 189, 248, 0.25), 0 0 35px rgba(56, 189, 248, 0.15)")
+              : "0 10px 30px rgba(0, 0, 0, 0.5)",
+            transition: "all 0.3s ease"
+          }}>
+            {/* STATUS BADGE */}
+            <div style={{
+              position: "absolute",
+              top: "-14px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: isEnterprisePlus
+                ? "linear-gradient(135deg, #EC4899, #8B5CF6)"
+                : isFleetCap 
+                ? "linear-gradient(135deg, #8B5CF6, #6366F1)" 
+                : isPaid
+                ? "linear-gradient(135deg, #0284C7, #06B6D4)"
+                : "linear-gradient(135deg, #10B981, #059669)",
+              color: "#FFFFFF",
+              fontSize: "0.76rem",
+              fontWeight: 900,
+              letterSpacing: "0.1em",
+              padding: "5px 20px",
+              borderRadius: "999px",
+              textTransform: "uppercase",
+              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.4)",
+              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}>
+              {isEnterprisePlus ? (
+                <>
+                  <Sparkles size={14} />
+                  <span>⚡ Enterprise+ Edition (&gt;100 Hosts • Standard Master Services Agreement)</span>
+                </>
+              ) : isFleetCap ? (
+                <>
+                  <Sparkles size={14} />
+                  <span>⚡ Enterprise Edition (25+ Hosts • $500/mo Flat Fleet Cap)</span>
+                </>
+              ) : isPaid ? (
+                <>
+                  <Sparkles size={14} />
+                  <span>⚡ Enterprise Edition ({nodeCount} {nodeCount === 1 ? "Host" : "Hosts"} • Full Entitlements)</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 size={14} />
+                  <span>Community Edition ($0 Forever • 100% Free Community License)</span>
+                </>
               )}
+            </div>
 
-              {/* TIER TITLE & TAGLINE */}
-              <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ fontSize: "1.6rem", fontWeight: 900, color: "#FFFFFF", marginBottom: "0.35rem" }}>
-                  {tier.name}
-                </h3>
-                <p style={{ color: "#94A3B8", fontSize: "0.88rem", minHeight: "40px", lineHeight: 1.45 }}>
-                  {tier.tagline}
-                </p>
-              </div>
-
-              {/* PRICE */}
-              <div style={{ marginBottom: "1.75rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                  <span style={{ fontSize: "3rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
-                    ${displayPrice}
+            {/* TOP CONTROLS & PRICE HEADER */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: "2.5rem",
+              alignItems: "center",
+              marginBottom: "2.5rem",
+              paddingBottom: "2rem",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.08)"
+            }}>
+              {/* LEFT: SLIDER & PRESETS */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                  <label htmlFor="fleet-scale-slider" style={{ fontSize: "0.92rem", fontWeight: 800, color: "#FFFFFF", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Select Your Fleet Allocation:
+                  </label>
+                  <span style={{ fontSize: "1.35rem", fontWeight: 900, color: isEnterprisePlus ? "#F472B6" : isFleetCap ? "#C4B5FD" : isPaid ? "#38BDF8" : "#10B981", fontFamily: "var(--font-mono, monospace)" }}>
+                    {isFree ? "0 Hosts (Community)" : isEnterprisePlus ? ">100 Hosts (Enterprise+)" : `${nodeCount} ${nodeCount === 1 ? "Host (Enterprise)" : "Hosts (Enterprise)"}`}
                   </span>
-                  <span style={{ color: "#64748B", fontSize: "1rem", fontWeight: 600 }}>
-                    / month
-                  </span>
                 </div>
-                <div style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "4px" }}>
-                  {tier.priceMonthly === 0 ? (
-                    <span style={{ color: "#10B981", fontWeight: 700 }}>Free forever • Zero credit card required</span>
-                  ) : billingCycle === "annual" ? (
-                    <span>Billed annually (${tier.annualBilledTotal}/yr)</span>
-                  ) : (
-                    <span>Billed monthly • Cancel anytime</span>
-                  )}
-                </div>
-              </div>
 
-              {/* CTA BUTTON */}
-              <button
-                disabled={isCurrent || isSwitchingFree}
-                onClick={() => handleSelectTier(tier.id, tier.name)}
-                style={{
-                  width: "100%",
-                  padding: "14px 20px",
-                  borderRadius: "12px",
-                  fontWeight: 800,
-                  fontSize: "1rem",
-                  cursor: isCurrent ? "default" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  marginBottom: "2rem",
-                  transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                  border: isCurrent 
-                    ? "1px solid rgba(255, 255, 255, 0.15)" 
-                    : isPro 
-                    ? "none" 
-                    : "1px solid rgba(255, 255, 255, 0.2)",
-                  background: isCurrent 
-                    ? "rgba(255, 255, 255, 0.06)" 
-                    : isPro 
-                    ? "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)" 
-                    : "rgba(255, 255, 255, 0.1)",
-                  color: isCurrent ? "#94A3B8" : "#FFFFFF",
-                  boxShadow: !isCurrent && isPro ? "0 4px 20px rgba(6, 182, 212, 0.4)" : "none"
-                }}
-              >
-                {isCurrent ? (
-                  <>
-                    <CheckCircle2 size={18} color="#10B981" />
-                    <span>Current Active Plan</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{tier.ctaLabel}</span>
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
+                <input 
+                  id="fleet-scale-slider"
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.min(nodeCount, 100)}
+                  onChange={(e) => setNodeCount(parseInt(e.target.value, 10))}
+                  style={{ width: "100%", accentColor: isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : isPaid ? "#38BDF8" : "#10B981", cursor: "pointer", marginBottom: "1rem" }}
+                />
 
-              {/* ALL 7 ENGINES UNLOCK SUMMARY */}
-              <div style={{ marginBottom: "1.75rem" }}>
-                <div style={{ 
-                  fontSize: "0.74rem", 
-                  fontWeight: 800, 
-                  color: "#94A3B8", 
-                  textTransform: "uppercase", 
-                  letterSpacing: "0.08em",
-                  marginBottom: "0.85rem" 
-                }}>
-                  Included Platform Engines
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {enginesList.map(eng => {
-                    const Icon = eng.icon;
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "1rem" }}>
+                  {[
+                    { count: 0, label: "0 (Community)" },
+                    { count: 5, label: "5 Hosts ($100/mo)" },
+                    { count: 10, label: "10 Hosts" },
+                    { count: 25, label: "25 Hosts ($500 Flat Cap ★)" },
+                    { count: 50, label: "50 Hosts" },
+                    { count: 100, label: "100 Hosts" },
+                    { count: 101, label: ">100 Hosts (Enterprise+)" }
+                  ].map((preset) => {
+                    const isSelected = preset.count === 101 ? nodeCount > 100 : nodeCount === preset.count;
+                    const isSpecial = preset.count === 5 || preset.count === 25 || preset.count === 101;
                     return (
-                      <span 
-                        key={eng.id}
+                      <button
+                        key={preset.count}
+                        type="button"
+                        onClick={() => setNodeCount(preset.count)}
                         style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          background: "rgba(255, 255, 255, 0.04)",
-                          border: "1px solid rgba(255, 255, 255, 0.08)",
-                          borderRadius: "6px",
-                          padding: "3px 8px",
-                          fontSize: "0.75rem",
-                          color: "#E2E8F0"
+                          padding: "5px 12px",
+                          fontSize: "0.78rem",
+                          fontWeight: 700,
+                          borderRadius: "8px",
+                          border: isSelected 
+                            ? (preset.count === 101 ? "1px solid #F472B6" : preset.count >= 25 ? "1px solid #A78BFA" : preset.count >= 5 ? "1px solid #38BDF8" : "1px solid #10B981") 
+                            : isSpecial 
+                            ? (preset.count === 101 ? "1px solid rgba(244, 114, 182, 0.4)" : "1px solid rgba(56, 189, 248, 0.3)") 
+                            : "1px solid rgba(255, 255, 255, 0.12)",
+                          background: isSelected 
+                            ? (preset.count === 101 ? "rgba(236, 72, 153, 0.35)" : preset.count >= 25 ? "rgba(139, 92, 246, 0.35)" : preset.count >= 5 ? "rgba(56, 189, 248, 0.3)" : "rgba(16, 185, 129, 0.25)") 
+                            : (preset.count === 101 ? "rgba(236, 72, 153, 0.08)" : "rgba(255, 255, 255, 0.04)"),
+                          color: isSelected ? "#FFFFFF" : preset.count === 101 ? "#F472B6" : isSpecial ? "#E0F2FE" : "#94A3B8",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease"
                         }}
                       >
-                        <Icon size={12} />
-                        <span>{eng.name}</span>
-                      </span>
+                        {preset.label}
+                      </button>
                     );
                   })}
                 </div>
-              </div>
 
-              {/* CORE HIGHLIGHTS */}
-              <div style={{ flex: 1 }}>
-                <div style={{ 
-                  fontSize: "0.74rem", 
-                  fontWeight: 800, 
-                  color: "#94A3B8", 
-                  textTransform: "uppercase", 
-                  letterSpacing: "0.08em",
-                  marginBottom: "0.85rem" 
+                {/* THRESHOLD PROGRESS BAR */}
+                <div style={{
+                  background: "rgba(0, 0, 0, 0.35)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "10px",
+                  padding: "10px 14px",
+                  marginTop: "0.5rem"
                 }}>
-                  Key Capabilities
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", marginBottom: "6px", color: "#94A3B8" }}>
+                    <span>Threshold Milestone:</span>
+                    <span>
+                      {isEnterprisePlus ? (
+                        <strong style={{ color: "#F472B6" }}>Enterprise+ Milestone (&gt;100 Hosts • Standard Master Services Agreement)</strong>
+                      ) : isFleetCap ? (
+                        <strong style={{ color: "#A78BFA" }}>Enterprise 25-Host Flat Cap Active ($500/mo • Save $125+/mo)</strong>
+                      ) : isPaid ? (
+                        <strong style={{ color: "#38BDF8" }}>Enterprise Active • {nodeCount}/25 Hosts to Flat Cap ({fleetProgress}%)</strong>
+                      ) : (
+                        <span>Community Edition ($0/mo)</span>
+                      )}
+                    </span>
+                  </div>
+                  <div style={{ width: "100%", height: "8px", background: "rgba(255, 255, 255, 0.08)", borderRadius: "999px", overflow: "hidden" }}>
+                    <div style={{
+                      width: `${isEnterprisePlus ? 100 : isPaid ? Math.max(8, fleetProgress) : 0}%`,
+                      height: "100%",
+                      background: isEnterprisePlus
+                        ? "linear-gradient(90deg, #EC4899, #8B5CF6)"
+                        : isFleetCap 
+                        ? "linear-gradient(90deg, #8B5CF6, #38BDF8)" 
+                        : "linear-gradient(90deg, #0284C7, #38BDF8)",
+                      borderRadius: "999px",
+                      transition: "width 0.3s ease"
+                    }} />
+                  </div>
                 </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {tier.highlights.map((h, i) => (
-                    <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.88rem", color: "#CBD5E1", lineHeight: 1.45 }}>
-                      <Check size={16} color={isPro ? "#06B6D4" : isEnterprise ? "#A78BFA" : "#10B981"} style={{ flexShrink: 0, marginTop: "3px" }} />
-                      <span>{h}</span>
+
+                {/* MSA ADVISORY CALLOUT FOR >100 HOSTS */}
+                {isEnterprisePlus && (
+                  <div style={{
+                    marginTop: "1.25rem",
+                    background: "linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(139, 92, 246, 0.12) 100%)",
+                    border: "1px solid rgba(236, 72, 153, 0.35)",
+                    borderRadius: "14px",
+                    padding: "1.25rem 1.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.85rem"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <FileText size={20} color="#F472B6" />
+                        <span style={{ fontSize: "1rem", fontWeight: 800, color: "#FFFFFF" }}>
+                          Deployments &gt;100 Hosts Require a Standard Master Services Agreement (MSA)
+                        </span>
+                      </div>
+                      <span style={{
+                        background: "rgba(236, 72, 153, 0.2)",
+                        color: "#F472B6",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                        padding: "3px 10px",
+                        borderRadius: "999px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em"
+                      }}>
+                        Zero &quot;Contact Sales&quot; Gating
+                      </span>
+                    </div>
+                    
+                    <p style={{ color: "#E2E8F0", fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
+                      We believe forcing engineering leaders to jump on high-pressure discovery calls with sales reps just to see pricing or contract terms is an anti-pattern. 
+                      Fleets exceeding 100 hosts operate under our transparent, standard <strong>Master Services Agreement (Form MSA-2026-EX)</strong>: 
+                      <strong> $500/mo flat fleet base + $12/node/mo</strong> (annual billing), Net-30 payment terms, 99.9% Threat Feed SLA, 
+                      exact remediation boundaries (customer environment adaptability), offline Ed25519 cryptographic licensing, and our strict <strong>Zero Telemetry Warranty</strong>.
+                    </p>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                      <button
+                        type="button"
+                        onClick={() => setIsMsaModalOpen(true)}
+                        style={{
+                          background: "linear-gradient(135deg, #EC4899, #8B5CF6)",
+                          color: "#FFFFFF",
+                          border: "none",
+                          padding: "10px 20px",
+                          borderRadius: "8px",
+                          fontWeight: 800,
+                          fontSize: "0.88rem",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          boxShadow: "0 4px 14px rgba(236, 72, 153, 0.35)",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        <FileText size={16} />
+                        <span>Preview Standard MSA (Sample Agreement) &rarr;</span>
+                      </button>
+
+                      <span style={{ color: "#94A3B8", fontSize: "0.82rem" }}>
+                        Instant preview • Download Markdown • Copy full text with zero email gating
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT: PRICE & ACTION BUTTON */}
+              <div style={{
+                background: "rgba(0, 0, 0, 0.3)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "16px",
+                padding: "1.75rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between"
+              }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                    {isEnterprisePlus ? (
+                      <>
+                        <span style={{ fontSize: "3.2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
+                          ${billingCycle === "annual" ? 12 : 15}
+                        </span>
+                        <span style={{ color: "#64748B", fontSize: "1.1rem", fontWeight: 600 }}>
+                          / node / month
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: "3.2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em" }}>
+                          ${displayPrice}
+                        </span>
+                        <span style={{ color: "#64748B", fontSize: "1.1rem", fontWeight: 600 }}>
+                          / month
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <div style={{ fontSize: "0.85rem", color: "#94A3B8", marginTop: "6px", marginBottom: "1.5rem", lineHeight: 1.45 }}>
+                    {isEnterprisePlus ? (
+                      <span>
+                        <strong style={{ color: "#F472B6" }}>★ Standard Master Services Agreement:</strong> $500/mo base cap + ${billingCycle === "annual" ? "12" : "15"}/node/mo {billingCycle === "annual" ? "(billed annually)" : "(billed monthly)"}. Includes Net-30 invoicing, 99.9% Threat Feed SLA, exact remediation boundaries, and dedicated offline Ed25519 cryptographic licensing.
+                      </span>
+                    ) : isFree ? (
+                      <span style={{ color: "#10B981", fontWeight: 700 }}>100% Free forever • Zero credit card required • Zero phone-home</span>
+                    ) : nodeCount < 5 ? (
+                      <span>
+                        1–4 hosts: <strong>${fleetCalc.sub25Rate}/host/mo</strong> {billingCycle === "annual" ? "(billed annually)" : "(billed monthly)"}. Scale to 5 hosts ($100/mo) for the standard baseline with unlimited Daedelus builds!
+                      </span>
+                    ) : nodeCount < 25 ? (
+                      <span>
+                        <strong style={{ color: "#38BDF8" }}>★ Enterprise Active:</strong> Covers all {nodeCount} hosts with live priority threat streaming and <strong>unlimited Daedelus builds</strong>! Scale to 25 to lock in the flat cap.
+                      </span>
+                    ) : nodeCount === 25 ? (
+                      <span style={{ color: "#34D399", fontWeight: 800 }}>
+                        ★ Enterprise 25-Host Flat Fleet Cap Active: Flat $500/mo ($6,000/yr) covers all 25 hosts! Save up to $125/mo ($1,500/yr).
+                      </span>
+                    ) : (
+                      <span>
+                        25-Host Base Cap ($500/mo) + <strong>{nodeCount - 25} extra hosts</strong> at ${fleetCalc.additionalRate}/host/mo.
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  disabled={isFree ? (currentPlatformTier === "community" || isSwitchingFree) : false}
+                  onClick={() => {
+                    if (isEnterprisePlus) {
+                      setIsMsaModalOpen(true);
+                    } else if (isFree) {
+                      handleSelectTier("community", "Community Sovereign");
+                    } else {
+                      handleSelectTier("enterprise", `Exultia Platform (${nodeCount} Hosts)`);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "16px 24px",
+                    borderRadius: "12px",
+                    fontWeight: 900,
+                    fontSize: "1.05rem",
+                    cursor: (isFree && currentPlatformTier === "community") ? "default" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                    border: (isFree && currentPlatformTier === "community")
+                      ? "1px solid rgba(255, 255, 255, 0.15)"
+                      : "none",
+                    background: (isFree && currentPlatformTier === "community")
+                      ? "rgba(255, 255, 255, 0.06)"
+                      : isEnterprisePlus
+                      ? "linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)"
+                      : isFleetCap
+                      ? "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)"
+                      : isPaid
+                      ? "linear-gradient(135deg, #0284C7 0%, #06B6D4 100%)"
+                      : "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                    color: (isFree && currentPlatformTier === "community") ? "#94A3B8" : "#FFFFFF",
+                    boxShadow: !(isFree && currentPlatformTier === "community") 
+                      ? (isEnterprisePlus
+                          ? "0 4px 20px rgba(236, 72, 153, 0.4)"
+                          : isFleetCap 
+                          ? "0 4px 20px rgba(139, 92, 246, 0.4)" 
+                          : isPaid 
+                          ? "0 4px 20px rgba(2, 132, 199, 0.4)" 
+                          : "0 4px 20px rgba(16, 185, 129, 0.35)") 
+                      : "none"
+                  }}
+                >
+                  {isEnterprisePlus ? (
+                    <>
+                      <FileText size={18} />
+                      <span>Review Standard MSA</span>
+                      <ArrowRight size={18} />
+                    </>
+                  ) : isFree ? (
+                    currentPlatformTier === "community" ? (
+                      <>
+                        <CheckCircle2 size={18} color="#10B981" />
+                        <span>Current Active Plan (Community)</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Download Free Daemon (Community)</span>
+                        <ArrowRight size={18} />
+                      </>
+                    )
+                  ) : (
+                    <>
+                      <span>Purchase</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* DYNAMIC ENTITLEMENTS BREAKDOWN GRID */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "10px" }}>
+                <h4 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                  Active Entitlements at {isFree ? "0 Hosts (Community)" : isEnterprisePlus ? ">100 Hosts (Enterprise+)" : `${nodeCount} Hosts (Enterprise)`}:
+                </h4>
+                <span style={{ fontSize: "0.8rem", color: isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : isPaid ? "#38BDF8" : "#94A3B8" }}>
+                  {isEnterprisePlus
+                    ? "✓ Enterprise+ Defense Stack Active (Standard MSA Terms • Offline Cryptographic Licensing)"
+                    : isFleetCap 
+                    ? "✓ Full Enterprise Fleet Defense Stack Active (Flat Cap)" 
+                    : isPaid
+                    ? "✓ Enterprise Entitlements Active (Unlimited Automated Threat Remediation)"
+                    : "Community Defense Active (Upgrade anytime for Enterprise)"}
+                </span>
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                gap: "1.5rem"
+              }}>
+                {/* COMMUNITY ENTITLEMENTS */}
+                <div style={{ background: "rgba(0, 0, 0, 0.25)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "14px", padding: "1.25rem" }}>
+                  <div style={{ fontSize: "0.76rem", fontWeight: 800, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
+                    Community Entitlements (Always Included)
+                  </div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: "#CBD5E1" }}>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      <Check size={16} color="#10B981" style={{ flexShrink: 0, marginTop: "2px" }} />
+                      <span>Autonomous resident Linux daemon ($0 forever)</span>
                     </li>
-                  ))}
-                </ul>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      <Check size={16} color="#10B981" style={{ flexShrink: 0, marginTop: "2px" }} />
+                      <span>Full Live Threat Feed w/local copy (daily sync)</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      <Check size={16} color="#10B981" style={{ flexShrink: 0, marginTop: "2px" }} />
+                      <span>Live Hotpatching</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      <Check size={16} color="#10B981" style={{ flexShrink: 0, marginTop: "2px" }} />
+                      <span>Strict zero outbound telemetry protocol (SCIF safe)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* ENTERPRISE ENTITLEMENTS */}
+                <div style={{
+                  background: isFleetCap ? "rgba(139, 92, 246, 0.08)" : isPaid ? "rgba(56, 189, 248, 0.08)" : "rgba(0, 0, 0, 0.15)",
+                  border: isFleetCap ? "1px solid rgba(139, 92, 246, 0.35)" : isPaid ? "1px solid rgba(56, 189, 248, 0.35)" : "1px solid rgba(255, 255, 255, 0.06)",
+                  borderRadius: "14px",
+                  padding: "1.25rem",
+                  opacity: isPaid ? 1 : 0.65
+                }}>
+                  <div style={{ fontSize: "0.76rem", fontWeight: 800, color: isFleetCap ? "#A78BFA" : isPaid ? "#38BDF8" : "#64748B", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    {isPaid ? <Sparkles size={14} /> : <Lock size={14} />}
+                    <span>Enterprise Entitlements ({isPaid ? "Active" : "Included on All Enterprise Allocations"})</span>
+                  </div>
+
+                  <p style={{ fontSize: "0.9rem", color: isPaid ? "#F1F5F9" : "#94A3B8", fontWeight: 700, margin: "0 0 0.85rem 0", lineHeight: 1.4 }}>
+                    Unlimited Access to Automated Threat Remediation
+                  </p>
+
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.85rem", color: isPaid ? "#E2E8F0" : "#64748B" }}>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {isPaid ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : "#38BDF8"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>Unlimited Access to Threat Feed API</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {isPaid ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : "#38BDF8"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>Unlimited Use of Daedelus - build secure IDEs, containers, and packages</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {isPaid ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : "#38BDF8"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>Unlimited Use of Praxis - generate POSIX-compliant scripts mapped to threat feed fixes</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {isPaid ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : "#38BDF8"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>Unlimited Use of Axiom - general cybersecurity exam questions and LMS API</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {(isFleetCap || isEnterprisePlus) ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : "#A78BFA"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>25-Host Flat Fleet Cap savings</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                      {isPaid ? <Check size={16} color={isEnterprisePlus ? "#F472B6" : isFleetCap ? "#A78BFA" : "#38BDF8"} style={{ flexShrink: 0, marginTop: "2px" }} /> : <Lock size={14} style={{ flexShrink: 0, marginTop: "3px" }} />}
+                      <span>Optional MSA terms for large enterprises</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        );
+      })()}
+
+
+
+      {/* LINK TO DEDICATED FAQ */}
+      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+        <Link
+          href="/faq"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            color: "#67E8F9",
+            fontSize: "0.9rem",
+            fontFamily: "var(--font-mono, monospace)",
+            textDecoration: "none",
+            background: "rgba(0, 229, 255, 0.06)",
+            border: "1px solid rgba(0, 229, 255, 0.25)",
+            padding: "10px 22px",
+            borderRadius: "8px",
+            transition: "all 0.15s ease"
+          }}
+        >
+          <span>Have architectural questions or skepticism? Read our full FAQ &rarr;</span>
+        </Link>
       </div>
 
-      {/* CLOSED-LOOP SOVEREIGNTY ARCHITECTURE VISUALIZATION */}
-      <div style={{
-        background: "rgba(10, 15, 26, 0.9)",
-        border: "1px solid rgba(6, 182, 212, 0.25)",
-        borderRadius: "20px",
-        padding: "3rem 2rem",
-        marginBottom: "4.5rem",
-        boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.6)"
-      }}>
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{ 
-            display: "inline-flex", 
-            alignItems: "center", 
-            gap: "8px", 
-            color: "#67E8F9", 
-            fontSize: "0.8rem", 
-            fontWeight: 800, 
-            letterSpacing: "0.1em", 
-            textTransform: "uppercase", 
-            marginBottom: "0.5rem" 
-          }}>
-            <RotateCcw size={16} />
-            The Closed-Loop Ecosystem
-          </div>
-          <h2 style={{ fontSize: "2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
-            How the 7 Engines Work in Concert
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0.5rem auto 0" }}>
-            Unlike standalone point tools, Exultia links threat intelligence directly to adversary simulation, proof probes, autonomous hotpatching, and attestation.
-          </p>
-        </div>
-
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
-          gap: "1.25rem" 
-        }}>
-          {/* Step 1 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(139, 92, 246, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <VantageIcon size={24} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#C084FC", fontWeight: 800, textTransform: "uppercase" }}>Stage 1 • Ingestion</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Vantage Intel</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Ingests 110+ threat feeds, CISA KEV, and early-warning zero-days with CVSS scoring and affected package telemetry.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(239, 68, 68, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <ErisIcon size={24} glow={false} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#F87171", fontWeight: 800, textTransform: "uppercase" }}>Stage 2 • Emulation</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Eris Chaos Lab</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Replicates the exact CVE vulnerability in an isolated, timed test container sandbox with automatic watchdog rollback timers.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(6, 182, 212, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <ValkyrieIcon size={24} glow={false} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#67E8F9", fontWeight: 800, textTransform: "uppercase" }}>Stage 3 • Verification</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Valkyrie BAS</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Executes safe, non-destructive network probes against your cluster or target endpoint to prove actual exploitability.
-            </p>
-          </div>
-
-          {/* Step 4 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <PraxisIcon size={24} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#FDE68A", fontWeight: 800, textTransform: "uppercase" }}>Stage 4 • Hotpatch</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Praxis Remediation</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Synthesizes zero-downtime hotfixes, Ansible plays, and hardware ACLs with mandatory sub-second deterministic rollbacks.
-            </p>
-          </div>
-
-          {/* Step 5 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(59, 130, 246, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <PureIdeIcon size={24} glow={false} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#93C5FD", fontWeight: 800, textTransform: "uppercase" }}>Stage 5 • Hardened Build</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>PureIDE & PureOS</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Hermetic compilation, airgapped binary cosigning, CIS-benchmarked containers, and automated CycloneDX SBOMs.
-            </p>
-          </div>
-
-          {/* Step 6 */}
-          <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(244, 63, 94, 0.25)", borderRadius: "14px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
-              <AxiomIcon size={24} />
-              <div>
-                <span style={{ fontSize: "0.7rem", color: "#FDA4AF", fontWeight: 800, textTransform: "uppercase" }}>Stage 6 • Skill Attestation</span>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Axiom Platform</h4>
-              </div>
-            </div>
-            <p style={{ fontSize: "0.85rem", color: "#94A3B8", lineHeight: 1.5, margin: 0 }}>
-              Hands-on exam simulations and SCORM/LTI API integration for continuous operator certification and training.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* COMPREHENSIVE ENGINE COMPARISON TABLE */}
-      <div style={{ marginBottom: "4.5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "2rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
-            Platform Engine Capability Matrix
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem" }}>
-            Compare full capabilities across Community, Professional, and Enterprise tiers.
-          </p>
-        </div>
-
-        <div style={{ 
-          background: "rgba(10, 15, 26, 0.85)", 
-          border: "1px solid rgba(255, 255, 255, 0.1)", 
-          borderRadius: "16px", 
-          overflow: "hidden" 
-        }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
-            <thead>
-              <tr style={{ background: "rgba(255, 255, 255, 0.04)", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#E2E8F0", fontWeight: 800, width: "35%" }}>Engine & Feature</th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#94A3B8", fontWeight: 800, width: "20%" }}>Community ($0)</th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#38BDF8", fontWeight: 800, width: "22%" }}>Professional ($59/mo)</th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#A78BFA", fontWeight: 800, width: "23%" }}>Enterprise ($399/mo)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Vantage */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <VantageIcon size={16} />
-                    <span>Vantage Threat Feed</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Web portal & CISA KEV</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Real-time stream & 300 req/m API</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Commercial feed & SIEM webhooks</td>
-              </tr>
-
-              {/* Praxis */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <PraxisIcon size={16} />
-                    <span>Praxis Hotpatching & Rollbacks</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Manual recipes & local inspection</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Autonomous stream & sub-sec rollbacks</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Multi-ring fleet & SLSA L3 cosign</td>
-              </tr>
-
-              {/* Eris */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <ErisIcon size={16} glow={false} />
-                    <span>Eris Adversary Emulation</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>5 core chaos modules</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Full 7+ CVE catalog & 5-container range</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Multi-node fleet chaos & 0-day studio</td>
-              </tr>
-
-              {/* Valkyrie */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <ValkyrieIcon size={16} glow={false} />
-                    <span>Valkyrie Pentest & Attestation</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>5 non-destructive canary probes</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Full 10+ CVE probes & HMAC tokens</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Continuous CI/CD & executive reports</td>
-              </tr>
-
-              {/* PureIDE */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <PureIdeIcon size={16} glow={false} />
-                    <span>PureIDE Workstation Compiler</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Single developer local sandbox</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Cloud build runners & egress firewall</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Airgap cosign & enterprise blueprints</td>
-              </tr>
-
-              {/* PureOS */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <PureOsIcon size={16} glow={false} />
-                    <span>PureOS Hardened Containers</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Standard CIS baseline images</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Zero-trust images & CycloneDX SBOMs</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>Cryptographic airgap provenance</td>
-              </tr>
-
-              {/* Axiom */}
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#FFFFFF", fontWeight: 700 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <AxiomIcon size={16} />
-                    <span>Axiom LMS Exam Simulator</span>
-                  </div>
-                </td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#94A3B8" }}>Full question practice banks</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>SHA-256 certs & transcript exports</td>
-                <td style={{ padding: "1.1rem 1.5rem", color: "#E2E8F0" }}>SCORM/LTI API & institutional LMS sync</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* LINK TO DEDICATED FAQ */}
-        <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <Link
-            href="/faq"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              color: "#67E8F9",
-              fontSize: "0.9rem",
-              fontFamily: "var(--font-mono, monospace)",
-              textDecoration: "none",
-              background: "rgba(0, 229, 255, 0.06)",
-              border: "1px solid rgba(0, 229, 255, 0.25)",
-              padding: "10px 22px",
-              borderRadius: "8px",
-              transition: "all 0.15s ease"
-            }}
-          >
-            <span>Have architectural questions or skepticism? Read our full FAQ &rarr;</span>
-          </Link>
-        </div>
-      </div>
+      {/* MSA PREVIEW MODAL */}
+      <MsaPreviewModal isOpen={isMsaModalOpen} onClose={() => setIsMsaModalOpen(false)} />
 
       {/* PAYMENT MODAL */}
       <PaymentModal />

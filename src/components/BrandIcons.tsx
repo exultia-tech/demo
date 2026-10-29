@@ -497,7 +497,7 @@ export function PureOsIcon({ size = 32, className = "", glow = true }: IconProps
 
 /**
  * Axiom Product Icon
- * Represents the foundational open-source framework for security education and certification.
+ * Represents the foundational sovereign framework for security education and certification.
  */
 export function AxiomIcon({ size = 32, className = "", glow = true }: IconProps) {
   const glowFilter = glow ? "drop-shadow(0 0 10px rgba(244, 63, 94, 0.45))" : "none";
@@ -977,9 +977,9 @@ export function ValkyrieIcon({ size = 32, className = "", glow = true }: IconPro
 }
 
 /**
- * Exultia Linux Sovereign OS Icon
+ * Exultia Daemon Icon
  * Cybernetic sovereign kernel core: faceted titanium-cyan defensive hexagon,
- * atomic declarative state rings (Nix/Kinetic), and central autonomous pulse node.
+ * atomic declarative state rings (Kinetic), and central autonomous pulse node.
  */
 export function ExultiaLinuxIcon({
   size = 48,

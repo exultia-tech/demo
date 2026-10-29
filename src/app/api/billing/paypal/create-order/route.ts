@@ -70,8 +70,10 @@ export async function POST(req: Request) {
     }
 
     // Pay-what-you-want dynamic tier entitlement unlocking:
-    let resolvedTier = (tier || 'pro').toLowerCase();
-    if (amount >= 399 || resolvedTier === 'enterprise') {
+    let resolvedTier = (tier || 'enterprise').toLowerCase();
+    if (product.toLowerCase() === 'platform' || product.toLowerCase() === 'multipass') {
+      resolvedTier = amount > 0 || tier === 'enterprise' ? 'enterprise' : 'community';
+    } else if (amount >= 399 || resolvedTier === 'enterprise') {
       resolvedTier = 'enterprise';
     } else if (amount >= 49 || resolvedTier === 'pro') {
       resolvedTier = 'pro';

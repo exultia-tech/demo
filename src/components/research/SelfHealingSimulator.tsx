@@ -117,7 +117,7 @@ export const HEALING_SCENARIOS: PackageScenario[] = [
       },
       {
         step: "ATOMIC_SWITCH",
-        title: "4. Atomic Nix Generation Activation (<50ms)",
+        title: "4. Atomic Nix Generation Activation",
         durationMs: 8.4,
         log: "[NIX] Realized profile generation 843 -> /nix/store/1h39...-xz-5.4.6. Swapped /nix/var/nix/profiles/system symlink in 8.4ms. Zero filesystem collisions."
       },
@@ -388,13 +388,13 @@ export default function SelfHealingSimulator() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
         <div>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "4px 12px", borderRadius: "9999px", fontSize: "0.78rem", fontWeight: 700, color: "#34D399", marginBottom: "0.75rem", letterSpacing: "0.04em" }}>
-            <Sparkles size={13} /> AUTONOMOUS RESILIENT OS RUNTIME
+            <Sparkles size={13} /> AUTONOMOUS RESILIENT DAEMON RUNTIME
           </div>
           <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.85rem", fontWeight: 800, margin: 0, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
             Autonomous Vulnerability Self-Correction
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.95rem", margin: "0.4rem 0 0 0", maxWidth: "720px", lineHeight: 1.6 }}>
-            When a zero-day disclosure strikes an installed package, Exultia Linux does not wait for manual intervention. The operating system immediately revokes execution permissions, resolves the <strong style={{ color: "#38BDF8" }}>Next-Best Safe Version</strong> (patched release or clean historical stable), verifies strict ABI compatibility, and atomically mutates the system generation in <strong style={{ color: "#34D399" }}>&lt;50ms with 0 dropped sockets</strong>.
+            When a zero-day disclosure strikes an installed package, the Exultia daemon does not wait for manual intervention. The resident daemon immediately revokes execution permissions, resolves the <strong style={{ color: "#38BDF8" }}>Next-Best Safe Version</strong> (patched release or clean historical stable), verifies strict ABI compatibility, and atomically mutates memory in <strong style={{ color: "#34D399" }}>&lt;50ms with 0 dropped sockets</strong>.
           </p>
         </div>
 
@@ -422,7 +422,7 @@ export default function SelfHealingSimulator() {
             }} />
             {isRunning ? "SELF-HEALING SOLVER ACTIVE" : isCompleted ? "SYSTEM RE-SYNTHESIZED (0 CVEs)" : "SENTINEL WATCHING"}
           </div>
-          <span style={{ fontSize: "0.75rem", color: "#64748B" }}>Determinism SLA: &lt;50ms Rollback</span>
+          <span style={{ fontSize: "0.75rem", color: "#64748B" }}>Deterministic Atomic Rollback Ready</span>
         </div>
       </div>
 
@@ -571,7 +571,7 @@ export default function SelfHealingSimulator() {
                       {idx === 0 && "Revokes execution permissions (chmod 0000) & detaches process from PATH."}
                       {idx === 1 && "Formulates multi-objective constraint: zero CVEs + valid hash provenance."}
                       {idx === 2 && `Validates ${scenario.abiTarget} symbols; confirms 0 broken dynamically linked consumers.`}
-                      {idx === 3 && "Nix store symlink swap updates /nix/var/nix/profiles/system in single syscall."}
+                      {idx === 3 && "Cryptographic profile swap updates system symlink in single atomic syscall."}
                       {idx === 4 && "Socket descriptor passing (SCM_RIGHTS) keeps active client streams alive."}
                     </p>
                   </div>
@@ -792,7 +792,7 @@ export default function SelfHealingSimulator() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
             <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#EF4444" }} />
             <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 800, color: "#F87171" }}>
-              Standard Linux Distributions (Ubuntu, Debian, RHEL)
+              Standard Linux Deployments
             </h4>
           </div>
           <p style={{ margin: 0, fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.6 }}>
@@ -808,7 +808,7 @@ export default function SelfHealingSimulator() {
             </h4>
           </div>
           <p style={{ margin: 0, fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.6 }}>
-            Packages reside immutably in `/nix/store/&lt;hash&gt;`. The constraint solver dynamically shifts system profiles in &lt;50ms without file collisions. Kinetic passes live open file descriptors via `SCM_RIGHTS`, guaranteeing that incoming web traffic, SSH sessions, and database transactions continue uninterrupted.
+            Packages reside immutably across cryptographic package stores and read-only commit trees. The constraint solver dynamically shifts system profiles deterministically without file collisions. Kinetic passes live open file descriptors via `SCM_RIGHTS`, guaranteeing that incoming web traffic, SSH sessions, and database transactions continue uninterrupted.
           </p>
         </div>
       </div>

@@ -80,9 +80,9 @@ export default function Footer() {
         textAlign: "center",
         lineHeight: 1.6
       }}>
-        © {new Date().getFullYear()} Exultia Technologies Inc. All Rights Reserved.<br />
+        © {new Date().getFullYear()} Exultia Technologies, PBC. All Rights Reserved.<br />
         <span style={{ opacity: 0.7, fontSize: "0.7rem" }}>
-          Kinetic™, Vantage™, and Exultia Linux™ are proprietary trademarks of Exultia Technologies Inc.
+          Exultia™, Vantage™, Praxis™, Daedelus™, Kinetic™, and Axiom™ are proprietary trademarks of Exultia Technologies, PBC.
         </span>
       </div>
     </footer>

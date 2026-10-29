@@ -5,6 +5,9 @@
 
 ---
 
+> [!NOTE]
+> **Internal Canary Prober**: Valkyrie serves as the non-destructive canary exploitability handshake prober integrated into the Kinetic Resident Linux Daemon's automated self-healing pipeline, rather than a standalone customer web module.
+
 ## 1. Quick-Start Guide
 
 Traditional penetration testing relies on weaponized exploit payloads that risk crashing production daemons, corrupting memory, or deadlocking active threads. Valkyrie replaces destructive testing with **Canary BAS (Breach & Attack Simulation)**.

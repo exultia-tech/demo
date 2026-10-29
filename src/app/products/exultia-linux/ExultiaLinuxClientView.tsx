@@ -3,12 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { 
-  PureOsIcon, 
-  PraxisIcon, 
-  VantageIcon, 
-  ExultiaLinuxIcon 
-} from "@/components/BrandIcons";
-import { 
   Terminal, 
   ShieldCheck, 
   Cpu, 
@@ -17,1005 +11,983 @@ import {
   CheckCircle2, 
   Copy, 
   Check, 
-  ExternalLink, 
   Download, 
   Server, 
   Zap, 
   Lock, 
-  RefreshCw,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Activity,
+  FileText,
+  Radio,
+  HardDrive,
+  AlertTriangle,
+  Box
 } from "lucide-react";
-import SelfHealingSimulator from "@/components/research/SelfHealingSimulator";
 
 export default function ExultiaLinuxClientView() {
-  const [flavorTab, setFlavorTab] = useState<"nixos" | "bsd" | "debian" | "alpine" | "silverblue">("nixos");
-  const [terminalTab, setTerminalTab] = useState<"status" | "hotfix" | "rollback" | "audit">("status");
-  const [deployTab, setDeployTab] = useState<"qcow2" | "iso" | "flake" | "cloud">("qcow2");
+  const [deployFormat, setDeployFormat] = useState<"portable" | "k8s" | "packages" | "container">("portable");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [activeConsoleTab, setActiveConsoleTab] = useState<"status" | "taxii" | "config" | "journal">("status");
 
   const copyToClipboard = (text: string, key: string) => {
-    if (typeof navigator !== "undefined") {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(text);
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(null), 2000);
     }
   };
 
+  const EXULTIA_DOWNLOADS = {
+    portable: {
+      fileName: "exultia-linux.tar.gz",
+      fileSize: "4.67 MB",
+      sha256: "91a029290c863de749cf95612b405a4d42d1aa4ff79b46b8df2a14df30090654",
+      targetPlatforms: "Linux (x86_64, aarch64)",
+      curlCmd: "curl -sSL https://exultia.tech/install.sh | sudo sh",
+      manualCmd: "wget https://exultia.tech/releases/exultia-linux.tar.gz \\\n  && tar -xzf exultia-linux.tar.gz \\\n  && cd exultia-linux && sudo ./install.sh",
+      downloadUrl: "/releases/exultia-linux.tar.gz"
+    },
+    k8s: {
+      chartName: "exultia/exultia-node-shield",
+      targetPlatforms: "Kubernetes 1.26+ (EKS, GKE, AKS, Talos, k3s, RKE2)",
+      helmCmd: "helm repo add exultia https://charts.exultia.org\nhelm repo update\nhelm install exultia-remediator exultia/exultia-node-shield \\\n  --namespace exultia-system --create-namespace \\\n  --set hostPid=true --set securityContext.privileged=true",
+      kubectlCmd: "kubectl apply -f https://exultia.tech/k8s/exultia-daemonset.yaml",
+      manifestUrl: "https://exultia.tech/k8s/exultia-daemonset.yaml"
+    },
+    packages: {
+      managerName: "Linux Native Packages & systemd",
+      cmdLabel: "Linux Exultia systemd Service & UVI Engine",
+      debCmd: "curl -fsSL https://pkg.exultia.org/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/exultia.gpg\necho \"deb [signed-by=/etc/apt/keyrings/exultia.gpg] https://pkg.exultia.org/deb stable main\" | sudo tee /etc/apt/sources.list.d/exultia.list\nsudo apt update && sudo apt install -y exultia-remediator",
+      rpmCmd: "sudo dnf config-manager --add-repo https://pkg.exultia.org/rpm/exultia.repo\nsudo dnf install -y exultia-remediator",
+      code: `# 1. Install signed Exultia binary to /usr/local/bin\ncurl -sSL https://exultia.tech/install.sh | sudo sh\n\n# 2. Configure /etc/exultia/exultia.conf for dual STIX/TAXII channels\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = "https://taxii.exultia.org/taxii2/exultia-feed"\nauth_token = "exultia_pki_verified"\npoll_interval = "60s"\nauto_safety_snapshot = true\n\n[corporate_local]\nurl = "https://siem.internal.corp/taxii2/indicators"\nnamespace_uuid = "client-local-550e8400-e29b-41d4-a716-446655440000"\nallow_livepatch = false\nallow_network_filter = true\nEOF\n\n# 3. Enable and start systemd background remediation service\nsudo systemctl daemon-reload\nsudo systemctl enable --now exultia.service`
+    },
+    container: {
+      imageName: "registry.exultia.tech/exultia/remediator:latest",
+      imageSize: "18.4 MB (Compressed OCI)",
+      targetPlatforms: "Docker, Podman, containerd, CRI-O (Linux amd64/arm64)",
+      dockerCmd: "docker run -d --name exultia-remediator \\\n  --restart=always \\\n  --net=host \\\n  --pid=host \\\n  --cap-add=SYS_PTRACE \\\n  --cap-add=NET_ADMIN \\\n  -v /etc/exultia:/etc/exultia:ro \\\n  -v /var/log/exultia:/var/log/exultia \\\n  registry.exultia.tech/exultia/remediator:latest",
+      podmanCmd: "podman run -d --name exultia-remediator \\\n  --restart=always \\\n  --net=host \\\n  --pid=host \\\n  --cap-add=SYS_PTRACE \\\n  --cap-add=NET_ADMIN \\\n  -v /etc/exultia:/etc/exultia:ro,Z \\\n  -v /var/log/exultia:/var/log/exultia:Z \\\n  registry.exultia.tech/exultia/remediator:latest",
+      pullCmd: "docker pull registry.exultia.tech/exultia/remediator:latest"
+    }
+  };
+
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
-      
-      {/* ── SECTION 1: INTERACTIVE SENTINEL TELEMETRY ─────────────────────────── */}
-      <section id="interactive-telemetry" style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            Live Sentinel Terminal Telemetry
+      {/* ── SECTION 1: ARCHITECTURE SPECIFICATION (4 PILLARS) ─────────── */}
+      <section style={{ marginBottom: "3rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(0, 229, 255, 0.12)", border: "1px solid rgba(0, 229, 255, 0.35)", padding: "3px 12px", borderRadius: "999px", marginBottom: "0.5rem" }}>
+            <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#00E5FF" }} />
+            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", fontWeight: 700, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Portable Autonomous Remediator Daemon • Built for Linux
+            </span>
+          </div>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.35rem" }}>
+            The Portable Exultia Daemon: Autonomous Remediation for Linux
           </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0 auto" }}>
-            Direct telemetry captured from an active Exultia Linux production node running the autonomous resident triad.
+          <p style={{ color: "#94A3B8", fontSize: "0.9rem", maxWidth: "800px", margin: "0 auto" }}>
+            Don&apos;t wipe your servers or migrate distributions. The portable Exultia daemon runs non-invasively directly on your existing Linux systems, providing 60-second autonomous threat remediation with zero downtime.
           </p>
         </div>
 
-        {/* Terminal Container */}
-        <div 
-          style={{ 
-            background: "rgba(8, 14, 26, 0.95)", 
-            borderRadius: "18px", 
-            border: "1px solid rgba(6, 182, 212, 0.3)", 
-            boxShadow: "0 0 50px rgba(6, 182, 212, 0.15)",
-            overflow: "hidden",
-            fontFamily: "var(--font-mono, monospace)"
-          }}
-        >
-          {/* Terminal Titlebar & Tabs */}
-          <div style={{ 
+        {/* 4 Architecture Specification Panels (Stacked Vertically) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+          
+          {/* Specification 1: System Foundation & Linux Daemon Runtime */}
+          <div className="glass-card" style={{ 
+            padding: "1.1rem 1.4rem", 
+            borderRadius: "14px", 
+            border: "1px solid rgba(0, 229, 255, 0.3)", 
             display: "flex", 
-            alignItems: "center", 
-            justifyContent: "space-between", 
-            padding: "10px 18px", 
-            background: "rgba(15, 23, 42, 0.9)", 
-            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-            flexWrap: "wrap",
-            gap: "10px"
+            flexDirection: "column",
+            gap: "0.75rem",
+            background: "rgba(15, 23, 42, 0.75)"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#EF4444" }} />
-              <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#F59E0B" }} />
-              <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10B981" }} />
-              <span style={{ fontSize: "0.8rem", color: "#64748B", marginLeft: "10px", fontWeight: 700 }}>
-                exultia-node-prod1.fleet.internal &bull; Ring 1 (Server Profile)
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(0, 229, 255, 0.15)", color: "#00E5FF" }}>
+                  <HardDrive size={20} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                    1. System Foundation &amp; Linux Daemon Runtime
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    Native Linux Architecture • Statically Linked Binary • systemd Service
+                  </span>
+                </div>
+              </div>
+              <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF", background: "rgba(0, 229, 255, 0.15)", padding: "3px 8px", borderRadius: "4px", fontWeight: 700 }}>
+                Runs on Any Distro • Zero OS Re-Imaging
               </span>
             </div>
 
-            {/* Tab Selectors */}
-            <div style={{ display: "flex", gap: "6px" }}>
-              <button
-                onClick={() => setTerminalTab("status")}
-                style={{
-                  background: terminalTab === "status" ? "rgba(6, 182, 212, 0.2)" : "transparent",
-                  color: terminalTab === "status" ? "#22D3EE" : "#94A3B8",
-                  border: terminalTab === "status" ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid transparent",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.78rem",
-                  fontWeight: 700
-                }}
-              >
-                1. System Status
-              </button>
-              <button
-                onClick={() => setTerminalTab("hotfix")}
-                style={{
-                  background: terminalTab === "hotfix" ? "rgba(6, 182, 212, 0.2)" : "transparent",
-                  color: terminalTab === "hotfix" ? "#22D3EE" : "#94A3B8",
-                  border: terminalTab === "hotfix" ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid transparent",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.78rem",
-                  fontWeight: 700
-                }}
-              >
-                2. Live Hotfix (306ms)
-              </button>
-              <button
-                onClick={() => setTerminalTab("rollback")}
-                style={{
-                  background: terminalTab === "rollback" ? "rgba(6, 182, 212, 0.2)" : "transparent",
-                  color: terminalTab === "rollback" ? "#22D3EE" : "#94A3B8",
-                  border: terminalTab === "rollback" ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid transparent",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.78rem",
-                  fontWeight: 700
-                }}
-              >
-                3. Atomic Rollback (18ms)
-              </button>
-              <button
-                onClick={() => setTerminalTab("audit")}
-                style={{
-                  background: terminalTab === "audit" ? "rgba(6, 182, 212, 0.2)" : "transparent",
-                  color: terminalTab === "audit" ? "#22D3EE" : "#94A3B8",
-                  border: terminalTab === "audit" ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid transparent",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.78rem",
-                  fontWeight: 700
-                }}
-              >
-                4. Cryptographic Ledger
-              </button>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px", marginTop: "4px" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Lightweight Daemon Architecture:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Statically linked binary (/usr/local/bin/exultia) runs as a resident systemd unit or background daemon with minimal footprint (&lt;15MB RAM). Non-invasive socket and syscall visibility via standard Linux kernel APIs and eBPF.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Universal Distro Compatibility:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Installs directly on top of your existing Linux distribution—Ubuntu, Debian, RHEL, Rocky, Alma, Alpine, Arch, SUSE, Amazon Linux—without OS re-imaging, disk repartitioning, or kernel recompilation. Your production systems stay live.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Daemon Sandboxing &amp; Protection:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Protected by Linux namespaces, cgroups, and hardened systemd service sandboxing (<code style={{ color: "#67E8F9" }}>ProtectSystem=strict</code>, private temporary filesystems, and unprivileged process boundaries). Never replaces base distribution binaries.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Terminal Screen Body */}
-          <div style={{ padding: "1.75rem", fontSize: "0.85rem", lineHeight: "1.65", color: "#E2E8F0", minHeight: "360px" }}>
-            {terminalTab === "status" && (
-              <div>
-                <div style={{ color: "#38BDF8", marginBottom: "8px" }}>$ exultia status</div>
-                <div style={{ color: "#67E8F9", fontWeight: 700 }}>=== EXULTIA KINETIC AUTONOMOUS SYSTEM STATUS ===</div>
-                <div style={{ color: "#94A3B8" }}>  • Operating System   : <span style={{ color: "#34D399" }}>Exultia Linux 2026.1 (Sovereign Hardened Base)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • Engine Version     : <span style={{ color: "#38BDF8" }}>Kinetic v2.4.0 (NixOS Hardened Native)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • Sovereign Daemon   : <span style={{ color: "#34D399" }}>[ACTIVE] (Systemd resident, PID 1649)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • Threat Feed Sync   : <span style={{ color: "#34D399" }}>Synchronized (110+ upstream registries; Vantage Enterprise L3)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • Active Hotfixes    : <span style={{ color: "#FBBF24" }}>1 applied (Zero socket disruption)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • Rollback Guarantee : <span style={{ color: "#38BDF8" }}>&lt;50ms Atomic Pre-Image Restoration (Empirical: 18.61ms)</span></div>
-                <div style={{ color: "#94A3B8" }}>  • State Store        : /var/lib/exultia</div>
-                <div style={{ color: "#94A3B8" }}>  • Audit Ledger       : /var/log/exultia/command_history.log</div>
-                <div style={{ color: "#64748B", marginTop: "12px" }}>ACTIVE RUNTIME HOTFIXES:</div>
-                <div style={{ color: "#34D399" }}>  ✔ CVE-2024-6387 [APPLIED_VERIFIED]</div>
-                <div style={{ color: "#94A3B8", marginLeft: "1.5rem" }}>Target     : /etc/ssh/sshd_config.d/00-exultia-cve-2024-6387.conf</div>
-                <div style={{ color: "#94A3B8", marginLeft: "1.5rem" }}>Applied At : 2026-10-25T18:58:55Z</div>
-                <div style={{ color: "#94A3B8", marginLeft: "1.5rem" }}>Rollback   : kinetic rollback --cve=CVE-2024-6387</div>
+          {/* Specification 2: Threat Intelligence Standard (STIX/TAXII) */}
+          <div className="glass-card" style={{ 
+            padding: "1.1rem 1.4rem", 
+            borderRadius: "14px", 
+            border: "1px solid rgba(6, 182, 212, 0.3)", 
+            display: "flex", 
+            flexDirection: "column",
+            gap: "0.75rem",
+            background: "rgba(15, 23, 42, 0.75)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE" }}>
+                  <Radio size={20} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                    2. Threat Intelligence Standard (STIX 2.1 / TAXII 2.1)
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    CISA &amp; FS-ISAC Standardized IoCs • RESTful Transport • Dual-Channel Subscription
+                  </span>
+                </div>
               </div>
-            )}
+              <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#22D3EE", background: "rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: "4px", fontWeight: 700 }}>
+                STIX 2.1 JSON Format
+              </span>
+            </div>
 
-            {terminalTab === "hotfix" && (
-              <div>
-                <div style={{ color: "#38BDF8", marginBottom: "8px" }}>$ journalctl -u exultia-daemon.service -f --no-pager</div>
-                <div style={{ color: "#94A3B8" }}>[exultia-daemon] Polling Vantage Threat Intelligence Feed: https://exultia.tech/api/patches/feed...</div>
-                <div style={{ color: "#34D399" }}>[exultia-daemon] Successfully synchronized with Vantage feed. Ingested threat base.</div>
-                <div style={{ color: "#FBBF24" }}>[exultia-daemon] Ingesting threat advisory: UVI-2024-6387 (CVE-2024-6387 / OpenSSH RegreSSHion)</div>
-                <div style={{ color: "#94A3B8" }}>[exultia-daemon] Evaluating host workload: OpenSSH daemon detected without surgical hotfix.</div>
-                <div style={{ color: "#38BDF8" }}>[exultia-daemon] Synthesizing zero-downtime hotfix for CVE-2024-6387...</div>
-                <div style={{ color: "#E2E8F0" }}>[kinetic::apply] Initiating autonomous hotfix for CVE-2024-6387...</div>
-                <div style={{ color: "#34D399", fontWeight: 700 }}>
-                  [kinetic::apply] Hotfix successfully applied in 306.61ms (Sentinel check: 272.91ms).
-                </div>
-                <div style={{ color: "#34D399" }}>
-                  [kinetic::apply] Zero dropped sockets. OpenVEX attestation created at /var/lib/exultia/attestations/CVE-2024-6387.vex.json.
-                </div>
-                <div style={{ color: "#64748B", marginTop: "12px" }}># Verified: Active client SSH connections remained 100% uninterrupted.</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px", marginTop: "4px" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Standardized Language:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Standardizes on STIX 2.1 JSON specifications utilized by CISA, US-CERT, and FS-ISAC to represent threat actors, indicators of compromise (IoCs), and automated mitigation rules.
+                </p>
               </div>
-            )}
-
-            {terminalTab === "rollback" && (
-              <div>
-                <div style={{ color: "#38BDF8", marginBottom: "8px" }}>$ sudo kinetic rollback --cve=CVE-2024-6387</div>
-                <div style={{ color: "#E2E8F0" }}>[kinetic::rollback] Initiating deterministic atomic rollback for CVE-2024-6387...</div>
-                <div style={{ color: "#94A3B8" }}>[kinetic::rollback] Fetching pre-image baseline: /var/lib/exultia/pre_images/CVE-2024-6387_pre.bin</div>
-                <div style={{ color: "#94A3B8" }}>[kinetic::rollback] Cryptographic SHA-256 verification: MATCH (e3b0c44298fc1c149afbf4c8996fb924...)</div>
-                <div style={{ color: "#34D399", fontWeight: 700 }}>
-                  [kinetic::rollback] Baseline state restored cleanly in 18.61ms.
-                </div>
-                <div style={{ color: "#34D399" }}>
-                  [kinetic::rollback] Zero host reboot required. Bitwise baseline match confirmed.
-                </div>
-                <div style={{ color: "#94A3B8" }}>[kinetic::rollback] OpenVEX attestation updated to status: &quot;not_affected&quot; (reverted).</div>
-                <div style={{ color: "#64748B", marginTop: "12px" }}># SLA Guarantee: Sub-50ms deterministic rollback (18.61ms actual latency).</div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#22D3EE" }}>Channel 1: Vantage Upstream (Primary):</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Authenticated HTTPS feed delivering autonomous threat definitions, zero-day remediation trampolines, and global threat intelligence directly from Exultia Technologies.
+                </p>
               </div>
-            )}
-
-            {terminalTab === "audit" && (
-              <div>
-                <div style={{ color: "#38BDF8", marginBottom: "8px" }}>$ exultia audit</div>
-                <div style={{ color: "#67E8F9", fontWeight: 700 }}>=== EXULTIA SHELL COMMAND AUDIT LEDGER ===</div>
-                <div style={{ color: "#64748B", fontSize: "0.78rem", marginBottom: "8px" }}>File: /var/log/exultia/command_history.log (Immutable Append-Only)</div>
-                <div style={{ color: "#34D399" }}>  [2026-10-25T18:36:18Z] [DAEMON_STARTED] Role: server, Ring: 1, PID: 902</div>
-                <div style={{ color: "#FBBF24" }}>  [2026-10-25T18:39:28Z] [HOTFIX_APPLIED] CVE: CVE-2024-6387, DurationMs: 331.13, SentinelMs: 295.71, ZeroDowntime: True</div>
-                <div style={{ color: "#38BDF8" }}>  [2026-10-25T18:39:41Z] [ROLLBACK_EXECUTED] CVE: CVE-2024-6387, DurationMs: 18.61, BitwiseMatch: True, ZeroReboot: True</div>
-                <div style={{ color: "#34D399" }}>  [2026-10-25T19:06:02Z] [FEED_SYNC_SUCCESS] Endpoint: https://exultia.tech/api/patches/feed, Ingested: 14KB</div>
-                <div style={{ color: "#94A3B8", marginTop: "12px" }}>Total verified cryptographic ledger actions recorded: 16</div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#60A5FA" }}>Channel 2: Corporate Local (Supplemental):</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  A local TAXII endpoint configured by corporate security teams to ingest internal SIEM alerts, industry-specific IoCs, and custom firewall blacklists without third-party dependencies.
+                </p>
               </div>
-            )}
+            </div>
           </div>
+
+          {/* Specification 3: Self-Healing & Remediation Pipeline */}
+          <div className="glass-card" style={{ 
+            padding: "1.1rem 1.4rem", 
+            borderRadius: "14px", 
+            border: "1px solid rgba(16, 185, 129, 0.3)", 
+            display: "flex", 
+            flexDirection: "column",
+            gap: "0.75rem",
+            background: "rgba(15, 23, 42, 0.75)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(16, 185, 129, 0.15)", color: "#34D399" }}>
+                  <RotateCcw size={20} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                    3. The Self-Healing &amp; Remediation Pipeline
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    Continuous 60s Loop • In-Memory Trampolines • Fail-Safe Rollback Checkpoints
+                  </span>
+                </div>
+              </div>
+              <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#34D399", background: "rgba(16, 185, 129, 0.15)", padding: "3px 8px", borderRadius: "4px", fontWeight: 700 }}>
+                Zero-Downtime Livepatching
+              </span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px", marginTop: "4px" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 1: Socket &amp; Vulnerability Detection</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Cryptographic signatures and CVE records are verified against the offline 24,388 UVI database. The daemon inspects active network sockets across the host to verify if vulnerable components are listening.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 2: Atomic State Snapshot &amp; Sandbox Probe</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Records an atomic rollback snapshot of process memory and configuration baselines in <code style={{ color: "#34D399" }}>/var/lib/exultia/snapshots</code>. Pre-validates the livepatch in an isolated process sandbox.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 3: In-Memory Trampoline &amp; Watchdog</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Injects surgical in-memory function redirects with 0 dropped TCP sockets and zero process restarts. Continuous 120-second watchdog verifies socket responsiveness and rolls back automatically if health checks fail.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Specification 4: Corporate Integration & Access Control */}
+          <div className="glass-card" style={{ 
+            padding: "1.1rem 1.4rem", 
+            borderRadius: "14px", 
+            border: "1px solid rgba(168, 85, 247, 0.3)", 
+            display: "flex", 
+            flexDirection: "column",
+            gap: "0.75rem",
+            background: "rgba(15, 23, 42, 0.75)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(168, 85, 247, 0.15)", color: "#C084FC" }}>
+                  <Lock size={20} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                    4. Corporate Integration &amp; Access Control
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                    Rule Namespacing • System Stability Override • Immutable System Boundaries
+                  </span>
+                </div>
+              </div>
+              <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#C084FC", background: "rgba(168, 85, 247, 0.15)", padding: "3px 8px", borderRadius: "4px", fontWeight: 700 }}>
+                UUID Namespaced
+              </span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px", marginTop: "4px" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Rule Namespacing:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  All STIX objects ingested from the corporate TAXII feed are strictly tagged with a client-local UUID, preventing accidental collision with upstream global signatures.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>System Stability Override:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  If a client rule inadvertently blocks essential infrastructure (e.g., blacklisting the Vantage server IP), Exultia triggers a Stability Override, logs an audit alert, and maintains system integrity.
+                </p>
+              </div>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Immutable System Boundaries:</span>
+                <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
+                  Corporate feeds are restricted to packet filters (nftables/iptables), application blacklists, and user-space service controls. Only Exultia-signed cryptographic payloads can inject in-memory livepatches, modify restricted sysctl parameters, or load eBPF socket probes.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* ── SECTION 2: ARCHITECTURAL PILLARS ──────────────────────────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            Hardened Architecture from the Kernel Up
+      {/* ── SECTION 2: INTERACTIVE LINUX TELEMETRY & REMEDIATION CONSOLE ───────────── */}
+      <section style={{ marginBottom: "3rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.45rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.35rem" }}>
+            Live Exultia Daemon Console &amp; Remediation State
           </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "680px", margin: "0 auto" }}>
-            Engineered to replace vulnerable, mutable Linux fleets with an immutable self-healing foundation.
+          <p style={{ color: "#94A3B8", fontSize: "0.85rem", maxWidth: "680px", margin: "0 auto" }}>
+            Inspect active daemon health, dual-channel TAXII polling, /etc/exultia/exultia.conf baselines, and journalctl -u exultia remediation logs.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1.5rem" }}>
-          
-          {/* Pillar 1 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(6, 182, 212, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(6, 182, 212, 0.15)", color: "#22D3EE" }}>
-                <Layers size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Content-Addressed Immutability</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Built upon a declarative Nix base (`/nix/store`). Binaries and libraries are read-only and cryptographically hashed. Package drift, library collisions, and accidental file mutations are structurally impossible.
-            </p>
-          </div>
-
-          {/* Pillar 2 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#34D399" }}>
-                <Zap size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Kinetic™ Zero-Downtime Engine</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Surgically applies in-memory hotpatches, dynamic drop-in configurations, and eBPF filters at sub-second execution speeds (benchmarked at ~300ms). Active TCP streams, SSH shells, and database connections remain uninterrupted.
-            </p>
-          </div>
-
-          {/* Pillar 3 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(245, 158, 11, 0.15)", color: "#FBBF24" }}>
-                <RotateCcw size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Deterministic &lt;50ms Rollback SLA</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Prior to applying any hotfix, Kinetic captures microsecond pre-image state snapshots. If post-patch sentinel verification fails, the system reverts instantaneously (benchmarked at 18.6ms) with zero reboots.
-            </p>
-          </div>
-
-          {/* Pillar 4 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA" }}>
-                <Cpu size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Kernel Self-Protection by Default</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Enforces hardened Linux kernel packages (`linuxPackages_hardened`), eBPF JIT blinding, disabled unprivileged user namespaces, restricted `ptrace_scope`, and hardened network sysctls.
-            </p>
-          </div>
-
-          {/* Pillar 5 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(168, 85, 247, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(168, 85, 247, 0.15)", color: "#C084FC" }}>
-                <Server size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Resident Autonomous Triad</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Three systemd resident services work in concert: `exultia-vantage-sync` pulls global feeds, `exultia-daemon` executes real-time hotpatching, and `exultia-trivy-audit` continuously verifies 0 findings.
-            </p>
-          </div>
-
-          {/* Pillar 6 */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(236, 72, 153, 0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(236, 72, 153, 0.15)", color: "#F472B6" }}>
-                <ShieldCheck size={24} />
-              </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Cryptographic OpenVEX Ledgers</h3>
-            </div>
-            <p style={{ color: "#94A3B8", fontSize: "0.92rem", lineHeight: 1.6, margin: 0 }}>
-              Every remediation produces machine-verifiable OpenVEX attestations (`/var/lib/exultia/attestations/`) signed via Cosign SLSA Level 3, maintaining an immutable compliance trail for audits.
-            </p>
-          </div>
-
-          {/* Pillar 7: Autonomous Self-Healing & Next-Best Version Re-Synthesis */}
-          <div className="glass-card" style={{ padding: "2rem", borderRadius: "18px", border: "1px solid rgba(16, 185, 129, 0.35)", background: "rgba(16, 185, 129, 0.04)", gridColumn: "1 / -1" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-              <div style={{ padding: "10px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.2)", color: "#34D399" }}>
-                <RefreshCw size={24} />
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>Autonomous Vulnerability Eviction & Next-Best Version Re-Synthesis</h3>
-                <span style={{ fontSize: "0.78rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Zero-Day Self-Healing Guarantee</span>
-              </div>
-            </div>
-            <p style={{ color: "#CBD5E1", fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>
-              The moment an installed package is identified in a new zero-day disclosure, Exultia Linux does not wait for a maintenance window. The OS immediately strips execution bits (<code>chmod 0000</code>), queries its constraint solver for the <strong>Next-Best Non-Vulnerable Candidate</strong> (official patch or clean historical stable), verifies strict ELF soname ABI compatibility, and activates the new generation in <strong>&lt;50ms with 0 dropped sockets</strong>.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── SECTION 2.5: LIVE AUTONOMOUS SELF-HEALING SIMULATOR ────────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        <SelfHealingSimulator />
-      </section>
-
-      {/* ── SECTION 3: HEAD-TO-HEAD COMPARISON TABLE ──────────────────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            How Exultia Linux Compares
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem" }}>
-            Understanding the distinction between Sovereign OS, PureOS Containers, and Legacy Linux Distributions.
-          </p>
-        </div>
-
-        <div style={{ 
-          background: "rgba(15, 23, 42, 0.7)", 
-          borderRadius: "18px", 
-          border: "1px solid rgba(255, 255, 255, 0.1)", 
-          overflowX: "auto" 
+        <div style={{
+          background: "#090D16",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          borderRadius: "14px",
+          overflow: "hidden",
+          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.6)"
         }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", background: "rgba(255, 255, 255, 0.02)" }}>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#94A3B8", fontWeight: 700, width: "24%" }}>Capability / Metric</th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#67E8F9", fontWeight: 800, background: "rgba(6, 182, 212, 0.08)", width: "30%" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <ExultiaLinuxIcon size={20} /> Exultia Linux (Sovereign OS)
-                  </div>
-                </th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#FBBF24", fontWeight: 700, width: "23%" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <PureOsIcon size={20} /> PureOS Container
-                  </div>
-                </th>
-                <th style={{ padding: "1.25rem 1.5rem", color: "#F87171", fontWeight: 700, width: "23%" }}>Legacy RHEL / Ubuntu / Debian</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Architectural Layer</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 700 }}>
-                  Layer 0–2 (Kernel, Init PID 1, Hardware)
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Layer 3–4 (Application Sandbox)</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#94A3B8" }}>Layer 0–2 (Mutable Filesystem)</td>
-              </tr>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Kernel Protection</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)" }}>
-                  Hardened Kernel (`linuxPackages_hardened`), eBPF JIT blinding
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#94A3B8" }}>Shares host kernel; cannot patch host</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#94A3B8" }}>Stock distro kernel; requires reboot</td>
-              </tr>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Hotpatch Execution Latency</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  Sub-second (~300ms runtime injection)
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#FBBF24" }}>Fast (Redeploy updated container)</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Service restart &amp; downtime (Minutes)</td>
-              </tr>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Socket Continuity</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  0 Dropped Sockets (Zero Disruption)
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#FBBF24" }}>Pod cycle drops persistent connections</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Service restart drops all connections</td>
-              </tr>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Deterministic Rollback</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  &lt;50ms SLA (Empirical: 18.6ms)
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Roll back image tag (10–30s)</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Manual snapshot / recovery (Hours)</td>
-              </tr>
-              <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Continuous Audit</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  Native Trivy Timer &bull; 0 Findings Certified
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#E2E8F0" }}>Pre-baked CIS &amp; SBOM manifest</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Stale quarterly point-in-time scans</td>
-              </tr>
-              <tr>
-                <td style={{ padding: "1rem 1.5rem", fontWeight: 700, color: "#FFFFFF" }}>Zero-Day Disclosure Response</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#34D399", background: "rgba(6, 182, 212, 0.04)", fontWeight: 800 }}>
-                  Autonomous Self-Correction: Taints binary, solves next-best clean candidate, verifies ABI &amp; swaps profile in &lt;50ms (0 dropped sockets)
-                </td>
-                <td style={{ padding: "1rem 1.5rem", color: "#FBBF24" }}>CI pipeline rebuilds image tag; rolling container restart drops active sockets</td>
-                <td style={{ padding: "1rem 1.5rem", color: "#F87171" }}>Manual emergency patching; vulnerable for days/weeks awaiting vendor packages</td>
-              </tr>
-            </tbody>
-          </table>
+          {/* Console Header Tabs */}
+          <div style={{
+            display: "flex",
+            background: "rgba(0, 0, 0, 0.5)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+            padding: "4px 8px",
+            overflowX: "auto"
+          }}>
+            {[
+              { id: "status", label: "exultia status", icon: HardDrive },
+              { id: "taxii", label: "exultia feed --status", icon: Radio },
+              { id: "config", label: "/etc/exultia/exultia.conf", icon: FileText },
+              { id: "journal", label: "journalctl -u exultia", icon: Activity },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeConsoleTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveConsoleTab(tab.id as any)}
+                  style={{
+                    background: isActive ? "rgba(0, 229, 255, 0.15)" : "transparent",
+                    color: isActive ? "#00E5FF" : "#94A3B8",
+                    border: "none",
+                    borderBottom: isActive ? "2px solid #00E5FF" : "2px solid transparent",
+                    padding: "8px 14px",
+                    fontSize: "0.78rem",
+                    fontWeight: isActive ? 700 : 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  <Icon size={14} /> {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Console Code View */}
+          <div style={{ padding: "1.25rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem", color: "#E2E8F0", lineHeight: 1.6, overflowX: "auto" }}>
+            {activeConsoleTab === "status" && (
+              <pre style={{ margin: 0 }}>
+{`root@linux-srv01:~ # exultia status
+[DAEMON] Exultia Autonomous Threat Remediator Daemon v2.4.0 (Linux x86_64)
+[STATUS] Active (Running) • systemd: exultia.service • PID: 1482
+[HOST]   Ubuntu 24.04 LTS (Kernel 6.8.0-45-generic) • Memory: 11.2 MB / 0.1% CPU
+[LOOP]   Next scheduled scan in: 18s (60s loop interval)
+[CATALOG] Pre-baked UVI Database: 24,388 advisories • CISA KEV: 12,993 CVEs (Offline)
+[SOCKETS] Audited: 42 open ports • In-memory trampolines active: 1 (CVE-2024-6387)
+[SNAPSHOT] Active rollback checkpoint: /var/lib/exultia/snapshots/baseline-20261027`}
+              </pre>
+            )}
+
+            {activeConsoleTab === "taxii" && (
+              <pre style={{ margin: 0 }}>
+{`root@linux-srv01:~ # /usr/local/bin/exultia feed --status
+[INFO] Exultia Threat Intelligence Ingest v2.4.0 (Linux x86_64)
+[POLL] Channel 1: Vantage Upstream (https://taxii.exultia.org/taxii2/feed)
+       -> Last Poll: 12 seconds ago | Status: 200 OK | Authenticated: Ed25519 Exultia PKI
+       -> Ingested: STIX 2.1 Object 'indicator--cve-2024-6387' (OpenSSH Livepatch)
+[POLL] Channel 2: Corporate Local (https://siem.internal.corp/taxii2/indicators)
+       -> Last Poll: 35 seconds ago | Status: 200 OK | Namespace: client-local-550e8400
+       -> Ingested: STIX 2.1 Object 'indicator--corp-blocklist-2026' (nftables egress ban)
+[SYS]  Stability Override: ACTIVE (0 conflicting rules detected)`}
+              </pre>
+            )}
+
+            {activeConsoleTab === "config" && (
+              <pre style={{ margin: 0 }}>
+{`# /etc/exultia/exultia.conf - Exultia Autonomous Remediator Daemon Configuration
+# Resident background service running alongside host applications
+[daemon]
+loop_interval = "60s"
+max_cpu_percent = 2
+log_level = "info"
+safety_rollback = true
+
+# Host Kernel Hardening & Sysctl Baselines
+[sysctl_enforcement]
+net.ipv4.tcp_syncookies = 1
+net.ipv4.conf.all.rp_filter = 1
+fs.protected_regular = 2
+fs.protected_fifos = 2
+kernel.kptr_restrict = 2
+
+# STIX 2.1 / TAXII Ingestion
+[taxii_upstream]
+url = "https://taxii.exultia.org/taxii2/feed"
+auth_token = "exultia_pki_verified"
+auto_remediate = true`}
+              </pre>
+            )}
+
+            {activeConsoleTab === "journal" && (
+              <pre style={{ margin: 0 }}>
+{`root@linux-srv01:~ # journalctl -u exultia.service -n 8 --no-pager
+Oct 28 05:30:00 linux-srv01 exultia[1482]: [AUDIT] Starting 60-second autonomous compliance audit...
+Oct 28 05:30:01 linux-srv01 exultia[1482]: [AUDIT] Checked 42 listening sockets against 24,388 UVI advisories.
+Oct 28 05:30:01 linux-srv01 exultia[1482]: [WARN] Socket :22 running vulnerable OpenSSH <9.8p1 (CVE-2024-6387).
+Oct 28 05:30:01 linux-srv01 exultia[1482]: [ACTION] Applying in-memory trampoline signal handler (zero dropped sockets).
+Oct 28 05:30:02 linux-srv01 exultia[1482]: [VERIFY] Process sandbox health probe returned 200 OK.
+Oct 28 05:30:02 linux-srv01 exultia[1482]: [SUCCESS] Remediation complete in 1.4s. Audit logged to /var/log/exultia/audit.log.`}
+              </pre>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* ── SECTION 4: HARDENED DERIVATIVE DISTRIBUTIONS ──────────────────────── */}
-      <section style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(139, 92, 246, 0.12)", border: "1px solid rgba(139, 92, 246, 0.35)", padding: "4px 14px", borderRadius: "999px", marginBottom: "1rem" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#A78BFA" }} />
-            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.78rem", fontWeight: 700, color: "#DDD6FE", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Multi-Architecture Family • Best-Practice Hardened
+      {/* ── SECTION 3: DOWNLOAD & DEPLOY THE PORTABLE DAEMON ─────────────────── */}
+      <section id="deployment-options" style={{ marginBottom: "2rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(0, 229, 255, 0.12)", border: "1px solid rgba(0, 229, 255, 0.35)", padding: "3px 12px", borderRadius: "999px", marginBottom: "0.5rem" }}>
+            <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#00E5FF" }} />
+            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", fontWeight: 700, color: "#67E8F9", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Universal Linux Daemon &bull; Multi-Architecture Support
             </span>
           </div>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            The Exultia Sovereign Derivatives
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.5rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.35rem" }}>
+            Deploy the Portable Exultia Daemon
           </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: "780px", margin: "0 auto" }}>
-            Tailored derivative distributions engineered to the strictest security conventions of OpenBSD, Debian, Alpine, and Fedora Silverblue. All flavors interface natively with the central Vantage Threat Intelligence Feed.
+          <p style={{ color: "#94A3B8", fontSize: "0.88rem", maxWidth: "700px", margin: "0 auto" }}>
+            Zero license fees. Zero node locks. Deploy the portable Exultia daemon directly onto your existing Linux infrastructure via standalone binary, systemd, Kubernetes DaemonSet, native packages, or OCI container.
           </p>
         </div>
 
-        {/* Derivative Selector Nav */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-          <button
-            onClick={() => setFlavorTab("nixos")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "10px",
-              background: flavorTab === "nixos" ? "rgba(6, 182, 212, 0.2)" : "rgba(255, 255, 255, 0.04)",
-              border: flavorTab === "nixos" ? "1px solid #06B6D4" : "1px solid rgba(255, 255, 255, 0.1)",
-              color: flavorTab === "nixos" ? "#22D3EE" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>❄️</span> Exultia NixOS (Flagship)
-          </button>
-          <button
-            onClick={() => setFlavorTab("bsd")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "10px",
-              background: flavorTab === "bsd" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.04)",
-              border: flavorTab === "bsd" ? "1px solid #F59E0B" : "1px solid rgba(255, 255, 255, 0.1)",
-              color: flavorTab === "bsd" ? "#FBBF24" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>🐡</span> Exultia BSD (OpenBSD Fortress)
-          </button>
-          <button
-            onClick={() => setFlavorTab("debian")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "10px",
-              background: flavorTab === "debian" ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.04)",
-              border: flavorTab === "debian" ? "1px solid #EF4444" : "1px solid rgba(255, 255, 255, 0.1)",
-              color: flavorTab === "debian" ? "#F87171" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>🌀</span> Exultia Debian (LTS Workhorse)
-          </button>
-          <button
-            onClick={() => setFlavorTab("alpine")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "10px",
-              background: flavorTab === "alpine" ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.04)",
-              border: flavorTab === "alpine" ? "1px solid #10B981" : "1px solid rgba(255, 255, 255, 0.1)",
-              color: flavorTab === "alpine" ? "#34D399" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>🏔️</span> Exultia Alpine (MicroVM &amp; Edge)
-          </button>
-          <button
-            onClick={() => setFlavorTab("silverblue")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "10px",
-              background: flavorTab === "silverblue" ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.04)",
-              border: flavorTab === "silverblue" ? "1px solid #3B82F6" : "1px solid rgba(255, 255, 255, 0.1)",
-              color: flavorTab === "silverblue" ? "#60A5FA" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <span>🔷</span> Exultia Silverblue (Atomic OSTree)
-          </button>
-        </div>
-
-        {/* Flavor Details Container */}
-        <div style={{
-          background: "rgba(10, 16, 30, 0.85)",
-          borderRadius: "18px",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
-          padding: "2rem",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
-        }}>
-          {/* 1. NIXOS */}
-          {flavorTab === "nixos" && (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#22D3EE", fontWeight: 800, textTransform: "uppercase" }}>
-                    Flagship Sovereign OS &bull; NixOS 24.05 Base
-                  </div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
-                    Exultia Linux (Declarative Immutable)
-                  </h3>
-                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                    Target: Enterprise Sovereign Datacenters, Bare-Metal Clouds, and Air-Gapped Clusters.
-                  </p>
-                </div>
-                <div style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#67E8F9", fontFamily: "var(--font-mono, monospace)" }}>
-                  SLA: &lt;50ms Deterministic Rollback
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Kernel Security</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>linuxPackages_hardened</code>, <code>security.protectKernelImage = true;</code>, <code>security.unprivilegedUsernsClone = false;</code>, and <code>security.forcePageTableIsolation = true;</code>.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Access &amp; Sandboxing</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>users.mutableUsers = false;</code> prevents runtime account tampering. <code>security.apparmor.killUnconfined = true;</code> guarantees strict confinement.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Declarative Firewall</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>networking.firewall.enable = true;</code> with strictly defined ports <code>[ 22 443 ]</code>. Automated store GC via <code>nix.gc.automatic = true;</code>.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Vantage Threat Integration</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>services.exultia.vantage.endpoint</code> synchronizes 110+ registries every 15m. In-memory Kinetic hotpatching executes in ~300ms with 0 dropped sockets.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 2. OPENBSD */}
-          {flavorTab === "bsd" && (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#FBBF24", fontWeight: 800, textTransform: "uppercase" }}>
-                    Fortress Edition &bull; OpenBSD 7.5+ Base
-                  </div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
-                    Exultia BSD (Formal Verification &amp; W^X)
-                  </h3>
-                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                    Target: Air-Gapped Gateway Firewalls, High-Consequence Bastions, and Cryptographic Signing Anchors.
-                  </p>
-                </div>
-                <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#FBBF24", fontFamily: "var(--font-mono, monospace)" }}>
-                  Security: 100% Strict W^X &bull; KARL Dynamic Link
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Dynamic KARL &amp; W^X</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Kernel Address Randomized Link rebuilds unique kernel binary on every boot. <code>wxallowed</code> stripped from <code>/usr/local</code> in <code>/etc/fstab</code>.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Packet Filter (block return)</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>/etc/pf.conf</code> enforces <code>set block-policy return</code> and <code>block return all</code> for clean rejections. Synproxy and anti-spoofing quick rules.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Scoped doas &amp; Zero Daemons</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>sudo</code> prohibited; <code>/etc/doas.conf</code> strictly scopes commands to <code>/sbin/pfctl</code>. Unneeded daemons disabled (<code>smtpd</code>, <code>sndiod</code>, <code>resolvd</code>).
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Vantage pf Anchor Sentinel</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>/etc/rc.d/vantage_sentinel</code> injects dynamic blocklists into <code>anchor &quot;vantage/*&quot;</code> and verifies base binary SHA-256 integrity checksums.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 3. DEBIAN */}
-          {flavorTab === "debian" && (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#F87171", fontWeight: 800, textTransform: "uppercase" }}>
-                    Enterprise LTS Edition &bull; Debian 12 (Bookworm)
-                  </div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
-                    Exultia Debian (Datacenter Workhorse)
-                  </h3>
-                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                    Target: Enterprise Application Servers, Clustered Databases, and Legacy Migration Fleets.
-                  </p>
-                </div>
-                <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#F87171", fontFamily: "var(--font-mono, monospace)" }}>
-                  Compliance: CIS Level 2 &bull; AppArmor Enforced
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ AppArmor Enforce Mode</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>apparmor</code> and <code>apparmor-profiles</code> locked down with <code>aa-enforce</code> across all critical network services instead of complain mode.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚙️ Hardened Sysctl Parameters</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>net.ipv4.tcp_syncookies = 1</code>, <code>net.ipv4.ip_forward = 0</code>, ICMP redirects disabled, YAMA ptrace scope 3, and protected FIFOs/symlinks.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 PAM &amp; Service Pruning</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>libpam-tmpdir</code> for user isolation, <code>libpam-pwquality</code> for entropy, and masking of legacy services (<code>avahi-daemon</code>, <code>rpcbind</code>, <code>bluetooth</code>).
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ UFW Firewall &amp; Vantage Hotpatch</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Default deny in/out, <code>ufw limit ssh</code>. <code>vantage-kinetic.service</code> applies eBPF in-memory hotpatches with zero TCP drops and &lt;50ms rollback SLA.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 4. ALPINE */}
-          {flavorTab === "alpine" && (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#34D399", fontWeight: 800, textTransform: "uppercase" }}>
-                    MicroVM &amp; Edge Edition &bull; Alpine 3.20 (musl)
-                  </div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
-                    Exultia Alpine (Hyper-Minimal Sentinel)
-                  </h3>
-                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                    Target: Cloud-Native MicroVMs (Firecracker / QEMU), Container Hosts, and Resource-Constrained Edge Appliances.
-                  </p>
-                </div>
-                <div style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#34D399", fontFamily: "var(--font-mono, monospace)" }}>
-                  Footprint: &lt;20MB RAM &bull; Boot &lt;50ms
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Linux Hardened Kernel</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Default kernel swapped for <code>linux-hardened</code> package with strict memory bounds, musl stack canaries, and 100% PIE enforcement.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔥 Alpine Wall (awall)</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Declarative JSON policy with default <code>DROP</code> for both inbound and outbound traffic, strictly whitelisting required management ports.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Mounts &amp; SSH Lockdown</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>/tmp</code>, <code>/var/tmp</code>, and <code>/dev/shm</code> mounted with <code>nodev, nosuid, noexec</code>. <code>sshd_config</code> enforces <code>PermitRootLogin no</code> and <code>PasswordAuthentication no</code>.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Minimized lbu &amp; Vantage Agent</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    <code>lbu</code> backup scope strictly minimized to prevent credential leakage in <code>.apkovl</code>. Resident musl-compiled Vantage agent requires &lt;8MB RAM.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 5. SILVERBLUE */}
-          {flavorTab === "silverblue" && (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#60A5FA", fontWeight: 800, textTransform: "uppercase" }}>
-                    Atomic OSTree Edition &bull; Fedora Silverblue &amp; CoreOS Base
-                  </div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#FFFFFF", margin: "4px 0" }}>
-                    Exultia Silverblue (Immutable Enclave)
-                  </h3>
-                  <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                    Target: Hardened Developer Workstations, Container Platforms, and Automated Ignition Clusters.
-                  </p>
-                </div>
-                <div style={{ background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", padding: "6px 14px", borderRadius: "8px", fontSize: "0.8rem", color: "#60A5FA", fontFamily: "var(--font-mono, monospace)" }}>
-                  Sysroot: Read-Only OSTree &bull; SELinux Enforcing
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🛡️ Strict SELinux Enforcing</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Never downgraded to permissive. Custom <code>exultia_kinetic.te</code> Type Enforcement module enables eBPF hotpatching under full MAC confinement.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔒 Zero OS Drift &amp; Rootless Podman</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Layered RPMs minimized; userland software confined to Flatpaks/containers. Rootful Docker daemon masked; all workloads execute rootless via Podman.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>🔑 Ignition &amp; TPM 2.0 LUKS</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    CoreOS Butane configuration provisions TPM 2.0 hardware encrypted LUKS root and locked root password natively on initial ignition boot.
-                  </div>
-                </div>
-                <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "1.25rem", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                  <div style={{ fontWeight: 800, color: "#FFFFFF", marginBottom: "6px", fontSize: "0.9rem" }}>⚡ Drop-Zone firewalld &amp; Vantage</div>
-                  <div style={{ fontSize: "0.82rem", color: "#94A3B8", lineHeight: 1.5 }}>
-                    Primary interfaces bound to firewalld <code>drop</code> zone. <code>vantage-ostree-sentinel.service</code> inspects atomic commits and coordinates in-memory hotpatching.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── SECTION 5: DEPLOYMENT & ARTIFACT DOWNLOADS ─────────────────────────── */}
-      <section id="deployment-options" style={{ marginBottom: "5rem" }}>
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.5rem" }}>
-            Download &amp; Deploy Exultia Linux (100% Free)
-          </h2>
-          <p style={{ color: "#94A3B8", fontSize: "1rem" }}>
-            Zero license fees. Zero node locks. Select your target: Turnkey virtual appliance, bare-metal live ISO, or declarative Flake module.
-          </p>
-        </div>
-
-        <div style={{ background: "rgba(15, 23, 42, 0.8)", border: "1px solid rgba(255, 255, 255, 0.12)", borderRadius: "18px", overflow: "hidden" }}>
+        <div style={{ background: "rgba(15, 23, 42, 0.8)", border: "1px solid rgba(255, 255, 255, 0.12)", borderRadius: "14px", overflow: "hidden" }}>
           
-          {/* Deployment Nav Tabs */}
-          <div style={{ display: "flex", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", background: "rgba(10, 16, 30, 0.9)" }}>
+          {/* Format Switcher Tabs */}
+          <div style={{ display: "flex", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", background: "rgba(10, 16, 30, 0.7)", overflowX: "auto" }}>
             <button
-              onClick={() => setDeployTab("qcow2")}
+              onClick={() => setDeployFormat("portable")}
               style={{
                 flex: 1,
-                padding: "1rem",
-                background: deployTab === "qcow2" ? "rgba(6, 182, 212, 0.15)" : "transparent",
-                color: deployTab === "qcow2" ? "#22D3EE" : "#94A3B8",
+                padding: "0.75rem 1rem",
+                background: deployFormat === "portable" ? "rgba(0, 229, 255, 0.15)" : "transparent",
+                color: deployFormat === "portable" ? "#00E5FF" : "#94A3B8",
                 border: "none",
-                borderBottom: deployTab === "qcow2" ? "2px solid #22D3EE" : "2px solid transparent",
+                borderBottom: deployFormat === "portable" ? "2px solid #00E5FF" : "2px solid transparent",
                 fontWeight: 700,
-                fontSize: "0.9rem",
+                fontSize: "0.84rem",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px"
+                gap: "6px",
+                whiteSpace: "nowrap"
               }}
             >
-              <Server size={18} /> Virtual Appliance (QCOW2 / Proxmox)
+              <Terminal size={16} /> Tier 1: Portable Linux Daemon &amp; systemd
             </button>
             <button
-              onClick={() => setDeployTab("iso")}
+              onClick={() => setDeployFormat("k8s")}
               style={{
                 flex: 1,
-                padding: "1rem",
-                background: deployTab === "iso" ? "rgba(6, 182, 212, 0.15)" : "transparent",
-                color: deployTab === "iso" ? "#22D3EE" : "#94A3B8",
+                padding: "0.75rem 1rem",
+                background: deployFormat === "k8s" ? "rgba(0, 229, 255, 0.15)" : "transparent",
+                color: deployFormat === "k8s" ? "#00E5FF" : "#94A3B8",
                 border: "none",
-                borderBottom: deployTab === "iso" ? "2px solid #22D3EE" : "2px solid transparent",
+                borderBottom: deployFormat === "k8s" ? "2px solid #00E5FF" : "2px solid transparent",
                 fontWeight: 700,
-                fontSize: "0.9rem",
+                fontSize: "0.84rem",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px"
+                gap: "6px",
+                whiteSpace: "nowrap"
               }}
             >
-              <Download size={18} /> Bare-Metal Live ISO
+              <Layers size={16} /> Tier 2: Kubernetes DaemonSet &amp; Helm
             </button>
             <button
-              onClick={() => setDeployTab("flake")}
+              onClick={() => setDeployFormat("packages")}
               style={{
                 flex: 1,
-                padding: "1rem",
-                background: deployTab === "flake" ? "rgba(6, 182, 212, 0.15)" : "transparent",
-                color: deployTab === "flake" ? "#22D3EE" : "#94A3B8",
+                padding: "0.75rem 1rem",
+                background: deployFormat === "packages" ? "rgba(245, 158, 11, 0.15)" : "transparent",
+                color: deployFormat === "packages" ? "#FBBF24" : "#94A3B8",
                 border: "none",
-                borderBottom: deployTab === "flake" ? "2px solid #22D3EE" : "2px solid transparent",
+                borderBottom: deployFormat === "packages" ? "2px solid #FBBF24" : "2px solid transparent",
                 fontWeight: 700,
-                fontSize: "0.9rem",
+                fontSize: "0.84rem",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px"
+                gap: "6px",
+                whiteSpace: "nowrap"
               }}
             >
-              <Layers size={18} /> Declarative NixOS Flake
+              <Server size={16} /> Native Packages (APT / DNF / APK)
+            </button>
+            <button
+              onClick={() => setDeployFormat("container")}
+              style={{
+                flex: 1,
+                padding: "0.75rem 1rem",
+                background: deployFormat === "container" ? "rgba(0, 229, 255, 0.15)" : "transparent",
+                color: deployFormat === "container" ? "#00E5FF" : "#94A3B8",
+                border: "none",
+                borderBottom: deployFormat === "container" ? "2px solid #00E5FF" : "2px solid transparent",
+                fontWeight: 700,
+                fontSize: "0.84rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                whiteSpace: "nowrap"
+              }}
+            >
+              <Box size={16} /> Tier 4: Container Daemon (Docker / Podman)
             </button>
           </div>
 
           {/* Deployment Tab Content */}
-          <div style={{ padding: "2rem" }}>
-            {deployTab === "qcow2" && (
+          <div style={{ padding: "1.25rem" }}>
+            {deployFormat === "portable" && (
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
                   <div>
-                    <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                      Turnkey QCOW2 Virtual Appliance (2026.1 LTS)
-                    </h3>
-                    <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                      Compatible with QEMU, KVM, Proxmox VE, OpenStack, and VMware ESXi (via `qemu-img convert`).
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                        Exultia Portable Linux Remediator ({EXULTIA_DOWNLOADS.portable.fileSize})
+                      </h3>
+                      <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF", background: "rgba(0, 229, 255, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 700 }}>
+                        Tier 1 Core • Single Binary + systemd
+                      </span>
+                    </div>
+                    <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0 }}>
+                      Compatible with {EXULTIA_DOWNLOADS.portable.targetPlatforms}. Installs self-healing daemon and pre-baked offline catalog to any existing machine in 60 seconds.
                     </p>
                   </div>
-                  <button
-                    onClick={() => copyToClipboard("qemu-system-x86_64 -m 4096 -smp 2 -drive file=exultia-linux.qcow2,format=qcow2 -net nic,model=virtio -net user,hostfwd=tcp::2226-:22 -nographic", "qemu-cmd")}
-                    className="btn-secondary"
-                    style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", fontSize: "0.85rem", cursor: "pointer", borderRadius: "8px" }}
-                  >
-                    {copiedKey === "qemu-cmd" ? <Check size={16} color="#10B981" /> : <Copy size={16} />}
-                    {copiedKey === "qemu-cmd" ? "Copied!" : "Copy Launch Command"}
-                  </button>
-                </div>
-
-                <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: "10px", padding: "1rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", color: "#67E8F9", marginBottom: "1.5rem" }}>
-                  qemu-system-x86_64 -m 4096 -smp 2 \<br />
-                  &nbsp;&nbsp;-drive file=exultia-linux.qcow2,format=qcow2 \<br />
-                  &nbsp;&nbsp;-net nic,model=virtio -net user,hostfwd=tcp::2226-:22 -nographic
-                </div>
-
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
                   <a
-                    href="/releases/exultia-linux-v2026.1-x86_64.qcow2"
-                    download
+                    href={EXULTIA_DOWNLOADS.portable.downloadUrl}
                     className="btn-primary"
-                    style={{ padding: "0.85rem 1.75rem", fontSize: "0.92rem", display: "inline-flex", alignItems: "center", gap: "8px", textDecoration: "none" }}
+                    style={{
+                      padding: "0.6rem 1.25rem",
+                      fontSize: "0.85rem",
+                      background: "linear-gradient(135deg, #00E5FF 0%, #007799 100%)",
+                      color: "#030712",
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      borderRadius: "8px",
+                      fontWeight: 800
+                    }}
                   >
-                    <Download size={18} /> Download Appliance Image (1.4 GB)
+                    <Download size={15} /> Download Archive ({EXULTIA_DOWNLOADS.portable.fileSize})
                   </a>
-                  <span style={{ fontSize: "0.85rem", color: "#94A3B8" }}>
-                    SHA-256 Checksum: <code style={{ color: "#38BDF8" }}>e5f8a01...99bc</code>
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {deployTab === "iso" && (
-              <div>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                  Bare-Metal &amp; Air-Gapped Live Installer ISO
-                </h3>
-                <p style={{ color: "#94A3B8", fontSize: "0.92rem", marginBottom: "1.5rem" }}>
-                  Boot directly from USB or IPMI virtual media. Includes automated partitioner, offline threat database, and zero-network deployment support.
-                </p>
-
-                <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: "10px", padding: "1rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", color: "#67E8F9", marginBottom: "1.5rem" }}>
-                  # Flash bootable live media to enterprise target drive<br />
-                  sudo dd if=exultia-linux-installer.iso of=/dev/sdX bs=4M status=progress oflag=sync
                 </div>
 
-                <a
-                  href="/releases/exultia-linux-installer-v2026.1.iso"
-                  download
-                  className="btn-primary"
-                  style={{ padding: "0.85rem 1.75rem", fontSize: "0.92rem", display: "inline-flex", alignItems: "center", gap: "8px", textDecoration: "none" }}
-                >
-                  <Download size={18} /> Download Live Installer ISO (1.8 GB)
-                </a>
-              </div>
-            )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "10px", marginBottom: "1rem" }}>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>SHA-256 Checksum</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#CBD5E1", wordBreak: "break-all", marginTop: "2px" }}>
+                      {EXULTIA_DOWNLOADS.portable.sha256}
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Pre-Loaded Offline Catalog</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#34D399", marginTop: "2px" }}>
+                      24,388 UVI Advisories + 12,993 CISA KEV Records (100% Air-Gapped)
+                    </div>
+                  </div>
+                </div>
 
-            {deployTab === "flake" && (
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
+                {/* Curl one-liner command */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      One-Command Universal Remote Install:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.portable.curlCmd, "curl-portable")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "curl-portable" ? "#34D399" : "#00E5FF", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "curl-portable" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "curl-portable" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(0, 229, 255, 0.25)",
+                    color: "#00E5FF",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.82rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.portable.curlCmd}
+                  </pre>
+                </div>
+
+                {/* Air-gapped manual extraction */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Air-Gapped Tarball Manual Extraction:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.portable.manualCmd, "manual-portable")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "manual-portable" ? "#34D399" : "#FBBF24", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "manual-portable" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "manual-portable" ? "Copied" : "Copy Commands"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    color: "#FDE68A",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.portable.manualCmd}
+                  </pre>
+                </div>
+
+                {/* Satirical CISO Warning */}
+                <div style={{
+                  marginTop: "1.25rem",
+                  background: "rgba(239, 68, 68, 0.05)",
+                  border: "1px dashed rgba(239, 68, 68, 0.3)",
+                  borderRadius: "10px",
+                  padding: "12px 16px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "12px"
+                }}>
+                  <span style={{ fontSize: "1.25rem", flexShrink: 0, marginTop: "1px" }}>⚠️</span>
                   <div>
-                    <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 6px 0" }}>
-                      Declarative NixOS Flake Module
-                    </h3>
-                    <p style={{ color: "#94A3B8", fontSize: "0.92rem", margin: 0 }}>
-                      Inject the Exultia Autonomous Security Pipeline into any existing NixOS configuration.
+                    <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#F87171", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)", marginBottom: "3px" }}>
+                      Executive Warning for Enterprise CISOs
+                    </div>
+                    <p style={{ margin: 0, fontSize: "0.82rem", color: "#CBD5E1", lineHeight: 1.5 }}>
+                      Deploying this 60-second autonomous remediation daemon on your servers may leave your 40-person alert-triage team with zero Jira tickets to forward to developers. If your CISO just spent a zillion dollars moving all of your cyber analysts to an office down the street from his house, please run this daemon in stealth mode.
                     </p>
                   </div>
-                  <button
-                    onClick={() => copyToClipboard(`services.exultia = {\n  enable = true;\n  role = "server";\n  vantage.autoRemediate = true;\n  kinetic.deterministicRollbackSlaMs = 50;\n};`, "flake-code")}
-                    className="btn-secondary"
-                    style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", fontSize: "0.85rem", cursor: "pointer", borderRadius: "8px" }}
+                </div>
+              </div>
+            )}
+
+            {deployFormat === "k8s" && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                        Exultia Kubernetes Node DaemonSet &amp; Helm Chart
+                      </h3>
+                      <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF", background: "rgba(0, 229, 255, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 700 }}>
+                        Tier 2 Cluster Defense • EKS / GKE / AKS / Talos
+                      </span>
+                    </div>
+                    <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0 }}>
+                      Deploy autonomous node-level threat detection, host socket auditing, and in-memory livepatching across all worker nodes in your cluster.
+                    </p>
+                  </div>
+                  <a
+                    href={EXULTIA_DOWNLOADS.k8s.manifestUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary"
+                    style={{
+                      padding: "0.6rem 1.25rem",
+                      fontSize: "0.85rem",
+                      background: "linear-gradient(135deg, #00E5FF 0%, #007799 100%)",
+                      color: "#030712",
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      borderRadius: "8px",
+                      fontWeight: 800
+                    }}
                   >
-                    {copiedKey === "flake-code" ? <Check size={16} color="#10B981" /> : <Copy size={16} />}
-                    {copiedKey === "flake-code" ? "Copied!" : "Copy Configuration"}
-                  </button>
+                    <Download size={15} /> View Raw Manifest (YAML)
+                  </a>
                 </div>
 
-                <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: "10px", padding: "1.25rem", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", color: "#E2E8F0", lineHeight: 1.6 }}>
-                  <span style={{ color: "#64748B" }}># flake.nix input</span><br />
-                  <span style={{ color: "#F472B6" }}>inputs</span>.exultia-os.url = <span style={{ color: "#34D399" }}>&quot;github:wstrika/exultia?dir=exultia-os&quot;</span>;<br /><br />
-                  <span style={{ color: "#64748B" }}># /etc/nixos/configuration.nix</span><br />
-                  <span style={{ color: "#38BDF8" }}>services.exultia</span> = &#123;<br />
-                  &nbsp;&nbsp;<span style={{ color: "#22D3EE" }}>enable</span> = <span style={{ color: "#FBBF24" }}>true</span>;<br />
-                  &nbsp;&nbsp;<span style={{ color: "#22D3EE" }}>role</span> = <span style={{ color: "#34D399" }}>&quot;server&quot;</span>; <span style={{ color: "#64748B" }}># &quot;server&quot; | &quot;workstation&quot; | &quot;canary&quot;</span><br />
-                  &nbsp;&nbsp;<span style={{ color: "#22D3EE" }}>vantage.autoRemediate</span> = <span style={{ color: "#FBBF24" }}>true</span>;<br />
-                  &nbsp;&nbsp;<span style={{ color: "#22D3EE" }}>kinetic.ring</span> = <span style={{ color: "#FBBF24" }}>1</span>;<br />
-                  &nbsp;&nbsp;<span style={{ color: "#22D3EE" }}>kinetic.deterministicRollbackSlaMs</span> = <span style={{ color: "#FBBF24" }}>50</span>;<br />
-                  &#125;;
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "10px", marginBottom: "1rem" }}>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Helm Repository</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#00E5FF", marginTop: "2px" }}>
+                      https://charts.exultia.org
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Telemetry Export</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#34D399", marginTop: "2px" }}>
+                      Prometheus Metrics (:9100/metrics) + OTEL
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Rollback Mechanism</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#CBD5E1", marginTop: "2px" }}>
+                      Automated Pod &amp; Node Canary Checkpoints
+                    </div>
+                  </div>
+                </div>
+
+                {/* Helm Install Command */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Deploy with Helm 3:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.k8s.helmCmd, "helm-k8s")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "helm-k8s" ? "#34D399" : "#00E5FF", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "helm-k8s" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "helm-k8s" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(0, 229, 255, 0.25)",
+                    color: "#00E5FF",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.82rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.k8s.helmCmd}
+                  </pre>
+                </div>
+
+                {/* Kubectl Manifest Command */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Or Apply Raw Kubernetes DaemonSet:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.k8s.kubectlCmd, "kubectl-k8s")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "kubectl-k8s" ? "#34D399" : "#FBBF24", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "kubectl-k8s" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "kubectl-k8s" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    color: "#FDE68A",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.k8s.kubectlCmd}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {deployFormat === "packages" && (
+              <div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                      Native Linux Package Repositories (APT &amp; DNF)
+                    </h3>
+                    <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF", background: "rgba(0, 229, 255, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 700 }}>
+                      deb &bull; rpm &bull; apk
+                    </span>
+                  </div>
+                  <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0 }}>
+                    Install Exultia using your standard distribution package manager with signed cryptographic repository keys.
+                  </p>
+                </div>
+
+                {/* Debian/Ubuntu APT */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Debian / Ubuntu (APT):
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.packages.debCmd, "apt-pkg")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "apt-pkg" ? "#34D399" : "#00E5FF", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "apt-pkg" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "apt-pkg" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(0, 229, 255, 0.25)",
+                    color: "#00E5FF",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.packages.debCmd}
+                  </pre>
+                </div>
+
+                {/* RHEL/Rocky DNF */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      RHEL / Rocky / Alma / Fedora (DNF):
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.packages.rpmCmd, "dnf-pkg")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "dnf-pkg" ? "#34D399" : "#FBBF24", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "dnf-pkg" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "dnf-pkg" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    color: "#FDE68A",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.packages.rpmCmd}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {deployFormat === "container" && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
+                        Containerized Exultia Daemon (Docker &amp; Podman)
+                      </h3>
+                      <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono, monospace)", color: "#00E5FF", background: "rgba(0, 229, 255, 0.15)", padding: "2px 7px", borderRadius: "4px", fontWeight: 700 }}>
+                        Tier 4 OCI • 18.4 MB Statically Linked Image
+                      </span>
+                    </div>
+                    <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: 0 }}>
+                      Run the autonomous threat remediation daemon as a container on any Docker, Podman, or containerd host with host socket and process visibility.
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.container.pullCmd, "docker-pull")}
+                      className="btn-primary"
+                      style={{
+                        padding: "0.6rem 1rem",
+                        fontSize: "0.82rem",
+                        background: "linear-gradient(135deg, #0284C7 0%, #0369A1 100%)",
+                        color: "#FFFFFF",
+                        border: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        borderRadius: "8px",
+                        fontWeight: 700,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {copiedKey === "docker-pull" ? <Check size={14} /> : <Copy size={14} />}
+                      {copiedKey === "docker-pull" ? "Copied Pull Cmd" : "Copy Pull Command"}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "10px", marginBottom: "1rem" }}>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Container Image</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#00E5FF", marginTop: "2px" }}>
+                      {EXULTIA_DOWNLOADS.container.imageName}
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Footprint</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#34D399", marginTop: "2px" }}>
+                      {EXULTIA_DOWNLOADS.container.imageSize}
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Host Visibility Flags</span>
+                    <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#CBD5E1", marginTop: "2px" }}>
+                      --net=host --pid=host (Full Host Audit)
+                    </div>
+                  </div>
+                </div>
+
+                {/* Docker Run Command */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Docker Launch Command:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.container.dockerCmd, "docker-run")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "docker-run" ? "#34D399" : "#00E5FF", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "docker-run" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "docker-run" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(0, 229, 255, 0.25)",
+                    color: "#00E5FF",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.container.dockerCmd}
+                  </pre>
+                </div>
+
+                {/* Podman Run Command */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono, monospace)" }}>
+                      Podman (SELinux / Rootless) Command:
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(EXULTIA_DOWNLOADS.container.podmanCmd, "podman-run")}
+                      style={{ background: "transparent", border: "none", color: copiedKey === "podman-run" ? "#34D399" : "#FBBF24", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                    >
+                      {copiedKey === "podman-run" ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedKey === "podman-run" ? "Copied" : "Copy Command"}
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    padding: "12px 14px",
+                    background: "#030712",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    color: "#FDE68A",
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.8rem",
+                    overflowX: "auto"
+                  }}>
+                    {EXULTIA_DOWNLOADS.container.podmanCmd}
+                  </pre>
                 </div>
               </div>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 5: ECOSYSTEM CALLOUT (THE TWO-TIER STACK) ─────────────────── */}
-      <section style={{ 
-        background: "radial-gradient(ellipse at center, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0) 70%)", 
-        border: "1px solid rgba(6, 182, 212, 0.25)", 
-        borderRadius: "24px", 
-        padding: "3rem 2rem", 
-        textAlign: "center" 
-      }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-          <ExultiaLinuxIcon size={32} />
-          <span style={{ color: "#94A3B8", fontSize: "1.2rem", fontWeight: 700 }}>+</span>
-          <PureOsIcon size={32} />
-        </div>
-        <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "2rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "1rem" }}>
-          The Sovereign Defense Stack
-        </h2>
-        <p style={{ maxWidth: "740px", margin: "0 auto 2rem auto", color: "#94A3B8", fontSize: "1.05rem", lineHeight: 1.6 }}>
-          Run your application workloads inside lightweight <Link href="/products/pure-os" style={{ color: "#FBBF24", textDecoration: "underline", fontWeight: 700 }}>PureOS Containers</Link> hosted on top of <strong style={{ color: "#22D3EE" }}>Exultia Linux</strong> nodes. Achieve full-stack defense-in-depth from bare-metal hardware up to microservice endpoints.
-        </p>
-
-        <div style={{ display: "flex", gap: "1.25rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/products/pure-os" className="btn-secondary" style={{ padding: "0.85rem 1.85rem", fontSize: "0.95rem" }}>
-            Explore PureOS Containers →
-          </Link>
-          <Link href="/account/subscription" className="btn-primary" style={{ padding: "0.85rem 2rem", fontSize: "0.95rem" }}>
-            Connect to Enterprise Fleet Stream ($100/mo) →
-          </Link>
         </div>
       </section>
 

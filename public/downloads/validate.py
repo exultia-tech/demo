@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Exultia Technologies Inc. All rights reserved.
+# Exultia Verification Suite & Test Harness.
 """
 Exultia Technologies - The "Bullshit Validator"
 Automated Verification Suite for Skeptical Engineers & Technical Evaluators.
