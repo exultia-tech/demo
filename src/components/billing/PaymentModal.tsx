@@ -13,6 +13,9 @@ export default function PaymentModal() {
   const [copiedToken, setCopiedToken] = useState(false);
   const [generatedToken, setGeneratedToken] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [statusNotice, setStatusNotice] = useState<string>("");
+  const [isReturnOpen, setIsReturnOpen] = useState(false);
+  const [returnPlan, setReturnPlan] = useState<string>("Exultia Platform Enterprise");
   const [paypalConfig, setPaypalConfig] = useState<{
     clientId: string;
     mode: string;
@@ -24,23 +27,99 @@ export default function PaymentModal() {
   });
 
   useEffect(() => {
+    fetch("/api/billing/paypal/config")
+      .then((res) => res.json())
+      .then((data) => setPaypalConfig(data))
+      .catch(() => {});
+  }, []);
+
+  // Listen for PayPal return or cancellation query parameters
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const token = params.get("token") || params.get("orderId");
+
+    if (status === "paypal_return" && token) {
+      setIsReturnOpen(true);
+      setIsProcessing(true);
+      setStatusNotice("Verifying and capturing approved PayPal payment...");
+
+      let pending: any = null;
+      try {
+        const stored = sessionStorage.getItem("exultia_pending_paypal");
+        if (stored) pending = JSON.parse(stored);
+      } catch {}
+
+      if (pending?.planName) {
+        setReturnPlan(pending.planName);
+      }
+
+      fetch("/api/billing/paypal/capture-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: token,
+          product: pending?.product || "platform",
+          tier: pending?.tier || "enterprise",
+          billingCycle: pending?.billingCycle || "annual",
+          customPrice: pending?.customPrice,
+        }),
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          if (data.success) {
+            await refreshUser();
+            const tokenStr = `EXULTIA-ED25519-V1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}-ENTERPRISE`;
+            setGeneratedToken(tokenStr);
+            setIsSuccess(true);
+            confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 } });
+            sessionStorage.removeItem("exultia_pending_paypal");
+          } else {
+            setError(data.error || "Failed to capture PayPal payment.");
+          }
+        })
+        .catch((err) => {
+          setError(err.message || "Failed to capture PayPal payment.");
+        })
+        .finally(() => {
+          setIsProcessing(false);
+          setStatusNotice("");
+          window.history.replaceState({}, "", window.location.pathname);
+        });
+    } else if (status === "paypal_cancel") {
+      setIsReturnOpen(true);
+      setError("PayPal checkout was cancelled. No charges were made.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [refreshUser]);
+
+  useEffect(() => {
     if (isPaymentModalOpen) {
       setIsSuccess(false);
       setError(null);
-      fetch("/api/billing/paypal/config")
-        .then((res) => res.json())
-        .then((data) => setPaypalConfig(data))
-        .catch(() => {});
+      setStatusNotice("");
     }
   }, [isPaymentModalOpen]);
 
-  if (!isPaymentModalOpen || !paymentOptions) return null;
+  const isOpen = isPaymentModalOpen || isReturnOpen;
+  if (!isOpen) return null;
 
-  const price = paymentOptions.price ?? 100;
-  const cycleLabel = paymentOptions.billingCycle === "annual" ? "billed annually" : "per month";
+  const activePlanName = paymentOptions?.planName || returnPlan;
+  const price = paymentOptions?.price ?? 100;
+  const cycleLabel = paymentOptions?.billingCycle === "annual" ? "billed annually" : "per month";
+
+  const handleClose = () => {
+    setIsReturnOpen(false);
+    setIsSuccess(false);
+    setError(null);
+    setStatusNotice("");
+    closePaymentModal();
+  };
 
   const handlePayPalCheckout = async () => {
     setIsProcessing(true);
+    setStatusNotice("Connecting to PayPal...");
     setError(null);
 
     try {
@@ -49,10 +128,11 @@ export default function PaymentModal() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          product: paymentOptions.product || "platform",
-          tier: paymentOptions.tier || "enterprise",
-          billingCycle: paymentOptions.billingCycle || "annual",
+          product: paymentOptions?.product || "platform",
+          tier: paymentOptions?.tier || "enterprise",
+          billingCycle: paymentOptions?.billingCycle || "annual",
           customPrice: price,
+          returnPath: window.location.pathname,
         }),
       });
 
@@ -61,18 +141,35 @@ export default function PaymentModal() {
         throw new Error(orderData.error || "Failed to initiate PayPal order");
       }
 
-      // Simulated approval step for sandbox/instant flow
-      await new Promise((r) => setTimeout(r, 900));
+      // If approval URL provided (standard PayPal flow):
+      if (orderData.approvalUrl && !orderData.mock) {
+        setStatusNotice("Redirecting to PayPal Sandbox Checkout...");
+        sessionStorage.setItem(
+          "exultia_pending_paypal",
+          JSON.stringify({
+            orderId: orderData.orderId,
+            product: paymentOptions?.product || "platform",
+            tier: paymentOptions?.tier || "enterprise",
+            billingCycle: paymentOptions?.billingCycle || "annual",
+            customPrice: price,
+            planName: activePlanName,
+          })
+        );
+        window.location.href = orderData.approvalUrl;
+        return;
+      }
 
-      // 2. Capture PayPal Order
+      // Simulated instant flow for mock mode:
+      await new Promise((r) => setTimeout(r, 800));
+
       const captureRes = await fetch("/api/billing/paypal/capture-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           orderId: orderData.orderId,
-          product: paymentOptions.product || "platform",
-          tier: paymentOptions.tier || "enterprise",
-          billingCycle: paymentOptions.billingCycle || "annual",
+          product: paymentOptions?.product || "platform",
+          tier: paymentOptions?.tier || "enterprise",
+          billingCycle: paymentOptions?.billingCycle || "annual",
           customPrice: price,
         }),
       });
@@ -95,8 +192,40 @@ export default function PaymentModal() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setError(msg);
+      setIsProcessing(false);
+      setStatusNotice("");
+    }
+  };
+
+  const handleInstantDevSimulation = async () => {
+    setIsProcessing(true);
+    setStatusNotice("Running instant local simulation...");
+    setError(null);
+    try {
+      const res = await fetch("/api/billing/mock-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product: paymentOptions?.product || "platform",
+          tier: paymentOptions?.tier || "enterprise",
+          billingCycle: paymentOptions?.billingCycle || "annual",
+          customPrice: price,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Simulation failed");
+
+      await refreshUser();
+      const token = `EXULTIA-ED25519-V1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}-ENTERPRISE`;
+      setGeneratedToken(token);
+      setIsSuccess(true);
+      confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 } });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
     } finally {
       setIsProcessing(false);
+      setStatusNotice("");
     }
   };
 
@@ -132,7 +261,7 @@ export default function PaymentModal() {
       >
         {/* Close Button */}
         <button
-          onClick={closePaymentModal}
+          onClick={handleClose}
           style={{
             position: "absolute",
             top: "1.25rem",
@@ -177,7 +306,7 @@ export default function PaymentModal() {
               </div>
 
               <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", margin: "0 0 0.4rem 0" }}>
-                {paymentOptions.planName}
+                {activePlanName}
               </h2>
               <div style={{ fontSize: "2rem", fontWeight: 900, color: "#38BDF8", margin: "0.25rem 0" }}>
                 ${price}
@@ -234,7 +363,7 @@ export default function PaymentModal() {
                 {isProcessing ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    <span>Connecting to PayPal...</span>
+                    <span>{statusNotice || "Connecting to PayPal..."}</span>
                   </>
                 ) : (
                   <>
@@ -243,6 +372,31 @@ export default function PaymentModal() {
                   </>
                 )}
               </button>
+
+              {paypalConfig.mode === "sandbox" && (
+                <button
+                  type="button"
+                  onClick={handleInstantDevSimulation}
+                  disabled={isProcessing}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px dashed rgba(56, 189, 248, 0.4)",
+                    background: "rgba(56, 189, 248, 0.05)",
+                    color: "#38BDF8",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    cursor: isProcessing ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                  }}
+                >
+                  <span>⚡ Instant Dev Simulation (Bypass Login)</span>
+                </button>
+              )}
 
               <div
                 style={{

@@ -78,6 +78,50 @@ function CheckoutContent() {
       .catch(() => {});
   }, []);
 
+  // Listen for PayPal return or cancellation
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const token = searchParams.get("token") || searchParams.get("orderId");
+
+    if (status === "paypal_return" && token) {
+      setIsProcessing(true);
+      fetch("/api/billing/paypal/capture-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: token,
+          product: "platform",
+          tier: "enterprise",
+          billingCycle,
+          customPrice: finalPrice,
+          nodeCount,
+        }),
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          if (data.success) {
+            await refreshUser();
+            const tokenStr = `EXULTIA-ED25519-V1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}-ENTERPRISE`;
+            setGeneratedToken(tokenStr);
+            setIsSuccess(true);
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+          } else {
+            setError(data.error || "Failed to capture PayPal payment.");
+          }
+        })
+        .catch((err) => {
+          setError(err.message || "Failed to capture PayPal payment.");
+        })
+        .finally(() => {
+          setIsProcessing(false);
+          window.history.replaceState({}, "", window.location.pathname);
+        });
+    } else if (status === "paypal_cancel") {
+      setError("PayPal checkout was cancelled. No charges were made.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [searchParams, refreshUser, billingCycle, finalPrice, nodeCount]);
+
   // Calculate pricing
   const fleetCalc = calculateEnterpriseFleetPrice(nodeCount, billingCycle);
   const finalPrice = selectedTier === "community" ? 0 : fleetCalc.monthlyRate;
@@ -114,6 +158,7 @@ function CheckoutContent() {
           billingCycle,
           customPrice: finalPrice,
           nodeCount,
+          returnPath: "/checkout",
         }),
       });
 
@@ -122,8 +167,22 @@ function CheckoutContent() {
         throw new Error(orderData.error || "Failed to initiate PayPal order");
       }
 
-      // Simulated approval step for sandbox/instant flow
-      await new Promise((r) => setTimeout(r, 1000));
+      // If approval URL provided (standard PayPal flow):
+      if (orderData.approvalUrl && !orderData.mock) {
+        sessionStorage.setItem(
+          "exultia_pending_checkout",
+          JSON.stringify({
+            nodeCount,
+            billingCycle,
+            finalPrice,
+          })
+        );
+        window.location.href = orderData.approvalUrl;
+        return;
+      }
+
+      // Simulated instant flow for mock mode:
+      await new Promise((r) => setTimeout(r, 800));
 
       // 2. Capture order
       const captureRes = await fetch("/api/billing/paypal/capture-order", {
@@ -157,7 +216,6 @@ function CheckoutContent() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setError(msg);
-    } finally {
       setIsProcessing(false);
     }
   };

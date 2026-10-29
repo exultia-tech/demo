@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { product, tier, billingCycle, customPrice } = body;
+    const { product, tier, billingCycle, customPrice, returnPath } = body;
 
     if (!product || !tier) {
       return NextResponse.json({ error: 'Product and tier are required' }, { status: 400 });
@@ -84,13 +84,38 @@ export async function POST(req: Request) {
     const customId = `${user.id}:${product}:${resolvedTier}:${billingCycle || 'monthly'}:${amount}`;
     const description = `Exultia ${product.toUpperCase()} - ${resolvedTier.toUpperCase()} [Pay What You Want: $${amount}]`;
 
+    // Dynamic dev vs prod URL detection
+    const originHeader = req.headers.get('origin');
+    const hostHeader = req.headers.get('host');
+    const refererHeader = req.headers.get('referer');
+    let appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://exultia.tech';
+
+    if (originHeader && (originHeader.includes('localhost') || originHeader.includes('127.0.0.1'))) {
+      appBaseUrl = originHeader;
+    } else if (hostHeader && (hostHeader.includes('localhost') || hostHeader.includes('127.0.0.1'))) {
+      const proto = req.headers.get('x-forwarded-proto') || 'http';
+      appBaseUrl = `${proto}://${hostHeader}`;
+    } else if (refererHeader && (refererHeader.includes('localhost') || refererHeader.includes('127.0.0.1'))) {
+      try {
+        const u = new URL(refererHeader);
+        appBaseUrl = `${u.protocol}//${u.host}`;
+      } catch {}
+    }
+
+    const targetReturnPath = (returnPath && typeof returnPath === 'string' && returnPath.startsWith('/'))
+      ? returnPath
+      : '/account/subscription';
+
+    const returnUrl = `${appBaseUrl}${targetReturnPath}?status=paypal_return`;
+    const cancelUrl = `${appBaseUrl}${targetReturnPath}?status=paypal_cancel`;
+
     const order = await createPayPalOrder({
       amount,
       currency: 'USD',
       customId,
       description,
-      returnUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://exultia.tech'}/account/subscription?status=success`,
-      cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://exultia.tech'}/account/subscription?status=cancel`,
+      returnUrl,
+      cancelUrl,
     });
 
     return NextResponse.json({
