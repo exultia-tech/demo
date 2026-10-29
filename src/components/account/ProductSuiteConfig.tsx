@@ -8,8 +8,7 @@ import {
   Cpu, 
   Lock, 
   Terminal, 
-  Check, 
-  CheckCircle2, 
+  Check,  
   AlertCircle, 
   Copy, 
   Download, 
@@ -18,9 +17,7 @@ import {
   Sparkles, 
   KeyRound, 
   Activity,
-  Sliders,
   ExternalLink,
-  Layers,
   Radio,
   Send,
   Database,
@@ -33,11 +30,9 @@ import {
   DaedelusIcon, 
   VantageIcon, 
   PraxisIcon, 
-  PureOsIcon, 
-  ExultiaLinuxIcon 
+  PureOsIcon
 } from "@/components/BrandIcons";
 
-type ConfigSection = "all" | "daedelus" | "vantage" | "praxis" | "containers";
 
 export default function ProductSuiteConfig() {
   const { user, getUserTier } = useAuth();
@@ -46,8 +41,6 @@ export default function ProductSuiteConfig() {
   const uviTier = getUserTier("uvi");
   const praxisTier = getUserTier("praxis");
   const pureosTier = getUserTier("pureos");
-
-  const [activeFilter, setActiveFilter] = useState<ConfigSection>("all");
 
   // ── 1. DAEDELUS WORKSTATION STATE ──────────────────────────────────────────
   const [blockC2, setBlockC2] = useState(true);
@@ -215,96 +208,8 @@ export default function ProductSuiteConfig() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
       
-      {/* ── HEADER BANNER ─────────────────────────────────────────────────── */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%)",
-        border: "1px solid rgba(0, 229, 255, 0.25)",
-        borderRadius: "18px",
-        padding: "1.75rem",
-        boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)"
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
-          <div>
-            <div style={{ fontSize: "0.74rem", color: "var(--accent-primary, #00E5FF)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <Sliders size={14} />
-              <span>Unified Platform Controls</span>
-            </div>
-            <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", margin: 0, fontFamily: "var(--font-display)" }}>
-              Product Suite Configuration
-            </h1>
-            <p style={{ color: "#94A3B8", fontSize: "0.9rem", margin: "6px 0 0 0", maxWidth: "680px", lineHeight: 1.5 }}>
-              Centralized management cockpit for active workstation firewalls, threat feed webhooks, autonomous daemon policies, and container registry enforcement.
-            </p>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "4px 10px",
-              background: "rgba(52, 211, 153, 0.12)",
-              border: "1px solid rgba(52, 211, 153, 0.3)",
-              borderRadius: "6px",
-              color: "#34D399",
-              fontSize: "0.75rem",
-              fontFamily: "var(--font-mono)",
-              fontWeight: 700
-            }}>
-              <CheckCircle2 size={13} />
-              ALL ENGINES ACTIVE
-            </span>
-          </div>
-        </div>
-
-        {/* Section Jump Bar */}
-        <div style={{
-          display: "flex",
-          gap: "8px",
-          flexWrap: "wrap",
-          paddingTop: "1rem",
-          borderTop: "1px solid rgba(255, 255, 255, 0.08)"
-        }}>
-          {[
-            { id: "all", label: "All Engines", icon: Layers },
-            { id: "daedelus", label: "Workstations (Daedelus)", icon: DaedelusIcon },
-            { id: "vantage", label: "Threat Feeds (Vantage)", icon: VantageIcon },
-            { id: "praxis", label: "Remediation & Daemon (Praxis)", icon: PraxisIcon },
-            { id: "containers", label: "Container Policies (PureOS)", icon: PureOsIcon },
-          ].map(tab => {
-            const Icon = tab.icon;
-            const active = activeFilter === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id as ConfigSection)}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  padding: "7px 14px",
-                  borderRadius: "8px",
-                  fontSize: "0.82rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  border: active ? "1px solid var(--accent-primary, #00E5FF)" : "1px solid rgba(255, 255, 255, 0.1)",
-                  background: active ? "rgba(0, 229, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
-                  color: active ? "#FFFFFF" : "#94A3B8",
-                  transition: "all 0.15s ease"
-                }}
-              >
-                <Icon size={14} glow={false} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* ── 1. DAEDELUS WORKSTATION & COMPILER CONTROLS ─────────────────────── */}
-      {(activeFilter === "all" || activeFilter === "daedelus") && (
-        <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <DaedelusIcon size={24} glow={false} />
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
@@ -484,11 +389,9 @@ export default function ProductSuiteConfig() {
 
           </div>
         </section>
-      )}
 
       {/* ── 2. VANTAGE THREAT INTEL & FEEDS CONTROLS ────────────────────────── */}
-      {(activeFilter === "all" || activeFilter === "vantage") && (
-        <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <VantageIcon size={24} />
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
@@ -669,11 +572,9 @@ export default function ProductSuiteConfig() {
 
           </div>
         </section>
-      )}
 
       {/* ── 3. PRAXIS REMEDIATION & DAEMON CONTROLS ─────────────────────────── */}
-      {(activeFilter === "all" || activeFilter === "praxis") && (
-        <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <PraxisIcon size={24} />
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
@@ -827,11 +728,9 @@ export default function ProductSuiteConfig() {
 
           </div>
         </section>
-      )}
 
       {/* ── 4. CONTAINER & REGISTRY CONTROLS ───────────────────────────────── */}
-      {(activeFilter === "all" || activeFilter === "containers") && (
-        <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <section style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <PureOsIcon size={24} />
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
@@ -922,8 +821,6 @@ export default function ProductSuiteConfig() {
 
           </div>
         </section>
-      )}
-
     </div>
   );
 }
