@@ -78,6 +78,21 @@ function CheckoutContent() {
       .catch(() => {});
   }, []);
 
+  // Calculate pricing
+  const fleetCalc = calculateEnterpriseFleetPrice(nodeCount, billingCycle);
+  const finalPrice = selectedTier === "community" ? 0 : fleetCalc.monthlyRate;
+  const annualTotal = selectedTier === "community" ? 0 : (billingCycle === "annual" ? fleetCalc.monthlyRate * 12 : fleetCalc.monthlyRate * 12);
+
+  // Preset node options
+  const nodePresets = [
+    { nodes: 1, label: "1 Node", hint: "Solo Dev" },
+    { nodes: 5, label: "5 Nodes", hint: "Small Team ★" },
+    { nodes: 10, label: "10 Nodes", hint: "Growing Shop" },
+    { nodes: 25, label: "25 Nodes", hint: "Flat Cap ★" },
+    { nodes: 50, label: "50 Nodes", hint: "Scale Fleet" },
+    { nodes: 100, label: "100 Nodes", hint: "Infrastructure" },
+  ];
+
   // Listen for PayPal return or cancellation
   useEffect(() => {
     const status = searchParams.get("status");
@@ -121,21 +136,6 @@ function CheckoutContent() {
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [searchParams, refreshUser, billingCycle, finalPrice, nodeCount]);
-
-  // Calculate pricing
-  const fleetCalc = calculateEnterpriseFleetPrice(nodeCount, billingCycle);
-  const finalPrice = selectedTier === "community" ? 0 : fleetCalc.monthlyRate;
-  const annualTotal = selectedTier === "community" ? 0 : (billingCycle === "annual" ? fleetCalc.monthlyRate * 12 : fleetCalc.monthlyRate * 12);
-
-  // Preset node options
-  const nodePresets = [
-    { nodes: 1, label: "1 Node", hint: "Solo Dev" },
-    { nodes: 5, label: "5 Nodes", hint: "Small Team ★" },
-    { nodes: 10, label: "10 Nodes", hint: "Growing Shop" },
-    { nodes: 25, label: "25 Nodes", hint: "Flat Cap ★" },
-    { nodes: 50, label: "50 Nodes", hint: "Scale Fleet" },
-    { nodes: 100, label: "100 Nodes", hint: "Infrastructure" },
-  ];
 
   // PayPal Checkout
   const handlePayPalCheckout = async () => {

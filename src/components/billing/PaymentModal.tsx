@@ -454,7 +454,7 @@ export default function PaymentModal() {
               Payment Confirmed!
             </h3>
             <p style={{ color: "#94A3B8", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-              Your subscription to <strong style={{ color: "#67E8F9" }}>{paymentOptions.planName}</strong> is active.
+              Your subscription to <strong style={{ color: "#67E8F9" }}>{activePlanName}</strong> is active.
             </p>
 
             {generatedToken && (
