@@ -13,6 +13,7 @@ from . import __version__
 from .engine import KineticEngine
 from .daemon import KineticDaemon
 from .provenance import ProvenanceVerifier
+from .compliance_drift import ComplianceDriftManager
 
 
 # Configure UTF-8 encoding for standard output across all platforms
@@ -32,7 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kinetic",
         parents=[common_parser],
-        description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream & Sub-Second Deterministic Rollback Binary"
+        description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream, Drift Sentinel & Sub-Second Deterministic Rollback Binary"
     )
     parser.add_argument("--version", action="version", version=f"kinetic {__version__}")
 
@@ -59,11 +60,20 @@ def build_parser() -> argparse.ArgumentParser:
     rollback_parser.add_argument("--latest", action="store_true", help="Rollback the most recently applied mitigation")
 
     # Command: daemon
-    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with canary health probes")
+    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with canary health probes and drift auto-reversion")
     daemon_parser.add_argument("--interval", type=int, default=3600, help="Sync interval in seconds (default: 3600)")
     daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
     daemon_parser.add_argument("--token", help="Exultia Kinetic authorization token")
     daemon_parser.add_argument("--ring", type=int, choices=[0, 1, 2], default=0, help="Staged rollout ring (0=Canary, 1=Cautious, 2=Broad)")
+    daemon_parser.add_argument("--revert-drift", dest="revert_drift", action="store_true", default=True, help="Enable automatic drift reversion to SOX/PCI baseline (default: enabled)")
+    daemon_parser.add_argument("--no-revert-drift", dest="revert_drift", action="store_false", help="Disable automatic drift reversion")
+    daemon_parser.add_argument("--compliance-mode", choices=["sox_pci", "pci", "sox", "strict"], default="sox_pci", help="Compliance baseline standards to enforce (default: sox_pci)")
+
+    # Command: drift (Configuration Drift Audit & Instant Reconciliation)
+    drift_parser = subparsers.add_parser("drift", parents=[common_parser], help="Audit and auto-revert configuration drift against SOX and PCI-DSS baselines")
+    drift_parser.add_argument("action", choices=["audit", "revert", "fix"], default="audit", nargs="?", help="Action: audit (inspect only) or revert/fix (reconcile to baseline)")
+    drift_parser.add_argument("--compliance-mode", choices=["sox_pci", "pci", "sox", "strict"], default="sox_pci", help="Compliance baseline standards to enforce (default: sox_pci)")
+    drift_parser.add_argument("--dry-run", action="store_true", help="Simulate reversion without modifying files")
 
     # Command: status
     status_parser = subparsers.add_parser("status", parents=[common_parser], help="Inspect host mitigation status and active snapshots")
@@ -100,7 +110,6 @@ def run_self_test(engine: KineticEngine) -> bool:
 
     # Execute deterministic rollback
     t0 = time.time()
-    # Create fake snapshot record to test rollback
     from .models import SnapshotRecord
     snap_rec = SnapshotRecord(
         snapshot_id="SNAP-TEST-001",
@@ -193,9 +202,60 @@ def cli_entry():
             feed_url=args.feed_url,
             token=args.token,
             interval=args.interval,
-            ring=args.ring
+            ring=args.ring,
+            revert_drift=args.revert_drift,
+            compliance_mode=args.compliance_mode
         )
         daemon.start()
+
+    elif args.command == "drift":
+        manager = ComplianceDriftManager(
+            state_dir=str(engine.base_dir),
+            baseline_mode=args.compliance_mode
+        )
+
+        if args.action == "audit":
+            findings = manager.audit()
+            if args.json:
+                print(json.dumps([f.to_dict() for f in findings], indent=2))
+            else:
+                print("\n=================================================")
+                print(f"  EXULTIA CONFIGURATION DRIFT AUDIT ({args.compliance_mode.upper()} BASELINE)")
+                print("=================================================")
+                if not findings:
+                    print("  [OK] ZERO DRIFT DETECTED across all SOX & PCI-DSS invariants.")
+                    print("       All monitored system parameters adhere to authoritative best practices.\n")
+                else:
+                    print(f"  WARNING: Detected {len(findings)} configuration drift violations:\n")
+                    for idx, f in enumerate(findings, 1):
+                        standards_label = ", ".join(f.control.standards)
+                        print(f"  {idx}. [{f.control.control_id}] {f.control.name} ({f.control.category})")
+                        print(f"     Standard:      {standards_label}")
+                        print(f"     Target:        {f.control.target_path}")
+                        print(f"     Current Value: {f.current_value}")
+                        print(f"     Desired Value: {f.control.desired_value}")
+                        print("")
+                    print("  To automatically revert all drifted controls back to best practices, run:")
+                    print("    kinetic drift revert\n")
+
+        elif args.action in ["revert", "fix"]:
+            print(f"\n[Kinetic Drift Sentinel] Reconciling configuration drift against {args.compliance_mode.upper()} baseline...")
+            results = manager.revert_drift(
+                dry_run=args.dry_run,
+                snapshot_engine=engine
+            )
+            if args.json:
+                print(json.dumps([r.to_dict() for r in results], indent=2))
+            else:
+                if not results:
+                    print("  [OK] No configuration drift found. Nothing to reconcile.")
+                else:
+                    for r in results:
+                        tag = "REVERTED" if r.success else "FAILED"
+                        print(f"  • [{tag}] {r.control.control_id} - {r.control.name}")
+                        print(f"    Result: {r.message}")
+                    reverted_count = sum(1 for r in results if r.success)
+                    print(f"\n[Kinetic Drift Sentinel] Successfully reconciled {reverted_count}/{len(results)} controls to baseline.\n")
 
     elif args.command == "status":
         info = engine.status()
