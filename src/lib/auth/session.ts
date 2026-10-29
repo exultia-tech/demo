@@ -68,20 +68,21 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
           const parsed = JSON.parse(Buffer.from(rawB64, 'base64url').toString('utf8'));
           if (parsed.exp && parsed.exp > Date.now()) {
             const isAuthorized = isAuthorizedOperator(parsed.email);
+            const isEnterprise = parsed.tier === 'enterprise' || isAuthorized;
             const userEmail = parsed.email || 'operator@exultia.tech';
-            const role = isAuthorized ? 'admin' : 'user';
-            const tier = isAuthorized ? 'enterprise' : 'free';
-            const defaultProducts = ['pureide', 'uvi', 'axiom', 'praxis', 'pureos'];
+            const role = isAuthorized ? 'admin' : (parsed.role || 'user');
+            const tier = isEnterprise ? 'enterprise' : 'free';
+            const defaultProducts = ['platform', 'pureide', 'uvi', 'axiom', 'praxis', 'pureos', 'kinetic', 'argent', 'eris', 'valkyrie'];
             return {
               id: parsed.userId,
               email: userEmail,
-              name: userEmail.split('@')[0],
+              name: parsed.name || userEmail.split('@')[0],
               role,
               isImpersonating: false,
               impersonatedBy: null,
               subscriptions: defaultProducts.map(p => ({
                 product: p,
-                tier,
+                tier: isEnterprise ? 'enterprise' : tier,
                 status: 'active'
               }))
             };
@@ -233,3 +234,18 @@ export async function destroySession(): Promise<void> {
   }
 }
 
+/**
+ * Creates an instantaneous, self-verifying Enterprise VIP session token
+ */
+export function createEnterpriseGuestToken(): string {
+  const expiresAt = new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000);
+  const sessionPayload = JSON.stringify({
+    userId: 'usr_enterprise_vip_client',
+    email: 'client@enterprise.exultia.tech',
+    name: 'Enterprise VIP Client',
+    role: 'user',
+    tier: 'enterprise',
+    exp: expiresAt.getTime(),
+  });
+  return `s_fallback_${signPayload(Buffer.from(sessionPayload).toString('base64url'))}`;
+}
