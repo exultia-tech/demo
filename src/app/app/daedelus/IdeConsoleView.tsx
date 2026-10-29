@@ -1383,23 +1383,41 @@ export default function IdeConsoleView() {
     }
 
     try {
-      const size = 250;
-      let sortParam = "sortBy=downloadCount&sortOrder=desc";
-      if (sort === "ALPHA_ASC") sortParam = "sortBy=name&sortOrder=asc";
-      else if (sort === "ALPHA_DESC") sortParam = "sortBy=name&sortOrder=desc";
-      else if (sort === "DOWNLOADS_ASC") sortParam = "sortBy=downloadCount&sortOrder=asc";
+      const size = 50;
+      let sortByParam = "downloadCount";
+      let sortOrderParam = "desc";
+      if (sort === "ALPHA_ASC") { sortByParam = "name"; sortOrderParam = "asc"; }
+      else if (sort === "ALPHA_DESC") { sortByParam = "name"; sortOrderParam = "desc"; }
+      else if (sort === "DOWNLOADS_ASC") { sortByParam = "downloadCount"; sortOrderParam = "asc"; }
 
-      const url = searchQuery 
-        ? `https://open-vsx.org/api/-/search?query=${encodeURIComponent(searchQuery)}&${sortParam}&offset=${currentOffset}&size=${size}`
-        : `https://open-vsx.org/api/-/search?${sortParam}&offset=${currentOffset}&size=${size}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      
-      if (data.total !== undefined) {
-        setTotalExtensions(data.total);
+      let data: any = null;
+      try {
+        const apiUrl = `/api/pureide/extensions?query=${encodeURIComponent(searchQuery || "")}&sortBy=${sortByParam}&sortOrder=${sortOrderParam}&offset=${currentOffset}&size=${size}`;
+        const res = await fetch(apiUrl);
+        if (res.ok) {
+          data = await res.json();
+        }
+      } catch (proxyErr) {
+        console.warn("Local extensions proxy failed, attempting direct OpenVSX...", proxyErr);
+      }
+
+      if (!data || !Array.isArray(data.extensions)) {
+        const sortParam = `sortBy=${sortByParam}&sortOrder=${sortOrderParam}`;
+        const directUrl = searchQuery 
+          ? `https://open-vsx.org/api/-/search?query=${encodeURIComponent(searchQuery)}&${sortParam}&offset=${currentOffset}&size=${size}`
+          : `https://open-vsx.org/api/-/search?${sortParam}&offset=${currentOffset}&size=${size}`;
+        const directRes = await fetch(directUrl);
+        if (directRes.ok) {
+          data = await directRes.json();
+        }
       }
       
-      const rawExtensions = data.extensions || [];
+      const total = typeof data?.totalSize === "number" ? data.totalSize : typeof data?.total === "number" ? data.total : (data?.extensions?.length || 0);
+      if (total > 0) {
+        setTotalExtensions(total);
+      }
+      
+      const rawExtensions = Array.isArray(data?.extensions) ? data.extensions : [];
       if (rawExtensions.length < size) {
         setHasMore(false);
       } else {
@@ -1512,10 +1530,13 @@ export default function IdeConsoleView() {
           threatFeeds: feeds
         });
 
+        const safeFiles = ext.files && typeof ext.files === "object" ? ext.files : { icon: ext.icon || undefined };
+
         return {
           ...ext,
           displayName: ext.displayName || ext.name || "Unnamed Extension",
           description: ext.description || "No description provided.",
+          files: safeFiles,
           securityGrade: evalResult.grade,
           permissions: globalIdx % 3 === 0 
             ? ["Network Sockets", "Child Process", "Reads .env"] 
@@ -1532,7 +1553,7 @@ export default function IdeConsoleView() {
           githubRepo: ghRepo,
           isGithubVerified: hasGithub,
           githubStars: stars,
-          supportedEngines: ["vscode", "theia"]
+          supportedEngines: ["vscode", "theia", "zed", "neovim", "jupyter"]
         };
       });
 
@@ -1549,7 +1570,10 @@ export default function IdeConsoleView() {
 
       const nonDupSpecial = currentOffset === 0 ? filteredSpecial.filter(s => !enriched.some(e => e.name === s.name && e.namespace === s.namespace)) : [];
 
-      if (append) {
+      if (rawExtensions.length === 0 && currentOffset === 0 && !append) {
+        setExtensions(filteredSpecial);
+        setTotalExtensions(filteredSpecial.length);
+      } else if (append) {
         setExtensions(prev => {
           const existingIds = new Set(prev.map(p => `${p.namespace}.${p.name}`));
           const newUnique = enriched.filter(e => !existingIds.has(`${e.namespace}.${e.name}`));
@@ -1563,6 +1587,19 @@ export default function IdeConsoleView() {
 
     } catch (e) {
       console.error("OpenVSX fetch error:", e);
+      if (currentOffset === 0 && !append) {
+        const qLower = (searchQuery || "").toLowerCase();
+        const filteredSpecial = qLower
+          ? microsoftExtensions.filter(e => 
+              (e.displayName || "").toLowerCase().includes(qLower) || 
+              (e.name || "").toLowerCase().includes(qLower) || 
+              (e.namespace || "").toLowerCase().includes(qLower) ||
+              (e.description || "").toLowerCase().includes(qLower)
+            )
+          : microsoftExtensions;
+        setExtensions(filteredSpecial);
+        setTotalExtensions(filteredSpecial.length);
+      }
     }
     setLoading(false);
     setLoadingMore(false);
@@ -1573,20 +1610,21 @@ export default function IdeConsoleView() {
     fetchExtensions(query, offset, true, sortBy);
   };
 
-  useEffect(() => {
-    setOffset(0);
-    setHasMore(true);
-    fetchExtensions(query, 0, false, sortBy);
-  }, [sortBy]);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      fetchExtensions("", 0, false, sortBy);
+      return;
+    }
     const delayDebounceFn = setTimeout(() => {
       setOffset(0);
       setHasMore(true);
       fetchExtensions(query, 0, false, sortBy);
-    }, 450);
+    }, 350);
     return () => clearTimeout(delayDebounceFn);
-  }, [query]);
+  }, [query, sortBy]);
 
   // Engine Switch handler with cart warning
   const handleEngineSwitch = (target: IdeEngine) => {
@@ -1774,7 +1812,7 @@ export default function IdeConsoleView() {
           namespace: c.namespace,
           name: c.name,
           displayName: c.displayName,
-          icon: c.files.icon,
+          icon: c.files?.icon || (c as any).icon || "",
           githubRepo: c.githubRepo
         }))
       : [
@@ -1812,8 +1850,13 @@ export default function IdeConsoleView() {
   };
 
   const displayedExtensions = extensions.filter(ext => {
-    // Hide extensions that are not compatible with the active selected IDE engine
-    const isEngineCompatible = !ext.supportedEngines || ext.supportedEngines.includes(selectedEngine);
+    // Allow extensions that match the selected IDE engine or universal language plugins
+    const isEngineCompatible = 
+      selectedEngine === "vscode" || 
+      selectedEngine === "theia" || 
+      !ext.supportedEngines || 
+      ext.supportedEngines.length === 0 || 
+      ext.supportedEngines.includes(selectedEngine);
     if (!isEngineCompatible) return false;
 
     const isReasonablyOk = (ext.cveCount || 0) === 0 && !ext.deprecated;
@@ -2149,7 +2192,7 @@ build_hardened_ide:
             namespace: c.namespace,
             name: c.name,
             displayName: c.displayName,
-            icon: c.files.icon,
+            icon: c.files?.icon || (c as any).icon || "",
             githubRepo: c.githubRepo
           })),
           author: communityAuthorHandle.trim() 
@@ -2863,7 +2906,7 @@ build_hardened_ide:
                           {/* Column 2: Extension Icon + Name + Description */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, paddingRight: '0.5rem' }}>
                             <img 
-                              src={ext.files.icon} 
+                              src={ext.files?.icon || (ext as any).icon || ""} 
                               alt={ext.displayName} 
                               style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover', background: 'rgba(255, 255, 255, 0.08)', flexShrink: 0 }} 
                               onError={(e) => (e.currentTarget.style.display = 'none')} 
@@ -3051,7 +3094,7 @@ build_hardened_ide:
                         }}
                       >
                         <img
-                          src={ext.files.icon}
+                          src={ext.files?.icon || (ext as any).icon || ""}
                           alt=""
                           style={{ width: '22px', height: '22px', borderRadius: '4px' }}
                           onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -4690,7 +4733,7 @@ build_hardened_ide:
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <img src={inspectingExt.files.icon} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <img src={inspectingExt.files?.icon || (inspectingExt as any).icon || ""} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
                 <div>
                   <h2 style={{ margin: 0, fontSize: '1.3rem' }}>{inspectingExt.displayName}</h2>
                   <span style={{ fontSize: '0.85rem', color: 'var(--accent-primary)' }}>{inspectingExt.namespace}.{inspectingExt.name}</span>
