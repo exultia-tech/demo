@@ -269,9 +269,8 @@ export default function Navbar() {
                         <ExultiaLinuxIcon size={32} glow={false} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
                           Portable Exultia Daemon
-                          <span style={{ fontSize: "0.6rem", background: "rgba(0, 229, 255, 0.2)", color: "#00E5FF", border: "1px solid rgba(0, 229, 255, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>60s REMEDIATOR</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Single-binary autonomous threat remediation for Linux</div>
                       </div>
@@ -297,9 +296,8 @@ export default function Navbar() {
                         <VantageIcon size={32} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
                           Vantage Threat Feed
-                          <span style={{ fontSize: "0.6rem", background: "rgba(168, 85, 247, 0.2)", color: "#C084FC", border: "1px solid rgba(168, 85, 247, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>24,388 CVES</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Real-time STIX/TAXII radar &amp; pre-baked offline advisory database</div>
                       </div>
@@ -325,9 +323,8 @@ export default function Navbar() {
                         <ArgentIcon size={32} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
                           Argent OS Patch Feed
-                          <span style={{ fontSize: "0.6rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>27 DISTROS</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>Multi-distro vendor errata, regular package updates &amp; zero-downtime hotfixes</div>
                       </div>
@@ -365,9 +362,8 @@ export default function Navbar() {
                         <DaedelusIcon size={30} glow={false} />
                       </div>
                       <div>
-                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
                           Daedelus
-                          <span style={{ fontSize: "0.6rem", background: "rgba(16, 185, 129, 0.2)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "1px 5px", borderRadius: "3px", fontWeight: 800 }}>IDE • OCI • PKG</span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "2px" }}>
                           Unified clean-room developer workstations, distroless containers &amp; zero-CVE packages
