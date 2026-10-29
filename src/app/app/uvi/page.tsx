@@ -53,9 +53,7 @@ export default function ThreatFeedPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Dedicated Threat Feeds (Vendor OS patch management separated into dedicated Argent feed)
-  const threatFeedsList = useMemo(() => {
-    return UVI_PUBLIC_FEED_SOURCES.filter(f => f.category !== "Vendor Security Disclosures");
-  }, []);
+  const threatFeedsList = useMemo(() => UVI_PUBLIC_FEED_SOURCES, []);
 
   // Alphabetized threat feeds list for sidebar
   const alphabetizedFeeds = useMemo(() => {
@@ -1353,16 +1351,28 @@ export default function ThreatFeedPage() {
                                       ? "rgba(168, 85, 247, 0.2)" 
                                       : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
                                       ? "rgba(59, 130, 246, 0.2)"
+                                      : (record.uviId.includes("IP-BLOCKLIST") || record.legacyUviId?.includes("IP-BLOCKLIST") || record.title.includes("Perimeter IP Blocklist"))
+                                      ? "rgba(56, 189, 248, 0.2)"
+                                      : (record.uviId.includes("PHISH-BLOCKLIST") || record.legacyUviId?.includes("PHISH-BLOCKLIST") || record.title.includes("Phishing"))
+                                      ? "rgba(245, 158, 11, 0.2)"
                                       : "rgba(236, 72, 153, 0.2)",
                                     color: record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
                                       ? "#C084FC" 
                                       : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
                                       ? "#93C5FD"
+                                      : (record.uviId.includes("IP-BLOCKLIST") || record.legacyUviId?.includes("IP-BLOCKLIST") || record.title.includes("Perimeter IP Blocklist"))
+                                      ? "#38BDF8"
+                                      : (record.uviId.includes("PHISH-BLOCKLIST") || record.legacyUviId?.includes("PHISH-BLOCKLIST") || record.title.includes("Phishing"))
+                                      ? "#FBBF24"
                                       : "#F472B6",
                                     border: record.affectedTargets[0]?.ecosystem?.includes("VS Code") 
                                       ? "1px solid rgba(168, 85, 247, 0.4)" 
                                       : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
                                       ? "1px solid rgba(59, 130, 246, 0.4)"
+                                      : (record.uviId.includes("IP-BLOCKLIST") || record.legacyUviId?.includes("IP-BLOCKLIST") || record.title.includes("Perimeter IP Blocklist"))
+                                      ? "1px solid rgba(56, 189, 248, 0.4)"
+                                      : (record.uviId.includes("PHISH-BLOCKLIST") || record.legacyUviId?.includes("PHISH-BLOCKLIST") || record.title.includes("Phishing"))
+                                      ? "1px solid rgba(245, 158, 11, 0.4)"
                                       : "1px solid rgba(236, 72, 153, 0.4)",
                                     padding: "0.1rem 0.4rem",
                                     borderRadius: "4px"
@@ -1372,6 +1382,10 @@ export default function ThreatFeedPage() {
                                     ? "🧩 MALICIOUS EXT" 
                                     : record.affectedTargets[0]?.ecosystem?.includes("GitHub Actions")
                                     ? "⚡ WORKFLOW EXPLOIT"
+                                    : (record.uviId.includes("IP-BLOCKLIST") || record.legacyUviId?.includes("IP-BLOCKLIST") || record.title.includes("Perimeter IP Blocklist"))
+                                    ? "🌐 IP BLOCKLIST DIGEST"
+                                    : (record.uviId.includes("PHISH-BLOCKLIST") || record.legacyUviId?.includes("PHISH-BLOCKLIST") || record.title.includes("Phishing"))
+                                    ? "🎣 PHISHING DIGEST"
                                     : "🛡️ NON-CVE MALWARE"}
                                 </span>
                               )}
@@ -1776,7 +1790,7 @@ export default function ThreatFeedPage() {
                         Affected Components:
                       </span>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
-                        {record.affectedTargets.map((tgt, i) => (
+                        {record.affectedTargets.slice(0, 10).map((tgt, i) => (
                           <span key={i} style={{
                             fontSize: "0.75rem",
                             background: "rgba(255, 255, 255, 0.05)",
@@ -1787,6 +1801,19 @@ export default function ThreatFeedPage() {
                             {tgt.product} ({tgt.affectedVersions})
                           </span>
                         ))}
+                        {record.affectedTargets.length > 10 && (
+                          <span style={{
+                            fontSize: "0.72rem",
+                            background: "rgba(139, 92, 246, 0.15)",
+                            border: "1px solid rgba(139, 92, 246, 0.3)",
+                            padding: "0.2rem 0.5rem",
+                            borderRadius: "4px",
+                            color: "#C084FC",
+                            fontWeight: 600
+                          }}>
+                            +{record.affectedTargets.length - 10} more targets
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

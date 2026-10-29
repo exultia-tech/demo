@@ -194,7 +194,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsProductsOpen(false)}
             >
               <button 
-                className={`nav-link ${isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext ? "active" : ""}`}
+                className={`nav-link ${isDaedelusContext || isThreatFeedContext || isPraxisContext || isAxiomContext || isExultiaLinuxContext || isArgentContext ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",

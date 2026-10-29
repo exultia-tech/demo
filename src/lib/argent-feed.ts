@@ -15,6 +15,7 @@
 export type ArgentOsCategory = 
   | 'ubuntu'
   | 'debian'
+  | 'linux-mint'
   | 'rocky'
   | 'rhel'
   | 'almalinux'
@@ -29,6 +30,7 @@ export type ArgentOsCategory =
   | 'freebsd'
   | 'openbsd'
   | 'netbsd'
+  | 'macos'
   | 'wolfi'
   | 'nixos'
   | 'void'
@@ -54,6 +56,7 @@ export type ArgentOsFamily =
   | 'bsd-freebsd'
   | 'bsd-openbsd'
   | 'bsd-netbsd'
+  | 'bsd-darwin'
   | 'linux-wolfi'
   | 'linux-nix'
   | 'linux-void'
@@ -63,13 +66,15 @@ export type ArgentOsFamily =
   | 'linux-openwrt'
   | 'linux-openeuler'
   | 'linux-cloudlinux'
-  | 'linux-azure';
+  | 'linux-azure'
+  | 'multi-distro';
 
 export type ArgentAdvisoryType = 
   | 'BUGFIX'         // Non-security stability, crash, memory leak, logic fixes (RHBA, RLBA, ALBA, Bodhi bugfix, FreeBSD-EN)
   | 'ENHANCEMENT'    // Hardware enablement, driver updates, performance optimizations, feature backports (RHEA, RLEA, ALEA)
   | 'MAINTENANCE'    // Distro point release updates, base runtime sync, compiler & toolchain updates
-  | 'GENERAL';       // General package bumps, timezone data, CA trust certificates, locale updates
+  | 'GENERAL'        // General package bumps, timezone data, CA trust certificates, locale updates
+  | 'SECURITY';      // Vendor security advisories & CVE updates (DSA, USN, RHSA, GLSA, ALAS, etc.)
 
 export type ArgentVendorSeverity = 'CRITICAL' | 'IMPORTANT' | 'MODERATE' | 'LOW';
 
@@ -167,7 +172,7 @@ export interface ArgentPublicFeedSource {
   icon: string;
   provider: string;
   officialFeedUrl: string;
-  format: 'OSV' | 'JSON' | 'OVAL' | 'CSAF' | 'UPDATEINFO' | 'GIT_TREE' | 'XML';
+  format: 'OSV' | 'JSON' | 'OVAL' | 'CSAF' | 'UPDATEINFO' | 'GIT_TREE' | 'XML' | 'RSS';
   recordsIngested: number;
   updateFrequency: string;
   documentationUrl: string;
@@ -179,7 +184,7 @@ export interface ArgentPublicFeedSource {
   coverage: string;
   refreshRate: string;
   homepageUrl: string;
-  feedTypesCovered: ('Bugfix' | 'Enhancement' | 'Maintenance' | 'General')[];
+  feedTypesCovered: ('Bugfix' | 'Enhancement' | 'Maintenance' | 'General' | 'Security')[];
 }
 
 /**
@@ -832,6 +837,486 @@ export const ARGENT_PUBLIC_FEED_SOURCES: ArgentPublicFeedSource[] = [
     status: "Realtime",
     supportedReleases: ["Azure Linux 3.0", "CBL-Mariner 2.0"],
     feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance"]
+  },
+
+  // 28. Linux Mint (Debian & Ubuntu Ecosystem)
+  {
+    id: "feed-linux-mint-relnotes",
+    os: "linux-mint",
+    name: "Linux Mint Release Notes & Package Errata",
+    category: "Debian & Ubuntu Ecosystem",
+    icon: "🍃",
+    provider: "Linux Mint Development Team & Clem Lefebvre",
+    officialFeedUrl: "https://linuxmint.com/rel_notes.php",
+    format: "JSON",
+    recordsIngested: 24500,
+    updateFrequency: "Continuous point release sync with upstream Ubuntu base",
+    documentationUrl: "https://linuxmint.com/rel_notes.php",
+    homepageUrl: "https://linuxmint.com/",
+    description: "Linux Mint desktop environment (Cinnamon, MATE, Xfce) and core system package updates, tracking Ubuntu LTS base package errata and desktop optimizations.",
+    scope: "Linux Mint 22 (Wilma), 21.3 (Virginia) Cinnamon, MATE, Xfce",
+    access: "Public release notes & repository package pools",
+    coverage: "Cinnamon desktop stability, XApp improvements, Nemo file manager fixes, upstream Ubuntu USN base synchronization",
+    refreshRate: "Continuous",
+    status: "Realtime",
+    supportedReleases: ["Linux Mint 22 (Wilma)", "Linux Mint 21.3 (Virginia)"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "General"]
+  },
+
+  // 29. Apple macOS (Darwin/BSD Base)
+  {
+    id: "feed-apple-macos-security",
+    os: "macos",
+    name: "Apple macOS & Darwin Base Security Updates",
+    category: "BSD & Unix Ecosystem",
+    icon: "🍎",
+    provider: "Apple Product Security (PSIRT) & Darwin Engineering",
+    officialFeedUrl: "https://support.apple.com/en-us/HT201222",
+    format: "JSON",
+    recordsIngested: 36200,
+    updateFrequency: "As Released / Rapid Security Responses (RSR)",
+    documentationUrl: "https://support.apple.com/en-us/HT201222",
+    homepageUrl: "https://support.apple.com/en-us/HT201222",
+    description: "Official Apple macOS operating system security updates, Darwin XNU kernel patches, and rapid security response errata across macOS Sequoia and Sonoma.",
+    scope: "macOS Sequoia 15, Sonoma 14, Ventura 13 (Apple Silicon & Intel)",
+    access: "Public Apple Security Releases & Web Feed",
+    coverage: "XNU kernel memory-safety mitigations, WebKit zero-day remediations, Gatekeeper security enhancements, Darwin base system updates",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["macOS Sequoia 15", "macOS Sonoma 14"],
+    feedTypesCovered: ["Security", "Maintenance", "Bugfix"]
+  },
+
+  // 30. Debian Security Advisories (DSA)
+  {
+    id: "feed-debian-dsa",
+    os: "debian",
+    name: "Debian Security Advisories (DSA) Feed",
+    category: "Debian & Ubuntu Ecosystem",
+    icon: "🔴",
+    provider: "Debian Security Team",
+    officialFeedUrl: "https://www.debian.org/security/",
+    format: "JSON",
+    recordsIngested: 112000,
+    updateFrequency: "Continuous publication upon security fix approval",
+    documentationUrl: "https://www.debian.org/security/",
+    homepageUrl: "https://www.debian.org/security/",
+    description: "Debian Security Advisories (DSA) providing rapid security fixes, CVE patches, and security backports for Debian stable and oldstable releases.",
+    scope: "Debian 12 (Bookworm), Debian 11 (Bullseye) Security Updates",
+    access: "Public Debian Security Tracker & Advisory Feed",
+    coverage: "Critical CVE mitigations, remote code execution fixes, kernel security backports, OpenSSL security patches",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Debian 12 (Bookworm)", "Debian 11 (Bullseye)"],
+    feedTypesCovered: ["Security", "Bugfix"]
+  },
+
+  // 31. Ubuntu Security Notices (USN) & RSS Feed
+  {
+    id: "feed-ubuntu-usn",
+    os: "ubuntu",
+    name: "Ubuntu Security Notices (USN) & RSS Feed",
+    category: "Debian & Ubuntu Ecosystem",
+    icon: "🟠",
+    provider: "Canonical Security Team",
+    officialFeedUrl: "https://ubuntu.com/security/notices.rss",
+    format: "RSS",
+    recordsIngested: 68500,
+    updateFrequency: "Hourly live security notice publishing",
+    documentationUrl: "https://ubuntu.com/security/notices",
+    homepageUrl: "https://ubuntu.com/security/notices",
+    description: "Official Canonical security notices and real-time RSS feed publishing CVE patch matrices, CVSS metrics, and package updates across Ubuntu LTS releases.",
+    scope: "Ubuntu 24.04 LTS (Noble), 22.04 LTS (Jammy), 20.04 LTS (Focal)",
+    access: "Public USN RSS Feed & REST API",
+    coverage: "Kernel privilege escalations, OpenSSH mitigations, systemd vulnerabilities, container runtime CVEs",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
+    feedTypesCovered: ["Security", "Bugfix"]
+  },
+
+  // 32. Red Hat Customer Portal Advisories (RHSA)
+  {
+    id: "feed-redhat-rhsa",
+    os: "rhel",
+    name: "Red Hat Customer Portal Advisories (RHSA)",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🎩",
+    provider: "Red Hat Product Security",
+    officialFeedUrl: "https://access.redhat.com/security/updates/advisory",
+    format: "CSAF",
+    recordsIngested: 94000,
+    updateFrequency: "Continuous security errata publication",
+    documentationUrl: "https://access.redhat.com/security/updates/advisory",
+    homepageUrl: "https://access.redhat.com/security/updates/advisory",
+    description: "Authoritative Red Hat Security Advisories (RHSA) publishing security errata, CVSSv3 scores, and CVE remediation packages for RHEL.",
+    scope: "RHEL 9, RHEL 8, RHEL 7 Extended Lifecycle",
+    access: "Public Red Hat Security Portal & CSAF Provider",
+    coverage: "Kernel zero-days, cryptographic library vulnerabilities, virtualization escape patches, SELinux policy fixes",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["RHEL 9.4", "RHEL 8.10"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 33. Fedora Security Updates (Bodhi)
+  {
+    id: "feed-fedora-security",
+    os: "fedora",
+    name: "Fedora Bodhi Security Updates",
+    category: "Independent & Rolling Distros",
+    icon: "🔵",
+    provider: "Fedora Project Security Team",
+    officialFeedUrl: "https://bodhi.fedoraproject.org/",
+    format: "JSON",
+    recordsIngested: 42300,
+    updateFrequency: "Continuous security updates stream",
+    documentationUrl: "https://bodhi.fedoraproject.org/",
+    homepageUrl: "https://bodhi.fedoraproject.org/",
+    description: "Fedora Bodhi updates system filtered specifically for security advisories and fast-track vulnerability remediation RPM packages.",
+    scope: "Fedora 40, Fedora 39 Security Updates",
+    access: "Public Bodhi REST API",
+    coverage: "Upstream zero-day fast-tracks, memory safety bugs, network protocol patches",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Fedora 40", "Fedora 39"],
+    feedTypesCovered: ["Security", "Bugfix"]
+  },
+
+  // 34. AlmaLinux Security Errata (ALSA)
+  {
+    id: "feed-almalinux-alsa",
+    os: "almalinux",
+    name: "AlmaLinux Security Errata (ALSA)",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🔵",
+    provider: "AlmaLinux OS Foundation Security Team",
+    officialFeedUrl: "https://errata.almalinux.org/",
+    format: "CSAF",
+    recordsIngested: 38700,
+    updateFrequency: "Continuous mirror synchronization upon security build",
+    documentationUrl: "https://errata.almalinux.org/",
+    homepageUrl: "https://errata.almalinux.org/",
+    description: "AlmaLinux Security Errata (ALSA) tracking enterprise vulnerability mitigations and CVE patch matrices in CSAF 2.0 and DNF updateinfo.",
+    scope: "AlmaLinux 9 & 8 BaseOS, AppStream Security",
+    access: "Public Errata REST API & CSAF 2.0",
+    coverage: "OpenSSL security patches, glibc buffer overflow mitigations, Linux kernel security errata",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["AlmaLinux 9.4", "AlmaLinux 8.10"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 35. Rocky Linux Security Errata (RLSA)
+  {
+    id: "feed-rocky-rlsa",
+    os: "rocky",
+    name: "Rocky Linux Security Errata (RLSA)",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🟢",
+    provider: "Rocky Enterprise Software Foundation (RESF)",
+    officialFeedUrl: "https://errata.rockylinux.org/",
+    format: "UPDATEINFO",
+    recordsIngested: 41200,
+    updateFrequency: "Continuous security build synchronization",
+    documentationUrl: "https://errata.rockylinux.org/",
+    homepageUrl: "https://errata.rockylinux.org/",
+    description: "Rocky Linux Security Advisories (RLSA) delivering CVE fixes and security errata across Rocky Linux enterprise server and container builds.",
+    scope: "Rocky Linux 9 & 8 BaseOS, AppStream",
+    access: "Public DNF updateinfo.xml & RESF REST API",
+    coverage: "Enterprise server security patches, container base image hardening, network daemon CVE fixes",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Rocky Linux 9", "Rocky Linux 8"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 36. Oracle Linux Security (ELSA)
+  {
+    id: "feed-oracle-elsa",
+    os: "oracle-linux",
+    name: "Oracle Linux Security Advisories (ELSA)",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🔴",
+    provider: "Oracle Linux Security Response",
+    officialFeedUrl: "https://linux.oracle.com/security/",
+    format: "OVAL",
+    recordsIngested: 49800,
+    updateFrequency: "Daily sync with ULN security metadata",
+    documentationUrl: "https://linux.oracle.com/security/",
+    homepageUrl: "https://linux.oracle.com/security/",
+    description: "Oracle Linux Enterprise Security Advisories (ELSA) providing CVE vulnerability patches for Unbreakable Enterprise Kernel (UEK) and RHCK.",
+    scope: "Oracle Linux 9, 8, UEK Release 7",
+    access: "Public OVAL XML & ULN security advisories",
+    coverage: "Ksplice zero-downtime security patches, UEK kernel vulnerabilities, system service security fixes",
+    refreshRate: "Daily",
+    status: "Daily",
+    supportedReleases: ["Oracle Linux 9", "Oracle Linux 8"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 37. SUSE Security Announcements (SUSE-SU)
+  {
+    id: "feed-suse-security",
+    os: "suse",
+    name: "SUSE Security Announcements (SUSE-SU)",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🦎",
+    provider: "SUSE Security Team",
+    officialFeedUrl: "https://www.suse.com/support/security/",
+    format: "CSAF",
+    recordsIngested: 51200,
+    updateFrequency: "Continuous publication of security updates",
+    documentationUrl: "https://www.suse.com/support/security/",
+    homepageUrl: "https://www.suse.com/support/security/",
+    description: "Official SUSE Security Updates (SUSE-SU) providing CVE patch matrices, CSAF metadata, and Zypper security errata for SUSE Linux Enterprise.",
+    scope: "SLES 15 SP6, SLES 15 SP5, SUSE Linux Enterprise Server",
+    access: "Public CSAF 2.0 & OVAL definitions",
+    coverage: "Enterprise Linux kernel CVEs, YaST security patches, enterprise storage driver vulnerability remediations",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["SLES 15 SP6", "SLES 15 SP5"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 38. openSUSE Security Updates
+  {
+    id: "feed-opensuse-security",
+    os: "suse",
+    name: "openSUSE Security Updates & Announcements",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🦎",
+    provider: "openSUSE Security Team & Maintainers",
+    officialFeedUrl: "https://lists.opensuse.org/archives/list/security-announce@lists.opensuse.org/",
+    format: "JSON",
+    recordsIngested: 37400,
+    updateFrequency: "Real-time mailing list archives & repository feeds",
+    documentationUrl: "https://lists.opensuse.org/archives/list/security-announce@lists.opensuse.org/",
+    homepageUrl: "https://lists.opensuse.org/archives/list/security-announce@lists.opensuse.org/",
+    description: "openSUSE official security announcement mailing list and repository update stream covering openSUSE Leap and Tumbleweed.",
+    scope: "openSUSE Leap 15.6, Tumbleweed Rolling",
+    access: "Public mailing list archives & Zypper repo security data",
+    coverage: "Community-driven security fixes, desktop package vulnerabilities, system utility CVE patches",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["openSUSE Leap 15.6", "openSUSE Tumbleweed"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 39. Gentoo Linux Security Advisories (GLSA)
+  {
+    id: "feed-gentoo-glsa",
+    os: "gentoo",
+    name: "Gentoo Linux Security Advisories (GLSA)",
+    category: "Independent & Rolling Distros",
+    icon: "🟣",
+    provider: "Gentoo Linux Security Team",
+    officialFeedUrl: "https://security.gentoo.org/",
+    format: "XML",
+    recordsIngested: 18900,
+    updateFrequency: "Continuous publication upon security review",
+    documentationUrl: "https://security.gentoo.org/",
+    homepageUrl: "https://security.gentoo.org/",
+    description: "Official Gentoo Linux Security Advisories (GLSA) cataloging package vulnerabilities, CVSS metrics, and glsa-check remediation ebuilds.",
+    scope: "Gentoo Portage Tree @world Security",
+    access: "Public GLSA XML feed & Portage metadata",
+    coverage: "Portage package security patches, toolchain vulnerability mitigations, C library security fixes",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Gentoo Stable Rolling"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 40. Arch Linux Security Tracker (ASA)
+  {
+    id: "feed-arch-security",
+    os: "arch",
+    name: "Arch Linux Security Tracker (ASA)",
+    category: "Independent & Rolling Distros",
+    icon: "🏹",
+    provider: "Arch Linux Security Team",
+    officialFeedUrl: "https://security.archlinux.org/",
+    format: "JSON",
+    recordsIngested: 29400,
+    updateFrequency: "Live continuous vulnerability tracking",
+    documentationUrl: "https://security.archlinux.org/",
+    homepageUrl: "https://security.archlinux.org/",
+    description: "Authoritative Arch Linux Security Advisories (ASA) tracking upstream CVEs, affected package versions, and patched releases across Core and Extra.",
+    scope: "Arch Linux Core & Extra Packages",
+    access: "Public JSON API & Security Tracker",
+    coverage: "Real-time rolling release CVE tracking, kernel vulnerability patches, pacman package updates",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Arch Linux Rolling"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 41. Alpine Linux Security Database (secfixes)
+  {
+    id: "feed-alpine-secfixes",
+    os: "alpine",
+    name: "Alpine Linux Security Database (secfixes)",
+    category: "Lightweight & Container OS",
+    icon: "🏔️",
+    provider: "Alpine Linux Security Team",
+    officialFeedUrl: "https://secdb.alpinelinux.org/",
+    format: "JSON",
+    recordsIngested: 26800,
+    updateFrequency: "Continuous publication of secfixes database",
+    documentationUrl: "https://secdb.alpinelinux.org/",
+    homepageUrl: "https://secdb.alpinelinux.org/",
+    description: "Official Alpine Linux security database mapping CVEs to fixed package versions across all active Alpine branches and container images.",
+    scope: "Alpine v3.20, v3.19, Edge (Main & Community)",
+    access: "Public secdb JSON feeds",
+    coverage: "musl libc security fixes, BusyBox vulnerability patches, lightweight container security errata",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Alpine v3.20", "Alpine v3.19"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 42. Amazon Linux Security Center (ALAS Security)
+  {
+    id: "feed-amazon-alas-sec",
+    os: "amazon-linux",
+    name: "Amazon Linux Security Center (ALAS)",
+    category: "Cloud & Hyperscaler Linux",
+    icon: "📦",
+    provider: "AWS Security Engineering",
+    officialFeedUrl: "https://alas.aws.amazon.com/",
+    format: "UPDATEINFO",
+    recordsIngested: 32100,
+    updateFrequency: "Continuous AWS cloud security advisory sync",
+    documentationUrl: "https://alas.aws.amazon.com/",
+    homepageUrl: "https://alas.aws.amazon.com/",
+    description: "Amazon Linux Security Center publishing authoritative ALAS security bulletins, CVSS severity ratings, and DNF updateinfo for AL2023 and AL2.",
+    scope: "Amazon Linux 2023 & AL2 EC2 / Container AMI",
+    access: "Public RSS & DNF security metadata",
+    coverage: "AWS Nitro hypervisor security, cloud-init vulnerabilities, enterprise Linux server CVE fixes",
+    refreshRate: "Daily",
+    status: "Daily",
+    supportedReleases: ["Amazon Linux 2023", "Amazon Linux 2"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 43. FreeBSD Security Advisories (FreeBSD-SA) & RSS
+  {
+    id: "feed-freebsd-sa",
+    os: "freebsd",
+    name: "FreeBSD Security Advisories (FreeBSD-SA) & RSS",
+    category: "BSD & Unix Ecosystem",
+    icon: "😈",
+    provider: "FreeBSD Security Officer & Secteam",
+    officialFeedUrl: "https://www.freebsd.org/security/rss.xml",
+    format: "RSS",
+    recordsIngested: 21500,
+    updateFrequency: "Continuous security notice publishing & RSS syndication",
+    documentationUrl: "https://www.freebsd.org/security/advisories/",
+    homepageUrl: "https://www.freebsd.org/security/advisories/",
+    description: "Official FreeBSD Security Advisories (FreeBSD-SA) and syndication RSS feed publishing CVE mitigations and security patches for base system components.",
+    scope: "FreeBSD 14.1-RELEASE, 13.3-RELEASE Base System",
+    access: "Public RSS feed & freebsd-update security stream",
+    coverage: "Kernel network stack vulnerabilities, OpenSSH security advisories, bhyve hypervisor escape mitigations",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["FreeBSD 14.1-RELEASE", "FreeBSD 13.3-RELEASE"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 44. OpenBSD Security & Reliability Errata
+  {
+    id: "feed-openbsd-security-errata",
+    os: "openbsd",
+    name: "OpenBSD Security & Reliability Errata",
+    category: "BSD & Unix Ecosystem",
+    icon: "🐡",
+    provider: "OpenBSD Errata Team & Theo de Raadt",
+    officialFeedUrl: "https://www.openbsd.org/errata.html",
+    format: "GIT_TREE",
+    recordsIngested: 16200,
+    updateFrequency: "Continuous publication upon patch verification",
+    documentationUrl: "https://www.openbsd.org/errata.html",
+    homepageUrl: "https://www.openbsd.org/errata.html",
+    description: "Official OpenBSD security errata patches delivered via syspatch binary updates and source tree errata patches.",
+    scope: "OpenBSD 7.5, 7.4 Base System & Kernel",
+    access: "Public HTTP errata mirrors & syspatch stream",
+    coverage: "pf packet filter security fixes, OpenSSH vulnerability remediations, kernel memory safety mitigations",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["OpenBSD 7.5", "OpenBSD 7.4"],
+    feedTypesCovered: ["Security", "Bugfix"]
+  },
+
+  // 45. NetBSD Security Advisories (NetBSD-SA)
+  {
+    id: "feed-netbsd-sa",
+    os: "netbsd",
+    name: "NetBSD Security Advisories (NetBSD-SA)",
+    category: "BSD & Unix Ecosystem",
+    icon: "🚩",
+    provider: "NetBSD Security Officer Team",
+    officialFeedUrl: "https://www.netbsd.org/support/security/",
+    format: "JSON",
+    recordsIngested: 17400,
+    updateFrequency: "Publication upon coordinated disclosure",
+    documentationUrl: "https://www.netbsd.org/support/security/",
+    homepageUrl: "https://www.netbsd.org/support/security/",
+    description: "Official NetBSD Security Advisories (NetBSD-SA) cataloging vulnerabilities, CVE references, and patch instructions for NetBSD releases.",
+    scope: "NetBSD 10.0, 9.4 Base System & Kernel",
+    access: "Public NetBSD security portal & mailing lists",
+    coverage: "Kernel subsystem vulnerabilities, base system utility CVE fixes, cryptographic module updates",
+    refreshRate: "Weekly",
+    status: "Daily",
+    supportedReleases: ["NetBSD 10.0", "NetBSD 9.4"],
+    feedTypesCovered: ["Security"]
+  },
+
+  // 46. LinuxSecurity.com Multi-Distro Advisories
+  {
+    id: "feed-linuxsecurity-aggregator",
+    os: "kernel",
+    name: "LinuxSecurity.com Multi-Distro Advisories",
+    category: "Multi-Distro Aggregators",
+    icon: "🌐",
+    provider: "LinuxSecurity.com Advisory Syndication",
+    officialFeedUrl: "https://linuxsecurity.com/about/linuxsecurity-rss-feeds",
+    format: "RSS",
+    recordsIngested: 145000,
+    updateFrequency: "Continuous multi-distro RSS syndication",
+    documentationUrl: "https://linuxsecurity.com/about/linuxsecurity-rss-feeds",
+    homepageUrl: "https://linuxsecurity.com/advisories",
+    description: "Centralized multi-distribution security advisory aggregator providing customized RSS feeds for 12 popular distributions, including hybrid feeds and direct vendor syndications.",
+    scope: "Multi-Distribution Linux (Debian, Ubuntu, Red Hat, Fedora, SUSE, Arch, Gentoo, Slackware, Mageia)",
+    access: "Public RSS Feeds & Syndication Portal",
+    coverage: "Multi-distribution security notices, kernel vulnerability advisories, package errata across 12 major Linux distros",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["Multi-Distribution Linux"],
+    feedTypesCovered: ["Security", "Bugfix", "Maintenance"]
+  },
+
+  // 47. Global Cyber Incident Response Team (gCIRT) Links
+  {
+    id: "feed-gcirt-advisories",
+    os: "kernel",
+    name: "Global Cyber Incident Response Team (gCIRT) Advisories",
+    category: "Multi-Distro Aggregators",
+    icon: "🌐",
+    provider: "Global Cyber Incident Response Team (gCIRT)",
+    officialFeedUrl: "https://gcirt.com/advisories",
+    format: "JSON",
+    recordsIngested: 88000,
+    updateFrequency: "Daily curation of global platform advisory links",
+    documentationUrl: "https://gcirt.com/advisories",
+    homepageUrl: "https://gcirt.com/advisories",
+    description: "Maintains an up-to-date repository and global directory of application, operating system, and cloud platform advisory URLs.",
+    scope: "Global Platform, Operating System & Infrastructure Advisories",
+    access: "Public Advisory Directory & Links",
+    coverage: "Consolidated platform advisory URLs, incident response links, and coordinated disclosure trackers",
+    refreshRate: "Daily",
+    status: "Daily",
+    supportedReleases: ["Global Platform & OS Advisories"],
+    feedTypesCovered: ["Security", "General"]
   }
 ];
 

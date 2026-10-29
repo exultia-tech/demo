@@ -65,15 +65,15 @@ export default function ArgentThreatFeedPage() {
   }, []);
 
   const FEED_CATEGORIES = useMemo(() => [
-    { id: "ALL", label: "All Distros", icon: "≡ƒîÉ", count: ARGENT_PUBLIC_FEED_SOURCES.length },
-    { id: "Debian & Ubuntu Ecosystem", label: "Debian & Ubuntu", icon: "≡ƒƒá", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Debian & Ubuntu Ecosystem").length },
-    { id: "Enterprise Linux (RHEL/Rocky/Alma)", label: "Enterprise Linux", icon: "≡ƒƒó", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Enterprise Linux (RHEL/Rocky/Alma)").length },
-    { id: "Lightweight & Container OS", label: "Container & Edge", icon: "≡ƒÅö∩╕Å", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Lightweight & Container OS").length },
-    { id: "Cloud & Hyperscaler Linux", label: "Cloud & Hyperscalers", icon: "≡ƒôª", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Cloud & Hyperscaler Linux").length },
-    { id: "BSD & Unix Ecosystem", label: "BSD & UNIX", icon: "≡ƒÿê", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "BSD & Unix Ecosystem").length },
-    { id: "Independent & Rolling Distros", label: "Rolling & Community", icon: "≡ƒÅ╣", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Independent & Rolling Distros").length },
-    { id: "Embedded & Edge Linux", label: "Embedded & IoT", icon: "≡ƒô╢", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Embedded & Edge Linux").length },
-    { id: "Upstream Linux Kernel", label: "Kernel Stable", icon: "≡ƒÉº", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Upstream Linux Kernel").length }
+    { id: "ALL", label: "All Distros", icon: "🌐", count: ARGENT_PUBLIC_FEED_SOURCES.length },
+    { id: "Debian & Ubuntu Ecosystem", label: "Debian & Ubuntu", icon: "🟠", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Debian & Ubuntu Ecosystem").length },
+    { id: "Enterprise Linux (RHEL/Rocky/Alma)", label: "Enterprise Linux", icon: "🟢", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Enterprise Linux (RHEL/Rocky/Alma)").length },
+    { id: "Lightweight & Container OS", label: "Container & Edge", icon: "🏔️", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Lightweight & Container OS").length },
+    { id: "Cloud & Hyperscaler Linux", label: "Cloud & Hyperscalers", icon: "📦", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Cloud & Hyperscaler Linux").length },
+    { id: "BSD & Unix Ecosystem", label: "BSD & UNIX", icon: "😈", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "BSD & Unix Ecosystem").length },
+    { id: "Independent & Rolling Distros", label: "Rolling & Community", icon: "🏹", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Independent & Rolling Distros").length },
+    { id: "Embedded & Edge Linux", label: "Embedded & IoT", icon: "📶", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Embedded & Edge Linux").length },
+    { id: "Upstream Linux Kernel", label: "Kernel Stable", icon: "🐧", count: ARGENT_PUBLIC_FEED_SOURCES.filter(f => f.category === "Upstream Linux Kernel").length }
   ], []);
 
   // Search & Filter State
@@ -278,7 +278,7 @@ export default function ArgentThreatFeedPage() {
         marginBottom: "1.5rem"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.88rem", color: "#E2E8F0", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "1.1rem" }}>ΓÜí</span>
+          <span style={{ fontSize: "1.1rem" }}>⚡</span>
           <span>
             <strong>Argent Licensing:</strong> Looking for machine-readable distro patch feeds, automated errata webhooks, or enterprise fleet seats?
           </span>
@@ -290,7 +290,7 @@ export default function ArgentThreatFeedPage() {
             color: "#38BDF8",
             fontWeight: 700
           }}>
-            Community ┬╖ Pro ┬╖ Enterprise Tiers
+            Community · Pro · Enterprise Tiers
           </span>
         </div>
         <Link
@@ -307,7 +307,7 @@ export default function ArgentThreatFeedPage() {
             whiteSpace: "nowrap"
           }}
         >
-          View Plans &amp; Upgrade ΓåÆ
+          View Plans &amp; Upgrade →
         </Link>
       </div>
 
@@ -377,15 +377,15 @@ export default function ArgentThreatFeedPage() {
             borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
             paddingTop: "0.75rem" 
           }}>
-            <span>≡ƒÉ¢ <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bug Fixes</span>
-            <span>ΓÇó</span>
-            <span>ΓÜí <strong style={{ color: "#38BDF8" }}>{enhancementCount}</strong> Enhancements</span>
-            <span>ΓÇó</span>
-            <span>≡ƒöº <strong style={{ color: "#A78BFA" }}>{maintenanceCount}</strong> Maintenance</span>
-            <span>ΓÇó</span>
-            <span>≡ƒôª <strong style={{ color: "#C084FC" }}>{totalPackagesCount}</strong> Packages</span>
-            <span>ΓÇó</span>
-            <span>≡ƒîÉ <strong style={{ color: "#34D399" }}>{ARGENT_PUBLIC_FEED_SOURCES.length}</strong> Distros</span>
+            <span>🐛 <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bug Fixes</span>
+            <span>•</span>
+            <span>⚡ <strong style={{ color: "#38BDF8" }}>{enhancementCount}</strong> Enhancements</span>
+            <span>•</span>
+            <span>🔧 <strong style={{ color: "#A78BFA" }}>{maintenanceCount}</strong> Maintenance</span>
+            <span>•</span>
+            <span>📦 <strong style={{ color: "#C084FC" }}>{totalPackagesCount}</strong> Packages</span>
+            <span>•</span>
+            <span>🌐 <strong style={{ color: "#34D399" }}>{ARGENT_PUBLIC_FEED_SOURCES.length}</strong> Distros</span>
           </div>
         </div>
       </div>
@@ -445,7 +445,7 @@ export default function ArgentThreatFeedPage() {
                 }}
                 title="Expand Distro Feeds Sidebar"
               >
-                Γû╢
+                ▶
               </button>
 
               <div style={{
@@ -483,7 +483,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title={searchQuery ? `Searching: "${searchQuery}" (Click to expand)` : "Search Distro Patches in Sidebar"}
                 >
-                  ≡ƒöì
+                  🔍
                 </button>
               </div>
 
@@ -503,7 +503,7 @@ export default function ArgentThreatFeedPage() {
                 }}
                 title={`View All ${ARGENT_PUBLIC_FEED_SOURCES.length} Distro Feeds Directory Modal`}
               >
-                ≡ƒîÉ
+                🌐
               </button>
             </div>
           ) : (
@@ -520,7 +520,7 @@ export default function ArgentThreatFeedPage() {
               }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
-                    <span style={{ fontSize: "1rem" }}>≡ƒîÉ</span>
+                    <span style={{ fontSize: "1rem" }}>🌐</span>
                     <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "0.02em" }}>
                       Distro Feeds
                     </span>
@@ -554,7 +554,7 @@ export default function ArgentThreatFeedPage() {
                     }}
                     title="Collapse Sidebar"
                   >
-                    ΓùÇ
+                    ◀
                   </button>
                 </div>
 
@@ -595,7 +595,7 @@ export default function ArgentThreatFeedPage() {
                     fontSize: "0.75rem",
                     pointerEvents: "none"
                   }}>
-                    ≡ƒöì
+                    🔍
                   </span>
                   {searchQuery && (
                     <button
@@ -614,7 +614,7 @@ export default function ArgentThreatFeedPage() {
                       }}
                       title="Clear search"
                     >
-                      Γ£ò
+                      ✕
                     </button>
                   )}
                 </div>
@@ -650,7 +650,7 @@ export default function ArgentThreatFeedPage() {
                       whiteSpace: "nowrap"
                     }}
                   >
-                    Reset Γ£ò
+                    Reset ✕
                   </button>
                 </div>
               )}
@@ -684,7 +684,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
-                    <span style={{ fontSize: "0.85rem" }}>≡ƒîÉ</span>
+                    <span style={{ fontSize: "0.85rem" }}>🌐</span>
                     <span>All Distros Combined</span>
                   </div>
                   <span style={{
@@ -766,9 +766,9 @@ export default function ArgentThreatFeedPage() {
                     transition: "all 0.15s ease"
                   }}
                 >
-                  <span>≡ƒîÉ</span>
+                  <span>🌐</span>
                   <span>View All {ARGENT_PUBLIC_FEED_SOURCES.length} Distro Feeds</span>
-                  <span>Γåù</span>
+                  <span>↗</span>
                 </button>
               </div>
             </>
@@ -825,7 +825,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title="Prioritize zero-downtime micro-mitigations and instant live service reloads"
                 >
-                  <span>ΓÜí</span>
+                  <span>⚡</span>
                   <span>Zero-Downtime Rollout View</span>
                   <span style={{
                     fontSize: "0.65rem",
@@ -857,7 +857,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title="Assess patches using conventional quantitative vendor severity classifications"
                 >
-                  <span>≡ƒôè</span>
+                  <span>📊</span>
                   <span>Classic Vendor Severity</span>
                   <span style={{
                     fontSize: "0.65rem",
@@ -893,7 +893,7 @@ export default function ArgentThreatFeedPage() {
                 }}
                 title={isSidebarCollapsed ? "Expand Distro Feeds Sidebar" : "Collapse Distro Feeds Sidebar to Maximize Table Width"}
               >
-                <span>{isSidebarCollapsed ? "ΓÜí" : "ΓùÇ"}</span>
+                <span>{isSidebarCollapsed ? "⚡" : "◀"}</span>
                 <span>{isSidebarCollapsed ? `Show Feeds (${ARGENT_PUBLIC_FEED_SOURCES.length})` : "Hide Sidebar"}</span>
               </button>
 
@@ -922,7 +922,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title="Consolidated Table View with locked sticky header"
                 >
-                  ≡ƒôï Table
+                  📋 Table
                 </button>
                 <button
                   onClick={() => setViewMode("cards")}
@@ -938,7 +938,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title="Wiki Card Grid View"
                 >
-                  ≡ƒÄ┤ Cards
+                  🎴 Cards
                 </button>
               </div>
             </div>
@@ -969,11 +969,11 @@ export default function ArgentThreatFeedPage() {
                 Advisory Stream:
               </span>
               {[
-                { id: "ALL", label: "All Regular Updates", icon: "≡ƒîÉ", count: totalUniversalCount },
-                { id: "BUGFIX", label: "Bug Fixes (RHBA/RLBA/EN)", icon: "≡ƒÉ¢", count: bugfixCount },
-                { id: "ENHANCEMENT", label: "Enhancements (HWE/Perf)", icon: "ΓÜí", count: enhancementCount },
-                { id: "MAINTENANCE", label: "Maintenance & Point Releases", icon: "≡ƒöº", count: maintenanceCount },
-                { id: "GENERAL", label: "General Packages", icon: "≡ƒôª", count: generalCount }
+                { id: "ALL", label: "All Regular Updates", icon: "🌐", count: totalUniversalCount },
+                { id: "BUGFIX", label: "Bug Fixes (RHBA/RLBA/EN)", icon: "🐛", count: bugfixCount },
+                { id: "ENHANCEMENT", label: "Enhancements (HWE/Perf)", icon: "⚡", count: enhancementCount },
+                { id: "MAINTENANCE", label: "Maintenance & Point Releases", icon: "🔧", count: maintenanceCount },
+                { id: "GENERAL", label: "General Packages", icon: "📦", count: generalCount }
               ].map(tab => {
                 const isActive = selectedAdvisoryType === tab.id;
                 return (
@@ -1064,16 +1064,16 @@ export default function ArgentThreatFeedPage() {
                   }}
                 >
                   <option value="ALL">All Subsystems (10 Domains)</option>
-                  <option value="PATCH">ΓÜí Patch &amp; Packaging</option>
-                  <option value="CORE">ΓÜÖ∩╕Å Core &amp; Glibc</option>
-                  <option value="NETWORK">≡ƒîÉ Network &amp; SSH</option>
-                  <option value="KERNEL">≡ƒÉº Kernel &amp; Drivers</option>
-                  <option value="CONTAINER">≡ƒôª Container &amp; Musl</option>
-                  <option value="SYSTEMD">≡ƒöÆ Systemd &amp; Services</option>
-                  <option value="STORAGE">≡ƒÆ╛ Storage &amp; NVMe</option>
-                  <option value="DRIVER">≡ƒöî Driver &amp; Hardware</option>
-                  <option value="STABILITY">≡ƒ¢í∩╕Å Stability &amp; Resiliency</option>
-                  <option value="PERFORMANCE">≡ƒÜÇ Performance Tuning</option>
+                  <option value="PATCH">⚡ Patch &amp; Packaging</option>
+                  <option value="CORE">⚙️ Core &amp; Glibc</option>
+                  <option value="NETWORK">🌐 Network &amp; SSH</option>
+                  <option value="KERNEL">🐧 Kernel &amp; Drivers</option>
+                  <option value="CONTAINER">📦 Container &amp; Musl</option>
+                  <option value="SYSTEMD">🔒 Systemd &amp; Services</option>
+                  <option value="STORAGE">💾 Storage &amp; NVMe</option>
+                  <option value="DRIVER">🔌 Driver &amp; Hardware</option>
+                  <option value="STABILITY">🛡️ Stability &amp; Resiliency</option>
+                  <option value="PERFORMANCE">🚀 Performance Tuning</option>
                 </select>
               </div>
 
@@ -1097,10 +1097,10 @@ export default function ArgentThreatFeedPage() {
                     width: "100%"
                   }}
                 >
-                  <option value="ALL">≡ƒîÉ All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
-                  <option value="ZERO_REBOOT">ΓÜí Zero-Downtime Rollouts ({zeroDowntimeCount.toLocaleString()})</option>
-                  <option value="KERNEL_CORE">≡ƒÉº Kernel &amp; Core Subsystems</option>
-                  <option value="ENTERPRISE_LTS">≡ƒÅó Enterprise LTS Releases</option>
+                  <option value="ALL">🌐 All Universal Advisories ({totalUniversalCount.toLocaleString()})</option>
+                  <option value="ZERO_REBOOT">⚡ Zero-Downtime Rollouts ({zeroDowntimeCount.toLocaleString()})</option>
+                  <option value="KERNEL_CORE">🐧 Kernel &amp; Core Subsystems</option>
+                  <option value="ENTERPRISE_LTS">🏢 Enterprise LTS Releases</option>
                 </select>
               </div>
 
@@ -1190,7 +1190,7 @@ export default function ArgentThreatFeedPage() {
                     whiteSpace: "nowrap"
                   }}
                 >
-                  Γ£ò Reset Filters
+                  ✕ Reset Filters
                 </button>
               )}
             </div>
@@ -1271,7 +1271,7 @@ export default function ArgentThreatFeedPage() {
                         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
                           <span>Date / Age</span>
                           <span style={{ fontSize: "0.85rem", color: (sortBy === "published_desc" || sortBy === "published_asc") ? "#38BDF8" : "#64748B", fontWeight: 700 }}>
-                            {sortBy === "published_desc" ? "Γåô" : sortBy === "published_asc" ? "Γåæ" : "Γåò"}
+                            {sortBy === "published_desc" ? "↓" : sortBy === "published_asc" ? "↑" : "↕"}
                           </span>
                         </div>
                       </th>
@@ -1284,7 +1284,7 @@ export default function ArgentThreatFeedPage() {
                     {bundles.length === 0 ? (
                       <tr>
                         <td colSpan={4} style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
-                          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>≡ƒöì</div>
+                          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
                           <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC", marginBottom: "0.5rem" }}>
                             No matching vendor patch bundles found
                           </div>
@@ -1343,7 +1343,7 @@ export default function ArgentThreatFeedPage() {
                                     }}
                                     title="Copy Advisory identifier"
                                   >
-                                    {copiedBundleId === bundle.bundleId ? "Γ£ô" : <Copy size={13} />}
+                                    {copiedBundleId === bundle.bundleId ? "✓" : <Copy size={13} />}
                                   </button>
                                 </div>
 
@@ -1390,7 +1390,7 @@ export default function ArgentThreatFeedPage() {
                                       whiteSpace: "nowrap"
                                     }}
                                   >
-                                    <span>Γ£¿</span>
+                                    <span>✨</span>
                                     <span>Inspect Dossier</span>
                                   </button>
                                 </div>
@@ -1426,12 +1426,12 @@ export default function ArgentThreatFeedPage() {
                                         gap: "0.35rem"
                                       }}
                                     >
-                                      <span style={{ color: "#38BDF8" }}>≡ƒôª {pkg.name}</span>
+                                      <span style={{ color: "#38BDF8" }}>📦 {pkg.name}</span>
                                       <span style={{ color: "#F87171", fontSize: "0.7rem", textDecoration: "line-through", opacity: 0.8 }}>
                                         {pkg.currentVersion}
                                       </span>
                                       <span style={{ color: "#34D399", fontSize: "0.7rem", fontWeight: 700 }}>
-                                        Γ₧ö {pkg.fixedVersion}
+                                        ➔ {pkg.fixedVersion}
                                       </span>
                                     </span>
                                   ))}
@@ -1475,7 +1475,7 @@ export default function ArgentThreatFeedPage() {
                                     padding: "0.1rem 0.45rem",
                                     borderRadius: "4px"
                                   }}>
-                                    ≡ƒôí {bundle.sourceFeed.feedName}
+                                    📡 {bundle.sourceFeed.feedName}
                                   </span>
 
                                   {bundle.impact.zeroDowntime && (
@@ -1488,7 +1488,7 @@ export default function ArgentThreatFeedPage() {
                                       padding: "0.1rem 0.45rem",
                                       borderRadius: "4px"
                                     }}>
-                                      ΓÜí Zero-Downtime Hotfix
+                                      ⚡ Zero-Downtime Hotfix
                                     </span>
                                   )}
                                 </div>
@@ -1513,7 +1513,7 @@ export default function ArgentThreatFeedPage() {
                                   alignItems: "center",
                                   gap: "0.25rem"
                                 }}>
-                                  <span>ΓÅ▒∩╕Å</span>
+                                  <span>⏱️</span>
                                   <span>{formatRelativeAge(bundle.issuedAt)}</span>
                                 </span>
                               </div>
@@ -1536,7 +1536,7 @@ export default function ArgentThreatFeedPage() {
                                     }}>
                                       <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981" }}></span>
                                       <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#34D399", letterSpacing: "0.02em" }}>
-                                        ΓÜí ZERO-DOWNTIME
+                                        ⚡ ZERO-DOWNTIME
                                       </span>
                                     </div>
                                   ) : (
@@ -1552,7 +1552,7 @@ export default function ArgentThreatFeedPage() {
                                     }}>
                                       <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#F59E0B" }}></span>
                                       <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#FBBF24", letterSpacing: "0.02em" }}>
-                                        ≡ƒöä REBOOT REQ
+                                        🔄 REBOOT REQ
                                       </span>
                                     </div>
                                   )
@@ -1593,7 +1593,7 @@ export default function ArgentThreatFeedPage() {
             }}>
               {bundles.length === 0 ? (
                 <div style={{ gridColumn: "1 / -1", padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)" }}>
-                  <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>≡ƒöì</div>
+                  <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#F8FAFC" }}>No matching vendor patch bundles found</div>
                 </div>
               ) : (
@@ -1660,7 +1660,7 @@ export default function ArgentThreatFeedPage() {
                         </div>
 
                         <div style={{ fontSize: "0.82rem", color: "#94A3B8", marginBottom: "0.5rem" }}>
-                          {bundle.osDisplayName} ΓÇó {bundle.targetReleases[0]}
+                          {bundle.osDisplayName} • {bundle.targetReleases[0]}
                         </div>
 
                         <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#F8FAFC", margin: "0 0 0.4rem 0", lineHeight: 1.4 }}>
@@ -1677,7 +1677,7 @@ export default function ArgentThreatFeedPage() {
                               <span style={{ color: "#38BDF8" }}>{pkg.name}</span>
                               <span>
                                 <span style={{ color: "#EF4444", textDecoration: "line-through" }}>{pkg.currentVersion}</span>
-                                {" Γ₧ö "}
+                                {" ➔ "}
                                 <span style={{ color: "#10B981", fontWeight: 700 }}>{pkg.fixedVersion}</span>
                               </span>
                             </div>
@@ -1700,7 +1700,7 @@ export default function ArgentThreatFeedPage() {
                         </span>
 
                         <span style={{ fontSize: "0.8rem", color: "#38BDF8", fontWeight: 600 }}>
-                          View Dossier ΓåÆ
+                          View Dossier →
                         </span>
                       </div>
                     </div>
@@ -1725,7 +1725,7 @@ export default function ArgentThreatFeedPage() {
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                Showing {((page - 1) * pageSize) + 1} ΓÇô {Math.min(page * pageSize, matchedCount)} of <strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> bundles
+                Showing {((page - 1) * pageSize) + 1} – {Math.min(page * pageSize, matchedCount)} of <strong style={{ color: "#F8FAFC" }}>{matchedCount.toLocaleString()}</strong> bundles
               </span>
 
               <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
@@ -1767,7 +1767,7 @@ export default function ArgentThreatFeedPage() {
                   cursor: page <= 1 ? "not-allowed" : "pointer"
                 }}
               >
-                ┬½ First
+                « First
               </button>
 
               <button
@@ -1784,7 +1784,7 @@ export default function ArgentThreatFeedPage() {
                   cursor: page <= 1 ? "not-allowed" : "pointer"
                 }}
               >
-                ΓÇ╣ Previous
+                ‹ Previous
               </button>
 
               <span style={{ fontSize: "0.85rem", color: "#F8FAFC", fontWeight: 700, padding: "0 0.5rem" }}>
@@ -1805,7 +1805,7 @@ export default function ArgentThreatFeedPage() {
                   cursor: page >= totalPages ? "not-allowed" : "pointer"
                 }}
               >
-                Next ΓÇ║
+                Next ›
               </button>
 
               <button
@@ -1821,7 +1821,7 @@ export default function ArgentThreatFeedPage() {
                   cursor: page >= totalPages ? "not-allowed" : "pointer"
                 }}
               >
-                Last ┬╗
+                Last »
               </button>
             </div>
           </div>
@@ -1916,7 +1916,7 @@ export default function ArgentThreatFeedPage() {
                         gap: "0.3rem"
                       }}>
                         <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#10B981" }}></span>
-                        ΓÜí ZERO DOWNTIME
+                        ⚡ ZERO DOWNTIME
                       </span>
                     ) : (
                       <span style={{
@@ -1932,7 +1932,7 @@ export default function ArgentThreatFeedPage() {
                         gap: "0.3rem"
                       }}>
                         <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#F59E0B" }}></span>
-                        ≡ƒöä REBOOT REQUIRED
+                        🔄 REBOOT REQUIRED
                       </span>
                     )
                   ) : (
@@ -2017,7 +2017,7 @@ export default function ArgentThreatFeedPage() {
                     }}
                     title="Close Dossier"
                   >
-                    Γ£ò
+                    ✕
                   </button>
                 </div>
               </div>
@@ -2030,13 +2030,13 @@ export default function ArgentThreatFeedPage() {
               {/* Metadata Subtitle */}
               <div style={{ display: "flex", gap: "0.65rem", fontSize: "0.76rem", color: "#94A3B8", flexWrap: "wrap", alignItems: "center" }}>
                 <span>Subsystem: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedBundle.operationalDomain}</strong></span>
-                <span>ΓÇó</span>
+                <span>•</span>
                 <span>Distro Feed: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedBundle.sourceFeed.feedName}</strong></span>
-                <span>ΓÇó</span>
+                <span>•</span>
                 <span>Issued: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedBundle.issuedAt.split("T")[0]}</strong></span>
-                <span>ΓÇó</span>
+                <span>•</span>
                 <span>Packages: <strong style={{ color: "#38BDF8", fontWeight: 600 }}>{selectedBundle.packages.length} Binaries</strong></span>
-                <span>ΓÇó</span>
+                <span>•</span>
                 <span>Target: <strong style={{ color: "#E2E8F0", fontWeight: 600 }}>{selectedBundle.targetReleases.join(", ")}</strong></span>
               </div>
             </div>
@@ -2111,7 +2111,7 @@ export default function ArgentThreatFeedPage() {
                     <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.7rem 0.95rem" }}>
                       <div style={{ fontSize: "0.66rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Downtime Profile</div>
                       <div style={{ fontSize: "0.8rem", fontWeight: 700, color: selectedBundle.impact.zeroDowntime ? "#34D399" : "#FBBF24", marginTop: "0.2rem" }}>
-                        {selectedBundle.impact.zeroDowntime ? "ΓÜí Zero-Downtime Hotfix" : "≡ƒöä Reboot Required"}
+                        {selectedBundle.impact.zeroDowntime ? "⚡ Zero-Downtime Hotfix" : "🔄 Reboot Required"}
                       </div>
                     </div>
 
@@ -2119,7 +2119,7 @@ export default function ArgentThreatFeedPage() {
                     <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.7rem 0.95rem" }}>
                       <div style={{ fontSize: "0.66rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Rollout Urgency</div>
                       <div style={{ fontSize: "0.8rem", fontWeight: 700, color: selectedBundle.vendorSeverity === "CRITICAL" ? "#F87171" : "#38BDF8", marginTop: "0.2rem" }}>
-                        {selectedBundle.vendorSeverity === "CRITICAL" ? "≡ƒöÑ Mandatory Fleet Hotfix" : "ΓÜí Standard Maintenance"}
+                        {selectedBundle.vendorSeverity === "CRITICAL" ? "🔥 Mandatory Fleet Hotfix" : "⚡ Standard Maintenance"}
                       </div>
                     </div>
 
@@ -2127,7 +2127,7 @@ export default function ArgentThreatFeedPage() {
                     <div style={{ background: "rgba(255, 255, 255, 0.025)", border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "8px", padding: "0.7rem 0.95rem" }}>
                       <div style={{ fontSize: "0.66rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.04em" }}>Signal Corroboration</div>
                       <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#F8FAFC", marginTop: "0.2rem" }}>
-                        ≡ƒôí {selectedBundle.sourceFeed.feedName.split(" ")[0]} ΓÇó Verified
+                        📡 {selectedBundle.sourceFeed.feedName.split(" ")[0]} • Verified
                       </div>
                     </div>
                   </div>
@@ -2155,7 +2155,7 @@ export default function ArgentThreatFeedPage() {
                     padding: "1rem 1.2rem"
                   }}>
                     <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", color: "#38BDF8", marginBottom: "0.4rem", letterSpacing: "0.04em" }}>
-                      ≡ƒÆí Infrastructure Analogy
+                      💡 Infrastructure Analogy
                     </div>
                     <p style={{ color: "#BAE6FD", fontSize: "0.86rem", lineHeight: 1.6, margin: 0 }}>
                       {selectedBundle.impact.zeroDowntime
@@ -2369,7 +2369,7 @@ export default function ArgentThreatFeedPage() {
                         fontWeight: 600
                       }}
                     >
-                      <ExternalLink size={14} /> Open Official Advisory Notice at Vendor Portal Γåù
+                      <ExternalLink size={14} /> Open Official Advisory Notice at Vendor Portal ↗
                     </a>
                   </div>
 
@@ -2510,7 +2510,7 @@ export default function ArgentThreatFeedPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.85rem" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "1.25rem" }}>≡ƒîÉ</span>
+                    <span style={{ fontSize: "1.25rem" }}>🌐</span>
                     <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#F8FAFC", margin: 0 }}>
                       Public Distro Patch Feeds Directory
                     </h2>
@@ -2547,7 +2547,7 @@ export default function ArgentThreatFeedPage() {
                   }}
                   title="Close Directory"
                 >
-                  Γ£ò
+                  ✕
                 </button>
               </div>
 
@@ -2571,7 +2571,7 @@ export default function ArgentThreatFeedPage() {
                     }}
                   />
                   <span style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "#64748B", fontSize: "0.85rem", pointerEvents: "none" }}>
-                    ≡ƒöì
+                    🔍
                   </span>
                   {feedDirectorySearch && (
                     <button
@@ -2588,7 +2588,7 @@ export default function ArgentThreatFeedPage() {
                         fontSize: "0.8rem"
                       }}
                     >
-                      Γ£ò
+                      ✕
                     </button>
                   )}
                 </div>
@@ -2759,7 +2759,7 @@ export default function ArgentThreatFeedPage() {
                             border: "1px solid rgba(255, 255, 255, 0.08)",
                             color: "#CBD5E1"
                           }}>
-                            ≡ƒôí {feed.access}
+                            📡 {feed.access}
                           </span>
                           <span style={{
                             padding: "0.15rem 0.45rem",
@@ -2768,7 +2768,7 @@ export default function ArgentThreatFeedPage() {
                             border: "1px solid rgba(255, 255, 255, 0.08)",
                             color: "#CBD5E1"
                           }}>
-                            ΓÅ▒∩╕Å {feed.refreshRate}
+                            ⏱️ {feed.refreshRate}
                           </span>
                           <span style={{
                             padding: "0.15rem 0.45rem",
@@ -2778,7 +2778,7 @@ export default function ArgentThreatFeedPage() {
                             color: "#34D399",
                             fontWeight: 600
                           }}>
-                            ≡ƒôè {feed.recordsIngested.toLocaleString()} Ingested
+                            📊 {feed.recordsIngested.toLocaleString()} Ingested
                           </span>
                         </div>
                       </div>
@@ -2807,7 +2807,7 @@ export default function ArgentThreatFeedPage() {
                           }}
                         >
                           <span>Official Endpoint</span>
-                          <span>Γåù</span>
+                          <span>↗</span>
                         </a>
 
                         <button
@@ -2912,7 +2912,7 @@ export default function ArgentThreatFeedPage() {
                 onClick={() => setDeployBundle(null)}
                 style={{ background: "none", border: "none", color: "#94A3B8", fontSize: "1.2rem", cursor: "pointer" }}
               >
-                Γ£ò
+                ✕
               </button>
             </div>
 

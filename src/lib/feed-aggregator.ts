@@ -1867,7 +1867,8 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
     console.warn("Live multi-feed ingestion failed or timed out, serving cached/curated advisories:", err);
   }
 
-  const standardized = standardizeUviAdvisories(merged);
+  const grouped = groupBlocklistAdvisories(merged);
+  const standardized = standardizeUviAdvisories(grouped);
   cachedAggregatedAdvisories = standardized;
   cachedGlobalMetrics = {
     totalConsolidatedCount: standardized.length,
@@ -1880,14 +1881,268 @@ export async function getAggregatedUviAdvisories(): Promise<UviAdvisoryRecord[]>
 }
 
 /**
+ * Group IP blocklist entries and Phishing blocklist entries occurring on the same day
+ * under a single consolidated UVI identifier per day.
+ * Prevents high-volume blocklist feeds (IPSum, Blocklist.de, Emerging Threats, OpenPhish)
+ * from eclipsing vulnerability advisories and consuming excessive feed real estate.
+ */
+export function groupBlocklistAdvisories(advisories: UviAdvisoryRecord[]): UviAdvisoryRecord[] {
+  const normalRecords: UviAdvisoryRecord[] = [];
+  const ipByDay = new Map<string, UviAdvisoryRecord[]>();
+  const phishByDay = new Map<string, UviAdvisoryRecord[]>();
+
+  for (const item of advisories) {
+    const rawDate = item.publishedDate || item.lastUpdatedDate || "2026-10-29";
+    const day = rawDate.slice(0, 10);
+
+    const isIpBlocklist = (
+      item.uviId.includes("IPSUM") ||
+      item.uviId.includes("BLK-") ||
+      item.uviId.includes("UVI-ET-") ||
+      item.uviId.includes("IP-BLOCKLIST") ||
+      item.upstreamSignals?.some(s => 
+        s.sourceId === "ipsum" ||
+        s.sourceId === "blocklist_de" ||
+        s.sourceId === "emerging_threats" ||
+        s.sourceId === "et_open_rules" ||
+        s.sourceId === "sans_dshield" ||
+        s.sourceId === "talos_ip_blacklist" ||
+        s.sourceId === "greensnow"
+      ) ||
+      (item.domainCategory === "Networking, Protocols & Cryptography" && 
+       (item.title?.toLowerCase().includes("ipsum") || 
+        item.title?.toLowerCase().includes("blocklist.de") || 
+        item.title?.toLowerCase().includes("compromised host")))
+    );
+
+    const isPhishBlocklist = (
+      item.uviId.includes("PHISH") ||
+      item.upstreamSignals?.some(s => 
+        s.sourceId === "openphish" ||
+        s.sourceId === "phishtank" ||
+        s.signalType === "PHISHING_URL"
+      ) ||
+      item.title?.toLowerCase().includes("openphish") ||
+      item.title?.toLowerCase().includes("phishtank")
+    );
+
+    if (isIpBlocklist) {
+      if (!ipByDay.has(day)) ipByDay.set(day, []);
+      ipByDay.get(day)!.push(item);
+    } else if (isPhishBlocklist) {
+      if (!phishByDay.has(day)) phishByDay.set(day, []);
+      phishByDay.get(day)!.push(item);
+    } else {
+      normalRecords.push(item);
+    }
+  }
+
+  const result: UviAdvisoryRecord[] = [...normalRecords];
+
+  // 1. Group IP blocklist records per day
+  for (const [day, records] of ipByDay.entries()) {
+    if (records.length === 1 && records[0].uviId.includes("IP-BLOCKLIST")) {
+      result.push(records[0]);
+      continue;
+    }
+
+    // Combine targets (deduplicate)
+    const seenTarget = new Set<string>();
+    const combinedTargets: UviAdvisoryRecord["affectedTargets"] = [];
+    for (const r of records) {
+      for (const t of r.affectedTargets || []) {
+        const key = `${t.product}:${t.affectedVersions}`;
+        if (!seenTarget.has(key)) {
+          seenTarget.add(key);
+          combinedTargets.push(t);
+        }
+      }
+    }
+
+    // Combine upstream signals (deduplicate by sourceId)
+    const seenSignal = new Set<string>();
+    const combinedSignals: UviAdvisoryRecord["upstreamSignals"] = [];
+    for (const r of records) {
+      for (const s of r.upstreamSignals || []) {
+        if (!seenSignal.has(s.sourceId)) {
+          seenSignal.add(s.sourceId);
+          combinedSignals.push(s);
+        }
+      }
+    }
+
+    if (combinedSignals.length === 0) {
+      combinedSignals.push({
+        sourceId: "ipsum",
+        sourceName: "IPsum (Consensus Blacklist)",
+        badge: "Perimeter Blocklist",
+        finding: `Consolidated IP reputation telemetry flagged ${records.length} abusive hosts.`,
+        signalType: "IP_REPUTATION",
+        confidence: "CONFIRMED"
+      });
+    }
+
+    const totalCount = combinedTargets.length > 0 ? combinedTargets.length : records.length;
+    const maxCvss = Math.max(...records.map(r => r.cvssScore || 7.5), 7.8);
+    const hasCritical = records.some(r => r.severity === "CRITICAL" || (r.cvssScore && r.cvssScore >= 9.0));
+
+    // Summary of top feeds represented
+    const ipsumCount = records.filter(r => r.uviId.includes("IPSUM") || r.upstreamSignals?.some(s => s.sourceId === "ipsum")).length;
+    const blocklistCount = records.filter(r => r.uviId.includes("BLK") || r.upstreamSignals?.some(s => s.sourceId === "blocklist_de")).length;
+    const etCount = records.filter(r => r.uviId.includes("ET") || r.upstreamSignals?.some(s => s.sourceId === "emerging_threats" || s.sourceId === "et_open_rules")).length;
+
+    const feedStats = [
+      ipsumCount > 0 ? `IPSum: ${ipsumCount}` : "",
+      blocklistCount > 0 ? `Blocklist.de SSH: ${blocklistCount}` : "",
+      etCount > 0 ? `Emerging Threats: ${etCount}` : ""
+    ].filter(Boolean).join(", ");
+
+    const uviId = `UVI-IP-BLOCKLIST-${day}`;
+
+    const groupedRecord: UviAdvisoryRecord = {
+      uviId,
+      title: `Consolidated Perimeter IP Blocklist Feed Digest (${day})`,
+      headline: `Consolidated multi-feed perimeter IP blocklist: ${totalCount.toLocaleString()} confirmed scanner, brute-force, and exploit hosts (${feedStats || "Consolidated Telemetry"}).`,
+      summary: `Automated daily consolidated threat intelligence digest grouping ${totalCount.toLocaleString()} verified malicious IP addresses identified across perimeter threat blacklists on ${day}. Synthesizes high-frequency SSH credential sprays from Blocklist.de, multi-blacklist concurrence scores from IPSum, and compromised hosts emitting exploit traffic from Emerging Threats. Grouped to provide high-density perimeter defense intelligence without cluttering vulnerability advisories.`,
+      technicalDetails: `Daily perimeter blocklist consolidation for ${day}.\nTotal active threat hosts: ${totalCount.toLocaleString()}.\nBreakdown by contributing telemetry:\n- IPSum Multi-Blacklist Scored Hosts: ${ipsumCount.toLocaleString()}\n- Blocklist.de Fail2ban SSH Attacking Nodes: ${blocklistCount.toLocaleString()}\n- Emerging Threats Confirmed Compromised Hosts: ${etCount.toLocaleString()}\nKey targeted services: SSH (Port 22), Web Application Crawlers, Port Scanners, Dictionary Sprays.\nSample targets:\n${combinedTargets.slice(0, 30).map(t => `- ${t.product} (${t.affectedVersions})`).join("\n")}${combinedTargets.length > 30 ? `\n...and ${combinedTargets.length - 30} more targets.` : ""}`,
+      globalImpact: `Persistent malicious infrastructure participating in distributed scanning waves, network reconnaissance, and automated vulnerability exploitation.`,
+      ideBuildImpact: {
+        hasDirectBuildImpact: false,
+        severityOnDeveloperEnv: "INDIRECT",
+        workstationVector: `External internet hosts probing remote developer listeners, open debug ports, or exposed SSH bastions.`,
+        buildPipelineRisk: `Reconnaissance and brute-force scans targeting build runners and cloud staging infrastructure.`,
+        recommendationForIdeBuilds: `Enforce edge perimeter IP blocklist drop rules. Ensure all developer workstations and staging instances require VPN or zero-trust identity proxy.`
+      },
+      severity: hasCritical ? "CRITICAL" : "HIGH",
+      cvssScore: maxCvss,
+      cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      cwe: "CWE-307: Improper Restriction of Excessive Authentication Attempts",
+      domainCategory: "Networking, Protocols & Cryptography",
+      attackVector: "NETWORK",
+      attackComplexity: "LOW",
+      privilegesRequired: "NONE",
+      userInteraction: "NONE",
+      scope: "UNCHANGED",
+      cveList: [],
+      affectedTargets: combinedTargets,
+      upstreamSignals: combinedSignals,
+      cisaKev: {
+        isKnownExploited: false
+      },
+      remediation: {
+        recommendedAction: `Apply daily consolidated perimeter IP blocklist at edge firewalls, AWS Security Groups, iptables, and Cloudflare WAF layers.`,
+        patchDetails: `Automated firewall blocklist subscription synchronized with ${day} daily digest.`,
+        workarounds: ["Deploy geo-fencing, fail2ban rate-limiting, and key-only authentication for remote administration."]
+      },
+      publishedDate: day,
+      lastUpdatedDate: day
+    };
+
+    result.push(groupedRecord);
+  }
+
+  // 2. Group Phishing blocklist records per day
+  for (const [day, records] of phishByDay.entries()) {
+    if (records.length === 1 && records[0].uviId.includes("PHISH-BLOCKLIST")) {
+      result.push(records[0]);
+      continue;
+    }
+
+    // Combine targets (deduplicate)
+    const seenTarget = new Set<string>();
+    const combinedTargets: UviAdvisoryRecord["affectedTargets"] = [];
+    for (const r of records) {
+      for (const t of r.affectedTargets || []) {
+        const key = `${t.product}:${t.affectedVersions}`;
+        if (!seenTarget.has(key)) {
+          seenTarget.add(key);
+          combinedTargets.push(t);
+        }
+      }
+    }
+
+    // Combine upstream signals (deduplicate by sourceId)
+    const seenSignal = new Set<string>();
+    const combinedSignals: UviAdvisoryRecord["upstreamSignals"] = [];
+    for (const r of records) {
+      for (const s of r.upstreamSignals || []) {
+        if (!seenSignal.has(s.sourceId)) {
+          seenSignal.add(s.sourceId);
+          combinedSignals.push(s);
+        }
+      }
+    }
+
+    if (combinedSignals.length === 0) {
+      combinedSignals.push({
+        sourceId: "openphish",
+        sourceName: "OpenPhish Global Threat Feed",
+        badge: "Zero-Day Phish",
+        finding: `Algorithmic detection system identified ${records.length} active zero-day credential harvesting portals.`,
+        signalType: "PHISHING_URL",
+        confidence: "CONFIRMED"
+      });
+    }
+
+    const totalCount = combinedTargets.length > 0 ? combinedTargets.length : records.length;
+    const uviId = `UVI-PHISH-BLOCKLIST-${day}`;
+
+    const groupedRecord: UviAdvisoryRecord = {
+      uviId,
+      title: `Consolidated Zero-Day Phishing & Credential Portal Digest (${day})`,
+      headline: `Consolidated identity threat blocklist: ${totalCount.toLocaleString()} verified zero-day credential harvesting and SSO impersonation portals.`,
+      summary: `Automated daily consolidated threat intelligence digest grouping ${totalCount.toLocaleString()} active zero-day credential harvesting portals and fraudulent identity landing pages identified on ${day}. Targets enterprise SSO authentication, corporate email logins, and developer OAuth tokens. Grouped to provide clean perimeter DNS and proxy policy ingestion.`,
+      technicalDetails: `Daily phishing blocklist consolidation for ${day}.\nTotal active zero-day portals: ${totalCount.toLocaleString()}.\nTarget vectors: Enterprise SSO credential harvesting, fake authentication portals, and deceptive OAuth consent prompts.\nContributing telemetry: OpenPhish Zero-Day Detection Feed.\nSample targets:\n${combinedTargets.slice(0, 30).map(t => `- ${t.product} (${t.fixedInVersion})`).join("\n")}${combinedTargets.length > 30 ? `\n...and ${combinedTargets.length - 30} more targets.` : ""}`,
+      globalImpact: `Critical human & identity vector. Tricking users into entering enterprise credentials results in account takeover, session hijacking, and lateral movement.`,
+      ideBuildImpact: {
+        hasDirectBuildImpact: true,
+        severityOnDeveloperEnv: "CRITICAL",
+        workstationVector: `Developers targeted with spoofed OAuth authorization screens, GitHub/GitLab login impersonation, or fake package registry credential prompts.`,
+        buildPipelineRisk: `Theft of developer Personal Access Tokens (PATs) or SSO sessions granting unauthorized push rights to source code repositories.`,
+        recommendationForIdeBuilds: `Block listed domains in corporate DNS and secure web gateways. Require hardware FIDO2 WebAuthn keys immune to reverse-proxy phishing.`
+      },
+      severity: "CRITICAL",
+      cvssScore: 8.9,
+      cvssVector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N",
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor",
+      domainCategory: "Enterprise & Web Frameworks",
+      attackVector: "NETWORK",
+      attackComplexity: "LOW",
+      privilegesRequired: "NONE",
+      userInteraction: "REQUIRED",
+      scope: "UNCHANGED",
+      cveList: [],
+      affectedTargets: combinedTargets,
+      upstreamSignals: combinedSignals,
+      cisaKev: {
+        isKnownExploited: true,
+        notes: `Active zero-day credential phishing campaigns verified on ${day}`
+      },
+      remediation: {
+        recommendedAction: `Sinkhole domains at enterprise recursive DNS resolvers and proxy gateways immediately. Revoke any developer sessions authenticated during the exposure window.`,
+        patchDetails: `Enforce phishing-resistant MFA (FIDO2 / YubiKey) across all corporate identity providers.`,
+        workarounds: ["Deploy browser-level URL reputation filtering to prevent workstation access."]
+      },
+      publishedDate: day,
+      lastUpdatedDate: day
+    };
+
+    result.push(groupedRecord);
+  }
+
+  return result;
+}
+
+/**
  * Standardize all Vantage advisories to the unified format: UVI-YYYY-MM-00000001
  * Deterministically buckets by publication year-month, prioritizes critical/milestone
  * threats within each month, and assigns continuous zero-padded 8-digit sequences (up to 100M/month).
  */
 export function standardizeUviAdvisories(advisories: UviAdvisoryRecord[]): UviAdvisoryRecord[] {
+  const groupedAdvisories = groupBlocklistAdvisories(advisories);
   const ymBuckets = new Map<string, UviAdvisoryRecord[]>();
 
-  for (const item of advisories) {
+  for (const item of groupedAdvisories) {
     const rawDate = item.publishedDate || item.lastUpdatedDate || "2026-09-01";
     const match = rawDate.match(/^(\d{4})-(\d{2})/);
     const ym = match ? `${match[1]}-${match[2]}` : "2026-09";
