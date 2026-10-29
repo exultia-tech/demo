@@ -359,9 +359,7 @@ function AccountPageContent() {
   const tabMetadata: Record<AccountTab, { title: string; subtitle: string; actionLabel?: string; actionHref?: string; onActionClick?: () => void }> = {
     profile: {
       title: "Profile & Identity Credentials",
-      subtitle: "Personal identity details, authenticated email address, and security access keys.",
-      actionLabel: "View Billing",
-      onActionClick: () => setActiveTab("subscriptions")
+      subtitle: "Personal identity details, authenticated email address, and security access keys."
     },
     subscriptions: {
       title: "Plans & Licensing Entitlements",
@@ -654,25 +652,8 @@ function AccountPageContent() {
             </p>
           </div>
 
-          {/* Quick Status Chips & Primary View Action */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "6px", 
-              padding: "0.35rem 0.75rem", 
-              background: "rgba(52, 211, 153, 0.1)", 
-              border: "1px solid rgba(52, 211, 153, 0.3)", 
-              borderRadius: "20px", 
-              fontSize: "0.75rem", 
-              color: "#34D399", 
-              fontWeight: 600 
-            }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34D399", display: "inline-block", boxShadow: "0 0 8px #34D399" }} />
-              Zero-Telemetry Enclave
-            </div>
-
-            {currentMeta.actionLabel && (
+          {/* Primary View Action */}
+          {currentMeta.actionLabel && (
               currentMeta.actionHref ? (
                 <Link
                   href={currentMeta.actionHref}
@@ -715,7 +696,6 @@ function AccountPageContent() {
                 </button>
               ) : null
             )}
-          </div>
         </div>
 
 
