@@ -4702,7 +4702,7 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
 
   const total = list.length;
   const page = Math.max(1, filters.page || 1);
-  const limit = Math.min(100, Math.max(1, filters.limit || 25));
+  const limit = Math.min(200, Math.max(1, filters.limit || 100));
   const totalPages = Math.ceil(total / limit) || 1;
   const startIndex = (page - 1) * limit;
   const pagedBundles = list.slice(startIndex, startIndex + limit);

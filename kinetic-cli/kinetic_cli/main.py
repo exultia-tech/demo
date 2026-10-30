@@ -12,6 +12,7 @@ from pathlib import Path
 from . import __version__
 from .engine import KineticEngine
 from .daemon import KineticDaemon
+from .webhook import KineticWebhookListener
 from .provenance import ProvenanceVerifier
 from .compliance_drift import ComplianceDriftManager
 
@@ -34,7 +35,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kinetic",
         parents=[common_parser],
-        description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream, OS Patch Management, Drift Sentinel & Sub-Second Deterministic Rollback Binary"
+        description=(
+            "Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream, OS Patch Management, "
+            "Vendor-Native Security Updater, Systemd/Cron Scheduler, Enterprise Webhook Listener, "
+            "Dynamic FullAuto HA Engine & Sub-Second Deterministic Rollback Binary"
+        )
     )
     parser.add_argument("--version", action="version", version=f"kinetic {__version__}")
 
@@ -48,15 +53,20 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--os", help="Target operating system distribution filter")
     apply_parser.add_argument("--dry-run", action="store_true", help="Simulate mitigation without modifying files")
 
-    # Command: upgrade (Standard OS Distribution Package Updates & Local Staging via Argent / Distro Feeds)
-    upgrade_parser = subparsers.add_parser("upgrade", parents=[common_parser], help="Stage and deploy standard OS package updates and vendor errata bundles from Argent")
+    # Command: upgrade (Standard OS Distribution Package Updates, Vendor Builtin Updates & Local Staging)
+    upgrade_parser = subparsers.add_parser("upgrade", parents=[common_parser], help="Stage and deploy OS package updates, vendor errata bundles, and native OS security updates")
     upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or ARG-UBUNTU-UPD-2024-0412)")
     upgrade_parser.add_argument("--feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
-    upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, suse)")
+    upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, sles)")
     upgrade_parser.add_argument("--stage-only", action="store_true", help="Automatically stage relevant OS patches locally without executing installation")
     upgrade_parser.add_argument("--auto-patch-non-reboot", action="store_true", help="Automatically install staged OS patches that do not require a system reboot")
-    upgrade_parser.add_argument("--disruptive-auto-reboot", action="store_true", help="Enable disruptive patching with automatic reboot during the off-peak window")
+    upgrade_parser.add_argument("--vendor-native", dest="vendor_native", action="store_true", default=False, help="Natively utilize OS vendor built-in patching commands to deploy standard security updates and non-reboot items")
+    upgrade_parser.add_argument("--disruptive-auto-reboot", action="store_true", help="Enable disruptive patching with automatic reboot during the off-peak / deferred window")
     upgrade_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe (HH:MM-HH:MM) for disruptive patching and auto-reboot (default: 02:00-05:00)")
+    upgrade_parser.add_argument("--deferred-windows", help="Comma-separated deferred maintenance windows for disruptive patching (e.g. 'Sat 01:00-05:00, Sun 01:00-05:00')")
+    upgrade_parser.add_argument("--defer-until", help="ISO-8601 timestamp until which disruptive patching is deferred (e.g. '2026-11-01T02:00:00Z')")
+    upgrade_parser.add_argument("--fullauto", action="store_true", default=False, help="Dynamically determine when to patch based on host/HA load and gracefully proceed (requires --confirm)")
+    upgrade_parser.add_argument("--confirm", action="store_true", default=False, help="Mandatory secondary confirmation flag required when using --fullauto")
     upgrade_parser.add_argument("--dry-run", action="store_true", help="Simulate upgrade without executing package manager")
 
     # Command: rollback
@@ -65,7 +75,12 @@ def build_parser() -> argparse.ArgumentParser:
     rollback_parser.add_argument("--latest", action="store_true", help="Rollback the most recently applied mitigation")
 
     # Command: daemon
-    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with local OS patch staging, off-peak maintenance, canary probes, and drift auto-reversion")
+    daemon_parser = subparsers.add_parser(
+        "daemon",
+        parents=[common_parser],
+        help="Run autonomous patch daemon with feed sync, vendor-native updates, systemd/cron scheduling, deferred windows, enterprise webhook listener, and --fullauto --confirm HA mode"
+    )
+    daemon_parser.add_argument("--once", action="store_true", default=False, help="Execute a single synchronization and patching pass then exit (used by systemd timers and crontabs)")
     daemon_parser.add_argument("--interval", type=int, default=3600, help="Sync interval in seconds (default: 3600)")
     daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Hotfix patch feed URL")
     daemon_parser.add_argument("--argent-feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent OS package feed URL")
@@ -75,12 +90,43 @@ def build_parser() -> argparse.ArgumentParser:
     daemon_parser.add_argument("--auto-stage", dest="auto_stage_patches", action="store_true", default=True, help="Automatically stage relevant OS patches in local staging directory (default: enabled)")
     daemon_parser.add_argument("--no-auto-stage", dest="auto_stage_patches", action="store_false", help="Disable automatic local staging of OS patches")
     daemon_parser.add_argument("--auto-patch-non-reboot", action="store_true", default=False, help="Enable automatic patching for non-reboot-required OS updates")
-    daemon_parser.add_argument("--disruptive-auto-reboot", action="store_true", default=False, help="Enable disruptive OS patching with automatic reboot during off-peak hours")
+    daemon_parser.add_argument("--vendor-native", dest="vendor_native_updates", action="store_true", default=False, help="Natively utilize OS vendor built-in patching commands for standard security and non-reboot updates")
+    daemon_parser.add_argument("--no-vendor-native", dest="vendor_native_updates", action="store_false", help="Disable vendor built-in patching commands")
+    daemon_parser.add_argument("--disruptive-auto-reboot", action="store_true", default=False, help="Enable disruptive OS patching with automatic reboot during off-peak / deferred windows")
     daemon_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe in HH:MM-HH:MM format for disruptive patching with auto-reboot (default: 02:00-05:00)")
+    daemon_parser.add_argument("--deferred-windows", help="Comma-separated deferred time periods for disruptive patching (e.g. 'Sat 01:00-05:00,Sun 01:00-05:00')")
+    daemon_parser.add_argument("--defer-until", help="Defer all disruptive patching until the specified ISO-8601 timestamp")
+    daemon_parser.add_argument("--enable-scheduler", choices=["auto", "systemd", "cron", "both", "none"], default=None, help="Configure automatic update scheduling via systemd timers and/or crontabs")
+    daemon_parser.add_argument("--schedule-cron", default="0 * * * *", help="Cron schedule expression when configuring crontab scheduling (default: '0 * * * *')")
+    daemon_parser.add_argument("--webhook-listen", action="store_true", default=False, help="Enable enterprise webhook/listener mode allowing external patch management consoles to trigger patching")
+    daemon_parser.add_argument("--webhook-host", default="127.0.0.1", help="Bind address for enterprise webhook listener (default: 127.0.0.1)")
+    daemon_parser.add_argument("--webhook-port", type=int, default=8765, help="TCP port for enterprise webhook listener (default: 8765)")
+    daemon_parser.add_argument("--webhook-secret", default=None, help="Shared secret token / HMAC key for authenticating enterprise webhook triggers")
+    daemon_parser.add_argument("--fullauto", action="store_true", default=False, help="Dynamically determine when to patch based on host/HA load and gracefully proceed (MUST be paired with --confirm)")
+    daemon_parser.add_argument("--confirm", action="store_true", default=False, help="Mandatory secondary confirmation flag required to activate --fullauto mode")
+    daemon_parser.add_argument("--drain-grace-seconds", type=int, default=0, help="Grace period in seconds after HA pre-patch drain hook before applying patches in --fullauto mode")
+    daemon_parser.add_argument("--pre-patch-hook", default=None, help="Command to execute before patching in --fullauto mode (e.g. HAproxy/k8s drain)")
+    daemon_parser.add_argument("--post-patch-hook", default=None, help="Command to execute after patching in --fullauto mode (e.g. HAproxy/k8s uncordon)")
     daemon_parser.add_argument("--revert-drift", dest="revert_drift", action="store_true", default=True, help="Enable automatic drift reversion to SOX/PCI baseline (default: enabled)")
     daemon_parser.add_argument("--no-revert-drift", dest="revert_drift", action="store_false", help="Disable automatic drift reversion")
     daemon_parser.add_argument("--compliance-mode", choices=["sox_pci", "pci", "sox", "strict"], default="sox_pci", help="Compliance baseline standards to enforce (default: sox_pci)")
     daemon_parser.add_argument("--dry-run", action="store_true", default=False, help="Simulate daemon patch execution and reboots without modifying system state")
+
+    # Command: schedule (Systemd Timer & Crontab Automatic Update Configuration)
+    schedule_parser = subparsers.add_parser("schedule", parents=[common_parser], help="Configure automatic update scheduling via systemd timers, native vendor timers, or crontabs")
+    schedule_parser.add_argument("--mode", choices=["auto", "systemd", "cron", "both"], default="auto", help="Scheduler backend to configure (default: auto)")
+    schedule_parser.add_argument("--cron", default="0 * * * *", help="Cron expression for periodic patch synchronization (default: '0 * * * *')")
+    schedule_parser.add_argument("--deferred-window", default="02:00-05:00", help="Deferred maintenance window for disruptive patching (default: '02:00-05:00')")
+    schedule_parser.add_argument("--os", help="Target OS distribution override")
+    schedule_parser.add_argument("--dry-run", action="store_true", default=False, help="Simulate scheduler installation")
+
+    # Command: webhook (Standalone Enterprise Patch Management Console Listener)
+    webhook_parser = subparsers.add_parser("webhook", parents=[common_parser], help="Start standalone HTTP webhook listener for enterprise patch management consoles")
+    webhook_parser.add_argument("--host", default="127.0.0.1", help="Bind address (default: 127.0.0.1)")
+    webhook_parser.add_argument("--port", type=int, default=8765, help="Port to listen on (default: 8765)")
+    webhook_parser.add_argument("--secret", default=None, help="Shared Bearer/HMAC secret for authenticating webhook requests")
+    webhook_parser.add_argument("--os", default=None, help="Target OS distribution override")
+    webhook_parser.add_argument("--dry-run", action="store_true", default=False, help="Run webhook-triggered commands in dry-run simulation mode")
 
     # Command: drift (Configuration Drift Audit & Instant Reconciliation)
     drift_parser = subparsers.add_parser("drift", parents=[common_parser], help="Audit and auto-revert configuration drift against SOX and PCI-DSS baselines")
@@ -116,12 +162,10 @@ def run_self_test(engine: KineticEngine) -> bool:
     print(f"[Kinetic Test] 1. Baseline Target Created: {test_file}")
     print(f"[Kinetic Test]    Initial SHA-256: {initial_sha[1] if initial_sha else 'ERR'}")
 
-    # Simulate hot-mitigation mutation
     mutated_content = "ORIGINAL_PRE_IMAGE_CONFIGURATION_V1=ENABLED\nMAX_CONNS=100\n# KINETIC HOTFIX\nPROTECTION_MODE=STRICT\n"
     test_file.write_text(mutated_content, encoding="utf-8")
     print("[Kinetic Test] 2. Applied Synthetic Mitigation Mutation")
 
-    # Execute deterministic rollback
     t0 = time.time()
     from .models import SnapshotRecord
     snap_rec = SnapshotRecord(
@@ -144,14 +188,12 @@ def run_self_test(engine: KineticEngine) -> bool:
     rb_success = engine.rollback_patch(cve_id="CVE-TEST-0001")
     latency = (time.time() - t0) * 1000
 
-    # Verify content restored
     restored_content = test_file.read_text(encoding="utf-8")
     matches = (restored_content == initial_content)
 
     print(f"[Kinetic Test] 4. Post-Rollback Content Integrity Match: {'PASS' if matches else 'FAIL'}")
     print(f"[Kinetic Test]    Rollback Latency: {latency:.2f}ms (Sub-second guaranteed: {'YES' if latency < 1000 else 'NO'})")
 
-    # Cleanup test file
     try:
         test_file.unlink(missing_ok=True)
     except Exception:
@@ -197,12 +239,42 @@ def cli_entry():
         sys.exit(0 if applied > 0 or len(patches) == 0 else 1)
 
     elif args.command == "upgrade":
-        if args.stage_only or args.auto_patch_non_reboot or args.disruptive_auto_reboot:
+        if args.fullauto:
+            if not args.confirm:
+                sys.stderr.write(
+                    "[Kinetic Error] --fullauto requires secondary confirmation flag --confirm "
+                    "(e.g., `kinetic upgrade --fullauto --confirm`).\n"
+                )
+                sys.exit(2)
+            fa_res = engine.execute_fullauto_cycle(
+                confirm=True,
+                os_filter=args.os,
+                argent_feed_url=args.feed_url,
+                dry_run=args.dry_run,
+            )
+            if args.json:
+                print(json.dumps(fa_res, indent=2))
+            sys.exit(0)
+
+        deferred_list = (
+            [w.strip() for w in args.deferred_windows.split(",") if w.strip()]
+            if getattr(args, "deferred_windows", None)
+            else None
+        )
+
+        if (
+            args.stage_only
+            or args.auto_patch_non_reboot
+            or args.disruptive_auto_reboot
+            or args.vendor_native
+            or deferred_list
+            or getattr(args, "defer_until", None)
+        ):
             staged = engine.stage_os_patches(
                 os_filter=args.os,
                 feed_url=args.feed_url
             )
-            if args.stage_only and not (args.auto_patch_non_reboot or args.disruptive_auto_reboot):
+            if args.stage_only and not (args.auto_patch_non_reboot or args.disruptive_auto_reboot or args.vendor_native):
                 if args.json:
                     print(json.dumps([s.to_dict() for s in staged], indent=2))
                 sys.exit(0)
@@ -212,6 +284,9 @@ def cli_entry():
                 auto_patch_non_reboot=args.auto_patch_non_reboot,
                 disruptive_auto_reboot=args.disruptive_auto_reboot,
                 off_peak_window=args.off_peak_window,
+                deferred_windows=deferred_list,
+                defer_disruptive_until=getattr(args, "defer_until", None),
+                vendor_native_updates=args.vendor_native,
                 feed_url=args.feed_url,
                 dry_run=args.dry_run
             )
@@ -232,6 +307,19 @@ def cli_entry():
         sys.exit(0 if success else 1)
 
     elif args.command == "daemon":
+        if args.fullauto and not args.confirm:
+            sys.stderr.write(
+                "[Kinetic Error] --fullauto mode requires the secondary confirmation argument --confirm "
+                "(usage: `kinetic daemon --fullauto --confirm`).\n"
+            )
+            sys.exit(2)
+
+        deferred_list = (
+            [w.strip() for w in args.deferred_windows.split(",") if w.strip()]
+            if args.deferred_windows
+            else None
+        )
+
         daemon = KineticDaemon(
             engine=engine,
             feed_url=args.feed_url,
@@ -247,9 +335,62 @@ def cli_entry():
             auto_patch_non_reboot=args.auto_patch_non_reboot,
             disruptive_auto_reboot=args.disruptive_auto_reboot,
             off_peak_window=args.off_peak_window,
+            deferred_windows=deferred_list,
+            defer_disruptive_until=args.defer_until,
+            vendor_native_updates=args.vendor_native_updates,
+            enable_scheduler=args.enable_scheduler,
+            schedule_cron=args.schedule_cron,
+            webhook_listen=args.webhook_listen,
+            webhook_host=args.webhook_host,
+            webhook_port=args.webhook_port,
+            webhook_secret=args.webhook_secret,
+            fullauto=args.fullauto,
+            confirm=args.confirm,
+            drain_grace_seconds=args.drain_grace_seconds,
+            pre_patch_hook=args.pre_patch_hook,
+            post_patch_hook=args.post_patch_hook,
             dry_run=args.dry_run
         )
+        if args.once:
+            total = daemon.run_once()
+            if args.json:
+                print(json.dumps({
+                    "once": True,
+                    "total_actions": total,
+                    "patch_management_summary": daemon.last_patch_management_summary,
+                    "fullauto_summary": daemon.last_fullauto_summary,
+                    "scheduler_summary": daemon.last_scheduler_summary,
+                }, indent=2))
+            sys.exit(0)
         daemon.start()
+
+    elif args.command == "schedule":
+        res = engine.configure_system_scheduler(
+            mode=args.mode,
+            sync_cron=args.cron,
+            deferred_window=args.deferred_window,
+            enable_vendor_native_timer=True,
+            os_filter=args.os,
+            dry_run=args.dry_run,
+        )
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            print(f"[Kinetic Scheduler] Configured {res['mode']} scheduler for OS '{res['target_os']}':")
+            for f in res["installed_files"]:
+                print(f"  • Installed: {f}")
+        sys.exit(0)
+
+    elif args.command == "webhook":
+        listener = KineticWebhookListener(
+            engine=engine,
+            host=args.host,
+            port=args.port,
+            secret=args.secret,
+            os_filter=args.os,
+            dry_run=args.dry_run,
+        )
+        listener.serve_forever()
 
     elif args.command == "drift":
         manager = ComplianceDriftManager(
@@ -319,9 +460,13 @@ def cli_entry():
             print("-------------------------------------------------")
             print("  OS Patch Management Policy:")
             print(f"    • Auto-Stage OS Patches:     {'ENABLED' if policy.get('auto_stage_patches', True) else 'DISABLED'}")
+            print(f"    • Vendor Built-in Updates:   {'ENABLED' if policy.get('vendor_native_updates', False) else 'DISABLED'}")
             print(f"    • Auto-Patch Non-Reboot:     {'ENABLED' if policy.get('auto_patch_non_reboot', False) else 'DISABLED'}")
             print(f"    • Disruptive Auto-Reboot:    {'ENABLED' if policy.get('disruptive_auto_reboot', False) else 'DISABLED'}")
-            print(f"    • Off-Peak Window:           {policy.get('off_peak_window', '02:00-05:00')}")
+            print(f"    • Off-Peak / Deferred Window:{policy.get('off_peak_window', '02:00-05:00')}")
+            print(f"    • Scheduler Mode:            {policy.get('scheduler_mode', 'systemd')}")
+            print(f"    • Enterprise Webhook Mode:   {'ENABLED' if policy.get('webhook_enabled', False) else 'DISABLED'}")
+            print(f"    • FullAuto HA Mode:          {'ACTIVE (--confirm)' if policy.get('fullauto_confirmed', False) else 'DISABLED'}")
             print("-------------------------------------------------")
             if info['active_hotfixes']:
                 print("  Active Hotfixes:")

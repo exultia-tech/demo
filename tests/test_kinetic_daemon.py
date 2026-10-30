@@ -241,6 +241,221 @@ class TestKineticRuntimeDaemon(unittest.TestCase):
         self.assertTrue(KineticEngine.is_within_off_peak_window("22:00-04:00", datetime(2026, 10, 30, 2, 45)))
         self.assertFalse(KineticEngine.is_within_off_peak_window("22:00-04:00", datetime(2026, 10, 30, 12, 0)))
 
+    def test_10_vendor_native_builtin_security_patching(self):
+        """Verify daemon natively utilizes OS vendor built-in patching commands for security & non-reboot updates."""
+        for distro, expected_substr in [
+            ("ubuntu", "apt-get"),
+            ("rhel", "dnf upgrade-minimal"),
+            ("rocky", "dnf upgrade-minimal"),
+            ("sles", "zypper"),
+            ("opensuse-leap", "zypper"),
+            ("alpine", "apk upgrade"),
+            ("fedora-coreos", "rpm-ostree"),
+            ("flatcar", "update_engine_client"),
+            ("truenas-scale", "midclt"),
+            ("proxmox", "apt-get"),
+            ("freebsd", "pkg upgrade"),
+            ("openbsd", "syspatch"),
+        ]:
+            res = self.engine.execute_vendor_native_updates(
+                os_filter=distro,
+                include_disruptive=False,
+                enable_builtin_autoupdate=True,
+                dry_run=True,
+            )
+            self.assertEqual(res["status"], "success")
+            self.assertEqual(res["target_os"], distro)
+            self.assertIn(expected_substr, res["command"])
+
+    def test_11_system_scheduler_systemd_timers_and_crontabs(self):
+        """Verify daemon configures systemd timer/service units and crontabs for automatic patching."""
+        sched_root = Path(self.temp_dir) / "sched_root"
+        res = self.engine.configure_system_scheduler(
+            mode="both",
+            sync_cron="15 */2 * * *",
+            deferred_window="Sat 01:00-05:00, Sun 01:00-05:00",
+            enable_vendor_native_timer=True,
+            os_filter="rocky",
+            custom_root=str(sched_root),
+            dry_run=True,
+        )
+        self.assertEqual(res["mode"], "both")
+        self.assertEqual(res["target_os"], "rocky")
+        self.assertTrue(Path(res["systemd_service_unit"]).exists())
+        self.assertTrue(Path(res["systemd_timer_unit"]).exists())
+        self.assertTrue(Path(res["cron_file"]).exists())
+
+        svc_txt = Path(res["systemd_service_unit"]).read_text(encoding="utf-8")
+        tmr_txt = Path(res["systemd_timer_unit"]).read_text(encoding="utf-8")
+        cron_txt = Path(res["cron_file"]).read_text(encoding="utf-8")
+
+        self.assertIn("--vendor-native", svc_txt)
+        self.assertIn("OnCalendar=*-*-* 01:00:00", tmr_txt)
+        self.assertIn("15 */2 * * *", cron_txt)
+
+    def test_12_deferred_time_periods_and_hold_timestamp(self):
+        """Verify deferred time periods (multi-window, day-of-week, and ISO-8601 hold timestamp) for disruptive patching."""
+        # 2026-10-31 is a Saturday
+        sat_inside = datetime(2026, 10, 31, 2, 30)
+        fri_same_hour = datetime(2026, 10, 30, 2, 30)
+
+        win_spec = "Sat 01:00-05:00, Sun 01:00-05:00"
+        self.assertTrue(KineticEngine.is_within_deferred_window(win_spec, current_time=sat_inside))
+        self.assertFalse(KineticEngine.is_within_deferred_window(win_spec, current_time=fri_same_hour))
+
+        # Explicit defer_until hold timestamp in the future blocks patching even inside Saturday window
+        self.assertFalse(
+            KineticEngine.is_within_deferred_window(
+                win_spec,
+                current_time=sat_inside,
+                defer_until="2026-11-05T00:00:00",
+            )
+        )
+        # Once past defer_until, Saturday window is active
+        self.assertTrue(
+            KineticEngine.is_within_deferred_window(
+                win_spec,
+                current_time=sat_inside,
+                defer_until="2026-10-30T00:00:00",
+            )
+        )
+
+    def test_13_enterprise_webhook_listener_trigger_and_defer(self):
+        """Verify enterprise webhook listener accepts authenticated external triggers and deferral updates."""
+        import urllib.request
+        import urllib.error
+
+        daemon = KineticDaemon(
+            engine=self.engine,
+            feed_url="http://127.0.0.1:59999/offline",
+            argent_feed_url="http://127.0.0.1:59999/offline",
+            os_distro="ubuntu",
+            staging_dir=str(self.staging_dir),
+            webhook_listen=True,
+            webhook_host="127.0.0.1",
+            webhook_port=0,  # ephemeral port
+            webhook_secret="enterprise-secret-token",
+            dry_run=True,
+        )
+        port = daemon.start_webhook_listener()
+        self.assertGreater(port, 0)
+
+        try:
+            # 1. Health endpoint
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=5) as resp:
+                self.assertEqual(resp.status, 200)
+                health_data = json.loads(resp.read().decode("utf-8"))
+                self.assertTrue(health_data["ok"])
+
+            # 2. Unauthorized POST must return 401
+            unauth_req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/webhook/trigger",
+                data=b'{"mode": "non-reboot"}',
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(unauth_req, timeout=5)
+            self.assertEqual(ctx.exception.code, 401)
+
+            # 3. Authorized POST /webhook/defer
+            defer_payload = json.dumps({
+                "deferred_windows": ["Sat 01:00-04:00", "Sun 01:00-04:00"],
+                "defer_disruptive_until": "2026-12-01T00:00:00Z",
+            }).encode("utf-8")
+            defer_req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/webhook/defer",
+                data=defer_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer enterprise-secret-token",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(defer_req, timeout=5) as resp:
+                self.assertEqual(resp.status, 200)
+                d_body = json.loads(resp.read().decode("utf-8"))
+                self.assertTrue(d_body["ok"])
+                self.assertEqual(d_body["patch_policy"]["defer_disruptive_until"], "2026-12-01T00:00:00Z")
+
+            # 4. Authorized POST /webhook/trigger
+            trig_payload = json.dumps({
+                "source": "ServiceNow-Enterprise-Console",
+                "mode": "non-reboot",
+                "include_vendor_native": True,
+                "dry_run": True,
+            }).encode("utf-8")
+            trig_req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/webhook/trigger",
+                data=trig_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer enterprise-secret-token",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(trig_req, timeout=5) as resp:
+                self.assertEqual(resp.status, 200)
+                t_body = json.loads(resp.read().decode("utf-8"))
+                self.assertTrue(t_body["ok"])
+                self.assertEqual(t_body["webhook_event"]["source"], "ServiceNow-Enterprise-Console")
+        finally:
+            daemon.stop_webhook_listener()
+
+    def test_14_fullauto_requires_secondary_confirm_argument(self):
+        """Verify --fullauto refuses to run without --confirm and succeeds with --fullauto --confirm."""
+        # 1. Engine level without confirm raises PermissionError
+        with self.assertRaises(PermissionError):
+            self.engine.execute_fullauto_cycle(confirm=False, os_filter="ubuntu", dry_run=True)
+
+        # 2. Daemon level without confirm raises PermissionError
+        with self.assertRaises(PermissionError):
+            KineticDaemon(
+                engine=self.engine,
+                os_distro="ubuntu",
+                fullauto=True,
+                confirm=False,
+                dry_run=True,
+            )
+
+        # 3. With --fullauto --confirm and healthy HA metrics, dynamically drains and patches
+        res = self.engine.execute_fullauto_cycle(
+            confirm=True,
+            os_filter="ubuntu",
+            argent_feed_url="http://127.0.0.1:59999/offline",
+            custom_staging_dir=str(self.staging_dir),
+            pre_patch_hook="echo draining_lb_node",
+            post_patch_hook="echo uncordoning_lb_node",
+            simulated_metrics={
+                "load_1m": 0.20,
+                "cpu_count": 4,
+                "avail_mem_pct": 72.0,
+                "ha_cluster_state": "ready",
+            },
+            dry_run=True,
+        )
+        self.assertTrue(res["fullauto"])
+        self.assertTrue(res["confirmed"])
+        self.assertEqual(res["status"], "completed")
+        self.assertTrue(res["ha_drain_graceful"])
+        self.assertGreaterEqual(res["patch_summary"]["applied_non_reboot_count"], 1)
+        self.assertGreaterEqual(res["patch_summary"]["applied_disruptive_count"], 1)
+
+        # 4. High CPU load dynamically defers fullauto cycle gracefully
+        busy_res = self.engine.execute_fullauto_cycle(
+            confirm=True,
+            os_filter="ubuntu",
+            simulated_metrics={
+                "load_1m": 7.8,
+                "cpu_count": 2,
+                "avail_mem_pct": 60.0,
+                "ha_cluster_state": "ready",
+            },
+            dry_run=True,
+        )
+        self.assertEqual(busy_res["status"], "deferred_by_dynamic_telemetry")
+        self.assertFalse(busy_res["readiness"]["ready_to_patch"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

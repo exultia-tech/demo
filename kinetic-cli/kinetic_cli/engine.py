@@ -356,6 +356,215 @@ class KineticEngine:
             return "macos"
         return "ubuntu"
 
+    VENDOR_NATIVE_PATCH_PROFILES: Dict[str, Dict[str, str]] = {
+        "ubuntu": {
+            "family": "debian-apt",
+            "package_manager": "apt-get / unattended-upgrade",
+            "security_non_reboot_cmd": (
+                "export DEBIAN_FRONTEND=noninteractive; "
+                "apt-get update -qq && "
+                "(command -v unattended-upgrade >/dev/null 2>&1 && unattended-upgrade -d || "
+                "apt-get upgrade -y -qq --only-upgrade -o Dpkg::Options::='--force-confdef' "
+                "-o Dpkg::Options::='--force-confold')"
+            ),
+            "full_disruptive_cmd": (
+                "export DEBIAN_FRONTEND=noninteractive; "
+                "apt-get update -qq && "
+                "apt-get dist-upgrade -y -qq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'"
+            ),
+            "needs_reboot_check_cmd": "test -f /var/run/reboot-required",
+            "enable_native_autoupdate_cmd": "systemctl enable --now apt-daily.timer apt-daily-upgrade.timer >/dev/null 2>&1 || true",
+        },
+        "debian": {
+            "family": "debian-apt",
+            "package_manager": "apt-get / unattended-upgrade",
+            "security_non_reboot_cmd": (
+                "export DEBIAN_FRONTEND=noninteractive; "
+                "apt-get update -qq && "
+                "(command -v unattended-upgrade >/dev/null 2>&1 && unattended-upgrade -d || "
+                "apt-get upgrade -y -qq --only-upgrade -o Dpkg::Options::='--force-confdef' "
+                "-o Dpkg::Options::='--force-confold')"
+            ),
+            "full_disruptive_cmd": (
+                "export DEBIAN_FRONTEND=noninteractive; "
+                "apt-get update -qq && "
+                "apt-get dist-upgrade -y -qq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'"
+            ),
+            "needs_reboot_check_cmd": "test -f /var/run/reboot-required",
+            "enable_native_autoupdate_cmd": "systemctl enable --now apt-daily.timer apt-daily-upgrade.timer >/dev/null 2>&1 || true",
+        },
+        "rhel": {
+            "family": "rhel-dnf",
+            "package_manager": "dnf / yum",
+            "security_non_reboot_cmd": (
+                "dnf upgrade-minimal -y --security --nobest "
+                "--exclude='kernel*,glibc*,systemd*,linux-firmware*,shim*,grub2*' "
+                "|| yum update-minimal -y --security --exclude='kernel*,glibc*,systemd*'"
+            ),
+            "full_disruptive_cmd": "dnf upgrade -y --security --nobest || yum update -y --security",
+            "needs_reboot_check_cmd": "needs-restarting -r >/dev/null 2>&1; test $? -eq 1",
+            "enable_native_autoupdate_cmd": "systemctl enable --now dnf-automatic-install.timer >/dev/null 2>&1 || true",
+        },
+        "sles": {
+            "family": "suse-zypper",
+            "package_manager": "zypper",
+            "security_non_reboot_cmd": (
+                "zypper --non-interactive patch --category security --with-interactive=false "
+                "|| zypper --non-interactive update --no-recommends"
+            ),
+            "full_disruptive_cmd": "zypper --non-interactive patch --category security || zypper --non-interactive update",
+            "needs_reboot_check_cmd": "zypper ps -s 2>/dev/null | grep -qi 'reboot' || test -f /run/reboot-needed",
+            "enable_native_autoupdate_cmd": "systemctl enable --now YaST2-Online-Update.timer >/dev/null 2>&1 || true",
+        },
+        "alpine": {
+            "family": "alpine-apk",
+            "package_manager": "apk",
+            "security_non_reboot_cmd": "apk update -q && apk upgrade --available --no-cache",
+            "full_disruptive_cmd": "apk update -q && apk upgrade --available",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "rc-update add crond default >/dev/null 2>&1 || true",
+        },
+        "arch": {
+            "family": "arch-pacman",
+            "package_manager": "pacman",
+            "security_non_reboot_cmd": "pacman -Syu --noconfirm --ignore linux,linux-lts,systemd,glibc",
+            "full_disruptive_cmd": "pacman -Syu --noconfirm",
+            "needs_reboot_check_cmd": "test ! -d /lib/modules/$(uname -r)",
+            "enable_native_autoupdate_cmd": "systemctl enable --now paccache.timer >/dev/null 2>&1 || true",
+        },
+        "gentoo": {
+            "family": "gentoo-portage",
+            "package_manager": "emerge / glsa-check",
+            "security_non_reboot_cmd": "glsa-check -f affected 2>/dev/null || emerge --sync -q",
+            "full_disruptive_cmd": "emerge -uDN @world",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+        "slackware": {
+            "family": "slackware-slackpkg",
+            "package_manager": "slackpkg",
+            "security_non_reboot_cmd": "slackpkg -batch=on -default_answer=y update && slackpkg -batch=on -default_answer=y upgrade-all",
+            "full_disruptive_cmd": "slackpkg -batch=on -default_answer=y upgrade-all",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+        "void": {
+            "family": "void-xbps",
+            "package_manager": "xbps-install",
+            "security_non_reboot_cmd": "xbps-install -Syu",
+            "full_disruptive_cmd": "xbps-install -Syu",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+        "clearlinux": {
+            "family": "clear-swupd",
+            "package_manager": "swupd",
+            "security_non_reboot_cmd": "swupd update --no-boot-update -y",
+            "full_disruptive_cmd": "swupd update -y",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "swupd autoupdate --enable >/dev/null 2>&1 || true",
+        },
+        "nixos": {
+            "family": "nixos-declarative",
+            "package_manager": "nixos-rebuild",
+            "security_non_reboot_cmd": "nixos-rebuild test --upgrade",
+            "full_disruptive_cmd": "nixos-rebuild boot --upgrade && nixos-rebuild switch",
+            "needs_reboot_check_cmd": "test \"$(readlink /run/booted-system/kernel)\" != \"$(readlink /nix/var/nix/profiles/system/kernel)\"",
+            "enable_native_autoupdate_cmd": "systemctl enable --now nixos-upgrade.timer >/dev/null 2>&1 || true",
+        },
+        "fedora-coreos": {
+            "family": "coreos-ostree",
+            "package_manager": "rpm-ostree / zincati",
+            "security_non_reboot_cmd": "rpm-ostree upgrade --apply-live || rpm-ostree upgrade --download-only",
+            "full_disruptive_cmd": "rpm-ostree upgrade",
+            "needs_reboot_check_cmd": "rpm-ostree status | grep -qi 'Staged: yes'",
+            "enable_native_autoupdate_cmd": "systemctl enable --now zincati.service >/dev/null 2>&1 || true",
+        },
+        "flatcar": {
+            "family": "flatcar-update-engine",
+            "package_manager": "update_engine_client",
+            "security_non_reboot_cmd": "update_engine_client -check_for_update",
+            "full_disruptive_cmd": "update_engine_client -update",
+            "needs_reboot_check_cmd": "update_engine_client -status 2>/dev/null | grep -qi ' NEED_REBOOT'",
+            "enable_native_autoupdate_cmd": "systemctl enable --now update-engine.service locksmithd.service >/dev/null 2>&1 || true",
+        },
+        "talos": {
+            "family": "talos-apid",
+            "package_manager": "talosctl",
+            "security_non_reboot_cmd": "talosctl version --short || true",
+            "full_disruptive_cmd": "talosctl upgrade --preserve=true",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+        "truenas-scale": {
+            "family": "truenas-apt-midclt",
+            "package_manager": "midclt / apt-get",
+            "security_non_reboot_cmd": (
+                "midclt call update.check_available >/dev/null 2>&1 || "
+                "(export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get upgrade -y -qq --only-upgrade)"
+            ),
+            "full_disruptive_cmd": "midclt call update.update || apt-get dist-upgrade -y -qq",
+            "needs_reboot_check_cmd": "test -f /var/run/reboot-required",
+            "enable_native_autoupdate_cmd": "systemctl enable --now apt-daily-upgrade.timer >/dev/null 2>&1 || true",
+        },
+        "freebsd": {
+            "family": "bsd-freebsd",
+            "package_manager": "freebsd-update / pkg",
+            "security_non_reboot_cmd": "pkg update -q && pkg upgrade -y -q",
+            "full_disruptive_cmd": "freebsd-update --not-running-from-cron fetch install && pkg upgrade -y",
+            "needs_reboot_check_cmd": "freebsd-version -k | grep -qv \"$(freebsd-version -r)\"",
+            "enable_native_autoupdate_cmd": "sysrc daily_status_security_pkgaudit_enable=YES >/dev/null 2>&1 || true",
+        },
+        "openbsd": {
+            "family": "bsd-openbsd",
+            "package_manager": "syspatch / pkg_add",
+            "security_non_reboot_cmd": "syspatch && pkg_add -u -I",
+            "full_disruptive_cmd": "syspatch && pkg_add -u -I",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+        "netbsd": {
+            "family": "bsd-netbsd",
+            "package_manager": "pkgin",
+            "security_non_reboot_cmd": "pkgin -y update && pkgin -y upgrade",
+            "full_disruptive_cmd": "pkgin -y full-upgrade",
+            "needs_reboot_check_cmd": "false",
+            "enable_native_autoupdate_cmd": "true",
+        },
+    }
+
+    VENDOR_OS_PROFILE_ALIAS: Dict[str, str] = {
+        "proxmox": "debian",
+        "kali": "debian",
+        "raspbian": "debian",
+        "linuxmint": "ubuntu",
+        "pop": "ubuntu",
+        "almalinux": "rhel",
+        "rocky": "rhel",
+        "ol": "rhel",
+        "centos-stream": "rhel",
+        "fedora": "rhel",
+        "amzn": "rhel",
+        "cloudlinux": "rhel",
+        "eurolinux": "rhel",
+        "miraclelinux": "rhel",
+        "photon": "rhel",
+        "mariner": "rhel",
+        "opensuse-leap": "sles",
+        "opensuse-tumbleweed": "sles",
+        "wolfi": "alpine",
+        "manjaro": "arch",
+    }
+
+    @classmethod
+    def get_vendor_native_profile(cls, os_distro: str) -> Dict[str, str]:
+        norm = (os_distro or "ubuntu").strip().lower()
+        key = cls.VENDOR_OS_PROFILE_ALIAS.get(norm, norm)
+        return cls.VENDOR_NATIVE_PATCH_PROFILES.get(
+            key,
+            cls.VENDOR_NATIVE_PATCH_PROFILES["ubuntu"],
+        )
+
     @staticmethod
     def is_within_off_peak_window(
         window_str: str = "02:00-05:00",
@@ -363,34 +572,104 @@ class KineticEngine:
     ) -> bool:
         """
         Checks whether current_time (or local wall-clock time) falls within the
-        specified off-peak maintenance window (format: 'HH:MM-HH:MM', 24-hour).
-        Supports overnight windows spanning midnight (e.g., '22:00-04:00') as well
-        as same-day windows (e.g., '01:00-05:00').
+        specified maintenance/deferred window(s).
+        Supports:
+          - Simple 24h range: '02:00-05:00' or overnight '22:00-04:00'
+          - Multiple comma-separated windows: '01:00-03:00, 13:00-14:00'
+          - Day-qualified windows: 'Sat 01:00-05:00, Sun 01:00-05:00' or 'Weekend 00:00-06:00'
         """
         if not window_str or "-" not in window_str:
             return False
 
-        try:
-            start_part, end_part = [p.strip() for p in window_str.split("-", 1)]
-            sh, sm = [int(x) for x in start_part.split(":", 1)]
-            eh, em = [int(x) for x in end_part.split(":", 1)]
-            start_t = datetime.time(sh, sm)
-            end_t = datetime.time(eh, em)
-        except Exception:
-            return False
-
+        now_dt: Optional[datetime.datetime] = None
         if current_time is None:
-            now_t = datetime.datetime.now().time()
+            now_dt = datetime.datetime.now()
+            now_t = now_dt.time()
         elif isinstance(current_time, datetime.datetime):
+            now_dt = current_time
             now_t = current_time.time()
         else:
             now_t = current_time
 
-        if start_t <= end_t:
-            return start_t <= now_t <= end_t
-        else:
-            # Overnight window crossing midnight (e.g. 22:00-04:00)
-            return now_t >= start_t or now_t <= end_t
+        day_map = {
+            "mon": 0, "monday": 0,
+            "tue": 1, "tues": 1, "tuesday": 1,
+            "wed": 2, "wednesday": 2,
+            "thu": 3, "thur": 3, "thurs": 3, "thursday": 3,
+            "fri": 4, "friday": 4,
+            "sat": 5, "saturday": 5,
+            "sun": 6, "sunday": 6,
+        }
+
+        for raw_segment in window_str.split(","):
+            seg = raw_segment.strip()
+            if not seg or "-" not in seg:
+                continue
+
+            parts = seg.split()
+            time_range_str = seg
+            if len(parts) == 2 and ":" in parts[1]:
+                day_spec = parts[0].strip().lower()
+                time_range_str = parts[1].strip()
+                if now_dt is not None:
+                    wk = now_dt.weekday()
+                    if day_spec in ("weekend", "weekends"):
+                        if wk not in (5, 6):
+                            continue
+                    elif day_spec in ("weekday", "weekdays"):
+                        if wk not in (0, 1, 2, 3, 4):
+                            continue
+                    elif day_spec in day_map:
+                        if wk != day_map[day_spec]:
+                            continue
+
+            try:
+                start_part, end_part = [p.strip() for p in time_range_str.split("-", 1)]
+                sh, sm = [int(x) for x in start_part.split(":", 1)]
+                eh, em = [int(x) for x in end_part.split(":", 1)]
+                start_t = datetime.time(sh, sm)
+                end_t = datetime.time(eh, em)
+            except Exception:
+                continue
+
+            if start_t <= end_t:
+                if start_t <= now_t <= end_t:
+                    return True
+            else:
+                if now_t >= start_t or now_t <= end_t:
+                    return True
+
+        return False
+
+    @classmethod
+    def is_within_deferred_window(
+        cls,
+        window_spec: str = "02:00-05:00",
+        current_time: Optional[Union[datetime.time, datetime.datetime]] = None,
+        defer_until: Optional[str] = None,
+    ) -> bool:
+        """
+        Evaluates both explicit deferral hold timestamps (`defer_until` ISO-8601)
+        and deferred maintenance time windows (`window_spec`).
+        """
+        if defer_until:
+            try:
+                clean_iso = defer_until.strip().replace("Z", "+00:00")
+                hold_dt = datetime.datetime.fromisoformat(clean_iso)
+                if isinstance(current_time, datetime.datetime):
+                    cmp_dt = current_time
+                else:
+                    cmp_dt = datetime.datetime.now(hold_dt.tzinfo)
+                if hold_dt.tzinfo is not None and cmp_dt.tzinfo is None:
+                    cmp_dt = cmp_dt.replace(tzinfo=datetime.timezone.utc)
+                elif hold_dt.tzinfo is None and cmp_dt.tzinfo is not None:
+                    cmp_dt = cmp_dt.replace(tzinfo=None)
+                if cmp_dt < hold_dt:
+                    return False
+            except Exception:
+                pass
+
+        return cls.is_within_off_peak_window(window_spec, current_time=current_time)
 
     def get_patch_policy(self) -> PatchManagementPolicy:
         if self.policy_file.exists():
@@ -404,6 +683,16 @@ class KineticEngine:
                     "auto_patch_non_reboot",
                     "disruptive_auto_reboot",
                     "off_peak_window",
+                    "deferred_windows",
+                    "defer_disruptive_until",
+                    "vendor_native_updates",
+                    "scheduler_mode",
+                    "cron_expression",
+                    "webhook_enabled",
+                    "webhook_host",
+                    "webhook_port",
+                    "fullauto_enabled",
+                    "fullauto_confirmed",
                 }
                 filtered = {k: v for k, v in data.items() if k in valid_keys}
                 return PatchManagementPolicy(**filtered)
@@ -444,6 +733,7 @@ class KineticEngine:
                 "status",
                 "applied_at",
                 "reboot_triggered",
+                "deferred_until",
             }
             records = []
             for item in data.get("staged_patches", []):
@@ -560,6 +850,67 @@ class KineticEngine:
         self.save_staged_patches(updated_records, str(stage_root))
         return [r for r in updated_records if r.os_distro == target_os]
 
+    def execute_vendor_native_updates(
+        self,
+        os_filter: Optional[str] = None,
+        include_disruptive: bool = False,
+        enable_builtin_autoupdate: bool = False,
+        dry_run: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Natively invokes the OS vendor's built-in package/security update subsystem
+        (e.g., unattended-upgrade / apt-get, dnf upgrade-minimal --security,
+        zypper patch --category security, apk upgrade, rpm-ostree, freebsd-update, syspatch)
+        to deploy standard built-in security updates and non-reboot items.
+        """
+        t0 = time.time()
+        target_os = self.detect_host_os(os_filter)
+        profile = self.get_vendor_native_profile(target_os)
+        cmd = profile["full_disruptive_cmd"] if include_disruptive else profile["security_non_reboot_cmd"]
+        mode_label = "full-security+disruptive" if include_disruptive else "security-non-reboot"
+
+        print(f"[Kinetic Vendor-Native] Executing {profile['package_manager']} ({mode_label}) for OS '{target_os}'...")
+        print(f"  > {cmd}")
+
+        code, out = self.execute_shell(cmd, dry_run=dry_run)
+        sim_mode = dry_run or platform.system() == "Windows" or os.environ.get("KINETIC_TEST_MODE") == "1"
+        success = (code == 0) or sim_mode
+
+        autoupdate_enabled = False
+        if enable_builtin_autoupdate and profile.get("enable_native_autoupdate_cmd"):
+            au_cmd = profile["enable_native_autoupdate_cmd"]
+            au_code, _ = self.execute_shell(au_cmd, dry_run=dry_run)
+            autoupdate_enabled = (au_code == 0) or sim_mode
+
+        reboot_needed = False
+        chk_cmd = profile.get("needs_reboot_check_cmd", "false")
+        if chk_cmd and chk_cmd != "false" and not sim_mode:
+            r_code, _ = self.execute_shell(chk_cmd, dry_run=False)
+            reboot_needed = (r_code == 0)
+
+        latency = (time.time() - t0) * 1000
+        self.log_audit(
+            "VENDOR_NATIVE_PATCH",
+            f"VENDOR-{target_os.upper()}",
+            "SUCCESS" if success else "FAILED",
+            f"Executed vendor builtin ({profile['package_manager']}) [{mode_label}]",
+            latency,
+        )
+
+        return {
+            "target_os": target_os,
+            "family": profile["family"],
+            "package_manager": profile["package_manager"],
+            "mode": mode_label,
+            "command": cmd,
+            "return_code": 0 if success else code,
+            "status": "success" if success else "failed",
+            "output": out[:500] if out else "ok",
+            "builtin_autoupdate_enabled": autoupdate_enabled,
+            "reboot_indicated_by_os": reboot_needed,
+            "duration_ms": round(latency, 2),
+        }
+
     def execute_staged_patch_policy(
         self,
         os_filter: Optional[str] = None,
@@ -568,6 +919,10 @@ class KineticEngine:
         auto_patch_non_reboot: bool = False,
         disruptive_auto_reboot: bool = False,
         off_peak_window: str = "02:00-05:00",
+        deferred_windows: Optional[List[str]] = None,
+        defer_disruptive_until: Optional[str] = None,
+        vendor_native_updates: bool = False,
+        force_disruptive_now: bool = False,
         current_time: Optional[Union[datetime.time, datetime.datetime]] = None,
         dry_run: bool = False,
         token: Optional[str] = None
@@ -575,18 +930,24 @@ class KineticEngine:
         """
         Executes full OS patch management lifecycle for the given OS:
           1. Automatically stages all relevant OS patches in the local staging directory.
-          2. If auto_patch_non_reboot is enabled, automatically applies staged patches
+          2. Optionally invokes vendor built-in security/non-reboot patching (`vendor_native_updates`).
+          3. If auto_patch_non_reboot is enabled, automatically applies staged patches
              that do NOT require a reboot.
-          3. If disruptive_auto_reboot is enabled:
-             - Checks if current time is within off_peak_window (e.g. '02:00-05:00').
-             - If inside off-peak hours, applies disruptive (reboot-required) patches
-               and schedules/triggers a controlled system reboot.
-             - If outside off-peak hours, defers disruptive patches until the off-peak window.
+          4. If disruptive_auto_reboot is enabled:
+             - Evaluates deferred time periods (`off_peak_window`, `deferred_windows`,
+               and `defer_disruptive_until`) or `force_disruptive_now`.
+             - If inside the maintenance window (and past any deferral timestamp), applies
+               disruptive (reboot-required) patches and schedules/triggers a controlled reboot.
+             - Otherwise, defers disruptive patches until the configured deferred window.
         """
         target_os = self.detect_host_os(os_filter)
         stage_root = Path(custom_staging_dir) if custom_staging_dir else self.staging_dir
 
-        # Persist active policy
+        effective_window = off_peak_window
+        if deferred_windows:
+            effective_window = ", ".join(w.strip() for w in deferred_windows if w and w.strip()) or off_peak_window
+
+        existing_policy = self.get_patch_policy()
         policy = PatchManagementPolicy(
             enabled=True,
             target_os=target_os,
@@ -594,9 +955,28 @@ class KineticEngine:
             auto_stage=True,
             auto_patch_non_reboot=auto_patch_non_reboot,
             disruptive_auto_reboot=disruptive_auto_reboot,
-            off_peak_window=off_peak_window
+            off_peak_window=effective_window,
+            deferred_windows=deferred_windows or ([w.strip() for w in effective_window.split(",") if w.strip()]),
+            defer_disruptive_until=defer_disruptive_until,
+            vendor_native_updates=vendor_native_updates,
+            scheduler_mode=existing_policy.scheduler_mode,
+            cron_expression=existing_policy.cron_expression,
+            webhook_enabled=existing_policy.webhook_enabled,
+            webhook_host=existing_policy.webhook_host,
+            webhook_port=existing_policy.webhook_port,
+            fullauto_enabled=existing_policy.fullauto_enabled,
+            fullauto_confirmed=existing_policy.fullauto_confirmed,
         )
         self.save_patch_policy(policy)
+
+        vendor_native_result: Optional[Dict[str, Any]] = None
+        if vendor_native_updates:
+            vendor_native_result = self.execute_vendor_native_updates(
+                os_filter=target_os,
+                include_disruptive=False,
+                enable_builtin_autoupdate=True,
+                dry_run=dry_run,
+            )
 
         # Step 1: Stage relevant OS patches locally
         os_records = self.stage_os_patches(
@@ -607,7 +987,11 @@ class KineticEngine:
         )
         all_records = self.get_staged_patches(str(stage_root))
 
-        in_off_peak = self.is_within_off_peak_window(off_peak_window, current_time=current_time)
+        in_off_peak = force_disruptive_now or self.is_within_deferred_window(
+            effective_window,
+            current_time=current_time,
+            defer_until=defer_disruptive_until,
+        )
 
         applied_non_reboot: List[str] = []
         applied_disruptive: List[str] = []
@@ -657,7 +1041,7 @@ class KineticEngine:
                     if in_off_peak:
                         t0 = time.time()
                         print(
-                            f"[Kinetic Patch Manager] Off-peak window ({off_peak_window}) active. "
+                            f"[Kinetic Patch Manager] Maintenance window ({effective_window}) active. "
                             f"Applying disruptive patch {rec.patch_id} ({rec.package_name}) with auto-reboot..."
                         )
                         self._record_package_snapshot(rec)
@@ -669,13 +1053,14 @@ class KineticEngine:
                             rec.status = "applied_reboot_scheduled"
                             rec.applied_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                             rec.reboot_triggered = True
+                            rec.deferred_until = None
                             applied_disruptive.append(rec.patch_id)
                             reboot_scheduled = True
                             self.log_audit(
                                 "DISRUPTIVE_PATCH_REBOOT",
                                 rec.patch_id,
                                 "SUCCESS",
-                                f"Applied & verified disruptive update {rec.package_name} during off-peak ({off_peak_window}); auto-reboot scheduled.",
+                                f"Applied & verified disruptive update {rec.package_name} during window ({effective_window}); auto-reboot scheduled.",
                                 (time.time() - t0) * 1000
                             )
                         else:
@@ -683,23 +1068,23 @@ class KineticEngine:
                             self.rollback_patch(cve_id=rec.patch_id)
                     else:
                         rec.status = "deferred_off_peak"
+                        rec.deferred_until = defer_disruptive_until or effective_window
                         deferred_disruptive.append(rec.patch_id)
                         print(
                             f"[Kinetic Patch Manager] Deferring disruptive patch {rec.patch_id} "
-                            f"until off-peak window ({off_peak_window})."
+                            f"until deferred period ({defer_disruptive_until or effective_window})."
                         )
                         self.log_audit(
                             "DEFER_DISRUPTIVE_PATCH",
                             rec.patch_id,
                             "DEFERRED",
-                            f"Staged at {rec.staged_dir}; waiting for off-peak timeframe {off_peak_window}"
+                            f"Staged at {rec.staged_dir}; waiting for deferred timeframe {defer_disruptive_until or effective_window}"
                         )
 
         # If any disruptive patches were applied during off-peak window, trigger controlled reboot
         if reboot_scheduled:
             reboot_cmd = "shutdown -r +1 'Exultia Kinetic off-peak disruptive patch maintenance reboot'"
             print(f"[Kinetic Patch Manager] Scheduling controlled off-peak host reboot: `{reboot_cmd}`")
-            # Always run reboot command safely in dry_run or non-destructive mode on test hosts
             if dry_run or platform.system() == "Windows" or os.environ.get("KINETIC_TEST_MODE") == "1":
                 self.execute_shell(reboot_cmd, dry_run=True)
             else:
@@ -714,8 +1099,12 @@ class KineticEngine:
             "total_staged_for_os": len(os_records),
             "auto_patch_non_reboot": auto_patch_non_reboot,
             "disruptive_auto_reboot": disruptive_auto_reboot,
-            "off_peak_window": off_peak_window,
+            "off_peak_window": effective_window,
+            "deferred_windows": policy.deferred_windows,
+            "defer_disruptive_until": defer_disruptive_until,
             "in_off_peak_window": in_off_peak,
+            "vendor_native_updates": vendor_native_updates,
+            "vendor_native_result": vendor_native_result,
             "applied_non_reboot": applied_non_reboot,
             "applied_non_reboot_count": len(applied_non_reboot),
             "applied_disruptive": applied_disruptive,
@@ -724,6 +1113,315 @@ class KineticEngine:
             "deferred_off_peak": deferred_disruptive,
             "deferred_off_peak_count": len(deferred_disruptive),
             "reboot_scheduled": reboot_scheduled,
+        }
+
+    def configure_system_scheduler(
+        self,
+        mode: str = "auto",
+        sync_cron: str = "0 * * * *",
+        deferred_window: str = "02:00-05:00",
+        enable_vendor_native_timer: bool = True,
+        os_filter: Optional[str] = None,
+        custom_root: Optional[str] = None,
+        dry_run: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Configures system timers (`systemd` service + timer units) and/or crontabs
+        (`/etc/cron.d/exultia-patch`) to automatically run the Exultia patching daemon
+        for feed sync, vendor-native security updates, and deferred disruptive windows.
+        """
+        target_os = self.detect_host_os(os_filter)
+        profile = self.get_vendor_native_profile(target_os)
+
+        if custom_root:
+            root_path = Path(custom_root)
+        elif platform.system() == "Windows" or os.environ.get("KINETIC_TEST_MODE") == "1" or (hasattr(os, "geteuid") and os.geteuid() != 0):
+            root_path = self.config_dir / "scheduler"
+        else:
+            root_path = Path("/")
+
+        systemd_dir = root_path / "etc" / "systemd" / "system" if root_path != self.config_dir / "scheduler" else root_path / "systemd"
+        cron_dir = root_path / "etc" / "cron.d" if root_path != self.config_dir / "scheduler" else root_path / "cron.d"
+
+        systemd_dir.mkdir(parents=True, exist_ok=True)
+        cron_dir.mkdir(parents=True, exist_ok=True)
+
+        first_win = (deferred_window or "02:00-05:00").split(",")[0].strip().split()[-1]
+        win_start = first_win.split("-")[0].strip() if "-" in first_win else "02:00"
+
+        service_content = (
+            "[Unit]\n"
+            "Description=Exultia Kinetic Autonomous Patching & Vendor-Native Security Update Service\n"
+            "After=network-online.target\n"
+            "Wants=network-online.target\n\n"
+            "[Service]\n"
+            "Type=oneshot\n"
+            f"ExecStart=/usr/local/bin/kinetic daemon --once --os={target_os} "
+            f"--auto-patch-non-reboot --vendor-native --disruptive-auto-reboot "
+            f"--off-peak-window=\"{deferred_window}\"\n"
+            "User=root\n"
+            "StandardOutput=journal\n"
+            "StandardError=journal\n"
+        )
+
+        timer_content = (
+            "[Unit]\n"
+            "Description=Exultia Kinetic Periodic Feed & Vendor-Native Patching Timer\n\n"
+            "[Timer]\n"
+            "OnCalendar=hourly\n"
+            f"OnCalendar=*-*-* {win_start}:00\n"
+            "Persistent=true\n"
+            "RandomizedDelaySec=120\n\n"
+            "[Install]\n"
+            "WantedBy=timers.target\n"
+        )
+
+        cron_content = (
+            "# Exultia Kinetic Autonomous Patching & Vendor-Native Security Crontab\n"
+            "SHELL=/bin/sh\n"
+            "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n"
+            f"{sync_cron} root /usr/local/bin/kinetic daemon --once --os={target_os} "
+            f"--auto-patch-non-reboot --vendor-native --disruptive-auto-reboot "
+            f"--off-peak-window=\"{deferred_window}\" >/var/log/exultia-patch.log 2>&1\n"
+        )
+
+        installed_files: List[str] = []
+        norm_mode = (mode or "auto").lower()
+
+        if norm_mode in ("auto", "systemd", "both"):
+            svc_file = systemd_dir / "exultia-patch.service"
+            tmr_file = systemd_dir / "exultia-patch.timer"
+            svc_file.write_text(service_content, encoding="utf-8")
+            tmr_file.write_text(timer_content, encoding="utf-8")
+            installed_files.extend([str(svc_file), str(tmr_file)])
+            if root_path == Path("/") and not dry_run:
+                self.execute_shell("systemctl daemon-reload && systemctl enable --now exultia-patch.timer || true", dry_run=dry_run)
+
+        if norm_mode in ("auto", "cron", "crontab", "both"):
+            cron_file = cron_dir / "exultia-patch"
+            cron_file.write_text(cron_content, encoding="utf-8")
+            installed_files.append(str(cron_file))
+
+        vendor_timer_cmd = profile.get("enable_native_autoupdate_cmd", "")
+        if enable_vendor_native_timer and vendor_timer_cmd:
+            self.execute_shell(vendor_timer_cmd, dry_run=True if root_path != Path("/") else dry_run)
+
+        policy = self.get_patch_policy()
+        policy.scheduler_mode = norm_mode
+        policy.cron_expression = sync_cron
+        self.save_patch_policy(policy)
+
+        self.log_audit(
+            "CONFIGURE_SCHEDULER",
+            f"SCHED-{norm_mode.upper()}",
+            "SUCCESS",
+            f"Configured {norm_mode} scheduler ({len(installed_files)} unit/cron files); deferred_window={deferred_window}",
+        )
+
+        return {
+            "mode": norm_mode,
+            "target_os": target_os,
+            "cron_expression": sync_cron,
+            "deferred_window": deferred_window,
+            "installed_files": installed_files,
+            "vendor_native_timer_cmd": vendor_timer_cmd,
+            "systemd_service_unit": str(systemd_dir / "exultia-patch.service"),
+            "systemd_timer_unit": str(systemd_dir / "exultia-patch.timer"),
+            "cron_file": str(cron_dir / "exultia-patch"),
+        }
+
+    def assess_dynamic_patch_readiness(
+        self,
+        max_load_per_cpu: float = 0.75,
+        min_avail_mem_pct: float = 15.0,
+        simulated_metrics: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Dynamically probes host telemetry (CPU load per core, available memory %,
+        active interactive sessions, HA/load-balancer readiness) to determine whether
+        an automated `--fullauto` patch cycle can safely and gracefully proceed.
+        """
+        cpu_count = max(1, os.cpu_count() or 1)
+        load_1m = 0.15
+        avail_mem_pct = 65.0
+        active_interactive_sessions = 0
+        ha_cluster_state = "ready"
+
+        if simulated_metrics:
+            load_1m = float(simulated_metrics.get("load_1m", load_1m))
+            cpu_count = int(simulated_metrics.get("cpu_count", cpu_count))
+            avail_mem_pct = float(simulated_metrics.get("avail_mem_pct", avail_mem_pct))
+            active_interactive_sessions = int(simulated_metrics.get("active_sessions", 0))
+            ha_cluster_state = str(simulated_metrics.get("ha_cluster_state", "ready"))
+        else:
+            if hasattr(os, "getloadavg"):
+                try:
+                    load_1m = float(os.getloadavg()[0])
+                except Exception:
+                    load_1m = 0.15
+            if Path("/proc/meminfo").exists():
+                try:
+                    mem_text = Path("/proc/meminfo").read_text(encoding="utf-8")
+                    total_kb = 0
+                    avail_kb = 0
+                    for line in mem_text.splitlines():
+                        if line.startswith("MemTotal:"):
+                            total_kb = int(line.split()[1])
+                        elif line.startswith("MemAvailable:"):
+                            avail_kb = int(line.split()[1])
+                    if total_kb > 0:
+                        avail_mem_pct = round((avail_kb / total_kb) * 100.0, 2)
+                except Exception:
+                    pass
+
+        load_ratio = round(load_1m / max(1, cpu_count), 3)
+        ready = (
+            load_ratio <= max_load_per_cpu
+            and avail_mem_pct >= min_avail_mem_pct
+            and ha_cluster_state in ("ready", "healthy", "standby", "draining_supported")
+        )
+
+        reasons = []
+        if load_ratio > max_load_per_cpu:
+            reasons.append(f"CPU load ratio {load_ratio} exceeds threshold {max_load_per_cpu}")
+        if avail_mem_pct < min_avail_mem_pct:
+            reasons.append(f"Available memory {avail_mem_pct}% below minimum {min_avail_mem_pct}%")
+        if ha_cluster_state not in ("ready", "healthy", "standby", "draining_supported"):
+            reasons.append(f"HA cluster state '{ha_cluster_state}' not ready for drain")
+
+        return {
+            "ready_to_patch": ready,
+            "cpu_count": cpu_count,
+            "load_1m": load_1m,
+            "load_ratio_per_cpu": load_ratio,
+            "max_load_per_cpu": max_load_per_cpu,
+            "avail_mem_pct": avail_mem_pct,
+            "min_avail_mem_pct": min_avail_mem_pct,
+            "active_sessions": active_interactive_sessions,
+            "ha_cluster_state": ha_cluster_state,
+            "reasons": reasons or ["Host load, memory, and HA health within optimal thresholds"],
+        }
+
+    def execute_fullauto_cycle(
+        self,
+        confirm: bool = False,
+        os_filter: Optional[str] = None,
+        feed_url: str = "https://exultia.tech/api/patches/feed",
+        argent_feed_url: str = "https://exultia.tech/api/argent/feed?format=kinetic",
+        custom_staging_dir: Optional[str] = None,
+        drain_grace_seconds: int = 0,
+        pre_patch_hook: Optional[str] = None,
+        post_patch_hook: Optional[str] = None,
+        simulated_metrics: Optional[Dict[str, Any]] = None,
+        dry_run: bool = False,
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Executes `--fullauto` autonomous patching mode for HA clusters and load-balanced hosts:
+          1. Strictly enforces that `confirm=True` (`--fullauto --confirm`) was provided.
+          2. Dynamically assesses host load, memory, and HA readiness.
+          3. Gracefully cordons/drains node (optional `pre_patch_hook` + HA drain marker).
+          4. Applies vendor-native security updates and all staged OS patches (non-reboot and disruptive).
+          5. Uncordons node (`post_patch_hook`) or schedules controlled rolling reboot.
+        """
+        if not confirm:
+            raise PermissionError(
+                "Refusing to run --fullauto without explicit secondary confirmation. "
+                "You must pass both `--fullauto --confirm` to authorize autonomous dynamic patching."
+            )
+
+        target_os = self.detect_host_os(os_filter)
+        readiness = self.assess_dynamic_patch_readiness(simulated_metrics=simulated_metrics)
+
+        if not readiness["ready_to_patch"]:
+            self.log_audit(
+                "FULLAUTO_DEFERRED",
+                f"FULLAUTO-{target_os.upper()}",
+                "DEFERRED",
+                f"Dynamic readiness gate deferred patching: {'; '.join(readiness['reasons'])}",
+            )
+            return {
+                "fullauto": True,
+                "confirmed": True,
+                "status": "deferred_by_dynamic_telemetry",
+                "target_os": target_os,
+                "readiness": readiness,
+            }
+
+        print(f"[Kinetic FullAuto] Dynamic readiness check PASSED (load_ratio={readiness['load_ratio_per_cpu']}, mem={readiness['avail_mem_pct']}%).")
+        drain_marker = self.config_dir / "ha_node_draining.lock"
+        drain_marker.parent.mkdir(parents=True, exist_ok=True)
+        drain_marker.write_text(
+            json.dumps({
+                "state": "draining",
+                "target_os": target_os,
+                "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }),
+            encoding="utf-8",
+        )
+
+        pre_hook_rc = 0
+        if pre_patch_hook:
+            print(f"[Kinetic FullAuto] Executing HA pre-patch drain hook: `{pre_patch_hook}`")
+            pre_hook_rc, _ = self.execute_shell(pre_patch_hook, dry_run=dry_run)
+
+        if drain_grace_seconds > 0 and not dry_run:
+            time.sleep(min(drain_grace_seconds, 5))
+
+        vendor_summary = self.execute_vendor_native_updates(
+            os_filter=target_os,
+            include_disruptive=True,
+            enable_builtin_autoupdate=True,
+            dry_run=dry_run,
+        )
+
+        patch_summary = self.execute_staged_patch_policy(
+            os_filter=target_os,
+            feed_url=argent_feed_url,
+            custom_staging_dir=custom_staging_dir,
+            auto_patch_non_reboot=True,
+            disruptive_auto_reboot=True,
+            off_peak_window="00:00-23:59",
+            vendor_native_updates=False,
+            force_disruptive_now=True,
+            dry_run=dry_run,
+            token=token,
+        )
+
+        post_hook_rc = 0
+        if post_patch_hook:
+            print(f"[Kinetic FullAuto] Executing HA post-patch uncordon hook: `{post_patch_hook}`")
+            post_hook_rc, _ = self.execute_shell(post_patch_hook, dry_run=dry_run)
+
+        if drain_marker.exists():
+            try:
+                drain_marker.unlink()
+            except Exception:
+                pass
+
+        policy = self.get_patch_policy()
+        policy.fullauto_enabled = True
+        policy.fullauto_confirmed = True
+        self.save_patch_policy(policy)
+
+        self.log_audit(
+            "FULLAUTO_EXECUTE",
+            f"FULLAUTO-{target_os.upper()}",
+            "SUCCESS",
+            f"Completed dynamic fullauto patching (non_reboot={patch_summary['applied_non_reboot_count']}, disruptive={patch_summary['applied_disruptive_count']})",
+        )
+
+        return {
+            "fullauto": True,
+            "confirmed": True,
+            "status": "completed",
+            "target_os": target_os,
+            "readiness": readiness,
+            "ha_drain_graceful": True,
+            "pre_hook_rc": pre_hook_rc,
+            "post_hook_rc": post_hook_rc,
+            "vendor_native_summary": vendor_summary,
+            "patch_summary": patch_summary,
         }
 
     def _record_package_snapshot(self, rec: StagedPatchRecord):

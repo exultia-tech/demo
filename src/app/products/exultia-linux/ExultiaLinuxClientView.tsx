@@ -32,14 +32,24 @@ export default function ExultiaLinuxClientView() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeConsoleTab, setActiveConsoleTab] = useState<"status" | "taxii" | "config" | "journal">("status");
 
-  // OS Patch Management & Off-Peak Disruptive Maintenance Policy State
+  // OS Patch Management, Vendor Built-in Updates, System Timers/Cron, Webhook & FullAuto State
   const [targetOs, setTargetOs] = useState<string>("ubuntu");
   const [stagingDir, setStagingDir] = useState<string>("/var/cache/exultia/staging");
   const [autoStagePatches, setAutoStagePatches] = useState<boolean>(true);
   const [autoPatchNonReboot, setAutoPatchNonReboot] = useState<boolean>(true);
+  const [vendorNativeUpdates, setVendorNativeUpdates] = useState<boolean>(true);
   const [disruptiveAutoReboot, setDisruptiveAutoReboot] = useState<boolean>(true);
   const [offPeakStart, setOffPeakStart] = useState<string>("02:00");
   const [offPeakEnd, setOffPeakEnd] = useState<string>("05:00");
+  const [deferredWindows, setDeferredWindows] = useState<string>("Sat 01:00-05:00, Sun 01:00-05:00");
+  const [deferUntil, setDeferUntil] = useState<string>("");
+  const [schedulerMode, setSchedulerMode] = useState<"auto" | "systemd" | "cron" | "both" | "none">("auto");
+  const [scheduleCron, setScheduleCron] = useState<string>("0 * * * *");
+  const [webhookListen, setWebhookListen] = useState<boolean>(true);
+  const [webhookPort, setWebhookPort] = useState<string>("8765");
+  const [webhookSecret, setWebhookSecret] = useState<string>("exultia_enterprise_webhook_hmac");
+  const [fullautoEnabled, setFullautoEnabled] = useState<boolean>(false);
+  const [fullautoConfirmed, setFullautoConfirmed] = useState<boolean>(false);
 
   const offPeakWindow = `${offPeakStart}-${offPeakEnd}`;
 
@@ -49,7 +59,13 @@ export default function ExultiaLinuxClientView() {
     `--staging-dir "${stagingDir}"`,
     autoStagePatches ? "--auto-stage" : "--no-auto-stage",
     autoPatchNonReboot ? "--auto-patch-non-reboot" : "",
+    vendorNativeUpdates ? "--vendor-native" : "",
     disruptiveAutoReboot ? `--disruptive-auto-reboot --off-peak-window "${offPeakWindow}"` : "",
+    disruptiveAutoReboot && deferredWindows.trim() ? `--deferred-windows "${deferredWindows.trim()}"` : "",
+    disruptiveAutoReboot && deferUntil.trim() ? `--defer-until "${deferUntil.trim()}"` : "",
+    schedulerMode !== "none" ? `--enable-scheduler ${schedulerMode} --schedule-cron "${scheduleCron}"` : "",
+    webhookListen ? `--webhook-listen --webhook-port ${webhookPort || "8765"}${webhookSecret ? ` --webhook-secret "${webhookSecret}"` : ""}` : "",
+    fullautoEnabled ? (fullautoConfirmed ? "--fullauto --confirm" : "# [WARNING: --fullauto requires --confirm to execute]") : "",
   ]
     .filter(Boolean)
     .join(" \\\n  ");
@@ -59,8 +75,16 @@ target_os = "${targetOs}"
 staging_dir = "${stagingDir}"
 auto_stage_patches = ${autoStagePatches}
 auto_patch_non_reboot = ${autoPatchNonReboot}
+vendor_native_updates = ${vendorNativeUpdates}
 disruptive_auto_reboot = ${disruptiveAutoReboot}
-off_peak_window = "${offPeakWindow}"`;
+off_peak_window = "${offPeakWindow}"
+deferred_windows = "${deferredWindows}"${deferUntil ? `\ndefer_disruptive_until = "${deferUntil}"` : ""}
+scheduler_mode = "${schedulerMode}"
+cron_expression = "${scheduleCron}"
+webhook_enabled = ${webhookListen}
+webhook_port = ${webhookPort || "8765"}
+fullauto_enabled = ${fullautoEnabled}
+fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
 
   const copyToClipboard = (text: string, key: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -478,7 +502,34 @@ off_peak_window = "${offPeakWindow}"`;
               />
             </div>
 
-            {/* Toggle 3: Disruptive Patching with Auto-Reboot + Off-Peak Window */}
+            {/* Toggle 2.5: Native OS Vendor Built-in Patching Commands */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${vendorNativeUpdates ? "rgba(56, 189, 248, 0.45)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "12px"
+            }}>
+              <div>
+                <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Terminal size={15} color="#38BDF8" /> Natively Utilize OS Vendor Built-in Patching Commands
+                </div>
+                <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                  Alongside the Argent/Vantage feeds, invokes native OS tooling (<code style={{ color: "#38BDF8" }}>unattended-upgrade</code>, <code style={{ color: "#38BDF8" }}>dnf upgrade-minimal --security</code>, <code style={{ color: "#38BDF8" }}>zypper patch --category security</code>, <code style={{ color: "#38BDF8" }}>apk upgrade</code>, <code style={{ color: "#38BDF8" }}>rpm-ostree --apply-live</code>) for standard security &amp; non-reboot updates.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={vendorNativeUpdates}
+                onChange={(e) => setVendorNativeUpdates(e.target.checked)}
+                style={{ width: "18px", height: "18px", accentColor: "#38BDF8", cursor: "pointer", marginTop: "2px" }}
+              />
+            </div>
+
+            {/* Toggle 3: Disruptive Patching with Auto-Reboot + Deferred Time Periods */}
             <div style={{
               background: "rgba(0, 0, 0, 0.3)",
               border: `1px solid ${disruptiveAutoReboot ? "rgba(245, 158, 11, 0.45)" : "rgba(255, 255, 255, 0.08)"}`,
@@ -491,10 +542,10 @@ off_peak_window = "${offPeakWindow}"`;
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
                 <div>
                   <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <RefreshCw size={15} color="#FBBF24" /> Enable Disruptive Patching with Auto-Reboot
+                    <RefreshCw size={15} color="#FBBF24" /> Enable Disruptive Patching &amp; Deferred Maintenance Windows
                   </div>
                   <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
-                    Applies staged kernel &amp; system updates where <code style={{ color: "#FBBF24" }}>requiresReboot = true</code> and triggers an automated reboot strictly during off-peak hours.
+                    Applies staged kernel &amp; system updates where <code style={{ color: "#FBBF24" }}>requiresReboot = true</code> and schedules deferred time windows or hold timestamps before rebooting.
                   </p>
                 </div>
                 <input
@@ -507,53 +558,253 @@ off_peak_window = "${offPeakWindow}"`;
 
               {disruptiveAutoReboot && (
                 <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
+                  display: "flex",
+                  flexDirection: "column",
                   gap: "10px",
                   paddingTop: "8px",
                   borderTop: "1px solid rgba(255, 255, 255, 0.08)"
                 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                        Off-Peak Window Start (24h)
+                      </label>
+                      <input
+                        type="time"
+                        value={offPeakStart}
+                        onChange={(e) => setOffPeakStart(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "7px 10px",
+                          borderRadius: "6px",
+                          background: "#090D16",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          color: "#FDE68A",
+                          fontSize: "0.84rem",
+                          fontFamily: "var(--font-mono, monospace)"
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                        Off-Peak Window End (24h)
+                      </label>
+                      <input
+                        type="time"
+                        value={offPeakEnd}
+                        onChange={(e) => setOffPeakEnd(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "7px 10px",
+                          borderRadius: "6px",
+                          background: "#090D16",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          color: "#FDE68A",
+                          fontSize: "0.84rem",
+                          fontFamily: "var(--font-mono, monospace)"
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "10px" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                        Deferred Time Periods (--deferred-windows)
+                      </label>
+                      <input
+                        type="text"
+                        value={deferredWindows}
+                        onChange={(e) => setDeferredWindows(e.target.value)}
+                        placeholder="Sat 01:00-05:00, Sun 01:00-05:00"
+                        style={{
+                          width: "100%",
+                          padding: "7px 10px",
+                          borderRadius: "6px",
+                          background: "#090D16",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          color: "#FDE68A",
+                          fontSize: "0.78rem",
+                          fontFamily: "var(--font-mono, monospace)"
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                        Defer Hold Until (--defer-until)
+                      </label>
+                      <input
+                        type="text"
+                        value={deferUntil}
+                        onChange={(e) => setDeferUntil(e.target.value)}
+                        placeholder="2026-11-01T02:00:00Z"
+                        style={{
+                          width: "100%",
+                          padding: "7px 10px",
+                          borderRadius: "6px",
+                          background: "#090D16",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          color: "#FDE68A",
+                          fontSize: "0.78rem",
+                          fontFamily: "var(--font-mono, monospace)"
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Toggle 4: Systemd Timer & Crontab Automatic Scheduling */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: "1px solid rgba(168, 85, 247, 0.35)",
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "10px"
+            }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, color: "#C084FC", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                  System Timer / Crontab Scheduler
+                </label>
+                <select
+                  value={schedulerMode}
+                  onChange={(e) => setSchedulerMode(e.target.value as "auto" | "systemd" | "cron" | "both" | "none")}
+                  style={{
+                    width: "100%",
+                    padding: "7px 10px",
+                    borderRadius: "6px",
+                    background: "#090D16",
+                    border: "1px solid rgba(168, 85, 247, 0.35)",
+                    color: "#E9D5FF",
+                    fontSize: "0.8rem",
+                    fontFamily: "var(--font-mono, monospace)"
+                  }}
+                >
+                  <option value="auto">Auto (systemd Timer + Vendor Timer)</option>
+                  <option value="systemd">systemd Timer (exultia-patch.timer)</option>
+                  <option value="cron">Crontab (/etc/cron.d/exultia-patch)</option>
+                  <option value="both">Both systemd Timer &amp; Crontab</option>
+                  <option value="none">Disabled (Manual / Resident Only)</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, color: "#C084FC", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                  Crontab Schedule (--schedule-cron)
+                </label>
+                <input
+                  type="text"
+                  value={scheduleCron}
+                  onChange={(e) => setScheduleCron(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "7px 10px",
+                    borderRadius: "6px",
+                    background: "#090D16",
+                    border: "1px solid rgba(168, 85, 247, 0.35)",
+                    color: "#E9D5FF",
+                    fontSize: "0.8rem",
+                    fontFamily: "var(--font-mono, monospace)"
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Toggle 5: Enterprise Webhook / Listener Mode */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${webhookListen ? "rgba(99, 102, 241, 0.45)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                <div>
+                  <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Radio size={15} color="#818CF8" /> Enterprise Patch Console Webhook / Listener Mode
+                  </div>
+                  <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                    Exposes an authenticated HTTP webhook listener (<code style={{ color: "#818CF8" }}>POST /webhook/trigger</code>, <code style={{ color: "#818CF8" }}>/webhook/defer</code>) so ServiceNow, Ansible AWX, Satellite, BigFix, or Rundeck can trigger patching externally.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={webhookListen}
+                  onChange={(e) => setWebhookListen(e.target.checked)}
+                  style={{ width: "18px", height: "18px", accentColor: "#6366F1", cursor: "pointer", marginTop: "2px" }}
+                />
+              </div>
+              {webhookListen && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1.8fr", gap: "10px", paddingTop: "6px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
-                      Off-Peak Window Start (24h)
+                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#818CF8", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                      Webhook Port
                     </label>
                     <input
-                      type="time"
-                      value={offPeakStart}
-                      onChange={(e) => setOffPeakStart(e.target.value)}
-                      style={{
-                        width: "100%",
-                        padding: "7px 10px",
-                        borderRadius: "6px",
-                        background: "#090D16",
-                        border: "1px solid rgba(245, 158, 11, 0.35)",
-                        color: "#FDE68A",
-                        fontSize: "0.84rem",
-                        fontFamily: "var(--font-mono, monospace)"
-                      }}
+                      type="text"
+                      value={webhookPort}
+                      onChange={(e) => setWebhookPort(e.target.value)}
+                      style={{ width: "100%", padding: "6px 10px", borderRadius: "6px", background: "#090D16", border: "1px solid rgba(99, 102, 241, 0.35)", color: "#C7D2FE", fontSize: "0.8rem", fontFamily: "var(--font-mono, monospace)" }}
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
-                      Off-Peak Window End (24h)
+                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#818CF8", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                      Bearer / HMAC Secret (--webhook-secret)
                     </label>
                     <input
-                      type="time"
-                      value={offPeakEnd}
-                      onChange={(e) => setOffPeakEnd(e.target.value)}
-                      style={{
-                        width: "100%",
-                        padding: "7px 10px",
-                        borderRadius: "6px",
-                        background: "#090D16",
-                        border: "1px solid rgba(245, 158, 11, 0.35)",
-                        color: "#FDE68A",
-                        fontSize: "0.84rem",
-                        fontFamily: "var(--font-mono, monospace)"
-                      }}
+                      type="text"
+                      value={webhookSecret}
+                      onChange={(e) => setWebhookSecret(e.target.value)}
+                      style={{ width: "100%", padding: "6px 10px", borderRadius: "6px", background: "#090D16", border: "1px solid rgba(99, 102, 241, 0.35)", color: "#C7D2FE", fontSize: "0.8rem", fontFamily: "var(--font-mono, monospace)" }}
                     />
                   </div>
                 </div>
+              )}
+            </div>
+
+            {/* Toggle 6: Dynamic HA / Load-Balancer --fullauto --confirm Mode */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${fullautoEnabled ? "rgba(244, 63, 94, 0.5)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                <div>
+                  <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Cpu size={15} color="#FB7185" /> Dynamic HA / Load-Balancer Full-Auto Mode (--fullauto --confirm)
+                  </div>
+                  <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                    Dynamically evaluates CPU load, available memory, and HA cluster drain state to determine when to patch and gracefully proceed. Requires mandatory secondary confirmation (<code style={{ color: "#FB7185" }}>--fullauto --confirm</code>).
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={fullautoEnabled}
+                  onChange={(e) => {
+                    setFullautoEnabled(e.target.checked);
+                    if (!e.target.checked) setFullautoConfirmed(false);
+                  }}
+                  style={{ width: "18px", height: "18px", accentColor: "#F43F5E", cursor: "pointer", marginTop: "2px" }}
+                />
+              </div>
+              {fullautoEnabled && (
+                <label style={{ display: "flex", alignItems: "center", gap: "8px", paddingTop: "6px", borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: "0.78rem", color: "#FDA4AF", fontWeight: 700, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={fullautoConfirmed}
+                    onChange={(e) => setFullautoConfirmed(e.target.checked)}
+                    style={{ width: "16px", height: "16px", accentColor: "#F43F5E", cursor: "pointer" }}
+                  />
+                  Pass Secondary Confirmation Argument (--confirm) to Authorize Dynamic HA Patching
+                </label>
               )}
             </div>
           </div>

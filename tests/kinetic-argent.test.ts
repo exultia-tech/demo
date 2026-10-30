@@ -160,20 +160,20 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(fs.existsSync(ubuntuStagingPath)).toBe(true);
     }, 15000);
 
-    it('should provide both non-disruptive and disruptive patch bundles for all 29 supported OSes with strict OS isolation', () => {
+    it('should provide both non-disruptive and disruptive patch bundles for all 34 supported OSes with strict OS isolation', () => {
       const expectedOses = [
         'almalinux', 'alpine', 'amazon-linux', 'arch', 'azure-linux',
-        'cloudlinux', 'debian', 'fedora', 'flatcar', 'freebsd', 'gentoo',
-        'kali', 'kernel', 'linux-mint', 'macos', 'netbsd', 'nixos',
-        'openbsd', 'openeuler', 'openwrt', 'oracle-linux', 'photon',
-        'rhel', 'rocky', 'suse', 'talos', 'ubuntu', 'void', 'wolfi'
+        'centos-stream', 'cloudlinux', 'debian', 'fedora', 'fedora-coreos',
+        'flatcar', 'freebsd', 'gentoo', 'kali', 'kernel', 'linux-mint',
+        'macos', 'netbsd', 'nixos', 'openbsd', 'openeuler', 'opensuse-leap',
+        'openwrt', 'oracle-linux', 'photon', 'proxmox', 'rhel', 'rocky',
+        'suse', 'talos', 'truenas-scale', 'ubuntu', 'void', 'wolfi'
       ];
-      expect(expectedOses.length).toBe(29);
+      expect(expectedOses.length).toBe(34);
 
       for (const osName of expectedOses) {
         const res = getArgentBundles({ os: osName, limit: 100 });
         expect(res.bundles.length).toBeGreaterThanOrEqual(2);
-        // Ensure no cross-OS leakage (e.g. debian matching ubuntu or rhel matching rocky)
         for (const b of res.bundles) {
           expect(b.os).toBe(osName);
         }
@@ -183,5 +183,39 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
         expect(disruptive.length).toBeGreaterThanOrEqual(1);
       }
     });
+
+    it('should execute vendor-native builtin updates, configure systemd/cron schedulers, and enforce --fullauto --confirm', () => {
+      // 1. Vendor-native + deferred windows
+      const vnCmd = `python kinetic-cli/run.py upgrade --os rocky --staging-dir "${testStagingDir}" --vendor-native --auto-patch-non-reboot --disruptive-auto-reboot --deferred-windows "Sat 01:00-05:00, Sun 01:00-05:00" --dry-run --json --state-dir "${testStateDir}"`;
+      const vnOut = execSync(vnCmd, { encoding: 'utf-8' });
+      const vnSummary = JSON.parse(vnOut.slice(vnOut.indexOf('{')));
+      expect(vnSummary.vendor_native_updates).toBe(true);
+      expect(vnSummary.vendor_native_result.status).toBe('success');
+      expect(vnSummary.vendor_native_result.command).toContain('dnf upgrade-minimal');
+
+      // 2. Systemd & Crontab scheduler
+      const schedCmd = `python kinetic-cli/run.py schedule --mode both --os ubuntu --cron "0 * * * *" --deferred-window "02:00-05:00" --dry-run --json --state-dir "${testStateDir}"`;
+      const schedOut = execSync(schedCmd, { encoding: 'utf-8' });
+      const schedSummary = JSON.parse(schedOut.slice(schedOut.indexOf('{')));
+      expect(schedSummary.mode).toBe('both');
+      expect(schedSummary.installed_files.length).toBe(3);
+
+      // 3. --fullauto without --confirm must fail
+      let rejected = false;
+      try {
+        execSync(`python kinetic-cli/run.py daemon --fullauto --once --dry-run --state-dir "${testStateDir}"`, { stdio: 'pipe' });
+      } catch (err: any) {
+        rejected = err.status === 2;
+      }
+      expect(rejected).toBe(true);
+
+      // 4. --fullauto --confirm must succeed
+      const faCmd = `python kinetic-cli/run.py upgrade --os ubuntu --staging-dir "${testStagingDir}" --fullauto --confirm --dry-run --json --state-dir "${testStateDir}"`;
+      const faOut = execSync(faCmd, { encoding: 'utf-8' });
+      const faSummary = JSON.parse(faOut.slice(faOut.indexOf('{')));
+      expect(faSummary.fullauto).toBe(true);
+      expect(faSummary.confirmed).toBe(true);
+      expect(faSummary.status).toBe('completed');
+    }, 20000);
   });
 });

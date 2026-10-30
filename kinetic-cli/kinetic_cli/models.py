@@ -121,6 +121,7 @@ class StagedPatchRecord:
     status: str  # "staged", "applied", "deferred_off_peak", "applied_reboot_scheduled", "failed"
     applied_at: Optional[str] = None
     reboot_triggered: bool = False
+    deferred_until: Optional[str] = None
 
     @property
     def local_bundle_path(self) -> str:
@@ -145,7 +146,17 @@ class PatchManagementPolicy:
     auto_stage: bool = True
     auto_patch_non_reboot: bool = False
     disruptive_auto_reboot: bool = False
-    off_peak_window: str = "02:00-05:00"  # HH:MM-HH:MM local 24h time
+    off_peak_window: str = "02:00-05:00"  # Supports single or comma-separated deferred windows (e.g. "Sat 01:00-05:00,Sun 01:00-05:00")
+    deferred_windows: List[str] = field(default_factory=lambda: ["02:00-05:00"])
+    defer_disruptive_until: Optional[str] = None  # Optional ISO-8601 timestamp holding disruptive patches
+    vendor_native_updates: bool = True  # Natively invoke OS built-in security & non-reboot patching commands
+    scheduler_mode: str = "none"  # "none", "systemd", "cron", "auto"
+    cron_expression: str = "0 * * * *"
+    webhook_enabled: bool = False
+    webhook_host: str = "127.0.0.1"
+    webhook_port: int = 8765
+    fullauto_enabled: bool = False
+    fullauto_confirmed: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
@@ -173,7 +184,7 @@ class SnapshotRecord:
 @dataclass
 class AuditEntry:
     timestamp: str
-    action: str  # "APPLY", "ROLLBACK", "CANARY_EVAL", "VERIFY_PASS", "VERIFY_FAIL", "STAGE_PATCH", "AUTO_PATCH_NON_REBOOT", "DISRUPTIVE_PATCH_REBOOT"
+    action: str
     cve_id: str
     status: str
     details: str
