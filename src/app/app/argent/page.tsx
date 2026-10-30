@@ -44,8 +44,8 @@ import {
 } from "lucide-react";
 
 export default function ArgentThreatFeedPage() {
-  // Global Rating System Mode: "observational" (Zero-Downtime Rollout / Operational Impact) vs "classic" (Classic Quantitative Vendor Severity)
-  const [ratingMode, setRatingMode] = useState<"observational" | "classic">("observational");
+  // Global Rating System Mode: Zero-Downtime Rollout / Operational Impact
+  const ratingMode = "observational";
 
   // Quad-Perspective Scope State: "ALL" vs "ZERO_REBOOT" vs "KERNEL_CORE" vs "ENTERPRISE_LTS"
   const [feedScope, setFeedScope] = useState<"ALL" | "ZERO_REBOOT" | "KERNEL_CORE" | "ENTERPRISE_LTS">("ALL");
@@ -78,12 +78,12 @@ export default function ArgentThreatFeedPage() {
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
+  const selectedSeverity = "ALL";
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedSourceFeed, setSelectedSourceFeed] = useState<string>("ALL");
   const [zeroDowntimeOnly, setZeroDowntimeOnly] = useState(false);
   const [rebootRequiredOnly, setRebootRequiredOnly] = useState(false);
-  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const viewMode = "table";
   const [sortBy, setSortBy] = useState<"cvss_desc" | "published_desc" | "published_asc" | "id_asc" | "id_desc">("cvss_desc");
 
   // Toggle date/age sort (Newest -> Oldest -> Newest)
@@ -158,9 +158,6 @@ export default function ArgentThreatFeedPage() {
         if (feedScope !== "ALL") params.set("scope", feedScope);
         if (selectedAdvisoryType !== "ALL") params.set("type", selectedAdvisoryType);
         if (selectedDomain !== "ALL") params.set("domain", selectedDomain);
-        if (ratingMode === "classic" && selectedSeverity !== "ALL") {
-          params.set("severity", selectedSeverity);
-        }
         if (selectedSourceFeed !== "ALL") params.set("source", selectedSourceFeed);
         if (zeroDowntimeOnly) params.set("reboot", "false");
         if (rebootRequiredOnly) params.set("reboot", "true");
@@ -264,54 +261,7 @@ export default function ArgentThreatFeedPage() {
       style={{ maxWidth: "1720px", margin: "0 auto", padding: "2rem 1.75rem 5rem", width: "100%", userSelect: "none" }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Direct Subscription / Referral Banner */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem",
-        background: "linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(148, 163, 184, 0.12))",
-        border: "1px solid rgba(56, 189, 248, 0.35)",
-        borderRadius: "12px",
-        padding: "0.75rem 1.25rem",
-        marginBottom: "1.5rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.88rem", color: "#E2E8F0", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "1.1rem" }}>⚡</span>
-          <span>
-            <strong>Argent Licensing:</strong> Looking for machine-readable distro patch feeds, automated errata webhooks, or enterprise fleet seats?
-          </span>
-          <span style={{
-            fontSize: "0.75rem",
-            padding: "0.2rem 0.55rem",
-            borderRadius: "6px",
-            background: "rgba(56, 189, 248, 0.2)",
-            color: "#38BDF8",
-            fontWeight: 700
-          }}>
-            Community · Pro · Enterprise Tiers
-          </span>
-        </div>
-        <Link
-          href="/account/subscription?product=kinetic"
-          style={{
-            padding: "0.45rem 1rem",
-            fontSize: "0.85rem",
-            fontWeight: 700,
-            color: "#0F172A",
-            background: "linear-gradient(135deg, #38BDF8, #0284C7)",
-            borderRadius: "8px",
-            textDecoration: "none",
-            boxShadow: "0 2px 10px rgba(56, 189, 248, 0.35)",
-            whiteSpace: "nowrap"
-          }}
-        >
-          View Plans &amp; Upgrade →
-        </Link>
-      </div>
-
-      {/* Top Header Row: Title & Subtitle (Left) + Patches Total Tile (Right) */}
+      {/* Top Header Row: Title & Subtitle */}
       <div style={{ 
         display: "flex", 
         justifyContent: "space-between", 
@@ -343,49 +293,6 @@ export default function ArgentThreatFeedPage() {
             <Link href="/app/uvi" style={{ color: "#38BDF8", textDecoration: "none", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
               Explore Vantage Threat Feed <ArrowRight size={13} />
             </Link>
-          </div>
-        </div>
-
-        {/* Right Column: Patches Total Summary Tile */}
-        <div style={{
-          background: "rgba(15, 23, 42, 0.75)",
-          border: "1px solid rgba(148, 163, 184, 0.2)",
-          borderRadius: "16px",
-          padding: "1.4rem 1.65rem",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "1rem",
-          minWidth: "320px",
-          flex: "0 1 360px",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)"
-        }}>
-          <div>
-            <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700, marginBottom: "0.35rem" }}>
-              Total Consolidated Patch Bundles
-            </div>
-            <div style={{ fontSize: "3rem", fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.03em", lineHeight: 1 }}>
-              {totalUniversalCount.toLocaleString()}
-            </div>
-          </div>
-          <div style={{ 
-            display: "flex", 
-            flexWrap: "wrap", 
-            gap: "0.6rem", 
-            fontSize: "0.8rem", 
-            color: "var(--text-muted)", 
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)", 
-            paddingTop: "0.75rem" 
-          }}>
-            <span>🐛 <strong style={{ color: "#FBBF24" }}>{bugfixCount}</strong> Bug Fixes</span>
-            <span>•</span>
-            <span>⚡ <strong style={{ color: "#38BDF8" }}>{enhancementCount}</strong> Enhancements</span>
-            <span>•</span>
-            <span>🔧 <strong style={{ color: "#A78BFA" }}>{maintenanceCount}</strong> Maintenance</span>
-            <span>•</span>
-            <span>📦 <strong style={{ color: "#C084FC" }}>{totalPackagesCount}</strong> Packages</span>
-            <span>•</span>
-            <span>🌐 <strong style={{ color: "#34D399" }}>{ARGENT_PUBLIC_FEED_SOURCES.length}</strong> Distros</span>
           </div>
         </div>
       </div>
@@ -776,174 +683,9 @@ export default function ArgentThreatFeedPage() {
         </aside>
 
         {/* ========================================================================= */}
-        {/* RIGHT MAIN COLUMN: Triage Toolbar, Filters, Advisories Table/Cards        */}
+        {/* RIGHT MAIN COLUMN: Filters & Advisories Table                             */}
         {/* ========================================================================= */}
         <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          {/* Executive Rating System Mode Toggle & Quick View Toolbar */}
-          <div style={{
-            background: "rgba(15, 23, 42, 0.65)",
-            border: "1px solid rgba(148, 163, 184, 0.18)",
-            borderRadius: "14px",
-            padding: "0.85rem 1.25rem",
-            marginBottom: "1rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.25)"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-                Triage Methodology:
-              </span>
-
-              {/* Segmented Mode Switcher */}
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                background: "rgba(10, 14, 23, 0.9)",
-                padding: "0.25rem",
-                borderRadius: "10px",
-                border: "1px solid rgba(255, 255, 255, 0.1)"
-              }}>
-                <button
-                  onClick={() => handleFilterChange(() => setRatingMode("observational"))}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.45rem",
-                    padding: "0.45rem 0.95rem",
-                    borderRadius: "8px",
-                    border: ratingMode === "observational" ? "1px solid #38BDF8" : "1px solid transparent",
-                    background: ratingMode === "observational" ? "rgba(56, 189, 248, 0.25)" : "transparent",
-                    color: ratingMode === "observational" ? "#BAE6FD" : "#94A3B8",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                  title="Prioritize zero-downtime micro-mitigations and instant live service reloads"
-                >
-                  <span>⚡</span>
-                  <span>Zero-Downtime Rollout View</span>
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: ratingMode === "observational" ? "rgba(56, 189, 248, 0.4)" : "rgba(255, 255, 255, 0.05)",
-                    color: ratingMode === "observational" ? "#FFFFFF" : "#64748B",
-                    padding: "0.1rem 0.35rem",
-                    borderRadius: "4px",
-                    fontWeight: 600
-                  }}>
-                    ZERO-DOWNTIME
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => handleFilterChange(() => setRatingMode("classic"))}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.45rem",
-                    padding: "0.45rem 0.95rem",
-                    borderRadius: "8px",
-                    border: ratingMode === "classic" ? "1px solid #F59E0B" : "1px solid transparent",
-                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.2)" : "transparent",
-                    color: ratingMode === "classic" ? "#FCD34D" : "#94A3B8",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.15s ease"
-                  }}
-                  title="Assess patches using conventional quantitative vendor severity classifications"
-                >
-                  <span>📊</span>
-                  <span>Classic Vendor Severity</span>
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: ratingMode === "classic" ? "rgba(245, 158, 11, 0.35)" : "rgba(255, 255, 255, 0.05)",
-                    color: ratingMode === "classic" ? "#FFFFFF" : "#64748B",
-                    padding: "0.1rem 0.35rem",
-                    borderRadius: "4px",
-                    fontWeight: 600
-                  }}>
-                    VENDOR ERRATA
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* View Mode Switcher: Table vs Cards + Feeds Sidebar Toggle */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
-              <button
-                onClick={() => setIsSidebarCollapsed(prev => !prev)}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.4rem",
-                  padding: "0.38rem 0.75rem",
-                  borderRadius: "8px",
-                  background: isSidebarCollapsed ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.04)",
-                  border: isSidebarCollapsed ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.1)",
-                  color: isSidebarCollapsed ? "#BAE6FD" : "#CBD5E1",
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.15s ease"
-                }}
-                title={isSidebarCollapsed ? "Expand Distro Feeds Sidebar" : "Collapse Distro Feeds Sidebar to Maximize Table Width"}
-              >
-                <span>{isSidebarCollapsed ? "⚡" : "◀"}</span>
-                <span>{isSidebarCollapsed ? `Show Feeds (${ARGENT_PUBLIC_FEED_SOURCES.length})` : "Hide Sidebar"}</span>
-              </button>
-
-              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#94A3B8", fontWeight: 700 }}>
-                Layout:
-              </span>
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                background: "rgba(10, 14, 23, 0.9)",
-                padding: "0.2rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(255, 255, 255, 0.1)"
-              }}>
-                <button
-                  onClick={() => setViewMode("table")}
-                  style={{
-                    padding: "0.35rem 0.7rem",
-                    borderRadius: "6px",
-                    border: viewMode === "table" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                    background: viewMode === "table" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                    color: viewMode === "table" ? "#F8FAFC" : "#94A3B8",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    cursor: "pointer"
-                  }}
-                  title="Consolidated Table View with locked sticky header"
-                >
-                  📋 Table
-                </button>
-                <button
-                  onClick={() => setViewMode("cards")}
-                  style={{
-                    padding: "0.35rem 0.7rem",
-                    borderRadius: "6px",
-                    border: viewMode === "cards" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                    background: viewMode === "cards" ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                    color: viewMode === "cards" ? "#F8FAFC" : "#94A3B8",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                    cursor: "pointer"
-                  }}
-                  title="Wiki Card Grid View"
-                >
-                  🎴 Cards
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Unified Filter Control Bar */}
           <div style={{
             background: "rgba(15, 20, 32, 0.8)",
@@ -1104,36 +846,6 @@ export default function ArgentThreatFeedPage() {
                 </select>
               </div>
 
-              {/* Severity Dropdown (Only in Classic Mode) */}
-              {ratingMode === "classic" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "140px" }}>
-                  <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
-                    Severity
-                  </label>
-                  <select
-                    value={selectedSeverity}
-                    onChange={(e) => handleFilterChange(() => setSelectedSeverity(e.target.value))}
-                    style={{
-                      padding: "0.65rem 0.9rem",
-                      background: "rgba(10, 14, 23, 0.95)",
-                      border: "1px solid rgba(255, 255, 255, 0.14)",
-                      borderRadius: "8px",
-                      color: "#F8FAFC",
-                      fontSize: "0.85rem",
-                      outline: "none",
-                      cursor: "pointer",
-                      width: "100%"
-                    }}
-                  >
-                    <option value="ALL">All Severities</option>
-                    <option value="CRITICAL">Critical</option>
-                    <option value="IMPORTANT">Important</option>
-                    <option value="MODERATE">Moderate</option>
-                    <option value="LOW">Low</option>
-                  </select>
-                </div>
-              )}
-
               {/* Sort Order Dropdown */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "165px" }}>
                 <label style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#94A3B8", fontWeight: 700 }}>
@@ -1166,12 +878,11 @@ export default function ArgentThreatFeedPage() {
               </div>
 
               {/* Reset Filters button */}
-              {(searchQuery || (ratingMode === "classic" && selectedSeverity !== "ALL") || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || zeroDowntimeOnly || rebootRequiredOnly) && (
+              {(searchQuery || selectedDomain !== "ALL" || selectedSourceFeed !== "ALL" || feedScope !== "ALL" || zeroDowntimeOnly || rebootRequiredOnly) && (
                 <button
                   onClick={() => {
                     setFeedScope("ALL");
                     setSearchQuery("");
-                    setSelectedSeverity("ALL");
                     setSelectedDomain("ALL");
                     setSelectedSourceFeed("ALL");
                     setZeroDowntimeOnly(false);
@@ -1330,20 +1041,20 @@ export default function ArgentThreatFeedPage() {
                                     color: "#38BDF8",
                                     letterSpacing: "-0.01em"
                                   }}>
-                                    {bundle.bundleId}
+                                    {bundle.id}
                                   </span>
                                   <button
-                                    onClick={(e) => handleCopyId(bundle.bundleId, e)}
+                                    onClick={(e) => handleCopyId(bundle.id, e)}
                                     style={{
                                       background: "none",
                                       border: "none",
                                       cursor: "pointer",
-                                      color: copiedBundleId === bundle.bundleId ? "#34D399" : "var(--text-muted)",
+                                      color: copiedBundleId === bundle.id ? "#34D399" : "var(--text-muted)",
                                       padding: "2px"
                                     }}
                                     title="Copy Advisory identifier"
                                   >
-                                    {copiedBundleId === bundle.bundleId ? "✓" : <Copy size={13} />}
+                                    {copiedBundleId === bundle.id ? "✓" : <Copy size={13} />}
                                   </button>
                                 </div>
 
@@ -1875,7 +1586,7 @@ export default function ArgentThreatFeedPage() {
                     color: "#F8FAFC",
                     letterSpacing: "-0.01em"
                   }}>
-                    {selectedBundle.bundleId}
+                    {selectedBundle.id}
                   </span>
 
                   {/* Advisory Type Badge */}
@@ -1969,11 +1680,11 @@ export default function ArgentThreatFeedPage() {
                 {/* Header Actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <button
-                    onClick={() => handleCopyId(selectedBundle.bundleId)}
+                    onClick={() => handleCopyId(selectedBundle.id)}
                     style={{
                       background: "rgba(255, 255, 255, 0.05)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
-                      color: copiedBundleId === selectedBundle.bundleId ? "#34D399" : "#CBD5E1",
+                      color: copiedBundleId === selectedBundle.id ? "#34D399" : "#CBD5E1",
                       padding: "0.25rem 0.6rem",
                       borderRadius: "6px",
                       fontSize: "0.75rem",
@@ -1981,7 +1692,7 @@ export default function ArgentThreatFeedPage() {
                       fontWeight: 500
                     }}
                   >
-                    {copiedBundleId === selectedBundle.bundleId ? "Copied ID!" : "Copy ID"}
+                    {copiedBundleId === selectedBundle.id ? "Copied ID!" : "Copy ID"}
                   </button>
 
                   <button

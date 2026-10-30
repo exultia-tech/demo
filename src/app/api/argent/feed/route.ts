@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { 
-  getArgentBundles, 
   generateArgentBashScript,
   ArgentPatchBundle
 } from '@/lib/argent-feed';
+import { queryArgentFeedFromDb } from '@/lib/db/sync-argent';
 import { getCurrentUser } from '@/lib/auth/session';
 import { recordLicenseActivity } from '@/lib/licensing/audit';
 
@@ -18,6 +18,7 @@ export async function GET(request: Request) {
     recordLicenseActivity(user.id, 'kinetic', request, 'argent_feed_query').catch(() => {});
   }
 
+  const id = searchParams.get('id') || undefined;
   const os = searchParams.get('os') || undefined;
   const severity = searchParams.get('severity') || undefined;
   const type = searchParams.get('type') || searchParams.get('advisoryType') || undefined;
@@ -33,7 +34,8 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '50', 10);
 
-  const result = getArgentBundles({
+  const result = await queryArgentFeedFromDb({
+    id,
     os,
     severity,
     type,
@@ -62,7 +64,7 @@ export async function GET(request: Request) {
 
   // Format tailored for Kinetic CLI / Daemon ingestion
   if (format === 'kinetic') {
-    const kineticItems = result.bundles.map(b => ({
+    const kineticItems = result.bundles.map((b: ArgentPatchBundle) => ({
       id: b.id,
       cveId: b.cveList[0] || b.bundleId,
       title: `[${b.osDisplayName}] ${b.title}`,
@@ -95,6 +97,7 @@ export async function GET(request: Request) {
         slsaLevel: 3
       },
       metadata: {
+        argId: b.id,
         bundleId: b.bundleId,
         upstreamNoticeUrl: b.upstreamNoticeUrl,
         upstreamFeed: b.sourceFeed.feedName
@@ -103,11 +106,17 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       feedVersion: '2.0.0-argent',
+      identifierSystem: 'ARG-VENDOR-YYYY-NNNN',
+      dataSource: result.dataSource === 'database' ? 'Turso LibSQL Database (Persisted & Indexed)' : 'In-Memory Fallback Aggregator',
       source: 'Exultia Argent Vendor Patch Aggregator',
       count: kineticItems.length,
       patches: kineticItems
     });
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({
+    ...result,
+    identifierSystem: 'ARG-VENDOR-YYYY-NNNN',
+    dataSource: result.dataSource === 'database' ? 'Turso LibSQL Database (Persisted & Indexed)' : 'In-Memory Fallback Aggregator'
+  });
 }

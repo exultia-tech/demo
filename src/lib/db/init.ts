@@ -252,6 +252,70 @@ export async function initializeDatabase(): Promise<void> {
       created_at INTEGER,
       updated_at INTEGER,
       FOREIGN KEY (case_id) REFERENCES inquest_cases(id) ON DELETE CASCADE
+    );`,
+
+    // 6. Argent Operating System Vendor Patch Feed & Errata Catalog
+    `CREATE TABLE IF NOT EXISTS argent_patches (
+      arg_id TEXT PRIMARY KEY,
+      bundle_id TEXT NOT NULL,
+      advisory_type TEXT NOT NULL,
+      os TEXT NOT NULL,
+      os_family TEXT NOT NULL,
+      os_display_name TEXT NOT NULL,
+      title TEXT NOT NULL,
+      synopsis TEXT NOT NULL,
+      vendor_severity TEXT NOT NULL,
+      severity_score REAL NOT NULL DEFAULT 0,
+      operational_domain TEXT NOT NULL,
+      action_directive TEXT NOT NULL,
+      issued_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      cve_list_json TEXT,
+      target_releases_json TEXT,
+      packages_json TEXT,
+      reboot_required INTEGER NOT NULL DEFAULT 0,
+      zero_downtime INTEGER NOT NULL DEFAULT 0,
+      native_upgrade_cmd TEXT,
+      verification_cmd TEXT,
+      rollback_cmd TEXT,
+      kinetic_deploy_cmd TEXT,
+      upstream_notice_url TEXT,
+      source_feed_id TEXT,
+      source_feed_name TEXT,
+      raw_record_json TEXT NOT NULL,
+      ingested_at INTEGER
+    );`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_advisory_type ON argent_patches(advisory_type);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_os ON argent_patches(os);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_severity ON argent_patches(vendor_severity);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_op_domain ON argent_patches(operational_domain);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_zero_downtime ON argent_patches(zero_downtime);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_reboot ON argent_patches(reboot_required);`,
+    `CREATE INDEX IF NOT EXISTS idx_argent_issued ON argent_patches(issued_at DESC);`,
+
+    `CREATE TABLE IF NOT EXISTS argent_sync_logs (
+      id TEXT PRIMARY KEY,
+      status TEXT NOT NULL,
+      total_records INTEGER NOT NULL,
+      bugfix_count INTEGER NOT NULL DEFAULT 0,
+      enhancement_count INTEGER NOT NULL DEFAULT 0,
+      maintenance_count INTEGER NOT NULL DEFAULT 0,
+      general_count INTEGER NOT NULL DEFAULT 0,
+      zero_downtime_count INTEGER NOT NULL DEFAULT 0,
+      reboot_required_count INTEGER NOT NULL DEFAULT 0,
+      duration_ms INTEGER NOT NULL DEFAULT 0,
+      details_json TEXT,
+      synced_at INTEGER
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS argent_bookmarks (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      arg_id TEXT NOT NULL,
+      bundle_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      os TEXT NOT NULL,
+      bookmarked_at INTEGER
     );`
   ];
 

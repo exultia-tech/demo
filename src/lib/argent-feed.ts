@@ -2985,6 +2985,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
 ];
 
 export interface ArgentQueryFilters {
+  id?: string;
   os?: string; // e.g. "ubuntu", "debian", "rocky", "all"
   severity?: string; // "critical", "important", "moderate", "low", "all"
   type?: string; // "all", "bugfix", "enhancement", "maintenance", "general"
@@ -3036,10 +3037,48 @@ export interface ArgentStats {
 }
 
 /**
+ * Normalizes any advisory or bundle ID to the standard Argent format prefixed with ARG-.
+ * E.g., "RLBA-2024:3910" -> "ARG-RLBA-2024-3910"
+ * E.g., "UBUNTU-UPD-2024-0412" -> "ARG-UBUNTU-UPD-2024-0412"
+ * E.g., "ARG-RLBA-2024-3910" -> "ARG-RLBA-2024-3910"
+ */
+export function normalizeArgentId(rawId: string): string {
+  if (!rawId) return 'ARG-ADVISORY';
+  const trimmed = rawId.trim();
+  if (trimmed.startsWith('ARG-')) {
+    return trimmed.replace(/[:/\s]+/g, '-');
+  }
+  const clean = trimmed.replace(/[:/\s]+/g, '-');
+  return `ARG-${clean}`;
+}
+
+/**
+ * Normalizes an ArgentPatchBundle ensuring:
+ * - bundle.id starts with "ARG-"
+ * - bundle.bundleId is populated with the upstream advisory identifier
+ */
+export function normalizeArgentBundle(bundle: ArgentPatchBundle): ArgentPatchBundle {
+  const normId = normalizeArgentId(bundle.id || bundle.bundleId);
+  const upstreamBundleId = bundle.bundleId || bundle.id?.replace(/^ARG-/, '') || normId;
+  return {
+    ...bundle,
+    id: normId,
+    bundleId: upstreamBundleId
+  };
+}
+
+/**
  * Filter and query regular vendor patch bundles (1:1 feature parity with Vantage threat feed)
  */
 export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryResult {
-  let list = [...ARGENT_PATCH_BUNDLES];
+  let list = ARGENT_PATCH_BUNDLES.map(normalizeArgentBundle);
+
+  // Filter by Specific ID (supports both ARG- prefixed ID and raw vendor bundleId)
+  if (filters.id) {
+    const normTarget = normalizeArgentId(filters.id).toLowerCase();
+    const rawTarget = filters.id.toLowerCase();
+    list = list.filter(b => b.id.toLowerCase() === normTarget || b.bundleId.toLowerCase() === rawTarget);
+  }
 
   // Scope Filtering
   if (filters.scope === 'ZERO_REBOOT') {
@@ -3105,6 +3144,7 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
   if (filters.query && filters.query.trim()) {
     const q = filters.query.trim().toLowerCase();
     list = list.filter(b => 
+      b.id.toLowerCase().includes(q) ||
       b.bundleId.toLowerCase().includes(q) ||
       b.title.toLowerCase().includes(q) ||
       b.synopsis.toLowerCase().includes(q) ||
@@ -3123,9 +3163,9 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
   } else if (sortBy === 'date_asc') {
     list.sort((a, b) => new Date(a.issuedAt).getTime() - new Date(b.issuedAt).getTime());
   } else if (sortBy === 'id_asc') {
-    list.sort((a, b) => a.bundleId.localeCompare(b.bundleId));
+    list.sort((a, b) => a.id.localeCompare(b.id));
   } else if (sortBy === 'id_desc') {
-    list.sort((a, b) => b.bundleId.localeCompare(a.bundleId));
+    list.sort((a, b) => b.id.localeCompare(a.id));
   }
 
   const total = list.length;

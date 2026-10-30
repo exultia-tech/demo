@@ -267,3 +267,64 @@ export const fixListScripts = sqliteTable('fix_list_scripts', {
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// ============================================================================
+// 6. Argent Operating System Vendor Patch Feed & Errata Catalog
+// ============================================================================
+
+export const argentPatches = sqliteTable('argent_patches', {
+  argId: text('arg_id').primaryKey(), // Normalized ID with prefix ARG-, e.g. "ARG-RLBA-2024-3910"
+  bundleId: text('bundle_id').notNull(), // Upstream vendor ID, e.g. "RLBA-2024:3910"
+  advisoryType: text('advisory_type').notNull(), // BUGFIX, ENHANCEMENT, MAINTENANCE, GENERAL, SECURITY
+  os: text('os').notNull(), // ubuntu, rocky, rhel, debian, etc.
+  osFamily: text('os_family').notNull(), // linux-rhel, linux-debian, etc.
+  osDisplayName: text('os_display_name').notNull(),
+  title: text('title').notNull(),
+  synopsis: text('synopsis').notNull(),
+  vendorSeverity: text('vendor_severity').notNull(), // CRITICAL, IMPORTANT, MODERATE, LOW
+  severityScore: real('severity_score').notNull().default(0),
+  operationalDomain: text('operational_domain').notNull(), // STORAGE, CORE, KERNEL, SYSTEMD, etc.
+  actionDirective: text('action_directive').notNull(), // SCHEDULE_REBOOT, ZERO_DOWNTIME_HOTFIX, etc.
+  issuedAt: text('issued_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  cveListJson: text('cve_list_json'),
+  targetReleasesJson: text('target_releases_json'),
+  packagesJson: text('packages_json'),
+  rebootRequired: integer('reboot_required').notNull().default(0),
+  zeroDowntime: integer('zero_downtime').notNull().default(0),
+  nativeUpgradeCmd: text('native_upgrade_cmd'),
+  verificationCmd: text('verification_cmd'),
+  rollbackCmd: text('rollback_cmd'),
+  kineticDeployCmd: text('kinetic_deploy_cmd'),
+  upstreamNoticeUrl: text('upstream_notice_url'),
+  sourceFeedId: text('source_feed_id'),
+  sourceFeedName: text('source_feed_name'),
+  rawRecordJson: text('raw_record_json').notNull(),
+  ingestedAt: integer('ingested_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+export const argentSyncLogs = sqliteTable('argent_sync_logs', {
+  id: text('id').primaryKey(),
+  status: text('status').notNull(), // SUCCESS, PARTIAL, FAILED
+  totalRecords: integer('total_records').notNull(),
+  bugfixCount: integer('bugfix_count').notNull().default(0),
+  enhancementCount: integer('enhancement_count').notNull().default(0),
+  maintenanceCount: integer('maintenance_count').notNull().default(0),
+  generalCount: integer('general_count').notNull().default(0),
+  zeroDowntimeCount: integer('zero_downtime_count').notNull().default(0),
+  rebootRequiredCount: integer('reboot_required_count').notNull().default(0),
+  durationMs: integer('duration_ms').notNull().default(0),
+  detailsJson: text('details_json'),
+  syncedAt: integer('synced_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+export const argentBookmarks = sqliteTable('argent_bookmarks', {
+  id: text('id').primaryKey(),
+  userId: text('user_id'),
+  argId: text('arg_id').notNull(),
+  bundleId: text('bundle_id').notNull(),
+  title: text('title').notNull(),
+  os: text('os').notNull(),
+  bookmarkedAt: integer('bookmarked_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+
