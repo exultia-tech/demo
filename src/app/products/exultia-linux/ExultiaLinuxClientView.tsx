@@ -56,22 +56,34 @@ export default function ExultiaLinuxClientView() {
   const offPeakWindow = `${offPeakStart}-${offPeakEnd}`;
 
   const generatedDaemonCli = [
-    "kinetic daemon",
+    "exultia daemon",
     targetOs !== "auto" ? `--os ${targetOs}` : "",
     `--staging-dir "${stagingDir}"`,
-    autoStagePatches ? "--auto-stage" : "--no-auto-stage",
-    autoPatchNonReboot ? "--auto-patch-non-reboot" : "",
-    vendorNativeUpdates ? "--vendor-native" : "",
-    kernelLivepatch ? `--kernel-livepatch --livepatch-mode ${kernelLivepatchMode}` : "--no-kernel-livepatch",
-    disruptiveAutoReboot ? `--disruptive-auto-reboot --off-peak-window "${offPeakWindow}"` : "",
+    autoStagePatches ? "--stage" : "--no-stage",
+    autoPatchNonReboot ? "--non-reboot" : "",
+    vendorNativeUpdates ? "--vendor" : "",
+    kernelLivepatch ? `--livepatch --livepatch-mode ${kernelLivepatchMode}` : "--no-livepatch",
+    disruptiveAutoReboot ? `--disruptive --window "${offPeakWindow}"` : "",
     disruptiveAutoReboot && deferredWindows.trim() ? `--deferred-windows "${deferredWindows.trim()}"` : "",
     disruptiveAutoReboot && deferUntil.trim() ? `--defer-until "${deferUntil.trim()}"` : "",
-    schedulerMode !== "none" ? `--enable-scheduler ${schedulerMode} --schedule-cron "${scheduleCron}"` : "",
-    webhookListen ? `--webhook-listen --webhook-port ${webhookPort || "8765"}${webhookSecret ? ` --webhook-secret "${webhookSecret}"` : ""}` : "",
+    schedulerMode !== "none" ? `--scheduler ${schedulerMode} --cron "${scheduleCron}"` : "",
+    webhookListen ? `--webhook --webhook-port ${webhookPort || "8765"}${webhookSecret ? ` --webhook-secret "${webhookSecret}"` : ""}` : "",
     fullautoEnabled ? (fullautoConfirmed ? "--fullauto --confirm" : "# [WARNING: --fullauto requires --confirm to execute]") : "",
   ]
     .filter(Boolean)
     .join(" \\\n  ");
+
+  const generatedXulShorthandCli = [
+    "xul --daemon",
+    targetOs !== "auto" ? `--os ${targetOs}` : "",
+    autoPatchNonReboot ? "--non-reboot" : "",
+    vendorNativeUpdates ? "--vendor" : "",
+    kernelLivepatch ? "--livepatch" : "",
+    disruptiveAutoReboot ? `--disruptive --window "${offPeakWindow}"` : "",
+    fullautoEnabled && fullautoConfirmed ? "--fullauto --confirm" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const generatedPatchConfig = `[patch_management]
 target_os = "${targetOs}"
@@ -879,7 +891,7 @@ fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                 <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)" }}>
-                  Generated Daemon CLI Command:
+                  Unified Daemon CLI (`exultia`):
                 </span>
                 <button
                   onClick={() => copyToClipboard(generatedDaemonCli, "patch-cli")}
@@ -902,6 +914,35 @@ fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
                 overflowX: "auto"
               }}>
                 {generatedDaemonCli}
+              </pre>
+            </div>
+
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#C4B5FD", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)" }}>
+                  One-Line `xul` Shorthand:
+                </span>
+                <button
+                  onClick={() => copyToClipboard(generatedXulShorthandCli, "xul-cli")}
+                  style={{ background: "transparent", border: "none", color: copiedKey === "xul-cli" ? "#34D399" : "#C4B5FD", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                >
+                  {copiedKey === "xul-cli" ? <Check size={13} /> : <Copy size={13} />}
+                  {copiedKey === "xul-cli" ? "Copied" : "Copy xul"}
+                </button>
+              </div>
+              <pre style={{
+                margin: 0,
+                padding: "10px 14px",
+                background: "#030712",
+                borderRadius: "8px",
+                border: "1px solid rgba(167, 139, 250, 0.3)",
+                color: "#DDD6FE",
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "0.78rem",
+                lineHeight: 1.4,
+                overflowX: "auto"
+              }}>
+                {generatedXulShorthandCli}
               </pre>
             </div>
 

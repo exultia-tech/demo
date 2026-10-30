@@ -514,6 +514,86 @@ class TestKineticRuntimeDaemon(unittest.TestCase):
         self.assertIsNotNone(policy_res["kernel_livepatch_result"])
         self.assertGreaterEqual(policy_res["kernel_livepatch_result"]["applied_count"], 4)
 
+    def test_16_unified_exultia_and_xul_shorthand_cli(self):
+        """Verify unified `exultia` / `xul` CLI normalization, shorthand flags, compiler, and feed search."""
+        from kinetic_cli.main import normalize_cli_argv, build_parser
+
+        parser = build_parser()
+
+        # 1. `xul --status` -> `status`
+        args_status = parser.parse_args(normalize_cli_argv(["--status", "--json"]))
+        self.assertEqual(args_status.command, "status")
+        self.assertTrue(args_status.json)
+
+        # 2. `xul --daemon --non-reboot --vendor --livepatch --disruptive --window "01:00-04:00"`
+        args_daemon = parser.parse_args(
+            normalize_cli_argv([
+                "--daemon",
+                "--os", "rocky",
+                "--non-reboot",
+                "--vendor",
+                "--livepatch",
+                "--disruptive",
+                "--window", "01:00-04:00",
+                "--scheduler", "systemd",
+                "--webhook",
+                "--fullauto",
+                "--confirm",
+            ])
+        )
+        self.assertEqual(args_daemon.command, "daemon")
+        self.assertEqual(args_daemon.os, "rocky")
+        self.assertTrue(args_daemon.auto_patch_non_reboot)
+        self.assertTrue(args_daemon.vendor_native)
+        self.assertTrue(args_daemon.kernel_livepatch)
+        self.assertTrue(args_daemon.disruptive_auto_reboot)
+        self.assertEqual(args_daemon.off_peak_window, "01:00-04:00")
+        self.assertEqual(args_daemon.enable_scheduler, "systemd")
+        self.assertTrue(args_daemon.webhook_listen)
+        self.assertTrue(args_daemon.fullauto)
+        self.assertTrue(args_daemon.confirm)
+
+        # 3. `xul --patch --non-reboot --vendor --livepatch`
+        args_patch = parser.parse_args(
+            normalize_cli_argv(["--patch", "--os", "ubuntu", "--non-reboot", "--vendor", "--livepatch"])
+        )
+        self.assertEqual(args_patch.command, "patch")
+        self.assertTrue(args_patch.auto_patch_non_reboot)
+        self.assertTrue(args_patch.vendor_native)
+        self.assertTrue(args_patch.kernel_livepatch)
+
+        # 4. `xul --livepatch --cve CVE-2024-1086`
+        args_lp = parser.parse_args(normalize_cli_argv(["--livepatch", "--cve", "CVE-2024-1086"]))
+        self.assertEqual(args_lp.command, "livepatch")
+        self.assertEqual(args_lp.action, "apply")
+        self.assertEqual(args_lp.cve, "CVE-2024-1086")
+
+        # 5. `xul --compile CVE-2024-6387` and `xul --search ssh`
+        args_comp = parser.parse_args(normalize_cli_argv(["--compile", "CVE-2024-6387"]))
+        self.assertEqual(args_comp.command, "compile")
+        self.assertEqual(args_comp.cve, "CVE-2024-6387")
+
+        args_search = parser.parse_args(normalize_cli_argv(["--search", "ssh"]))
+        self.assertEqual(args_search.command, "feed")
+        self.assertEqual(args_search.search, "ssh")
+
+        # 6. Verify unified compiler and feed search on engine
+        compiled = self.engine.compile_remediation_artifact(
+            cve_id="CVE-2024-6387",
+            output_format="both",
+            feed_url="http://127.0.0.1:59999/offline",
+        )
+        self.assertEqual(compiled["cve_id"], "CVE-2024-6387")
+        self.assertIn("#!/bin/sh", compiled["posix_script"])
+        self.assertIn("hosts: all", compiled["ansible_playbook"])
+
+        feed_res = self.engine.query_unified_feed(
+            search="ssh",
+            feed_url="http://127.0.0.1:59999/offline",
+            argent_feed_url="http://127.0.0.1:59999/offline",
+        )
+        self.assertGreaterEqual(feed_res["total_matches"], 1)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,14 +1,14 @@
 #!/bin/sh
 # ==============================================================================
-# EXULTIA VANTAGE - Universal Unix/Linux Installer
-# Installs Autonomous Threat Remediation & Pre-Baked 24,388-Advisory UVI Catalog
+# EXULTIA (exultia / xul) - Universal Unix/Linux Installer
+# Installs Unified Autonomous Patching, Kernel Livepatching, Remediation & UVI Catalog
 # ==============================================================================
 set -e
 
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 echo "=============================================================================="
-echo " Installing Exultia Vantage Threat Pipeline"
+echo " Installing Exultia Unified Autonomous Daemon (exultia / xul)"
 echo " Detected OS: $OS ($ARCH)"
 echo "=============================================================================="
 
@@ -74,16 +74,22 @@ if [ "$OS" = "Linux" ]; then
 fi
 
 # 1. Install directories
-echo "[+] Creating Vantage data and spool directories..."
-mkdir -p /var/db/vantage /var/spool/vantage /var/log/vantage /etc/exultia /usr/local/bin
+echo "[+] Creating Exultia data and spool directories..."
+mkdir -p /var/db/vantage /var/spool/vantage /var/log/vantage /var/cache/exultia/staging /etc/exultia /usr/local/bin
 
-# 2. Copy binary
-echo "[+] Installing /usr/local/bin/exultia-vantage..."
-cp "$PAYLOAD_DIR/bin/exultia-vantage" /usr/local/bin/exultia-vantage
-chmod 755 /usr/local/bin/exultia-vantage
-ln -sf /usr/local/bin/exultia-vantage /usr/local/bin/vantage
-ln -sf /usr/local/bin/exultia-vantage /usr/bin/vantage 2>/dev/null || true
-ln -sf /usr/local/bin/exultia-vantage /usr/bin/exultia-vantage 2>/dev/null || true
+# 2. Copy unified binary (`exultia` + `xul` shorthand + legacy aliases)
+echo "[+] Installing unified Exultia daemon (/usr/local/bin/exultia & /usr/local/bin/xul)..."
+cp "$PAYLOAD_DIR/bin/exultia-vantage" /usr/local/bin/exultia
+chmod 755 /usr/local/bin/exultia
+ln -sf /usr/local/bin/exultia /usr/local/bin/xul
+ln -sf /usr/local/bin/exultia /usr/local/bin/kinetic
+ln -sf /usr/local/bin/exultia /usr/local/bin/vantage
+ln -sf /usr/local/bin/exultia /usr/local/bin/praxis
+ln -sf /usr/local/bin/exultia /usr/local/bin/exultia-vantage
+ln -sf /usr/local/bin/exultia /usr/bin/exultia 2>/dev/null || true
+ln -sf /usr/local/bin/exultia /usr/bin/xul 2>/dev/null || true
+ln -sf /usr/local/bin/exultia /usr/bin/vantage 2>/dev/null || true
+ln -sf /usr/local/bin/exultia /usr/bin/exultia-vantage 2>/dev/null || true
 
 # 3. Copy pre-baked UVI offline database
 if [ -f "$PAYLOAD_DIR/data/uvi_catalog.db" ]; then
@@ -103,12 +109,13 @@ case "$OS" in
     Linux)
         if which systemctl >/dev/null 2>&1; then
             cp "$PAYLOAD_DIR/services/exultia-vantage.service" /etc/systemd/system/exultia-vantage.service
+            cp "$PAYLOAD_DIR/services/exultia-vantage.service" /etc/systemd/system/exultia.service 2>/dev/null || true
             systemctl daemon-reload
             systemctl enable exultia-vantage.service
             systemctl restart exultia-vantage.service
-            echo "[+] Enabled and started systemd service: exultia-vantage.service"
+            echo "[+] Enabled and started systemd service: exultia.service"
         else
-            nohup /usr/local/bin/exultia-vantage daemon >/dev/null 2>&1 &
+            nohup /usr/local/bin/exultia daemon >/dev/null 2>&1 &
             echo "[+] Started background daemon via nohup"
         fi
         ;;
@@ -122,13 +129,16 @@ case "$OS" in
 esac
 
 echo "=============================================================================="
-echo " EXULTIA VANTAGE INSTALLED SUCCESSFULLY!"
+echo " EXULTIA UNIFIED DAEMON (exultia / xul) INSTALLED SUCCESSFULLY!"
 echo " Offline UVI Catalog: 24,388 Pre-Installed Advisories"
-echo " Daemon Loop: Active (60-second autonomous drift reconciliation)"
+echo " Daemon Loop: Active (Autonomous Patching, Livepatching & Drift Sentinel)"
 echo ""
-echo " Try these commands:"
-echo "   vantage audit            # Full security compliance audit"
-echo "   vantage fix              # Manually trigger remediation"
-echo "   vantage search rust      # Search offline UVI feed"
-echo "   vantage query CVE-2024-24576"
+echo " Try these unified commands (or use the 'xul' shorthand):"
+echo "   exultia status           (or: xul --status)"
+echo "   exultia patch --vendor   (or: xul --patch --non-reboot --vendor --livepatch)"
+echo "   exultia livepatch apply  (or: xul --livepatch --cve CVE-2024-1086)"
+echo "   exultia audit            (or: xul --audit)"
+echo "   exultia fix              (or: xul --fix)"
+echo "   exultia compile          (or: xul --compile --cve CVE-2024-6387)"
+echo "   exultia feed --search ssh(or: xul --search ssh)"
 echo "=============================================================================="

@@ -218,12 +218,25 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(faSummary.status).toBe('completed');
 
       // 5. Open-source kernel livepatching (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE)
-      const lpCmd = `python kinetic-cli/run.py livepatch apply --cve CVE-2024-1086 --mode both --staging-dir "${testStagingDir}" --dry-run --json --state-dir "${testStateDir}"`;
+      const lpCmd = `python kinetic-cli/exultia.py livepatch apply --cve CVE-2024-1086 --mode both --staging-dir "${testStagingDir}" --dry-run --json --state-dir "${testStateDir}"`;
       const lpOut = execSync(lpCmd, { encoding: 'utf-8' });
       const lpSummary = JSON.parse(lpOut.slice(lpOut.indexOf('{')));
       expect(lpSummary.non_commercial_open_source).toBe(true);
       expect(lpSummary.requires_reboot).toBe(false);
       expect(lpSummary.applied_count).toBe(1);
-    }, 20000);
+
+      // 6. Unified `xul` shorthand CLI (--patch, --compile, --search)
+      const xulPatchCmd = `python kinetic-cli/xul.py --patch --os ubuntu --staging-dir "${testStagingDir}" --non-reboot --vendor --livepatch --dry-run --json --state-dir "${testStateDir}"`;
+      const xulPatchOut = execSync(xulPatchCmd, { encoding: 'utf-8' });
+      const xulPatchSummary = JSON.parse(xulPatchOut.slice(xulPatchOut.indexOf('{')));
+      expect(xulPatchSummary.vendor_native_updates).toBe(true);
+      expect(xulPatchSummary.kernel_livepatch).toBe(true);
+
+      const xulCompileCmd = `python kinetic-cli/xul.py --compile CVE-2024-6387 --json --state-dir "${testStateDir}"`;
+      const xulCompileOut = execSync(xulCompileCmd, { encoding: 'utf-8' });
+      const xulCompileSummary = JSON.parse(xulCompileOut.slice(xulCompileOut.indexOf('{')));
+      expect(xulCompileSummary.cve_id).toBe('CVE-2024-6387');
+      expect(xulCompileSummary.posix_script).toContain('#!/bin/sh');
+    }, 25000);
   });
 });

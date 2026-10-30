@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exultia"
+version = "2.5.0"
+description = "Exultia (xul) Unified Autonomous Patching, Vendor-Native Security Updater, Open-Source Kernel Livepatcher, Threat Feed Engine, Remediation Compiler & Drift Sentinel"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+
+[project.scripts]
+exultia = "kinetic_cli.main:cli_entry"
+xul = "kinetic_cli.main:cli_entry"
+kinetic = "kinetic_cli.main:cli_entry"
+vantage = "kinetic_cli.main:cli_entry"
+praxis = "kinetic_cli.main:cli_entry"
+
