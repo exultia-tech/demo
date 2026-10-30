@@ -24,6 +24,7 @@ from .models import (
     StagedPatchRecord,
     PatchManagementPolicy,
 )
+from .livepatch import KernelLivepatchEngine
 
 
 DEFAULT_FALLBACK_PATCHES = [
@@ -270,6 +271,7 @@ class KineticEngine:
         self.snapshots_dir.mkdir(parents=True, exist_ok=True)
         self.staging_dir.mkdir(parents=True, exist_ok=True)
         self.config_dir.mkdir(parents=True, exist_ok=True)
+        self.livepatch_engine = KernelLivepatchEngine(self)
 
     def log_audit(self, action: str, cve_id: str, status: str, details: str, latency_ms: float = 0.0):
         entry = AuditEntry(
@@ -693,6 +695,8 @@ class KineticEngine:
                     "webhook_port",
                     "fullauto_enabled",
                     "fullauto_confirmed",
+                    "kernel_livepatch_enabled",
+                    "kernel_livepatch_mode",
                 }
                 filtered = {k: v for k, v in data.items() if k in valid_keys}
                 return PatchManagementPolicy(**filtered)
@@ -911,6 +915,28 @@ class KineticEngine:
             "duration_ms": round(latency, 2),
         }
 
+    def probe_kernel_livepatch_capabilities(self, simulated_caps: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return self.livepatch_engine.probe_kernel_capabilities(simulated_caps=simulated_caps)
+
+    def apply_kernel_livepatches(
+        self,
+        cve_filter: Optional[str] = None,
+        mode: str = "auto",
+        compile_klp: bool = False,
+        custom_staging_dir: Optional[str] = None,
+        dry_run: bool = False,
+    ) -> Dict[str, Any]:
+        return self.livepatch_engine.stage_and_apply_kernel_livepatches(
+            cve_filter=cve_filter,
+            mode=mode,
+            compile_klp=compile_klp,
+            custom_staging_dir=custom_staging_dir,
+            dry_run=dry_run,
+        )
+
+    def unload_kernel_livepatch(self, cve_id: str, dry_run: bool = False) -> bool:
+        return self.livepatch_engine.unload_livepatch(cve_id=cve_id, dry_run=dry_run)
+
     def execute_staged_patch_policy(
         self,
         os_filter: Optional[str] = None,
@@ -922,6 +948,8 @@ class KineticEngine:
         deferred_windows: Optional[List[str]] = None,
         defer_disruptive_until: Optional[str] = None,
         vendor_native_updates: bool = False,
+        kernel_livepatch: bool = False,
+        kernel_livepatch_mode: str = "auto",
         force_disruptive_now: bool = False,
         current_time: Optional[Union[datetime.time, datetime.datetime]] = None,
         dry_run: bool = False,
@@ -931,9 +959,10 @@ class KineticEngine:
         Executes full OS patch management lifecycle for the given OS:
           1. Automatically stages all relevant OS patches in the local staging directory.
           2. Optionally invokes vendor built-in security/non-reboot patching (`vendor_native_updates`).
-          3. If auto_patch_non_reboot is enabled, automatically applies staged patches
+          3. Optionally applies open-source in-memory kernel livepatches (`CONFIG_LIVEPATCH` / eBPF).
+          4. If auto_patch_non_reboot is enabled, automatically applies staged patches
              that do NOT require a reboot.
-          4. If disruptive_auto_reboot is enabled:
+          5. If disruptive_auto_reboot is enabled:
              - Evaluates deferred time periods (`off_peak_window`, `deferred_windows`,
                and `defer_disruptive_until`) or `force_disruptive_now`.
              - If inside the maintenance window (and past any deferral timestamp), applies
@@ -942,6 +971,7 @@ class KineticEngine:
         """
         target_os = self.detect_host_os(os_filter)
         stage_root = Path(custom_staging_dir) if custom_staging_dir else self.staging_dir
+        self.livepatch_engine.livepatch_dir = stage_root / "livepatch"
 
         effective_window = off_peak_window
         if deferred_windows:
@@ -966,6 +996,8 @@ class KineticEngine:
             webhook_port=existing_policy.webhook_port,
             fullauto_enabled=existing_policy.fullauto_enabled,
             fullauto_confirmed=existing_policy.fullauto_confirmed,
+            kernel_livepatch_enabled=kernel_livepatch,
+            kernel_livepatch_mode=kernel_livepatch_mode,
         )
         self.save_patch_policy(policy)
 
@@ -975,6 +1007,13 @@ class KineticEngine:
                 os_filter=target_os,
                 include_disruptive=False,
                 enable_builtin_autoupdate=True,
+                dry_run=dry_run,
+            )
+
+        kernel_livepatch_result: Optional[Dict[str, Any]] = None
+        if kernel_livepatch and kernel_livepatch_mode != "disabled":
+            kernel_livepatch_result = self.apply_kernel_livepatches(
+                mode=kernel_livepatch_mode,
                 dry_run=dry_run,
             )
 
@@ -1105,6 +1144,9 @@ class KineticEngine:
             "in_off_peak_window": in_off_peak,
             "vendor_native_updates": vendor_native_updates,
             "vendor_native_result": vendor_native_result,
+            "kernel_livepatch": kernel_livepatch,
+            "kernel_livepatch_mode": kernel_livepatch_mode,
+            "kernel_livepatch_result": kernel_livepatch_result,
             "applied_non_reboot": applied_non_reboot,
             "applied_non_reboot_count": len(applied_non_reboot),
             "applied_disruptive": applied_disruptive,
@@ -1383,6 +1425,8 @@ class KineticEngine:
             disruptive_auto_reboot=True,
             off_peak_window="00:00-23:59",
             vendor_native_updates=False,
+            kernel_livepatch=True,
+            kernel_livepatch_mode="auto",
             force_disruptive_now=True,
             dry_run=dry_run,
             token=token,
@@ -1737,6 +1781,8 @@ class KineticEngine:
             "total_snapshots": len(snapshots),
             "staged_patches_count": len([s for s in staged if s.status == "staged"]),
             "deferred_off_peak_count": len([s for s in staged if s.status == "deferred_off_peak"]),
+            "active_kernel_livepatches": self.livepatch_engine.get_active_livepatches(),
+            "kernel_livepatch_capabilities": self.livepatch_engine.probe_kernel_capabilities(),
             "patch_policy": policy.to_dict(),
             "staged_patches": [s.to_dict() for s in staged],
             "active_hotfixes": [

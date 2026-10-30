@@ -216,6 +216,14 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       expect(faSummary.fullauto).toBe(true);
       expect(faSummary.confirmed).toBe(true);
       expect(faSummary.status).toBe('completed');
+
+      // 5. Open-source kernel livepatching (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE)
+      const lpCmd = `python kinetic-cli/run.py livepatch apply --cve CVE-2024-1086 --mode both --staging-dir "${testStagingDir}" --dry-run --json --state-dir "${testStateDir}"`;
+      const lpOut = execSync(lpCmd, { encoding: 'utf-8' });
+      const lpSummary = JSON.parse(lpOut.slice(lpOut.indexOf('{')));
+      expect(lpSummary.non_commercial_open_source).toBe(true);
+      expect(lpSummary.requires_reboot).toBe(false);
+      expect(lpSummary.applied_count).toBe(1);
     }, 20000);
   });
 });

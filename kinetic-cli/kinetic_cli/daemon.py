@@ -49,6 +49,8 @@ class KineticDaemon:
         deferred_windows: Optional[List[str]] = None,
         defer_disruptive_until: Optional[str] = None,
         vendor_native_updates: bool = False,
+        kernel_livepatch: bool = False,
+        kernel_livepatch_mode: str = "auto",
         enable_scheduler: Optional[str] = None,
         schedule_cron: str = "0 * * * *",
         webhook_listen: bool = False,
@@ -87,6 +89,8 @@ class KineticDaemon:
         self.deferred_windows = deferred_windows
         self.defer_disruptive_until = defer_disruptive_until
         self.vendor_native_updates = vendor_native_updates or fullauto
+        self.kernel_livepatch = kernel_livepatch or fullauto
+        self.kernel_livepatch_mode = kernel_livepatch_mode
         self.enable_scheduler = enable_scheduler
         self.schedule_cron = schedule_cron
         self.webhook_listen = webhook_listen
@@ -269,6 +273,7 @@ class KineticDaemon:
             and not self.auto_patch_non_reboot
             and not self.disruptive_auto_reboot
             and not self.vendor_native_updates
+            and not self.kernel_livepatch
         ):
             return {
                 "target_os": self.os_distro,
@@ -294,6 +299,8 @@ class KineticDaemon:
             deferred_windows=self.deferred_windows,
             defer_disruptive_until=self.defer_disruptive_until,
             vendor_native_updates=self.vendor_native_updates,
+            kernel_livepatch=self.kernel_livepatch,
+            kernel_livepatch_mode=self.kernel_livepatch_mode,
             current_time=current_time,
             dry_run=self.dry_run,
             token=self.token

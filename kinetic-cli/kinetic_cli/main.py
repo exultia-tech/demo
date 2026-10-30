@@ -61,6 +61,8 @@ def build_parser() -> argparse.ArgumentParser:
     upgrade_parser.add_argument("--stage-only", action="store_true", help="Automatically stage relevant OS patches locally without executing installation")
     upgrade_parser.add_argument("--auto-patch-non-reboot", action="store_true", help="Automatically install staged OS patches that do not require a system reboot")
     upgrade_parser.add_argument("--vendor-native", dest="vendor_native", action="store_true", default=False, help="Natively utilize OS vendor built-in patching commands to deploy standard security updates and non-reboot items")
+    upgrade_parser.add_argument("--kernel-livepatch", dest="kernel_livepatch", action="store_true", default=False, help="Apply open-source zero-reboot kernel livepatches (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE function guards)")
+    upgrade_parser.add_argument("--livepatch-mode", choices=["auto", "klp", "ebpf", "both"], default="auto", help="Open-source kernel livepatch backend mode (default: auto)")
     upgrade_parser.add_argument("--disruptive-auto-reboot", action="store_true", help="Enable disruptive patching with automatic reboot during the off-peak / deferred window")
     upgrade_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe (HH:MM-HH:MM) for disruptive patching and auto-reboot (default: 02:00-05:00)")
     upgrade_parser.add_argument("--deferred-windows", help="Comma-separated deferred maintenance windows for disruptive patching (e.g. 'Sat 01:00-05:00, Sun 01:00-05:00')")
@@ -92,6 +94,9 @@ def build_parser() -> argparse.ArgumentParser:
     daemon_parser.add_argument("--auto-patch-non-reboot", action="store_true", default=False, help="Enable automatic patching for non-reboot-required OS updates")
     daemon_parser.add_argument("--vendor-native", dest="vendor_native_updates", action="store_true", default=False, help="Natively utilize OS vendor built-in patching commands for standard security and non-reboot updates")
     daemon_parser.add_argument("--no-vendor-native", dest="vendor_native_updates", action="store_false", help="Disable vendor built-in patching commands")
+    daemon_parser.add_argument("--kernel-livepatch", dest="kernel_livepatch", action="store_true", default=False, help="Enable non-commercial in-memory kernel livepatching via upstream CONFIG_LIVEPATCH (klp/kpatch) + eBPF CO-RE function guards")
+    daemon_parser.add_argument("--no-kernel-livepatch", dest="kernel_livepatch", action="store_false", help="Disable in-memory kernel livepatching")
+    daemon_parser.add_argument("--livepatch-mode", choices=["auto", "klp", "ebpf", "both"], default="auto", help="Open-source kernel livepatch backend mode (default: auto)")
     daemon_parser.add_argument("--disruptive-auto-reboot", action="store_true", default=False, help="Enable disruptive OS patching with automatic reboot during off-peak / deferred windows")
     daemon_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe in HH:MM-HH:MM format for disruptive patching with auto-reboot (default: 02:00-05:00)")
     daemon_parser.add_argument("--deferred-windows", help="Comma-separated deferred time periods for disruptive patching (e.g. 'Sat 01:00-05:00,Sun 01:00-05:00')")
@@ -127,6 +132,14 @@ def build_parser() -> argparse.ArgumentParser:
     webhook_parser.add_argument("--secret", default=None, help="Shared Bearer/HMAC secret for authenticating webhook requests")
     webhook_parser.add_argument("--os", default=None, help="Target OS distribution override")
     webhook_parser.add_argument("--dry-run", action="store_true", default=False, help="Run webhook-triggered commands in dry-run simulation mode")
+
+    # Command: livepatch (Open-Source CONFIG_LIVEPATCH / kpatch + eBPF CO-RE Kernel Hotpatching)
+    lp_parser = subparsers.add_parser("livepatch", parents=[common_parser], help="Manage non-commercial zero-reboot Linux kernel livepatches (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE)")
+    lp_parser.add_argument("action", choices=["probe", "apply", "unload", "status"], default="status", nargs="?", help="Action: probe capabilities, apply livepatches, unload a livepatch, or view active status")
+    lp_parser.add_argument("--cve", default=None, help="Specific kernel CVE ID or livepatch ID (e.g. CVE-2024-1086)")
+    lp_parser.add_argument("--mode", choices=["auto", "klp", "ebpf", "both"], default="auto", help="Livepatch mechanism (default: auto)")
+    lp_parser.add_argument("--compile-klp", action="store_true", default=False, help="Compile generated CONFIG_LIVEPATCH C module against /lib/modules/$(uname -r)/build if headers are present")
+    lp_parser.add_argument("--dry-run", action="store_true", default=False, help="Simulate kernel livepatch operation")
 
     # Command: drift (Configuration Drift Audit & Instant Reconciliation)
     drift_parser = subparsers.add_parser("drift", parents=[common_parser], help="Audit and auto-revert configuration drift against SOX and PCI-DSS baselines")
@@ -267,6 +280,7 @@ def cli_entry():
             or args.auto_patch_non_reboot
             or args.disruptive_auto_reboot
             or args.vendor_native
+            or args.kernel_livepatch
             or deferred_list
             or getattr(args, "defer_until", None)
         ):
@@ -274,7 +288,12 @@ def cli_entry():
                 os_filter=args.os,
                 feed_url=args.feed_url
             )
-            if args.stage_only and not (args.auto_patch_non_reboot or args.disruptive_auto_reboot or args.vendor_native):
+            if args.stage_only and not (
+                args.auto_patch_non_reboot
+                or args.disruptive_auto_reboot
+                or args.vendor_native
+                or args.kernel_livepatch
+            ):
                 if args.json:
                     print(json.dumps([s.to_dict() for s in staged], indent=2))
                 sys.exit(0)
@@ -287,6 +306,8 @@ def cli_entry():
                 deferred_windows=deferred_list,
                 defer_disruptive_until=getattr(args, "defer_until", None),
                 vendor_native_updates=args.vendor_native,
+                kernel_livepatch=args.kernel_livepatch,
+                kernel_livepatch_mode=args.livepatch_mode,
                 feed_url=args.feed_url,
                 dry_run=args.dry_run
             )
@@ -338,6 +359,8 @@ def cli_entry():
             deferred_windows=deferred_list,
             defer_disruptive_until=args.defer_until,
             vendor_native_updates=args.vendor_native_updates,
+            kernel_livepatch=args.kernel_livepatch,
+            kernel_livepatch_mode=args.livepatch_mode,
             enable_scheduler=args.enable_scheduler,
             schedule_cron=args.schedule_cron,
             webhook_listen=args.webhook_listen,
@@ -391,6 +414,48 @@ def cli_entry():
             dry_run=args.dry_run,
         )
         listener.serve_forever()
+
+    elif args.command == "livepatch":
+        if args.action == "probe":
+            caps = engine.probe_kernel_livepatch_capabilities()
+            if args.json:
+                print(json.dumps(caps, indent=2))
+            else:
+                print(f"[Kinetic Kernel Livepatch] Host Kernel: {caps['kernel_release']} ({caps['architecture']})")
+                print(f"  • CONFIG_LIVEPATCH (/sys/kernel/livepatch): {caps['config_livepatch_supported']}")
+                print(f"  • BTF / eBPF CO-RE (/sys/kernel/btf/vmlinux): {caps['btf_ebpf_core_supported']}")
+                print(f"  • kprobes (/sys/kernel/tracing/kprobe_events): {caps['kprobes_supported']}")
+                print(f"  • Recommended Non-Commercial Backend: {caps['recommended_backend']}")
+            sys.exit(0)
+        elif args.action == "apply":
+            res = engine.apply_kernel_livepatches(
+                cve_filter=args.cve,
+                mode=args.mode,
+                compile_klp=args.compile_klp,
+                dry_run=args.dry_run,
+            )
+            if args.json:
+                print(json.dumps(res, indent=2))
+            sys.exit(0)
+        elif args.action == "unload":
+            if not args.cve:
+                sys.stderr.write("[Kinetic Error] Please specify --cve=<CVE_ID> to unload a kernel livepatch.\n")
+                sys.exit(2)
+            ok = engine.unload_kernel_livepatch(cve_id=args.cve, dry_run=args.dry_run)
+            if args.json:
+                print(json.dumps({"unloaded": ok, "cve_id": args.cve}, indent=2))
+            sys.exit(0 if ok else 1)
+        else:
+            active = engine.livepatch_engine.get_active_livepatches()
+            caps = engine.probe_kernel_livepatch_capabilities()
+            payload = {"capabilities": caps, "active_livepatches": active}
+            if args.json:
+                print(json.dumps(payload, indent=2))
+            else:
+                print(f"[Kinetic Kernel Livepatch] Active In-Memory Kernel Livepatches: {len(active)}")
+                for item in active:
+                    print(f"  • {item['livepatch_id']} ({item['cve_id']}) -> symbol `{item['target_symbol']}` [{item['status']}]")
+            sys.exit(0)
 
     elif args.command == "drift":
         manager = ComplianceDriftManager(

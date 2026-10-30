@@ -157,6 +157,8 @@ class PatchManagementPolicy:
     webhook_port: int = 8765
     fullauto_enabled: bool = False
     fullauto_confirmed: bool = False
+    kernel_livepatch_enabled: bool = True
+    kernel_livepatch_mode: str = "auto"  # "auto", "klp", "ebpf", "both", "disabled"
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)

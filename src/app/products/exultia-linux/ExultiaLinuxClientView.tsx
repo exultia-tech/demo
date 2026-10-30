@@ -38,6 +38,8 @@ export default function ExultiaLinuxClientView() {
   const [autoStagePatches, setAutoStagePatches] = useState<boolean>(true);
   const [autoPatchNonReboot, setAutoPatchNonReboot] = useState<boolean>(true);
   const [vendorNativeUpdates, setVendorNativeUpdates] = useState<boolean>(true);
+  const [kernelLivepatch, setKernelLivepatch] = useState<boolean>(true);
+  const [kernelLivepatchMode, setKernelLivepatchMode] = useState<"auto" | "klp" | "ebpf" | "both">("auto");
   const [disruptiveAutoReboot, setDisruptiveAutoReboot] = useState<boolean>(true);
   const [offPeakStart, setOffPeakStart] = useState<string>("02:00");
   const [offPeakEnd, setOffPeakEnd] = useState<string>("05:00");
@@ -60,6 +62,7 @@ export default function ExultiaLinuxClientView() {
     autoStagePatches ? "--auto-stage" : "--no-auto-stage",
     autoPatchNonReboot ? "--auto-patch-non-reboot" : "",
     vendorNativeUpdates ? "--vendor-native" : "",
+    kernelLivepatch ? `--kernel-livepatch --livepatch-mode ${kernelLivepatchMode}` : "--no-kernel-livepatch",
     disruptiveAutoReboot ? `--disruptive-auto-reboot --off-peak-window "${offPeakWindow}"` : "",
     disruptiveAutoReboot && deferredWindows.trim() ? `--deferred-windows "${deferredWindows.trim()}"` : "",
     disruptiveAutoReboot && deferUntil.trim() ? `--defer-until "${deferUntil.trim()}"` : "",
@@ -76,6 +79,8 @@ staging_dir = "${stagingDir}"
 auto_stage_patches = ${autoStagePatches}
 auto_patch_non_reboot = ${autoPatchNonReboot}
 vendor_native_updates = ${vendorNativeUpdates}
+kernel_livepatch_enabled = ${kernelLivepatch}
+kernel_livepatch_mode = "${kernelLivepatchMode}"
 disruptive_auto_reboot = ${disruptiveAutoReboot}
 off_peak_window = "${offPeakWindow}"
 deferred_windows = "${deferredWindows}"${deferUntil ? `\ndefer_disruptive_until = "${deferUntil}"` : ""}
@@ -527,6 +532,66 @@ fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
                 onChange={(e) => setVendorNativeUpdates(e.target.checked)}
                 style={{ width: "18px", height: "18px", accentColor: "#38BDF8", cursor: "pointer", marginTop: "2px" }}
               />
+            </div>
+
+            {/* Toggle 2.75: Open-Source Kernel Hotpatching (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE) */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${kernelLivepatch ? "rgba(167, 139, 250, 0.45)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                <div>
+                  <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Cpu size={15} color="#A78BFA" /> Open-Source Kernel Hotpatching (<code style={{ fontSize: "0.78rem", color: "#C4B5FD" }}>CONFIG_LIVEPATCH</code> + eBPF CO-RE)
+                  </div>
+                  <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                    100% open-source, zero-reboot Linux kernel livepatching without commercial subscriptions. Synthesizes &amp; loads upstream <code style={{ color: "#C4B5FD" }}>&lt;linux/livepatch.h&gt;</code> (<code style={{ color: "#C4B5FD" }}>kpatch</code>) modules and eBPF CO-RE / <code style={{ color: "#C4B5FD" }}>kprobe_events</code> function guards in RAM.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={kernelLivepatch}
+                  onChange={(e) => setKernelLivepatch(e.target.checked)}
+                  style={{ width: "18px", height: "18px", accentColor: "#8B5CF6", cursor: "pointer", marginTop: "2px" }}
+                />
+              </div>
+              {kernelLivepatch && (
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                  paddingTop: "8px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.08)"
+                }}>
+                  <label style={{ fontSize: "0.72rem", fontWeight: 700, color: "#C4B5FD", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)" }}>
+                    Livepatch Backend Mode
+                  </label>
+                  <select
+                    value={kernelLivepatchMode}
+                    onChange={(e) => setKernelLivepatchMode(e.target.value as any)}
+                    style={{
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      background: "#090D16",
+                      border: "1px solid rgba(167, 139, 250, 0.35)",
+                      color: "#EDE9FE",
+                      fontSize: "0.78rem",
+                      fontFamily: "var(--font-mono, monospace)"
+                    }}
+                  >
+                    <option value="auto">auto (Prefer KLP + eBPF Shield)</option>
+                    <option value="both">both (CONFIG_LIVEPATCH + eBPF CO-RE)</option>
+                    <option value="klp">klp (Upstream CONFIG_LIVEPATCH / kpatch)</option>
+                    <option value="ebpf">ebpf (eBPF CO-RE / tracefs kprobe Guard)</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Toggle 3: Disruptive Patching with Auto-Reboot + Deferred Time Periods */}

@@ -456,6 +456,64 @@ class TestKineticRuntimeDaemon(unittest.TestCase):
         self.assertEqual(busy_res["status"], "deferred_by_dynamic_telemetry")
         self.assertFalse(busy_res["readiness"]["ready_to_patch"])
 
+    def test_15_open_source_kernel_livepatching_klp_and_ebpf(self):
+        """Verify 100% open-source Linux kernel livepatching (CONFIG_LIVEPATCH / kpatch + eBPF CO-RE function guards)."""
+        # 1. Probe capabilities
+        caps = self.engine.probe_kernel_livepatch_capabilities()
+        self.assertTrue(caps["non_commercial"])
+        self.assertIn("recommended_backend", caps)
+        self.assertIn("open_source_tiers", caps)
+
+        # 2. Stage and apply open-source kernel livepatches
+        lp_res = self.engine.apply_kernel_livepatches(
+            mode="both",
+            custom_staging_dir=str(self.staging_dir),
+            dry_run=True,
+        )
+        self.assertTrue(lp_res["non_commercial_open_source"])
+        self.assertFalse(lp_res["requires_reboot"])
+        self.assertGreaterEqual(lp_res["applied_count"], 4)
+
+        # Verify generated C and eBPF CO-RE artifacts on disk for CVE-2024-1086
+        cve_dir = self.staging_dir / "livepatch" / "cve-2024-1086"
+        self.assertTrue((cve_dir / "klp_cve_2024_1086.c").exists())
+        self.assertTrue((cve_dir / "ebpf_klp_cve_2024_1086.bpf.c").exists())
+        self.assertTrue((cve_dir / "Makefile").exists())
+        self.assertTrue((cve_dir / "apply_livepatch.sh").exists())
+        self.assertTrue((cve_dir / "unload_livepatch.sh").exists())
+        self.assertTrue((cve_dir / "livepatch_manifest.json").exists())
+
+        klp_c_text = (cve_dir / "klp_cve_2024_1086.c").read_text(encoding="utf-8")
+        self.assertIn("#include <linux/livepatch.h>", klp_c_text)
+        self.assertIn("klp_enable_patch", klp_c_text)
+        self.assertIn("nft_verdict_init", klp_c_text)
+
+        ebpf_c_text = (cve_dir / "ebpf_klp_cve_2024_1086.bpf.c").read_text(encoding="utf-8")
+        self.assertIn("fmod_ret/nft_verdict_init", ebpf_c_text)
+
+        # 3. Verify deterministic unload of kernel livepatch
+        unload_ok = self.engine.unload_kernel_livepatch("CVE-2024-1086", dry_run=True)
+        self.assertTrue(unload_ok)
+
+        # 4. Verify integration inside execute_staged_patch_policy
+        self.engine.stage_os_patches(
+            os_filter="ubuntu",
+            feed_url="http://127.0.0.1:59999/offline",
+            custom_staging_dir=str(self.staging_dir),
+        )
+        policy_res = self.engine.execute_staged_patch_policy(
+            os_filter="ubuntu",
+            feed_url="http://127.0.0.1:59999/offline",
+            auto_patch_non_reboot=True,
+            kernel_livepatch=True,
+            kernel_livepatch_mode="both",
+            custom_staging_dir=str(self.staging_dir),
+            dry_run=True,
+        )
+        self.assertTrue(policy_res["kernel_livepatch"])
+        self.assertIsNotNone(policy_res["kernel_livepatch_result"])
+        self.assertGreaterEqual(policy_res["kernel_livepatch_result"]["applied_count"], 4)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
