@@ -41,7 +41,12 @@ export type ArgentOsCategory =
   | 'openeuler'
   | 'cloudlinux'
   | 'kali'
-  | 'azure-linux';
+  | 'azure-linux'
+  | 'centos-stream'
+  | 'opensuse-leap'
+  | 'fedora-coreos'
+  | 'proxmox'
+  | 'truenas-scale';
 
 export type ArgentOsFamily = 
   | 'linux-debian'
@@ -94,6 +99,7 @@ export type ArgentPackageManager =
   | 'opkg' 
   | 'talosctl' 
   | 'update_engine' 
+  | 'rpm-ostree'
   | 'kmod';
 
 export type ArgentOperationalDomain = 
@@ -1317,6 +1323,126 @@ export const ARGENT_PUBLIC_FEED_SOURCES: ArgentPublicFeedSource[] = [
     status: "Daily",
     supportedReleases: ["Global Platform & OS Advisories"],
     feedTypesCovered: ["Security", "General"]
+  },
+
+  // 48. CentOS Stream Continuous Delivery & Compose Stream
+  {
+    id: "feed-centos-stream",
+    os: "centos-stream",
+    name: "CentOS Stream 9 & 10 Continuous Delivery & DNF Updateinfo Stream",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🟣",
+    provider: "CentOS Project & Red Hat Enterprise Linux Engineering",
+    officialFeedUrl: "https://mirror.stream.centos.org/9-stream/",
+    format: "UPDATEINFO",
+    recordsIngested: 64200,
+    updateFrequency: "Continuous compose & mirror synchronization",
+    documentationUrl: "https://www.centos.org/centos-stream/",
+    homepageUrl: "https://www.centos.org/download",
+    description: "Official CentOS Stream continuous delivery package stream tracking upstream RHEL 9 and RHEL 10 kernel, glibc, and enterprise user-space updates.",
+    scope: "CentOS Stream 9 & CentOS Stream 10 (BaseOS, AppStream, CRB)",
+    access: "Public CentOS Stream Mirror Network & DNF Metadata",
+    coverage: "Upstream RHEL minor release candidates, kernel & glibc bugfixes, enterprise toolchain updates",
+    refreshRate: "Realtime",
+    status: "Realtime",
+    supportedReleases: ["CentOS Stream 9", "CentOS Stream 10"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "Security"]
+  },
+
+  // 49. openSUSE Leap Maintenance & Recommended Updates
+  {
+    id: "feed-opensuse-leap",
+    os: "opensuse-leap",
+    name: "openSUSE Leap 15.6 Maintenance & Zypper Updateinfo Stream",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🦎",
+    provider: "openSUSE Project & SUSE Maintenance Engineering",
+    officialFeedUrl: "https://download.opensuse.org/update/leap/15.6/oss/",
+    format: "UPDATEINFO",
+    recordsIngested: 53800,
+    updateFrequency: "Hourly openSUSE build service (OBS) update publication",
+    documentationUrl: "https://get.opensuse.org/leap/",
+    homepageUrl: "https://get.opensuse.org/leap/",
+    description: "Official openSUSE Leap update stream synchronized with SUSE Linux Enterprise (SLE) shared service pack maintenance and community backports.",
+    scope: "openSUSE Leap 15.6 & 15.5 (OSS, Non-OSS, SLE-Update)",
+    access: "Public Zypper repomd.xml & OVAL Advisories",
+    coverage: "SLE-shared kernel-default stability fixes, OpenSSL 3 updates, Btrfs & transactional-update patches",
+    refreshRate: "Hourly",
+    status: "Realtime",
+    supportedReleases: ["openSUSE Leap 15.6", "openSUSE Leap 15.5"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "Security"]
+  },
+
+  // 50. Fedora CoreOS (FCOS) Cincinnati & OSTree Release Stream
+  {
+    id: "feed-fedora-coreos",
+    os: "fedora-coreos",
+    name: "Fedora CoreOS (FCOS) Cincinnati Update Graph & OSTree Stream",
+    category: "Lightweight & Container OS",
+    icon: "🔵",
+    provider: "Fedora CoreOS Working Group",
+    officialFeedUrl: "https://builds.coreos.fedoraproject.org/streams/stable.json",
+    format: "JSON",
+    recordsIngested: 19400,
+    updateFrequency: "Bi-weekly promoted stable & testing OSTree releases",
+    documentationUrl: "https://fedoraproject.org/coreos/download",
+    homepageUrl: "https://fedoraproject.org/coreos/download",
+    description: "Official Fedora CoreOS (FCOS) atomic OSTree update stream and Zincati Cincinnati update graph for immutable container hosts.",
+    scope: "Fedora CoreOS Stable, Testing & Next Streams (x86_64, aarch64)",
+    access: "Public JSON Stream Metadata & Cincinnati Update Graph",
+    coverage: "Atomic rpm-ostree host deployments, Ignition provisioning fixes, moby-engine/podman & kernel updates",
+    refreshRate: "Daily",
+    status: "Realtime",
+    supportedReleases: ["Fedora CoreOS Stable (40)", "Fedora CoreOS Testing"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "Security"]
+  },
+
+  // 51. Proxmox Virtual Environment (Proxmox VE) Enterprise & No-Subscription Repository
+  {
+    id: "feed-proxmox-ve",
+    os: "proxmox",
+    name: "Proxmox VE 8.x Hypervisor, QEMU/KVM & ZFS Kernel Stream",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🟧",
+    provider: "Proxmox Server Solutions GmbH",
+    officialFeedUrl: "https://download.proxmox.com/debian/pve/dists/bookworm/",
+    format: "JSON",
+    recordsIngested: 28900,
+    updateFrequency: "Continuous hypervisor & kernel point release publication",
+    documentationUrl: "https://pve.proxmox.com/wiki/Package_Repositories",
+    homepageUrl: "https://www.proxmox.com/en/downloads",
+    description: "Official Proxmox Virtual Environment (PVE) Debian-based hypervisor update stream covering pve-manager, pve-qemu-kvm, Ceph, and proxmox-kernel.",
+    scope: "Proxmox VE 8.2 / 8.1 (Debian 12 Bookworm Base + PVE Kernel 6.8)",
+    access: "Public Proxmox APT Repository Changelog & Release Notes",
+    coverage: "QEMU/KVM live-migration stability, LXC container isolation, ZFS & Ceph storage cluster updates, PVE 6.8 kernel",
+    refreshRate: "Daily",
+    status: "Realtime",
+    supportedReleases: ["Proxmox VE 8.2", "Proxmox VE 8.1"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "Security"]
+  },
+
+  // 52. TrueNAS SCALE Enterprise Storage & OpenZFS Appliance Stream
+  {
+    id: "feed-truenas-scale",
+    os: "truenas-scale",
+    name: "TrueNAS SCALE Dragonfish / Electric Eel & OpenZFS Release Stream",
+    category: "Enterprise Linux (RHEL/Rocky/Alma)",
+    icon: "🐋",
+    provider: "iXsystems TrueNAS Engineering",
+    officialFeedUrl: "https://update.sys.truenas.net/scale/",
+    format: "JSON",
+    recordsIngested: 22100,
+    updateFrequency: "Continuous appliance train & OpenZFS package updates",
+    documentationUrl: "https://www.truenas.com/docs/scale/",
+    homepageUrl: "https://www.truenas.com/download-truenas-scale",
+    description: "Official TrueNAS SCALE Debian-based storage appliance update feed tracking middlewared, OpenZFS 2.2+, Samba/NFS multiprotocol shares, and storage kernel patches.",
+    scope: "TrueNAS SCALE 24.04 (Dragonfish) & 24.10 (Electric Eel)",
+    access: "Public TrueNAS Update Manifests & APT Repository Metadata",
+    coverage: "OpenZFS ARC/L2ARC stability fixes, middlewared API updates, NVMe-oF & iSCSI target enhancements",
+    refreshRate: "Daily",
+    status: "Realtime",
+    supportedReleases: ["TrueNAS SCALE 24.04 (Dragonfish)", "TrueNAS SCALE 24.10 (Electric Eel)"],
+    feedTypesCovered: ["Bugfix", "Enhancement", "Maintenance", "Security"]
   }
 ];
 
@@ -3993,6 +4119,396 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       syncStatus: "live",
       sourceUrl: "https://packages.wolfi.dev/os/security.json"
     }
+  },
+
+  // 69. CentOS Stream 9 glibc & systemd Live Service Update (Non-Reboot)
+  {
+    id: "ARG-CENTOS-STREAM-2024-4102",
+    bundleId: "CSBA-2024:4102",
+    advisoryType: "BUGFIX",
+    os: "centos-stream",
+    osFamily: "linux-rhel",
+    osDisplayName: "CentOS Stream",
+    targetReleases: ["CentOS Stream 9", "CentOS Stream 10"],
+    title: "CentOS Stream 9 glibc Resolver & NSS Cache Concurrency Bug Fix",
+    synopsis: "Non-disruptive CentOS Stream user-space glibc and nscd resolver stability update applied without host reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T19:00:00Z",
+    updatedAt: "2024-06-29T19:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "glibc", sourcePackage: "glibc", arch: "x86_64", currentVersion: "2.34-105.el9", fixedVersion: "2.34-109.el9", packageManager: "dnf", sizeBytes: 4210000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y glibc",
+      verification: "rpm -q glibc | grep 2.34-109.el9",
+      rollback: "dnf downgrade -y glibc-2.34-105.el9",
+      kineticDeploy: "kinetic upgrade --bundle CSBA-2024:4102 --os centos-stream"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd", "systemd-resolved"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.centos.org/download",
+    sourceFeed: {
+      sourceId: "feed-centos-stream",
+      feedName: "CentOS Stream 9 & 10 Continuous Delivery & DNF Updateinfo Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://mirror.stream.centos.org/9-stream/"
+    }
+  },
+
+  // 70. CentOS Stream 9 Kernel 5.14.0-496.el9 Cgroups & XFS Update (Disruptive)
+  {
+    id: "ARG-CENTOS-STREAM-KRN-2024-5201",
+    bundleId: "CSBA-2024:5201",
+    advisoryType: "MAINTENANCE",
+    os: "centos-stream",
+    osFamily: "linux-rhel",
+    osDisplayName: "CentOS Stream",
+    targetReleases: ["CentOS Stream 9", "CentOS Stream 10"],
+    title: "CentOS Stream 9 Kernel 5.14.0-496.el9 XFS Journaling & io_uring Update",
+    synopsis: "Disruptive CentOS Stream kernel update fixing XFS log recovery contention; requires system reboot during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.9,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T19:10:00Z",
+    updatedAt: "2024-06-29T19:10:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel", sourcePackage: "kernel", arch: "x86_64", currentVersion: "5.14.0-480.el9", fixedVersion: "5.14.0-496.el9", packageManager: "dnf", sizeBytes: 56400000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel",
+      verification: "rpm -q kernel | grep 5.14.0-496.el9",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle CSBA-2024:5201 --os centos-stream"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.centos.org/download",
+    sourceFeed: {
+      sourceId: "feed-centos-stream",
+      feedName: "CentOS Stream 9 & 10 Continuous Delivery & DNF Updateinfo Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://mirror.stream.centos.org/9-stream/"
+    }
+  },
+
+  // 71. openSUSE Leap 15.6 OpenSSL-3 & libzypp Update (Non-Reboot)
+  {
+    id: "ARG-OPENSUSE-LEAP-2024-2810",
+    bundleId: "openSUSE-RU-2024:2810-1",
+    advisoryType: "BUGFIX",
+    os: "opensuse-leap",
+    osFamily: "linux-suse",
+    osDisplayName: "openSUSE Leap",
+    targetReleases: ["openSUSE Leap 15.6", "openSUSE Leap 15.5"],
+    title: "openSUSE Leap 15.6 OpenSSL 3.1.4 FIPS Provider & TLS Session Cache Update",
+    synopsis: "Non-disruptive openSUSE Leap zypper user-space cryptographic library update applied live without reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.3,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T19:20:00Z",
+    updatedAt: "2024-06-29T19:20:00Z",
+    cveList: [],
+    packages: [
+      { name: "openssl-3", sourcePackage: "openssl-3", arch: "x86_64", currentVersion: "3.1.4-150600.2.1", fixedVersion: "3.1.4-150600.5.1", packageManager: "zypper", sizeBytes: 4950000 }
+    ],
+    commands: {
+      nativeUpgrade: "zypper --non-interactive update openssl-3",
+      verification: "rpm -q openssl-3 | grep 3.1.4-150600.5.1",
+      rollback: "zypper --non-interactive install --oldpackage openssl-3=3.1.4-150600.2.1",
+      kineticDeploy: "kinetic upgrade --bundle openSUSE-RU-2024:2810-1 --os opensuse-leap"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://get.opensuse.org/leap/",
+    sourceFeed: {
+      sourceId: "feed-opensuse-leap",
+      feedName: "openSUSE Leap 15.6 Maintenance & Zypper Updateinfo Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://download.opensuse.org/update/leap/15.6/oss/"
+    }
+  },
+
+  // 72. openSUSE Leap 15.6 Kernel-Default 6.4.0-150600.23.25.1 Btrfs Update (Disruptive)
+  {
+    id: "ARG-OPENSUSE-LEAP-KRN-2024-3412",
+    bundleId: "openSUSE-RU-2024:3412-1",
+    advisoryType: "MAINTENANCE",
+    os: "opensuse-leap",
+    osFamily: "linux-suse",
+    osDisplayName: "openSUSE Leap",
+    targetReleases: ["openSUSE Leap 15.6", "openSUSE Leap 15.5"],
+    title: "openSUSE Leap 15.6 Kernel 6.4.0-150600.23.25.1 Btrfs Subvolume Quota & NVMe Fix",
+    synopsis: "Disruptive openSUSE Leap kernel-default maintenance update requiring host reboot during scheduled off-peak hours.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.8,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T19:30:00Z",
+    updatedAt: "2024-06-29T19:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-default", sourcePackage: "kernel-default", arch: "x86_64", currentVersion: "6.4.0-150600.23.1", fixedVersion: "6.4.0-150600.23.25.1", packageManager: "zypper", sizeBytes: 52800000 }
+    ],
+    commands: {
+      nativeUpgrade: "zypper --non-interactive update kernel-default",
+      verification: "rpm -q kernel-default | grep 6.4.0-150600.23.25.1",
+      rollback: "zypper --non-interactive install --oldpackage kernel-default=6.4.0-150600.23.1",
+      kineticDeploy: "kinetic upgrade --bundle openSUSE-RU-2024:3412-1 --os opensuse-leap"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://get.opensuse.org/leap/",
+    sourceFeed: {
+      sourceId: "feed-opensuse-leap",
+      feedName: "openSUSE Leap 15.6 Maintenance & Zypper Updateinfo Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://download.opensuse.org/update/leap/15.6/oss/"
+    }
+  },
+
+  // 73. Fedora CoreOS (FCOS) Zincati & Podman Live Layer Update (Non-Reboot)
+  {
+    id: "ARG-FCOS-UPD-2024-4001",
+    bundleId: "FCOS-UPD-2024-4001",
+    advisoryType: "ENHANCEMENT",
+    os: "fedora-coreos",
+    osFamily: "linux-fedora",
+    osDisplayName: "Fedora CoreOS",
+    targetReleases: ["Fedora CoreOS Stable (40)", "Fedora CoreOS Testing"],
+    title: "Fedora CoreOS Zincati 0.0.29 & rpm-ostree Live Overlay FS Apply Update",
+    synopsis: "Non-disruptive Fedora CoreOS rpm-ostree --apply-live package layer update applied immediately without node drain or reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.9,
+    operationalDomain: "CONTAINER",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T19:40:00Z",
+    updatedAt: "2024-06-29T19:40:00Z",
+    cveList: [],
+    packages: [
+      { name: "zincati", sourcePackage: "rust-zincati", arch: "x86_64", currentVersion: "0.0.27-1.fc40", fixedVersion: "0.0.29-1.fc40", packageManager: "rpm-ostree", sizeBytes: 3890000 }
+    ],
+    commands: {
+      nativeUpgrade: "rpm-ostree install --apply-live -y zincati",
+      verification: "rpm -q zincati | grep 0.0.29-1.fc40",
+      rollback: "rpm-ostree rollback",
+      kineticDeploy: "kinetic upgrade --bundle FCOS-UPD-2024-4001 --os fedora-coreos"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["zincati"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://fedoraproject.org/coreos/download",
+    sourceFeed: {
+      sourceId: "feed-fedora-coreos",
+      feedName: "Fedora CoreOS (FCOS) Cincinnati Update Graph & OSTree Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://builds.coreos.fedoraproject.org/streams/stable.json"
+    }
+  },
+
+  // 74. Fedora CoreOS (FCOS) Atomic OSTree Deployment 40.20240815.3.0 (Disruptive)
+  {
+    id: "ARG-FCOS-OSTREE-2024-4020",
+    bundleId: "FCOS-OSTREE-40.20240815.3.0",
+    advisoryType: "MAINTENANCE",
+    os: "fedora-coreos",
+    osFamily: "linux-fedora",
+    osDisplayName: "Fedora CoreOS",
+    targetReleases: ["Fedora CoreOS Stable (40)"],
+    title: "Fedora CoreOS Atomic OSTree Image 40.20240815.3.0 (Kernel 6.9.12 & Ignition)",
+    synopsis: "Disruptive Fedora CoreOS atomic OSTree deployment switching bootable rootfs tree; requires reboot during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.7,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T19:50:00Z",
+    updatedAt: "2024-06-29T19:50:00Z",
+    cveList: [],
+    packages: [
+      { name: "fedora-coreos-ostree", sourcePackage: "fedora-coreos-ostree", arch: "x86_64", currentVersion: "40.20240701.3.0", fixedVersion: "40.20240815.3.0", packageManager: "rpm-ostree", sizeBytes: 64200000 }
+    ],
+    commands: {
+      nativeUpgrade: "rpm-ostree upgrade",
+      verification: "rpm-ostree status | grep 40.20240815.3.0",
+      rollback: "rpm-ostree rollback",
+      kineticDeploy: "kinetic upgrade --bundle FCOS-OSTREE-40.20240815.3.0 --os fedora-coreos"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://fedoraproject.org/coreos/download",
+    sourceFeed: {
+      sourceId: "feed-fedora-coreos",
+      feedName: "Fedora CoreOS (FCOS) Cincinnati Update Graph & OSTree Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://builds.coreos.fedoraproject.org/streams/stable.json"
+    }
+  },
+
+  // 75. Proxmox VE 8.2 pve-manager & pve-cluster Live Control Plane Update (Non-Reboot)
+  {
+    id: "ARG-PROXMOX-PVE-2024-0822",
+    bundleId: "PVE-UPD-2024-0822",
+    advisoryType: "BUGFIX",
+    os: "proxmox",
+    osFamily: "linux-debian",
+    osDisplayName: "Proxmox VE",
+    targetReleases: ["Proxmox VE 8.2 (Debian 12 Bookworm)"],
+    title: "Proxmox VE 8.2 pve-manager 8.2.7 Live Migration & Corosync Quorum Fix",
+    synopsis: "Non-disruptive Proxmox VE control-plane update reloading pveproxy and pvedaemon without interrupting running KVM guests or rebooting the hypervisor.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "SYSTEMD",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T20:00:00Z",
+    updatedAt: "2024-06-29T20:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "pve-manager", sourcePackage: "pve-manager", arch: "x86_64", currentVersion: "8.2.2", fixedVersion: "8.2.7", packageManager: "apt", sizeBytes: 5120000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y pve-manager",
+      verification: "dpkg -l pve-manager | grep 8.2.7",
+      rollback: "apt-get install -y --allow-downgrades pve-manager=8.2.2",
+      kineticDeploy: "kinetic upgrade --bundle PVE-UPD-2024-0822 --os proxmox"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["pvedaemon", "pveproxy"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.proxmox.com/en/downloads",
+    sourceFeed: {
+      sourceId: "feed-proxmox-ve",
+      feedName: "Proxmox VE 8.x Hypervisor, QEMU/KVM & ZFS Kernel Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://download.proxmox.com/debian/pve/dists/bookworm/"
+    }
+  },
+
+  // 76. Proxmox VE 8.2 Kernel 6.8.12-2-pve VFIO IOMMU & ZFS Module Update (Disruptive)
+  {
+    id: "ARG-PROXMOX-KRN-2024-6812",
+    bundleId: "PVE-KRN-2024-6812",
+    advisoryType: "MAINTENANCE",
+    os: "proxmox",
+    osFamily: "linux-debian",
+    osDisplayName: "Proxmox VE",
+    targetReleases: ["Proxmox VE 8.2 (Debian 12 Bookworm)"],
+    title: "Proxmox VE Kernel 6.8.12-2-pve KVM IOMMU Passthrough & OpenZFS 2.2.6 Update",
+    synopsis: "Disruptive Proxmox VE hypervisor kernel update requiring node reboot during off-peak maintenance window.",
+    vendorSeverity: "CRITICAL",
+    severityScore: 8.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T20:10:00Z",
+    updatedAt: "2024-06-29T20:10:00Z",
+    cveList: [],
+    packages: [
+      { name: "proxmox-kernel-6.8", sourcePackage: "proxmox-kernel-6.8", arch: "x86_64", currentVersion: "6.8.8-2-pve", fixedVersion: "6.8.12-2-pve", packageManager: "apt", sizeBytes: 68900000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y proxmox-kernel-6.8",
+      verification: "dpkg -l proxmox-kernel-6.8 | grep 6.8.12-2-pve",
+      rollback: "apt-get install -y --allow-downgrades proxmox-kernel-6.8=6.8.8-2-pve",
+      kineticDeploy: "kinetic upgrade --bundle PVE-KRN-2024-6812 --os proxmox"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.proxmox.com/en/downloads",
+    sourceFeed: {
+      sourceId: "feed-proxmox-ve",
+      feedName: "Proxmox VE 8.x Hypervisor, QEMU/KVM & ZFS Kernel Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://download.proxmox.com/debian/pve/dists/bookworm/"
+    }
+  },
+
+  // 77. TrueNAS SCALE 24.04 middlewared & SMB Multiprotocol Service Update (Non-Reboot)
+  {
+    id: "ARG-TRUENAS-SCALE-2024-2404",
+    bundleId: "NAS-UPD-2024-2404",
+    advisoryType: "BUGFIX",
+    os: "truenas-scale",
+    osFamily: "linux-debian",
+    osDisplayName: "TrueNAS SCALE",
+    targetReleases: ["TrueNAS SCALE 24.04 (Dragonfish)"],
+    title: "TrueNAS SCALE 24.04.2.2 middlewared ZFS Snapshot Scheduler & SMB ACL Fix",
+    synopsis: "Non-disruptive TrueNAS SCALE storage middleware and SMB service update applied online with zero storage pool downtime.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "STORAGE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T20:20:00Z",
+    updatedAt: "2024-06-29T20:20:00Z",
+    cveList: [],
+    packages: [
+      { name: "middlewared", sourcePackage: "middlewared", arch: "x86_64", currentVersion: "24.04.1", fixedVersion: "24.04.2.2", packageManager: "apt", sizeBytes: 4480000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y middlewared",
+      verification: "dpkg -l middlewared | grep 24.04.2.2",
+      rollback: "apt-get install -y --allow-downgrades middlewared=24.04.1",
+      kineticDeploy: "kinetic upgrade --bundle NAS-UPD-2024-2404 --os truenas-scale"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["middlewared"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.truenas.com/download-truenas-scale",
+    sourceFeed: {
+      sourceId: "feed-truenas-scale",
+      feedName: "TrueNAS SCALE Dragonfish / Electric Eel & OpenZFS Release Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://update.sys.truenas.net/scale/"
+    }
+  },
+
+  // 78. TrueNAS SCALE 24.04 OpenZFS 2.2.6 Kernel Module & Appliance Kernel Update (Disruptive)
+  {
+    id: "ARG-TRUENAS-ZFS-2024-2405",
+    bundleId: "NAS-ZFS-2024-2405",
+    advisoryType: "MAINTENANCE",
+    os: "truenas-scale",
+    osFamily: "linux-debian",
+    osDisplayName: "TrueNAS SCALE",
+    targetReleases: ["TrueNAS SCALE 24.04 (Dragonfish)"],
+    title: "TrueNAS SCALE OpenZFS 2.2.6-1 Kernel Module ARC Eviction & dRAID Scrub Fix",
+    synopsis: "Disruptive TrueNAS SCALE OpenZFS kernel module and storage appliance kernel update requiring scheduled off-peak reboot.",
+    vendorSeverity: "CRITICAL",
+    severityScore: 8.3,
+    operationalDomain: "STORAGE",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T20:30:00Z",
+    updatedAt: "2024-06-29T20:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "openzfs-truenas", sourcePackage: "openzfs-truenas", arch: "x86_64", currentVersion: "2.2.4-1", fixedVersion: "2.2.6-1", packageManager: "apt", sizeBytes: 41200000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y openzfs-truenas",
+      verification: "dpkg -l openzfs-truenas | grep 2.2.6-1",
+      rollback: "apt-get install -y --allow-downgrades openzfs-truenas=2.2.4-1",
+      kineticDeploy: "kinetic upgrade --bundle NAS-ZFS-2024-2405 --os truenas-scale"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.truenas.com/download-truenas-scale",
+    sourceFeed: {
+      sourceId: "feed-truenas-scale",
+      feedName: "TrueNAS SCALE Dragonfish / Electric Eel & OpenZFS Release Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://update.sys.truenas.net/scale/"
+    }
   }
 ];
 
@@ -4107,7 +4623,11 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
       b.os === 'oracle-linux' || 
       b.os === 'suse' ||
       b.os === 'openeuler' ||
-      b.os === 'cloudlinux'
+      b.os === 'cloudlinux' ||
+      b.os === 'centos-stream' ||
+      b.os === 'opensuse-leap' ||
+      b.os === 'proxmox' ||
+      b.os === 'truenas-scale'
     );
   }
 

@@ -381,12 +381,24 @@ off_peak_window = "${offPeakWindow}"`;
                   }}
                 >
                   <option value="auto">Auto-Detect (/etc/os-release)</option>
-                  <option value="ubuntu">Ubuntu LTS (apt)</option>
+                  <option value="ubuntu">Ubuntu Server LTS (apt)</option>
                   <option value="debian">Debian Stable (apt)</option>
-                  <option value="rocky">Rocky Linux (dnf)</option>
                   <option value="rhel">Red Hat Enterprise Linux (dnf)</option>
+                  <option value="almalinux">AlmaLinux (dnf)</option>
+                  <option value="rocky">Rocky Linux (dnf)</option>
+                  <option value="oracle-linux">Oracle Linux (dnf)</option>
+                  <option value="centos-stream">CentOS Stream (dnf)</option>
+                  <option value="fedora">Fedora Server (dnf)</option>
+                  <option value="suse">SUSE Linux Enterprise Server (zypper)</option>
+                  <option value="opensuse-leap">openSUSE Leap (zypper)</option>
                   <option value="alpine">Alpine Linux (apk)</option>
-                  <option value="suse">SUSE Linux Enterprise (zypper)</option>
+                  <option value="fedora-coreos">Fedora CoreOS (rpm-ostree)</option>
+                  <option value="flatcar">Flatcar Container Linux (update_engine)</option>
+                  <option value="talos">Talos Linux (talosctl)</option>
+                  <option value="proxmox">Proxmox VE (apt)</option>
+                  <option value="truenas-scale">TrueNAS SCALE (apt)</option>
+                  <option value="nixos">NixOS (nix-env)</option>
+                  <option value="cloudlinux">CloudLinux OS (dnf)</option>
                 </select>
               </div>
 

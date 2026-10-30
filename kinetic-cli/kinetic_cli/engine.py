@@ -324,11 +324,26 @@ class KineticEngine:
         if os_release.exists():
             try:
                 content = os_release.read_text(encoding="utf-8", errors="ignore")
+                os_id = ""
+                variant_id = ""
+                pretty_name = ""
                 for line in content.splitlines():
                     if line.startswith("ID="):
-                        val = line.split("=", 1)[1].strip().strip('"\'').lower()
-                        if val:
-                            return val
+                        os_id = line.split("=", 1)[1].strip().strip('"\'').lower()
+                    elif line.startswith("VARIANT_ID="):
+                        variant_id = line.split("=", 1)[1].strip().strip('"\'').lower()
+                    elif line.startswith("PRETTY_NAME="):
+                        pretty_name = line.split("=", 1)[1].strip().strip('"\'').lower()
+                if os_id == "fedora" and variant_id == "coreos":
+                    return "fedora-coreos"
+                if os_id == "centos" and "stream" in pretty_name:
+                    return "centos-stream"
+                if os_id == "debian" and ("proxmox" in pretty_name or Path("/usr/bin/pveversion").exists()):
+                    return "proxmox"
+                if os_id == "debian" and "truenas" in pretty_name:
+                    return "truenas-scale"
+                if os_id:
+                    return os_id
             except Exception:
                 pass
 

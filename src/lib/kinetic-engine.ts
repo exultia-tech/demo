@@ -58,7 +58,8 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
     'ubuntu', 'debian', 'linux-mint', 'rocky', 'rhel', 'almalinux', 'oracle-linux',
     'suse', 'alpine', 'arch', 'fedora', 'amazon-linux', 'kernel', 'gentoo',
     'freebsd', 'openbsd', 'netbsd', 'macos', 'wolfi', 'nixos', 'void',
-    'photon', 'flatcar', 'talos', 'openwrt', 'openeuler', 'cloudlinux', 'kali', 'azure-linux'
+    'photon', 'flatcar', 'talos', 'openwrt', 'openeuler', 'cloudlinux', 'kali', 'azure-linux',
+    'centos-stream', 'opensuse-leap', 'fedora-coreos', 'proxmox', 'truenas-scale'
   ];
 
   const rawPkg = (packages[0] || 'system-core').split(/[<=>\s]/)[0].toLowerCase();
@@ -138,7 +139,12 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
     flatcar: `update_engine_client -check_for_update 2>/dev/null || true`,
     freebsd: `pkg upgrade -y ${pkgName} 2>/dev/null || true`,
     openbsd: `syspatch 2>/dev/null || true`,
-    netbsd: `pkgin -y upgrade 2>/dev/null || true`
+    netbsd: `pkgin -y upgrade 2>/dev/null || true`,
+    'centos-stream': `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    'opensuse-leap': `zypper --non-interactive update ${pkgName} 2>/dev/null || true`,
+    'fedora-coreos': `rpm-ostree install --apply-live -y ${pkgName} 2>/dev/null || true`,
+    proxmox: `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`,
+    'truenas-scale': `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`
   };
 
   // Tier 3: Ansible GitOps Playbook
