@@ -3,18 +3,22 @@ import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { GET as getArgentFeed } from '@/app/api/argent/feed/route';
+import { getArgentBundles } from '@/lib/argent-feed';
 
 describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', () => {
   const projectRoot = process.cwd();
   const testStateDir = path.join(projectRoot, '.temp_kinetic_argent_test_state');
+  const testStagingDir = path.join(projectRoot, '.temp_kinetic_argent_test_staging');
 
   beforeAll(() => {
     fs.mkdirSync(testStateDir, { recursive: true });
+    fs.mkdirSync(testStagingDir, { recursive: true });
   });
 
   afterAll(() => {
     try {
       fs.rmSync(testStateDir, { recursive: true, force: true });
+      fs.rmSync(testStagingDir, { recursive: true, force: true });
     } catch {
       // ignore on windows file lock
     }
@@ -135,6 +139,49 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
 
       const content = fs.readFileSync(auditPath, 'utf-8');
       expect(content).toContain('OS_UPGRADE');
+    });
+  });
+
+  describe('4. Local OS Patch Staging, Non-Reboot Auto-Patching & Off-Peak Disruptive Reboot Policy', () => {
+    it('should stage relevant OS patches into the local staging directory and apply non-reboot items', () => {
+      const cmd = `python kinetic-cli/run.py upgrade --os ubuntu --staging-dir "${testStagingDir}" --auto-patch-non-reboot --disruptive-auto-reboot --off-peak-window "00:00-23:59" --dry-run --json --state-dir "${testStateDir}"`;
+      const out = execSync(cmd, { encoding: 'utf-8' });
+      const jsonStart = out.indexOf('{');
+      expect(jsonStart).toBeGreaterThanOrEqual(0);
+      const summary = JSON.parse(out.slice(jsonStart));
+
+      expect(summary.target_os).toBe('ubuntu');
+      expect(summary.staged_count).toBeGreaterThanOrEqual(2);
+      expect(summary.applied_non_reboot_count).toBeGreaterThanOrEqual(1);
+      expect(summary.applied_disruptive_count).toBeGreaterThanOrEqual(1);
+      expect(summary.reboot_scheduled).toBe(true);
+
+      const ubuntuStagingPath = path.join(testStagingDir, 'ubuntu');
+      expect(fs.existsSync(ubuntuStagingPath)).toBe(true);
+    }, 15000);
+
+    it('should provide both non-disruptive and disruptive patch bundles for all 29 supported OSes with strict OS isolation', () => {
+      const expectedOses = [
+        'almalinux', 'alpine', 'amazon-linux', 'arch', 'azure-linux',
+        'cloudlinux', 'debian', 'fedora', 'flatcar', 'freebsd', 'gentoo',
+        'kali', 'kernel', 'linux-mint', 'macos', 'netbsd', 'nixos',
+        'openbsd', 'openeuler', 'openwrt', 'oracle-linux', 'photon',
+        'rhel', 'rocky', 'suse', 'talos', 'ubuntu', 'void', 'wolfi'
+      ];
+      expect(expectedOses.length).toBe(29);
+
+      for (const osName of expectedOses) {
+        const res = getArgentBundles({ os: osName, limit: 100 });
+        expect(res.bundles.length).toBeGreaterThanOrEqual(2);
+        // Ensure no cross-OS leakage (e.g. debian matching ubuntu or rhel matching rocky)
+        for (const b of res.bundles) {
+          expect(b.os).toBe(osName);
+        }
+        const nonDisruptive = res.bundles.filter(b => !b.impact.rebootRequired);
+        const disruptive = res.bundles.filter(b => b.impact.rebootRequired);
+        expect(nonDisruptive.length).toBeGreaterThanOrEqual(1);
+        expect(disruptive.length).toBeGreaterThanOrEqual(1);
+      }
     });
   });
 });

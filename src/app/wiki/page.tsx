@@ -86,7 +86,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
       steps: [
         {
           label: "1. Tier 1: Linux Daemon One-Line Install & systemd Service",
-          command: "curl -fsSL https://get.exultia.org | sudo sh\nsudo systemctl status exultia.service",
+          command: "curl -fsSL https://exultia.tech/install.sh | sudo sh\nsudo systemctl status exultia.service",
           codeLang: "bash",
           details: "Installs the statically compiled native daemon into /usr/local/bin/ with pre-baked 24k+ UVI database, registers a hardened systemd unit, and arms the watchdog supervisor."
         },
@@ -98,7 +98,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         },
         {
           label: "3. Dual-Channel Threat Ingestion Configuration",
-          command: "# Configure dual-channel STIX 2.1 endpoints\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = \"https://taxii.exultia.org/taxii2/exultia-feed\"\nauth_token = \"exultia_pki_verified\"\n\n[corporate_local]\nurl = \"https://siem.internal.corp/taxii2/indicators\"\nnamespace_uuid = \"client-local-550e8400-e29b-41d4-a716-446655440000\"\nEOF\n\nsudo systemctl restart exultia",
+          command: "# Configure dual-channel STIX 2.1 endpoints\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = \"https://exultia.tech/api/threat-feed\"\nauth_token = \"exultia_pki_verified\"\n\n[corporate_local]\nurl = \"https://siem.internal.corp/taxii2/indicators\"\nnamespace_uuid = \"client-local-550e8400-e29b-41d4-a716-446655440000\"\nEOF\n\nsudo systemctl restart exultia",
           codeLang: "bash",
           details: "Deploy dual-channel STIX 2.1 / TAXII 2.1 ingestion directly into /etc/exultia/ with zero external runtime dependencies."
         },
@@ -160,7 +160,7 @@ const WIKI_PRODUCTS: ProductWiki[] = [
         responses: [
           { status: 200, description: "Operating system status", example: { host: "exultia-node-1", generation: 42, hotpatchesActive: 3, rollbackReady: true } }
         ],
-        curlExample: "curl -s http://localhost:3000/api/exultia/status | jq ."
+        curlExample: "curl -s https://exultia.tech/api/exultia/status | jq ."
       }
     ]
   },

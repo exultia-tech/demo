@@ -303,7 +303,7 @@ export default function ThreatFeedPage() {
 
 
   const handleCopyModalCurl = (record: UviAdvisoryRecord) => {
-    const curlCmd = `curl -s "https://secureide.dev/api/threat-feed?id=${record.uviId}" | jq .`;
+    const curlCmd = `curl -s "https://exultia.tech/api/threat-feed?id=${record.uviId}" | jq .`;
     navigator.clipboard.writeText(curlCmd);
     setCopiedModalCurl(true);
     setTimeout(() => setCopiedModalCurl(false), 2500);

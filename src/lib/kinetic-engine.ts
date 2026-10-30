@@ -54,23 +54,30 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
   let hotCommands: string[] = [];
   let verificationCmd = '';
   let rollbackCmd = '';
-  let affectedDistros: ('ubuntu' | 'debian' | 'rhel' | 'rocky' | 'alpine')[] = ['ubuntu', 'debian', 'rhel', 'rocky'];
+  const affectedDistros: any[] = [
+    'ubuntu', 'debian', 'linux-mint', 'rocky', 'rhel', 'almalinux', 'oracle-linux',
+    'suse', 'alpine', 'arch', 'fedora', 'amazon-linux', 'kernel', 'gentoo',
+    'freebsd', 'openbsd', 'netbsd', 'macos', 'wolfi', 'nixos', 'void',
+    'photon', 'flatcar', 'talos', 'openwrt', 'openeuler', 'cloudlinux', 'kali', 'azure-linux'
+  ];
 
-  const pkgName = sanitizeShellString(packages[0].split(/[<=>\s]/)[0].toLowerCase());
+  const rawPkg = (packages[0] || 'system-core').split(/[<=>\s]/)[0].toLowerCase();
+  const pkgName = rawPkg.replace(/[^a-z0-9._-]/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || 'system-core';
+  const slugCve = primaryCve.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/^-+|-+$/g, '');
 
   if (domain.includes('Networking') || cleanTitle.toLowerCase().includes('ssh') || pkgName.includes('ssh')) {
     hotMitigationSummary = 'Network Service Hardening: Apply drop-in daemon security constraint and reload without session disruption.';
     hotCommands = [
       'mkdir -p /etc/ssh/sshd_config.d',
-      `echo "# Kinetic hotfix for ${primaryCve}\\nLoginGraceTime 0" > /etc/ssh/sshd_config.d/00-kinetic-${primaryCve.toLowerCase().replace(/[^a-z0-9]/g, '-')}.conf`,
+      `printf "# Kinetic hotfix for %s\\nLoginGraceTime 0\\n" "${primaryCve}" > /etc/ssh/sshd_config.d/00-kinetic-${slugCve}.conf`,
       'sshd -t && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)'
     ];
     verificationCmd = 'sshd -T | grep -i logingracetime';
-    rollbackCmd = `rm -f /etc/ssh/sshd_config.d/00-kinetic-${primaryCve.toLowerCase().replace(/[^a-z0-9]/g, '-')}.conf && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)`;
+    rollbackCmd = `rm -f /etc/ssh/sshd_config.d/00-kinetic-${slugCve}.conf && (systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || true)`;
   } else if (domain.includes('Kernel') || cleanTitle.toLowerCase().includes('privilege') || cleanTitle.toLowerCase().includes('userns')) {
     hotMitigationSummary = 'Kernel Boundary Enforcement: Restrict unprivileged user namespace cloning and drop malicious eBPF vectors.';
     const sysctlKey = 'user.max_user_namespaces';
-    const confPath = `/etc/sysctl.d/99-kinetic-${primaryCve.toLowerCase().replace(/[^a-z0-9]/g, '-')}.conf`;
+    const confPath = `/etc/sysctl.d/99-kinetic-${slugCve}.conf`;
     hotCommands = [
       'mkdir -p /etc/sysctl.d',
       `echo "${sysctlKey} = 0" > ${confPath}`,
@@ -101,13 +108,37 @@ export function synthesizeKineticPatch(advisory: UviAdvisoryRecord): PatchFeedIt
     rollbackCmd = `rm -rf ${dropinDir} && systemctl daemon-reload && (systemctl reload-or-restart ${pkgName} 2>/dev/null || true)`;
   }
 
-  // Tier 2: Atomic Package Upgrades
+  // Tier 2: Atomic Package Upgrades across all 29 OS distributions
   const distroCommands: Record<string, string> = {
     ubuntu: `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`,
     debian: `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`,
+    kali: `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`,
+    'linux-mint': `apt-get update -qq && apt-get install --only-upgrade -y ${pkgName} 2>/dev/null || true`,
     rocky: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
     rhel: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
-    alpine: `apk add --upgrade ${pkgName} 2>/dev/null || true`
+    almalinux: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    'oracle-linux': `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    cloudlinux: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    'amazon-linux': `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    fedora: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    openeuler: `dnf upgrade -y ${pkgName} 2>/dev/null || true`,
+    'azure-linux': `tdnf update -y ${pkgName} 2>/dev/null || true`,
+    photon: `tdnf update -y ${pkgName} 2>/dev/null || true`,
+    alpine: `apk add --upgrade ${pkgName} 2>/dev/null || true`,
+    wolfi: `apk add --upgrade ${pkgName} 2>/dev/null || true`,
+    suse: `zypper --non-interactive update ${pkgName} 2>/dev/null || true`,
+    arch: `pacman -S --noconfirm ${pkgName} 2>/dev/null || true`,
+    gentoo: `emerge --update --oneshot ${pkgName} 2>/dev/null || true`,
+    void: `xbps-install -Su -y ${pkgName} 2>/dev/null || true`,
+    nixos: `nix-env -u ${pkgName} 2>/dev/null || true`,
+    openwrt: `opkg update && opkg upgrade ${pkgName} 2>/dev/null || true`,
+    kernel: `modprobe -r ${pkgName} 2>/dev/null || true`,
+    macos: `softwareupdate -i -a 2>/dev/null || true`,
+    talos: `talosctl upgrade-k8s 2>/dev/null || true`,
+    flatcar: `update_engine_client -check_for_update 2>/dev/null || true`,
+    freebsd: `pkg upgrade -y ${pkgName} 2>/dev/null || true`,
+    openbsd: `syspatch 2>/dev/null || true`,
+    netbsd: `pkgin -y upgrade 2>/dev/null || true`
   };
 
   // Tier 3: Ansible GitOps Playbook

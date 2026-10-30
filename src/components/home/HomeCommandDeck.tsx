@@ -80,7 +80,7 @@ curl -s http://<node-ip>:9100/metrics | grep exultia_remediations_total`
       file: "/etc/exultia/exultia.conf",
       code: `# /etc/exultia/exultia.conf (Linux / systemd)
 [vantage_upstream]
-url = "https://taxii.exultia.org/taxii2/exultia-feed"
+url = "https://exultia.tech/api/threat-feed"
 auth_token = "exultia_pki_verified"
 poll_interval = "60s"
 auto_safety_snapshot = true

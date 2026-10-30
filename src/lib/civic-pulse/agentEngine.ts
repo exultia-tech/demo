@@ -30,7 +30,8 @@ export async function executeMunicipalQuery(params: SearchQueryParams): Promise<
   // If citizen provided a direct portal URL, execute live server-side crawler
   if (hasCustomUrl) {
     try {
-      const endpoint = typeof window !== 'undefined' ? '/api/civic-pulse/crawl' : 'http://localhost:3000/api/civic-pulse/crawl';
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://exultia.tech';
+      const endpoint = typeof window !== 'undefined' ? '/api/civic-pulse/crawl' : `${baseUrl}/api/civic-pulse/crawl`;
       const liveRes = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

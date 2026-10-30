@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const sortBy = (searchParams.get('sortBy') as any) || undefined;
   const format = (searchParams.get('format') || 'json').toLowerCase();
   const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '50', 10);
+  const limit = parseInt(searchParams.get('limit') || '100', 10);
 
   const result = await queryArgentFeedFromDb({
     id,

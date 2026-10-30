@@ -257,10 +257,10 @@ export async function queryArgentFeedFromDb(
   const offset = (page - 1) * limit;
 
   try {
-    // Ensure DB has records; if empty, sync synchronously or fallback
+    // Ensure DB has all static curated records; if empty or fewer than curated catalog, sync synchronously
     const metrics = await getDbArgentMetrics();
-    if (metrics.totalCount === 0) {
-      await syncArgentPatchesToDb(false);
+    if (metrics.totalCount < ARGENT_PATCH_BUNDLES.length) {
+      await syncArgentPatchesToDb(true);
     }
 
     const whereClauses: string[] = [];
@@ -289,8 +289,8 @@ export async function queryArgentFeedFromDb(
 
     if (filters.os && filters.os.toLowerCase() !== 'all') {
       const targetOs = filters.os.toLowerCase();
-      whereClauses.push('(LOWER(os) = ? OR LOWER(os_family) LIKE ?)');
-      args.push(targetOs, `%${targetOs}%`);
+      whereClauses.push('(LOWER(os) = ? OR LOWER(os_family) = ?)');
+      args.push(targetOs, targetOs);
     }
 
     if (filters.source && filters.source.toUpperCase() !== 'ALL') {

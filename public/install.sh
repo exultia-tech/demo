@@ -34,15 +34,14 @@ else
     # Candidate mirror locations
     URLS="
     ${EXULTIA_RELEASE_URL}
-    http://192.168.1.202:3000/releases/exultia-linux.tar.gz
     https://exultia.tech/releases/exultia-linux.tar.gz
-    http://192.168.1.100:8080/releases/exultia-linux.tar.gz
+    https://download.exultia.tech/exultia-linux.tar.gz
     "
     
     for url in $URLS; do
         if [ -n "$url" ]; then
             echo "[+] Attempting download from $url..."
-            if curl -sSL -f "$url" -o "$TMP_DIR/$TARBALL_NAME" 2>/dev/null; then
+            if curl -sSL -f --connect-timeout 10 "$url" -o "$TMP_DIR/$TARBALL_NAME" 2>/dev/null; then
                 if [ -s "$TMP_DIR/$TARBALL_NAME" ]; then
                     DOWNLOAD_SUCCESS=1
                     echo "[+] Download successful from $url"

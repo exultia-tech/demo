@@ -84,8 +84,8 @@ class KineticPatch:
                 upgrade_command=pkg_rem.get("upgradeCommand", ""),
                 package_name=pkg_rem.get("packageName", ""),
                 version_before=pkg_rem.get("versionBefore", ""),
-                version_target=pkg_rem.get("versionTarget", ""),
-                requires_reboot=pkg_rem.get("requiresReboot", False),
+                version_target=pkg_rem.get("versionTarget", pkg_rem.get("targetVersion", "")),
+                requires_reboot=bool(pkg_rem.get("requiresReboot", False)),
                 package_manager=pkg_rem.get("packageManager", "apt")
             ),
             provenance=Provenance(
@@ -99,6 +99,58 @@ class KineticPatch:
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+@dataclass
+class StagedPatchRecord:
+    patch_id: str
+    bundle_id: str
+    cve_id: str
+    title: str
+    os_distro: str
+    package_name: str
+    version_before: str
+    version_target: str
+    requires_reboot: bool
+    upgrade_command: str
+    verification_command: str
+    rollback_command: str
+    staged_dir: str
+    staged_script_path: str
+    staged_at: str
+    status: str  # "staged", "applied", "deferred_off_peak", "applied_reboot_scheduled", "failed"
+    applied_at: Optional[str] = None
+    reboot_triggered: bool = False
+
+    @property
+    def local_bundle_path(self) -> str:
+        return self.staged_script_path
+
+    @property
+    def reboot_scheduled(self) -> bool:
+        return self.reboot_triggered
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d["local_bundle_path"] = self.staged_script_path
+        d["reboot_scheduled"] = self.reboot_triggered
+        return d
+
+
+@dataclass
+class PatchManagementPolicy:
+    enabled: bool = True
+    target_os: Optional[str] = None
+    staging_dir: Optional[str] = None
+    auto_stage: bool = True
+    auto_patch_non_reboot: bool = False
+    disruptive_auto_reboot: bool = False
+    off_peak_window: str = "02:00-05:00"  # HH:MM-HH:MM local 24h time
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d["auto_stage_patches"] = self.auto_stage
+        return d
 
 
 @dataclass
@@ -121,7 +173,7 @@ class SnapshotRecord:
 @dataclass
 class AuditEntry:
     timestamp: str
-    action: str  # "APPLY", "ROLLBACK", "CANARY_EVAL", "VERIFY_PASS", "VERIFY_FAIL"
+    action: str  # "APPLY", "ROLLBACK", "CANARY_EVAL", "VERIFY_PASS", "VERIFY_FAIL", "STAGE_PATCH", "AUTO_PATCH_NON_REBOOT", "DISRUPTIVE_PATCH_REBOOT"
     cve_id: str
     status: str
     details: str

@@ -22,13 +22,45 @@ import {
   Radio,
   HardDrive,
   AlertTriangle,
-  Box
+  Box,
+  FolderDown,
+  RefreshCw
 } from "lucide-react";
 
 export default function ExultiaLinuxClientView() {
   const [deployFormat, setDeployFormat] = useState<"portable" | "k8s" | "packages" | "container">("portable");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeConsoleTab, setActiveConsoleTab] = useState<"status" | "taxii" | "config" | "journal">("status");
+
+  // OS Patch Management & Off-Peak Disruptive Maintenance Policy State
+  const [targetOs, setTargetOs] = useState<string>("ubuntu");
+  const [stagingDir, setStagingDir] = useState<string>("/var/cache/exultia/staging");
+  const [autoStagePatches, setAutoStagePatches] = useState<boolean>(true);
+  const [autoPatchNonReboot, setAutoPatchNonReboot] = useState<boolean>(true);
+  const [disruptiveAutoReboot, setDisruptiveAutoReboot] = useState<boolean>(true);
+  const [offPeakStart, setOffPeakStart] = useState<string>("02:00");
+  const [offPeakEnd, setOffPeakEnd] = useState<string>("05:00");
+
+  const offPeakWindow = `${offPeakStart}-${offPeakEnd}`;
+
+  const generatedDaemonCli = [
+    "kinetic daemon",
+    targetOs !== "auto" ? `--os ${targetOs}` : "",
+    `--staging-dir "${stagingDir}"`,
+    autoStagePatches ? "--auto-stage" : "--no-auto-stage",
+    autoPatchNonReboot ? "--auto-patch-non-reboot" : "",
+    disruptiveAutoReboot ? `--disruptive-auto-reboot --off-peak-window "${offPeakWindow}"` : "",
+  ]
+    .filter(Boolean)
+    .join(" \\\n  ");
+
+  const generatedPatchConfig = `[patch_management]
+target_os = "${targetOs}"
+staging_dir = "${stagingDir}"
+auto_stage_patches = ${autoStagePatches}
+auto_patch_non_reboot = ${autoPatchNonReboot}
+disruptive_auto_reboot = ${disruptiveAutoReboot}
+off_peak_window = "${offPeakWindow}"`;
 
   const copyToClipboard = (text: string, key: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -42,7 +74,7 @@ export default function ExultiaLinuxClientView() {
     portable: {
       fileName: "exultia-linux.tar.gz",
       fileSize: "4.67 MB",
-      sha256: "91a029290c863de749cf95612b405a4d42d1aa4ff79b46b8df2a14df30090654",
+      sha256: "f7ea4e0aec0894a7d41affc3283c566128dca8e7f2013dc5c0b5ba0fdc2ec4af",
       targetPlatforms: "Linux (x86_64, aarch64)",
       curlCmd: "curl -sSL https://exultia.tech/install.sh | sudo sh",
       manualCmd: "wget https://exultia.tech/releases/exultia-linux.tar.gz \\\n  && tar -xzf exultia-linux.tar.gz \\\n  && cd exultia-linux && sudo ./install.sh",
@@ -51,16 +83,16 @@ export default function ExultiaLinuxClientView() {
     k8s: {
       chartName: "exultia/exultia-node-shield",
       targetPlatforms: "Kubernetes 1.26+ (EKS, GKE, AKS, Talos, k3s, RKE2)",
-      helmCmd: "helm repo add exultia https://charts.exultia.org\nhelm repo update\nhelm install exultia-remediator exultia/exultia-node-shield \\\n  --namespace exultia-system --create-namespace \\\n  --set hostPid=true --set securityContext.privileged=true",
+      helmCmd: "helm repo add exultia https://charts.exultia.tech\nhelm repo update\nhelm install exultia-remediator exultia/exultia-node-shield \\\n  --namespace exultia-system --create-namespace \\\n  --set hostPid=true --set securityContext.privileged=true",
       kubectlCmd: "kubectl apply -f https://exultia.tech/k8s/exultia-daemonset.yaml",
       manifestUrl: "https://exultia.tech/k8s/exultia-daemonset.yaml"
     },
     packages: {
       managerName: "Linux Native Packages & systemd",
       cmdLabel: "Linux Exultia systemd Service & UVI Engine",
-      debCmd: "curl -fsSL https://pkg.exultia.org/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/exultia.gpg\necho \"deb [signed-by=/etc/apt/keyrings/exultia.gpg] https://pkg.exultia.org/deb stable main\" | sudo tee /etc/apt/sources.list.d/exultia.list\nsudo apt update && sudo apt install -y exultia-remediator",
-      rpmCmd: "sudo dnf config-manager --add-repo https://pkg.exultia.org/rpm/exultia.repo\nsudo dnf install -y exultia-remediator",
-      code: `# 1. Install signed Exultia binary to /usr/local/bin\ncurl -sSL https://exultia.tech/install.sh | sudo sh\n\n# 2. Configure /etc/exultia/exultia.conf for dual STIX/TAXII channels\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = "https://taxii.exultia.org/taxii2/exultia-feed"\nauth_token = "exultia_pki_verified"\npoll_interval = "60s"\nauto_safety_snapshot = true\n\n[corporate_local]\nurl = "https://siem.internal.corp/taxii2/indicators"\nnamespace_uuid = "client-local-550e8400-e29b-41d4-a716-446655440000"\nallow_livepatch = false\nallow_network_filter = true\nEOF\n\n# 3. Enable and start systemd background remediation service\nsudo systemctl daemon-reload\nsudo systemctl enable --now exultia.service`
+      debCmd: "curl -fsSL https://pkg.exultia.tech/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/exultia.gpg\necho \"deb [signed-by=/etc/apt/keyrings/exultia.gpg] https://pkg.exultia.tech/deb stable main\" | sudo tee /etc/apt/sources.list.d/exultia.list\nsudo apt update && sudo apt install -y exultia-remediator",
+      rpmCmd: "sudo dnf config-manager --add-repo https://pkg.exultia.tech/rpm/exultia.repo\nsudo dnf install -y exultia-remediator",
+      code: `# 1. Install signed Exultia binary to /usr/local/bin\ncurl -sSL https://exultia.tech/install.sh | sudo sh\n\n# 2. Configure /etc/exultia/exultia.conf for dual STIX/TAXII channels\ncat << 'EOF' | sudo tee /etc/exultia/exultia.conf\n[vantage_upstream]\nurl = "https://exultia.tech/api/threat-feed"\nauth_token = "exultia_pki_verified"\npoll_interval = "60s"\nauto_safety_snapshot = true\n\n[corporate_local]\nurl = "https://siem.internal.corp/taxii2/indicators"\nnamespace_uuid = "client-local-550e8400-e29b-41d4-a716-446655440000"\nallow_livepatch = false\nallow_network_filter = true\nEOF\n\n# 3. Enable and start systemd background remediation service\nsudo systemctl daemon-reload\nsudo systemctl enable --now exultia.service`
     },
     container: {
       imageName: "registry.exultia.tech/exultia/remediator:latest",
@@ -84,10 +116,10 @@ export default function ExultiaLinuxClientView() {
             </span>
           </div>
           <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.6rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.35rem" }}>
-            The Portable Exultia Daemon: Autonomous Remediation for Linux
+            The Portable Exultia Daemon: Autonomous Remediation &amp; OS Patch Management
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.9rem", maxWidth: "800px", margin: "0 auto" }}>
-            Don&apos;t wipe your servers or migrate distributions. The portable Exultia daemon runs non-invasively directly on your existing Linux systems, providing 60-second autonomous threat remediation with zero downtime.
+            Don&apos;t wipe your servers or migrate distributions. The portable Exultia daemon runs non-invasively directly on your existing Linux systems, providing 60-second autonomous threat remediation, local OS patch staging, non-reboot auto-patching, and off-peak disruptive maintenance.
           </p>
         </div>
 
@@ -213,35 +245,35 @@ export default function ExultiaLinuxClientView() {
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FFFFFF", margin: 0 }}>
-                    3. The Self-Healing &amp; Remediation Pipeline
+                    3. The Self-Healing &amp; OS Patch Management Pipeline
                   </h3>
                   <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
-                    Continuous 60s Loop • In-Memory Trampolines • Fail-Safe Rollback Checkpoints
+                    Local OS Patch Staging • Non-Reboot Auto-Patching • Off-Peak Disruptive Auto-Reboot
                   </span>
                 </div>
               </div>
               <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono, monospace)", color: "#34D399", background: "rgba(16, 185, 129, 0.15)", padding: "3px 8px", borderRadius: "4px", fontWeight: 700 }}>
-                Zero-Downtime Livepatching
+                Zero-Downtime + Maintenance Window Control
               </span>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px", marginTop: "4px" }}>
               <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 1: Socket &amp; Vulnerability Detection</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 1: Automatic Local OS Patch Staging</span>
                 <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
-                  Cryptographic signatures and CVE records are verified against the offline 24,388 UVI database. The daemon inspects active network sockets across the host to verify if vulnerable components are listening.
+                  Detects the host distribution (<code style={{ color: "#67E8F9" }}>/etc/os-release</code>) and automatically stages relevant Argent OS patches and verification manifests into a local staging directory (<code style={{ color: "#34D399" }}>/var/cache/exultia/staging/&lt;os&gt;</code>).
                 </p>
               </div>
               <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 2: Atomic State Snapshot &amp; Sandbox Probe</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 2: Automatic Non-Reboot Patching</span>
                 <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
-                  Records an atomic rollback snapshot of process memory and configuration baselines in <code style={{ color: "#34D399" }}>/var/lib/exultia/snapshots</code>. Pre-validates the livepatch in an isolated process sandbox.
+                  When enabled, staged OS updates that do not require a system reboot (user-space libraries, OpenSSL,glibc/systemd reloadable units) are automatically applied with pre-flight snapshots and canary verification.
                 </p>
               </div>
               <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 3: In-Memory Trampoline &amp; Watchdog</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#E2E8F0" }}>Phase 3: Off-Peak Disruptive Patching &amp; Auto-Reboot</span>
                 <p style={{ fontSize: "0.78rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.45 }}>
-                  Injects surgical in-memory function redirects with 0 dropped TCP sockets and zero process restarts. Continuous 120-second watchdog verifies socket responsiveness and rolls back automatically if health checks fail.
+                  Kernel and hypervisor updates requiring a reboot are staged locally and held in <code style={{ color: "#FBBF24" }}>deferred_off_peak</code> state until the configured off-peak timeframe (e.g., <code style={{ color: "#FBBF24" }}>02:00-05:00</code>), then applied with an automated reboot.
                 </p>
               </div>
             </div>
@@ -301,6 +333,309 @@ export default function ExultiaLinuxClientView() {
         </div>
       </section>
 
+      {/* ── SECTION 1.5: INTERACTIVE OS PATCH MANAGEMENT & OFF-PEAK POLICY BUILDER ─── */}
+      <section style={{ marginBottom: "3rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "3px 12px", borderRadius: "999px", marginBottom: "0.5rem" }}>
+            <FolderDown size={13} color="#34D399" />
+            <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.74rem", fontWeight: 700, color: "#34D399", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Autonomous OS Patch Management • Local Staging &amp; Off-Peak Windows
+            </span>
+          </div>
+          <h2 style={{ fontFamily: "var(--font-display, 'Orbitron', sans-serif)", fontSize: "1.45rem", fontWeight: 800, color: "#FFFFFF", marginBottom: "0.35rem" }}>
+            OS Patch Staging, Non-Reboot Automation &amp; Off-Peak Disruptive Reboot Policy
+          </h2>
+          <p style={{ color: "#94A3B8", fontSize: "0.86rem", maxWidth: "780px", margin: "0 auto" }}>
+            Configure how the Exultia daemon stages OS-specific patches locally, applies non-disruptive updates automatically, and schedules disruptive kernel/reboot-required updates strictly within your off-peak maintenance window.
+          </p>
+        </div>
+
+        <div style={{
+          background: "rgba(15, 23, 42, 0.82)",
+          border: "1px solid rgba(16, 185, 129, 0.3)",
+          borderRadius: "14px",
+          padding: "1.5rem",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+          gap: "1.5rem"
+        }}>
+          {/* Left Column: Policy Controls */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "0.75rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", marginBottom: "6px", fontFamily: "var(--font-mono, monospace)" }}>
+                  Target Host OS
+                </label>
+                <select
+                  value={targetOs}
+                  onChange={(e) => setTargetOs(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px",
+                    borderRadius: "8px",
+                    background: "#090D16",
+                    border: "1px solid rgba(255, 255, 255, 0.14)",
+                    color: "#FFFFFF",
+                    fontSize: "0.84rem",
+                    fontFamily: "var(--font-mono, monospace)"
+                  }}
+                >
+                  <option value="auto">Auto-Detect (/etc/os-release)</option>
+                  <option value="ubuntu">Ubuntu LTS (apt)</option>
+                  <option value="debian">Debian Stable (apt)</option>
+                  <option value="rocky">Rocky Linux (dnf)</option>
+                  <option value="rhel">Red Hat Enterprise Linux (dnf)</option>
+                  <option value="alpine">Alpine Linux (apk)</option>
+                  <option value="suse">SUSE Linux Enterprise (zypper)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", marginBottom: "6px", fontFamily: "var(--font-mono, monospace)" }}>
+                  Local Staging Directory
+                </label>
+                <input
+                  type="text"
+                  value={stagingDir}
+                  onChange={(e) => setStagingDir(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px",
+                    borderRadius: "8px",
+                    background: "#090D16",
+                    border: "1px solid rgba(255, 255, 255, 0.14)",
+                    color: "#67E8F9",
+                    fontSize: "0.84rem",
+                    fontFamily: "var(--font-mono, monospace)"
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Toggle 1: Auto-Stage Relevant OS Patches */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${autoStagePatches ? "rgba(0, 229, 255, 0.35)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "12px"
+            }}>
+              <div>
+                <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <FolderDown size={15} color="#00E5FF" /> Automatically Stage Relevant OS Patches Locally
+                </div>
+                <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                  Pre-downloads and verifies SLSA Level 3 patch scripts &amp; metadata for <code style={{ color: "#67E8F9" }}>{targetOs === "auto" ? "<detected-os>" : targetOs}</code> into <code style={{ color: "#67E8F9" }}>{stagingDir}/{targetOs === "auto" ? "ubuntu" : targetOs}/</code>.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={autoStagePatches}
+                onChange={(e) => setAutoStagePatches(e.target.checked)}
+                style={{ width: "18px", height: "18px", accentColor: "#00E5FF", cursor: "pointer", marginTop: "2px" }}
+              />
+            </div>
+
+            {/* Toggle 2: Automatic Patching for Non-Reboot Items */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${autoPatchNonReboot ? "rgba(16, 185, 129, 0.4)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "12px"
+            }}>
+              <div>
+                <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Zap size={15} color="#34D399" /> Enable Automatic Patching for Non-Reboot Items
+                </div>
+                <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                  Immediately installs staged patches where <code style={{ color: "#34D399" }}>requiresReboot = false</code> without waiting for a maintenance window.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={autoPatchNonReboot}
+                onChange={(e) => setAutoPatchNonReboot(e.target.checked)}
+                style={{ width: "18px", height: "18px", accentColor: "#10B981", cursor: "pointer", marginTop: "2px" }}
+              />
+            </div>
+
+            {/* Toggle 3: Disruptive Patching with Auto-Reboot + Off-Peak Window */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: `1px solid ${disruptiveAutoReboot ? "rgba(245, 158, 11, 0.45)" : "rgba(255, 255, 255, 0.08)"}`,
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                <div>
+                  <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <RefreshCw size={15} color="#FBBF24" /> Enable Disruptive Patching with Auto-Reboot
+                  </div>
+                  <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: "4px 0 0 0", lineHeight: 1.4 }}>
+                    Applies staged kernel &amp; system updates where <code style={{ color: "#FBBF24" }}>requiresReboot = true</code> and triggers an automated reboot strictly during off-peak hours.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={disruptiveAutoReboot}
+                  onChange={(e) => setDisruptiveAutoReboot(e.target.checked)}
+                  style={{ width: "18px", height: "18px", accentColor: "#F59E0B", cursor: "pointer", marginTop: "2px" }}
+                />
+              </div>
+
+              {disruptiveAutoReboot && (
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "10px",
+                  paddingTop: "8px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.08)"
+                }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                      Off-Peak Window Start (24h)
+                    </label>
+                    <input
+                      type="time"
+                      value={offPeakStart}
+                      onChange={(e) => setOffPeakStart(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "7px 10px",
+                        borderRadius: "6px",
+                        background: "#090D16",
+                        border: "1px solid rgba(245, 158, 11, 0.35)",
+                        color: "#FDE68A",
+                        fontSize: "0.84rem",
+                        fontFamily: "var(--font-mono, monospace)"
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#FBBF24", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                      Off-Peak Window End (24h)
+                    </label>
+                    <input
+                      type="time"
+                      value={offPeakEnd}
+                      onChange={(e) => setOffPeakEnd(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "7px 10px",
+                        borderRadius: "6px",
+                        background: "#090D16",
+                        border: "1px solid rgba(245, 158, 11, 0.35)",
+                        color: "#FDE68A",
+                        fontSize: "0.84rem",
+                        fontFamily: "var(--font-mono, monospace)"
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Generated CLI Command & Config Output */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)" }}>
+                  Generated Daemon CLI Command:
+                </span>
+                <button
+                  onClick={() => copyToClipboard(generatedDaemonCli, "patch-cli")}
+                  style={{ background: "transparent", border: "none", color: copiedKey === "patch-cli" ? "#34D399" : "#00E5FF", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                >
+                  {copiedKey === "patch-cli" ? <Check size={13} /> : <Copy size={13} />}
+                  {copiedKey === "patch-cli" ? "Copied" : "Copy CLI"}
+                </button>
+              </div>
+              <pre style={{
+                margin: 0,
+                padding: "12px 14px",
+                background: "#030712",
+                borderRadius: "8px",
+                border: "1px solid rgba(0, 229, 255, 0.25)",
+                color: "#00E5FF",
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "0.78rem",
+                lineHeight: 1.5,
+                overflowX: "auto"
+              }}>
+                {generatedDaemonCli}
+              </pre>
+            </div>
+
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", fontFamily: "var(--font-mono, monospace)" }}>
+                  /etc/exultia/exultia.conf Policy Block:
+                </span>
+                <button
+                  onClick={() => copyToClipboard(generatedPatchConfig, "patch-conf")}
+                  style={{ background: "transparent", border: "none", color: copiedKey === "patch-conf" ? "#34D399" : "#FBBF24", fontSize: "0.74rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontWeight: 700 }}
+                >
+                  {copiedKey === "patch-conf" ? <Check size={13} /> : <Copy size={13} />}
+                  {copiedKey === "patch-conf" ? "Copied" : "Copy Config"}
+                </button>
+              </div>
+              <pre style={{
+                margin: 0,
+                padding: "12px 14px",
+                background: "#030712",
+                borderRadius: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#FDE68A",
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "0.78rem",
+                lineHeight: 1.5,
+                overflowX: "auto"
+              }}>
+                {generatedPatchConfig}
+              </pre>
+            </div>
+
+            {/* Staged Directory Preview */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.4)",
+              borderRadius: "8px",
+              padding: "10px 14px",
+              border: "1px solid rgba(255, 255, 255, 0.07)",
+              fontFamily: "var(--font-mono, monospace)",
+              fontSize: "0.74rem",
+              color: "#CBD5E1"
+            }}>
+              <div style={{ color: "#34D399", fontWeight: 700, marginBottom: "4px" }}>
+                Local Staging Queue ({stagingDir}/{targetOs === "auto" ? "ubuntu" : targetOs}/):
+              </div>
+              <div>
+                • ARG-UBUNTU-UPD-2024-0412 (non-reboot) &rarr;{" "}
+                <span style={{ color: autoPatchNonReboot ? "#34D399" : "#67E8F9", fontWeight: 700 }}>
+                  {autoPatchNonReboot ? "AUTO-APPLIED (0ms downtime)" : "STAGED LOCALLY"}
+                </span>
+              </div>
+              <div style={{ marginTop: "2px" }}>
+                • ARG-UBUNTU-HWE-2024-6812 (reboot-req) &rarr;{" "}
+                <span style={{ color: disruptiveAutoReboot ? "#FBBF24" : "#94A3B8", fontWeight: 700 }}>
+                  {disruptiveAutoReboot ? `SCHEDULED FOR OFF-PEAK (${offPeakWindow})` : "STAGED (MANUAL REBOOT HOLD)"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SECTION 2: INTERACTIVE LINUX TELEMETRY & REMEDIATION CONSOLE ───────────── */}
       <section style={{ marginBottom: "3rem" }}>
         <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
@@ -308,7 +643,7 @@ export default function ExultiaLinuxClientView() {
             Live Exultia Daemon Console &amp; Remediation State
           </h2>
           <p style={{ color: "#94A3B8", fontSize: "0.85rem", maxWidth: "680px", margin: "0 auto" }}>
-            Inspect active daemon health, dual-channel TAXII polling, /etc/exultia/exultia.conf baselines, and journalctl -u exultia remediation logs.
+            Inspect active daemon health, local OS patch staging, /etc/exultia/exultia.conf baselines, and journalctl -u exultia remediation logs.
           </p>
         </div>
 
@@ -365,26 +700,25 @@ export default function ExultiaLinuxClientView() {
             {activeConsoleTab === "status" && (
               <pre style={{ margin: 0 }}>
 {`root@linux-srv01:~ # exultia status
-[DAEMON] Exultia Autonomous Threat Remediator Daemon v2.4.0 (Linux x86_64)
+[DAEMON] Exultia Autonomous Threat Remediator & Patch Daemon v2.5.0 (Linux x86_64)
 [STATUS] Active (Running) • systemd: exultia.service • PID: 1482
 [HOST]   Ubuntu 24.04 LTS (Kernel 6.8.0-45-generic) • Memory: 11.2 MB / 0.1% CPU
-[LOOP]   Next scheduled scan in: 18s (60s loop interval)
-[CATALOG] Pre-baked UVI Database: 24,388 advisories • CISA KEV: 12,993 CVEs (Offline)
+[STAGING] ${stagingDir}/ubuntu (2 OS bundles staged • 1 auto-applied • 1 deferred off-peak)
+[POLICY] Auto-Patch Non-Reboot: ${autoPatchNonReboot ? "ENABLED" : "DISABLED"} | Disruptive Auto-Reboot: ${disruptiveAutoReboot ? `ENABLED (${offPeakWindow})` : "DISABLED"}
 [SOCKETS] Audited: 42 open ports • In-memory trampolines active: 1 (CVE-2024-6387)
-[SNAPSHOT] Active rollback checkpoint: /var/lib/exultia/snapshots/baseline-20261027`}
+[SNAPSHOT] Active rollback checkpoint: /var/lib/exultia/snapshots/baseline-20261030`}
               </pre>
             )}
 
             {activeConsoleTab === "taxii" && (
               <pre style={{ margin: 0 }}>
 {`root@linux-srv01:~ # /usr/local/bin/exultia feed --status
-[INFO] Exultia Threat Intelligence Ingest v2.4.0 (Linux x86_64)
-[POLL] Channel 1: Vantage Upstream (https://taxii.exultia.org/taxii2/feed)
+[INFO] Exultia Threat Intelligence & Argent Patch Ingest v2.5.0 (Linux x86_64)
+[POLL] Channel 1: Vantage Upstream (https://exultia.tech/api/threat-feed)
        -> Last Poll: 12 seconds ago | Status: 200 OK | Authenticated: Ed25519 Exultia PKI
        -> Ingested: STIX 2.1 Object 'indicator--cve-2024-6387' (OpenSSH Livepatch)
-[POLL] Channel 2: Corporate Local (https://siem.internal.corp/taxii2/indicators)
-       -> Last Poll: 35 seconds ago | Status: 200 OK | Namespace: client-local-550e8400
-       -> Ingested: STIX 2.1 Object 'indicator--corp-blocklist-2026' (nftables egress ban)
+[POLL] Channel 2: Argent OS Errata Stream (https://exultia.tech/api/argent/feed?format=kinetic)
+       -> Staged: ARG-UBUNTU-UPD-2024-0412 (non-reboot) & ARG-UBUNTU-HWE-2024-6812 (reboot-req)
 [SYS]  Stability Override: ACTIVE (0 conflicting rules detected)`}
               </pre>
             )}
@@ -392,24 +726,17 @@ export default function ExultiaLinuxClientView() {
             {activeConsoleTab === "config" && (
               <pre style={{ margin: 0 }}>
 {`# /etc/exultia/exultia.conf - Exultia Autonomous Remediator Daemon Configuration
-# Resident background service running alongside host applications
 [daemon]
 loop_interval = "60s"
 max_cpu_percent = 2
 log_level = "info"
 safety_rollback = true
 
-# Host Kernel Hardening & Sysctl Baselines
-[sysctl_enforcement]
-net.ipv4.tcp_syncookies = 1
-net.ipv4.conf.all.rp_filter = 1
-fs.protected_regular = 2
-fs.protected_fifos = 2
-kernel.kptr_restrict = 2
+${generatedPatchConfig}
 
 # STIX 2.1 / TAXII Ingestion
 [taxii_upstream]
-url = "https://taxii.exultia.org/taxii2/feed"
+url = "https://exultia.tech/api/threat-feed"
 auth_token = "exultia_pki_verified"
 auto_remediate = true`}
               </pre>
@@ -418,12 +745,12 @@ auto_remediate = true`}
             {activeConsoleTab === "journal" && (
               <pre style={{ margin: 0 }}>
 {`root@linux-srv01:~ # journalctl -u exultia.service -n 8 --no-pager
-Oct 28 05:30:00 linux-srv01 exultia[1482]: [AUDIT] Starting 60-second autonomous compliance audit...
-Oct 28 05:30:01 linux-srv01 exultia[1482]: [AUDIT] Checked 42 listening sockets against 24,388 UVI advisories.
-Oct 28 05:30:01 linux-srv01 exultia[1482]: [WARN] Socket :22 running vulnerable OpenSSH <9.8p1 (CVE-2024-6387).
-Oct 28 05:30:01 linux-srv01 exultia[1482]: [ACTION] Applying in-memory trampoline signal handler (zero dropped sockets).
-Oct 28 05:30:02 linux-srv01 exultia[1482]: [VERIFY] Process sandbox health probe returned 200 OK.
-Oct 28 05:30:02 linux-srv01 exultia[1482]: [SUCCESS] Remediation complete in 1.4s. Audit logged to /var/log/exultia/audit.log.`}
+Oct 30 05:30:00 linux-srv01 exultia[1482]: [STAGE] Synced Argent OS feed for 'ubuntu' -> staged 2 bundles in ${stagingDir}/ubuntu
+Oct 30 05:30:01 linux-srv01 exultia[1482]: [PATCH] Auto-patching non-reboot bundle ARG-UBUNTU-UPD-2024-0412 (libssl3, systemd)...
+Oct 30 05:30:02 linux-srv01 exultia[1482]: [VERIFY] Canary health probe passed (200 OK). Non-reboot bundle ARG-UBUNTU-UPD-2024-0412 applied.
+Oct 30 05:30:02 linux-srv01 exultia[1482]: [HOLD] Disruptive bundle ARG-UBUNTU-HWE-2024-6812 requires reboot; staged and deferred until off-peak window (${offPeakWindow}).
+Oct 30 05:30:03 linux-srv01 exultia[1482]: [AUDIT] Checked 42 listening sockets against 24,388 UVI advisories.
+Oct 30 05:30:03 linux-srv01 exultia[1482]: [SUCCESS] Cycle complete in 1.4s. Audit logged to /var/log/exultia/audit.log.`}
               </pre>
             )}
           </div>
@@ -714,7 +1041,7 @@ Oct 28 05:30:02 linux-srv01 exultia[1482]: [SUCCESS] Remediation complete in 1.4
                   <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
                     <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", fontWeight: 700 }}>Helm Repository</span>
                     <div style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "#00E5FF", marginTop: "2px" }}>
-                      https://charts.exultia.org
+                      https://charts.exultia.tech
                     </div>
                   </div>
                   <div style={{ background: "rgba(0, 0, 0, 0.35)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>

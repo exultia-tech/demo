@@ -17,7 +17,7 @@ from typing import Dict, Any, List
 CACHE_DIR = Path("/var/cache/vantage")
 
 class VantageSyncClient:
-    def __init__(self, endpoint_url: str = "http://127.0.0.1:3000/api/threat-feed", cache_dir: Path = CACHE_DIR):
+    def __init__(self, endpoint_url: str = "https://exultia.tech/api/threat-feed", cache_dir: Path = CACHE_DIR):
         self.endpoint_url = endpoint_url
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -44,7 +44,7 @@ class VantageSyncClient:
         return digest
 
 def main():
-    endpoint = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:3000/api/threat-feed"
+    endpoint = sys.argv[1] if len(sys.argv) > 1 else "https://exultia.tech/api/threat-feed"
     print(f"[Vantage Client] Initiating unidirectional sync from {endpoint}...")
     client = VantageSyncClient(endpoint_url=endpoint)
     try:

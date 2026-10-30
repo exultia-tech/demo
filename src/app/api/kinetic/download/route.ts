@@ -26,19 +26,19 @@ export async function GET(request: NextRequest) {
           file: 'kinetic',
           url: '/api/kinetic/download?platform=linux',
           format: 'ELF 64-bit Standalone Native Binary (PyInstaller)',
-          sha256: '18e836c85c1af06becef9161a5e66a99bb7efea35bcfa5234c67c56f3c7bd5c6'
+          sha256: '1c7784460637b4dbd416e9d47897f1baee3c297eae975b1df5832b5aeeba6032'
         },
         windows_amd64: {
           file: 'kinetic.exe',
           url: '/api/kinetic/download?platform=windows',
           format: 'PE32+ Standalone Binary (PyInstaller Native)',
-          sha256: 'a09b5b1cb8afecf6d44b1d720781793f51cc4b397bf399ed3766af546ad3c4da'
+          sha256: '77918a33e2e028d45fafd8700c2f83ec9950266fedc0a7e22f94353bd0bfbb95'
         },
         universal_zipapp: {
           file: 'kinetic.pyz',
           url: '/api/kinetic/download?file=kinetic.pyz',
           format: 'PEP 441 Multi-Arch Universal Archive',
-          sha256: '177a2c46c6500b2204da8e209bc82a267ae762eeb9173cc7c7483d4f30ea3aa6'
+          sha256: '87d4d810b3434312b621f31259600e992c31f096de8c15c53a3ef1629e87c874'
         },
         legacy_script: {
           file: 'kinetic.sh',

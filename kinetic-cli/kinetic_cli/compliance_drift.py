@@ -59,16 +59,19 @@ class ComplianceControl:
 # ==============================================================================
 
 def _check_sysctl_sim(key: str, desired: str, custom_root: Optional[Path] = None) -> Tuple[bool, str]:
-    """Inspect sysctl parameter either via real sysctl or simulated file root."""
+    """Inspect sysctl parameter either via drop-in config, real sysctl, or simulated file root."""
+    conf_file = (custom_root / "etc" / "sysctl.d" / "99-exultia-drift.conf") if custom_root else Path("/etc/sysctl.d/99-exultia-drift.conf")
+    if conf_file.exists():
+        for line in conf_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            clean = line.strip()
+            if not clean or clean.startswith("#"):
+                continue
+            if "=" in clean:
+                k, v = clean.split("=", 1)
+                if k.strip() == key:
+                    val = v.strip()
+                    return (val != desired, val)
     if custom_root:
-        conf_file = custom_root / "etc" / "sysctl.d" / "99-exultia-drift.conf"
-        if conf_file.exists():
-            for line in conf_file.read_text(encoding="utf-8").splitlines():
-                if "=" in line:
-                    k, v = line.split("=", 1)
-                    if k.strip() == key:
-                        val = v.strip()
-                        return (val != desired, val)
         return (True, "MISSING_CONFIGURATION")
 
     if platform.system() == "Linux":
@@ -88,36 +91,24 @@ def _revert_sysctl_sim(key: str, desired: str, custom_root: Optional[Path] = Non
     if dry_run:
         return (True, f"[DRY-RUN] Revert sysctl {key}={desired}")
 
-    if custom_root:
-        conf_dir = custom_root / "etc" / "sysctl.d"
+    conf_dir = (custom_root / "etc" / "sysctl.d") if custom_root else Path("/etc/sysctl.d")
+    try:
         conf_dir.mkdir(parents=True, exist_ok=True)
         conf_file = conf_dir / "99-exultia-drift.conf"
         existing_lines = []
         if conf_file.exists():
-            existing_lines = [l for l in conf_file.read_text(encoding="utf-8").splitlines() if not l.startswith(f"{key} =") and not l.startswith(f"{key}=")]
+            existing_lines = [
+                l for l in conf_file.read_text(encoding="utf-8", errors="replace").splitlines()
+                if not l.strip().startswith(f"{key} =") and not l.strip().startswith(f"{key}=")
+            ]
         existing_lines.append(f"{key} = {desired}")
         conf_file.write_text("\n".join(existing_lines) + "\n", encoding="utf-8")
-        return (True, f"Wrote {key} = {desired} to {conf_file}")
 
-    if platform.system() == "Linux":
-        try:
-            # Write dropin config to guarantee persistence across reboots
-            dropin_dir = Path("/etc/sysctl.d")
-            dropin_dir.mkdir(parents=True, exist_ok=True)
-            dropin_file = dropin_dir / "99-exultia-drift.conf"
-            with open(dropin_file, "a+", encoding="utf-8") as f:
-                f.seek(0)
-                content = f.read()
-                if f"{key} =" not in content:
-                    f.write(f"\n# Exultia Kinetic SOX/PCI Invariant\n{key} = {desired}\n")
-
-            # Apply immediately in-memory
+        if platform.system() == "Linux" and not custom_root:
             subprocess.run(["sysctl", "-w", f"{key}={desired}"], capture_output=True, timeout=5)
-            return (True, f"Applied sysctl {key}={desired}")
-        except Exception as e:
-            return (False, str(e))
-
-    return (True, f"Simulated sysctl {key}={desired}")
+        return (True, f"Applied sysctl {key}={desired} in {conf_file}")
+    except Exception as e:
+        return (False, str(e))
 
 
 def _check_sshd_param(key: str, desired: str, custom_root: Optional[Path] = None) -> Tuple[bool, str]:

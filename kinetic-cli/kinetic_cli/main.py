@@ -28,12 +28,13 @@ if sys.platform == "win32":
 def build_parser() -> argparse.ArgumentParser:
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--state-dir", help="Custom state and snapshot directory", default=None)
+    common_parser.add_argument("--staging-dir", help="Custom local staging directory for OS patches", default=None)
     common_parser.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     parser = argparse.ArgumentParser(
         prog="kinetic",
         parents=[common_parser],
-        description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream, Drift Sentinel & Sub-Second Deterministic Rollback Binary"
+        description="Exultia Kinetic: Autonomous Zero-Downtime Hotfix Stream, OS Patch Management, Drift Sentinel & Sub-Second Deterministic Rollback Binary"
     )
     parser.add_argument("--version", action="version", version=f"kinetic {__version__}")
 
@@ -47,11 +48,15 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--os", help="Target operating system distribution filter")
     apply_parser.add_argument("--dry-run", action="store_true", help="Simulate mitigation without modifying files")
 
-    # Command: upgrade (Standard OS Distribution Package Updates via Argent / Distro Feeds)
-    upgrade_parser = subparsers.add_parser("upgrade", parents=[common_parser], help="Deploy standard OS package updates and vendor errata bundles from Argent")
-    upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or USN-6856-1)")
+    # Command: upgrade (Standard OS Distribution Package Updates & Local Staging via Argent / Distro Feeds)
+    upgrade_parser = subparsers.add_parser("upgrade", parents=[common_parser], help="Stage and deploy standard OS package updates and vendor errata bundles from Argent")
+    upgrade_parser.add_argument("--bundle", help="Specific vendor advisory / bundle ID (e.g. RLSA-2024:4312 or ARG-UBUNTU-UPD-2024-0412)")
     upgrade_parser.add_argument("--feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent / distro patch feed URL")
     upgrade_parser.add_argument("--os", help="Operating system filter (e.g. rocky, ubuntu, debian, alpine, suse)")
+    upgrade_parser.add_argument("--stage-only", action="store_true", help="Automatically stage relevant OS patches locally without executing installation")
+    upgrade_parser.add_argument("--auto-patch-non-reboot", action="store_true", help="Automatically install staged OS patches that do not require a system reboot")
+    upgrade_parser.add_argument("--disruptive-auto-reboot", action="store_true", help="Enable disruptive patching with automatic reboot during the off-peak window")
+    upgrade_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe (HH:MM-HH:MM) for disruptive patching and auto-reboot (default: 02:00-05:00)")
     upgrade_parser.add_argument("--dry-run", action="store_true", help="Simulate upgrade without executing package manager")
 
     # Command: rollback
@@ -60,14 +65,22 @@ def build_parser() -> argparse.ArgumentParser:
     rollback_parser.add_argument("--latest", action="store_true", help="Rollback the most recently applied mitigation")
 
     # Command: daemon
-    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with canary health probes and drift auto-reversion")
+    daemon_parser = subparsers.add_parser("daemon", parents=[common_parser], help="Run autonomous patch daemon with local OS patch staging, off-peak maintenance, canary probes, and drift auto-reversion")
     daemon_parser.add_argument("--interval", type=int, default=3600, help="Sync interval in seconds (default: 3600)")
-    daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
+    daemon_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Hotfix patch feed URL")
+    daemon_parser.add_argument("--argent-feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent OS package feed URL")
     daemon_parser.add_argument("--token", help="Exultia Kinetic authorization token")
     daemon_parser.add_argument("--ring", type=int, choices=[0, 1, 2], default=0, help="Staged rollout ring (0=Canary, 1=Cautious, 2=Broad)")
+    daemon_parser.add_argument("--os", help="Target OS distribution for patch management (auto-detected from /etc/os-release if omitted)")
+    daemon_parser.add_argument("--auto-stage", dest="auto_stage_patches", action="store_true", default=True, help="Automatically stage relevant OS patches in local staging directory (default: enabled)")
+    daemon_parser.add_argument("--no-auto-stage", dest="auto_stage_patches", action="store_false", help="Disable automatic local staging of OS patches")
+    daemon_parser.add_argument("--auto-patch-non-reboot", action="store_true", default=False, help="Enable automatic patching for non-reboot-required OS updates")
+    daemon_parser.add_argument("--disruptive-auto-reboot", action="store_true", default=False, help="Enable disruptive OS patching with automatic reboot during off-peak hours")
+    daemon_parser.add_argument("--off-peak-window", default="02:00-05:00", help="Off-peak hours timeframe in HH:MM-HH:MM format for disruptive patching with auto-reboot (default: 02:00-05:00)")
     daemon_parser.add_argument("--revert-drift", dest="revert_drift", action="store_true", default=True, help="Enable automatic drift reversion to SOX/PCI baseline (default: enabled)")
     daemon_parser.add_argument("--no-revert-drift", dest="revert_drift", action="store_false", help="Disable automatic drift reversion")
     daemon_parser.add_argument("--compliance-mode", choices=["sox_pci", "pci", "sox", "strict"], default="sox_pci", help="Compliance baseline standards to enforce (default: sox_pci)")
+    daemon_parser.add_argument("--dry-run", action="store_true", default=False, help="Simulate daemon patch execution and reboots without modifying system state")
 
     # Command: drift (Configuration Drift Audit & Instant Reconciliation)
     drift_parser = subparsers.add_parser("drift", parents=[common_parser], help="Audit and auto-revert configuration drift against SOX and PCI-DSS baselines")
@@ -76,7 +89,7 @@ def build_parser() -> argparse.ArgumentParser:
     drift_parser.add_argument("--dry-run", action="store_true", help="Simulate reversion without modifying files")
 
     # Command: status
-    status_parser = subparsers.add_parser("status", parents=[common_parser], help="Inspect host mitigation status and active snapshots")
+    status_parser = subparsers.add_parser("status", parents=[common_parser], help="Inspect host mitigation status, staged OS patches, and active snapshots")
     status_parser.add_argument("--audit", action="store_true", help="Include full recent audit trail")
 
     # Command: verify
@@ -160,7 +173,7 @@ def cli_entry():
         parser.print_help()
         sys.exit(0)
 
-    engine = KineticEngine(state_dir=args.state_dir)
+    engine = KineticEngine(state_dir=args.state_dir, staging_dir=args.staging_dir)
 
     if args.command == "apply":
         patches = engine.fetch_feed(
@@ -184,6 +197,28 @@ def cli_entry():
         sys.exit(0 if applied > 0 or len(patches) == 0 else 1)
 
     elif args.command == "upgrade":
+        if args.stage_only or args.auto_patch_non_reboot or args.disruptive_auto_reboot:
+            staged = engine.stage_os_patches(
+                os_filter=args.os,
+                feed_url=args.feed_url
+            )
+            if args.stage_only and not (args.auto_patch_non_reboot or args.disruptive_auto_reboot):
+                if args.json:
+                    print(json.dumps([s.to_dict() for s in staged], indent=2))
+                sys.exit(0)
+
+            summary = engine.execute_staged_patch_policy(
+                os_filter=args.os,
+                auto_patch_non_reboot=args.auto_patch_non_reboot,
+                disruptive_auto_reboot=args.disruptive_auto_reboot,
+                off_peak_window=args.off_peak_window,
+                feed_url=args.feed_url,
+                dry_run=args.dry_run
+            )
+            if args.json:
+                print(json.dumps(summary, indent=2))
+            sys.exit(0)
+
         success = engine.upgrade_os_packages(
             bundle_id=args.bundle,
             os_filter=args.os,
@@ -200,11 +235,19 @@ def cli_entry():
         daemon = KineticDaemon(
             engine=engine,
             feed_url=args.feed_url,
+            argent_feed_url=args.argent_feed_url,
             token=args.token,
             interval=args.interval,
             ring=args.ring,
             revert_drift=args.revert_drift,
-            compliance_mode=args.compliance_mode
+            compliance_mode=args.compliance_mode,
+            os_distro=args.os,
+            staging_dir=args.staging_dir,
+            auto_stage_patches=args.auto_stage_patches,
+            auto_patch_non_reboot=args.auto_patch_non_reboot,
+            disruptive_auto_reboot=args.disruptive_auto_reboot,
+            off_peak_window=args.off_peak_window,
+            dry_run=args.dry_run
         )
         daemon.start()
 
@@ -262,14 +305,23 @@ def cli_entry():
         if args.json:
             print(json.dumps(info, indent=2))
         else:
+            policy = info.get("patch_policy", {})
             print("\n=================================================")
             print(f"  EXULTIA KINETIC HOST STATUS (v{info['kinetic_version']})")
             print("=================================================")
-            print(f"  Host Platform:      {info['host_os']}")
+            print(f"  Host Platform:      {info['host_os']} (distro: {info.get('detected_distro', 'linux')})")
             print(f"  State Directory:    {info['state_directory']}")
+            print(f"  Staging Directory:  {info.get('staging_directory', 'N/A')}")
             print(f"  Active Hotfixes:    {info['active_hotfixes_count']}")
+            print(f"  Staged OS Patches:  {info.get('staged_patches_count', 0)} (deferred off-peak: {info.get('deferred_off_peak_count', 0)})")
             print(f"  Rolled Back Patches:{info['rolled_back_count']}")
             print(f"  Total Snapshots:    {info['total_snapshots']}")
+            print("-------------------------------------------------")
+            print("  OS Patch Management Policy:")
+            print(f"    • Auto-Stage OS Patches:     {'ENABLED' if policy.get('auto_stage_patches', True) else 'DISABLED'}")
+            print(f"    • Auto-Patch Non-Reboot:     {'ENABLED' if policy.get('auto_patch_non_reboot', False) else 'DISABLED'}")
+            print(f"    • Disruptive Auto-Reboot:    {'ENABLED' if policy.get('disruptive_auto_reboot', False) else 'DISABLED'}")
+            print(f"    • Off-Peak Window:           {policy.get('off_peak_window', '02:00-05:00')}")
             print("-------------------------------------------------")
             if info['active_hotfixes']:
                 print("  Active Hotfixes:")
@@ -277,6 +329,12 @@ def cli_entry():
                     print(f"    • {h['cve_id']}: {h['target']} (applied {h['applied_at']})")
             else:
                 print("  No active hotfixes applied. Host at clean baseline.")
+
+            if info.get("staged_patches"):
+                print("\n  Local Staged OS Patches:")
+                for sp in info["staged_patches"]:
+                    reboot_flag = "REBOOT-REQUIRED" if sp.get("requires_reboot") else "NON-REBOOT"
+                    print(f"    • {sp['patch_id']} [{sp['os_distro']}] ({reboot_flag}) -> {sp['status']} | {sp['local_bundle_path']}")
 
             if args.audit and info['recent_audit_trail']:
                 print("\n  Recent Audit Trail:")

@@ -1584,7 +1584,7 @@ export default function AxiomDashboard() {
                 Institutional endpoint for embedding the exam simulator directly into Canvas, Blackboard, Moodle, or custom SCORM/LTI runtime harnesses. Rejected with HTTP 403 for Free and Pro tiers.
               </p>
               <pre style={{ background: "#050204", border: "1px solid rgba(124, 58, 237, 0.3)", borderRadius: "8px", padding: "1rem", color: "#DDD6FE", fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem", overflowX: "auto" }}>
-{`curl -X POST https://exultia.ai/api/axiom/exam \\
+{`curl -X POST https://exultia.tech/api/axiom/exam \\
   -H "Authorization: Bearer <ENTERPRISE_API_TOKEN>" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -1610,7 +1610,7 @@ export default function AxiomDashboard() {
                 Step 1: Start Exam Session
               </div>
               <pre style={{ background: "#050204", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "8px", padding: "1.25rem", color: "#FDA4AF", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", overflowX: "auto" }}>
-{`curl -X POST https://exultia.ai/api/axiom/exam \\
+{`curl -X POST https://exultia.tech/api/axiom/exam \\
   -H "Content-Type: application/json" \\
   -d '{
     "action": "start",
@@ -1628,7 +1628,7 @@ export default function AxiomDashboard() {
                 Step 2: Submit Answer &amp; Request Next Question
               </div>
               <pre style={{ background: "#050204", border: "1px solid rgba(244, 63, 94, 0.2)", borderRadius: "8px", padding: "1.25rem", color: "#FDA4AF", fontFamily: "var(--font-mono, monospace)", fontSize: "0.85rem", overflowX: "auto" }}>
-{`curl -X POST https://exultia.ai/api/axiom/exam \\
+{`curl -X POST https://exultia.tech/api/axiom/exam \\
   -H "Content-Type: application/json" \\
   -d '{
     "action": "answer",

@@ -1451,7 +1451,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
   // 4. Ubuntu Hardware Enablement (HWE) Intel Wi-Fi 7 & AMD GPU Microcode Enhancement
   {
     id: "ARG-UBUNTU-UPD-2024-0518",
-    bundleId: "UBUNTU-HWE-2024-0518",
+    bundleId: "UBUNTU-FW-2024-0518",
     advisoryType: "ENHANCEMENT",
     os: "ubuntu",
     osFamily: "linux-debian",
@@ -1473,7 +1473,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-firmware",
       verification: "dpkg -l linux-firmware | grep ubuntu2.4",
       rollback: "apt-get install -y linux-firmware=20240318.git3b128b0-0ubuntu2",
-      kineticDeploy: "kinetic upgrade --bundle UBUNTU-HWE-2024-0518 --os ubuntu"
+      kineticDeploy: "kinetic upgrade --bundle UBUNTU-FW-2024-0518 --os ubuntu"
     },
     impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
     upstreamNoticeUrl: "https://launchpad.net/ubuntu/+source/linux-firmware",
@@ -1669,9 +1669,9 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       { name: "wireplumber", sourcePackage: "wireplumber", arch: "x86_64", currentVersion: "0.5.2-1.fc40", fixedVersion: "0.5.3-1.fc40", packageManager: "dnf", sizeBytes: 680000 }
     ],
     commands: {
-      nativeUpgrade: "dnf upgrade -y pipewire pipewire-alsa wireplumber && systemctl --user restart pipewire wireplumber",
+      nativeUpgrade: "dnf upgrade -y pipewire pipewire-alsa wireplumber && (systemctl --user restart pipewire wireplumber 2>/dev/null || true)",
       verification: "pipewire --version | grep 1.0.7-3",
-      rollback: "dnf history undo last -y && systemctl --user restart pipewire wireplumber",
+      rollback: "dnf history undo last -y && (systemctl --user restart pipewire wireplumber 2>/dev/null || true)",
       kineticDeploy: "kinetic upgrade --bundle FEDORA-2024-d2e81102 --os fedora"
     },
     impact: { rebootRequired: false, servicesToRestart: ["pipewire"], zeroDowntime: true },
@@ -1710,7 +1710,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     commands: {
       nativeUpgrade: "git fetch origin linux-6.6.y && git checkout v6.6.41 && make -j$(nproc) && make modules_install install",
       verification: "uname -r | grep 6.6.41",
-      rollback: "grub-reboot 'Previous Kernel v6.6.40' && reboot",
+      rollback: "grub-reboot 'Previous Kernel v6.6.40'",
       kineticDeploy: "kinetic hotpatch --kernel-tag v6.6.41 --live"
     },
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
@@ -1747,9 +1747,9 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       { name: "syspatch-004_bridge", sourcePackage: "src/sys/net", arch: "x86_64", currentVersion: "7.5-base", fixedVersion: "7.5-patch004", packageManager: "syspatch", sizeBytes: 184000 }
     ],
     commands: {
-      nativeUpgrade: "syspatch && shutdown -r +1 'Rebooting to activate OpenBSD 004_bridge errata'",
+      nativeUpgrade: "syspatch",
       verification: "syspatch -l | grep 004_bridge",
-      rollback: "syspatch -r 004_bridge && reboot",
+      rollback: "syspatch -r 004_bridge",
       kineticDeploy: "kinetic upgrade --bundle OPENBSD-75-004 --os openbsd"
     },
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
@@ -1945,7 +1945,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
     commands: {
       nativeUpgrade: "update_engine_client -check_for_update",
       verification: "cat /etc/flatcar/update.conf",
-      rollback: "cgpt prioritize -P 2 /dev/sda && reboot",
+      rollback: "cgpt prioritize -P 2 /dev/sda",
       kineticDeploy: "kinetic upgrade --bundle FLATCAR-UPD-2024-3815 --os flatcar"
     },
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
@@ -2374,9 +2374,9 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       { name: "kernel-netbsd", sourcePackage: "src/sys/dev/nvmm", arch: "x86_64", currentVersion: "10.0_base", fixedVersion: "10.0_patch2", packageManager: "pkgin", sizeBytes: 16500000 }
     ],
     commands: {
-      nativeUpgrade: "pkgin update && pkgin upgrade nvmm-kmod && shutdown -r now",
-      verification: "uname -v",
-      rollback: "reboot",
+      nativeUpgrade: "pkgin -y update && pkgin -y upgrade nvmm-kmod",
+      verification: "uname -v | grep NetBSD",
+      rollback: "pkgin -y install nvmm-kmod-10.0",
       kineticDeploy: "kinetic upgrade --bundle NetBSD-EN-2024-002 --os netbsd"
     },
     impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
@@ -2886,7 +2886,7 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       { name: "kubelet", sourcePackage: "kubernetes", arch: "x86_64", currentVersion: "v1.30.1", fixedVersion: "v1.30.2", packageManager: "talosctl", sizeBytes: 19800000 }
     ],
     commands: {
-      nativeUpgrade: "talosctl upgrade --nodes <node-ip> --image ghcr.io/siderolabs/installer:v1.7.5",
+      nativeUpgrade: "talosctl upgrade --nodes 127.0.0.1 --image ghcr.io/siderolabs/installer:v1.7.5",
       verification: "talosctl version | grep v1.7.5",
       rollback: "talosctl rollback",
       kineticDeploy: "kinetic upgrade --bundle TALOS-PKG-2024-0640 --os talos"
@@ -2980,8 +2980,1020 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       syncStatus: "live",
       sourceUrl: "https://linux.oracle.com/security/"
     }
-  }
+  }  ,
+  // 43. Rocky Linux OpenSSL & CA-Certificates Non-Reboot Daemon Reload Advisory (RLBA)
+  {
+    id: "ARG-RLBA-2024-4418",
+    bundleId: "RLBA-2024:4418",
+    advisoryType: "BUGFIX",
+    os: "rocky",
+    osFamily: "linux-rhel",
+    osDisplayName: "Rocky Linux",
+    targetReleases: ["Rocky Linux 9.4 (Blue Onyx)", "Rocky Linux 8.10"],
+    title: "OpenSSL 3.0 TLS Session Ticket Memory Leak & CA Trust Store Update",
+    synopsis: "Non-disruptive Rocky Linux update resolving TLS 1.3 session resumption memory growth in long-lived daemons without requiring host reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "NETWORK",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T12:00:00Z",
+    updatedAt: "2024-06-29T12:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "openssl-libs", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.7-27.el9", fixedVersion: "3.0.7-28.el9_4", packageManager: "dnf", sizeBytes: 2150000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y openssl-libs ca-certificates",
+      verification: "rpm -q openssl-libs | grep 3.0.7-28.el9_4",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle RLBA-2024:4418 --os rocky"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://errata.rockylinux.org/RLBA-2024:4418",
+    sourceFeed: {
+      sourceId: "feed-rocky-errata",
+      feedName: "Rocky Linux Bug Fix & Enhancement Errata (RLBA & RLEA)",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://errata.rockylinux.org/"
+    }
+  },
 
+  // 44. Red Hat Enterprise Linux Kernel Core & XFS Pagecache Disruptive Advisory (RHBA)
+  {
+    id: "ARG-RHBA-2024-5102",
+    bundleId: "RHBA-2024:5102",
+    advisoryType: "BUGFIX",
+    os: "rhel",
+    osFamily: "linux-rhel",
+    osDisplayName: "Red Hat Enterprise Linux",
+    targetReleases: ["RHEL 9.4", "RHEL 8.10"],
+    title: "Kernel Core XFS Pagecache Writeback & IOMMU DMA Mapping Update",
+    synopsis: "Disruptive Red Hat kernel-core errata resolving XFS writeback stalls under direct I/O; requires scheduled off-peak system reboot.",
+    vendorSeverity: "CRITICAL",
+    severityScore: 8.6,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T12:30:00Z",
+    updatedAt: "2024-06-29T12:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-core", sourcePackage: "kernel", arch: "x86_64", currentVersion: "5.14.0-427.24.1.el9_4", fixedVersion: "5.14.0-427.35.1.el9_4", packageManager: "dnf", sizeBytes: 22400000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel-core kernel-modules",
+      verification: "rpm -q kernel-core | grep 5.14.0-427.35.1.el9_4",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle RHBA-2024:5102 --os rhel"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://access.redhat.com/errata/RHBA-2024:5102",
+    sourceFeed: {
+      sourceId: "feed-redhat-errata",
+      feedName: "Red Hat Bug & Enhancement Advisories Stream (RHBA & RHEA)",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://access.redhat.com/hydra/rest/securitydata/cvrf.json"
+    }
+  },
+
+  // 45. Debian 12 Bookworm Linux Kernel 6.1 ABI Point Release (Disruptive)
+  {
+    id: "ARG-DEBIAN-KRN-2024-1207",
+    bundleId: "DEBIAN-KRN-2024-1207",
+    advisoryType: "MAINTENANCE",
+    os: "debian",
+    osFamily: "linux-debian",
+    osDisplayName: "Debian GNU/Linux",
+    targetReleases: ["Debian 12 (Bookworm)"],
+    title: "Debian 12.7 Linux Kernel 6.1.106 Virtio-Blk & Ext4 Journal Update",
+    synopsis: "Debian stable kernel point release fixing ext4 fast_commit replay edge cases and virtio-blk multiqueue IRQ affinity; requires system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.9,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T13:00:00Z",
+    updatedAt: "2024-06-29T13:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-image-amd64", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.1.99-1", fixedVersion: "6.1.106-3", packageManager: "apt", sizeBytes: 68500000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-image-amd64",
+      verification: "dpkg -l linux-image-amd64 | grep 6.1.106-3",
+      rollback: "apt-get install -y linux-image-amd64=6.1.99-1",
+      kineticDeploy: "kinetic upgrade --bundle DEBIAN-KRN-2024-1207 --os debian"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.debian.org/News/2024/20240831",
+    sourceFeed: {
+      sourceId: "feed-debian-updates",
+      feedName: "Debian Proposed Updates & Bug Tracking Stream (BTS / debian-updates)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://bugs.debian.org/release-critical/"
+    }
+  },
+
+  // 46. Alpine Linux LTS Kernel 6.6 Virtio & Netfilter Update (Disruptive)
+  {
+    id: "ARG-ALPINE-KRN-2024-3204",
+    bundleId: "ALPINE-KRN-2024-3204",
+    advisoryType: "MAINTENANCE",
+    os: "alpine",
+    osFamily: "linux-alpine",
+    osDisplayName: "Alpine Linux",
+    targetReleases: ["Alpine v3.20", "Alpine v3.19"],
+    title: "Alpine Linux LTS Kernel 6.6.52 WireGuard & Virtio-Net Update",
+    synopsis: "Alpine Linux LTS kernel update fixing WireGuard gro_receive packet coalescing; requires host reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T13:15:00Z",
+    updatedAt: "2024-06-29T13:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-lts", sourcePackage: "linux-lts", arch: "x86_64", currentVersion: "6.6.48-r0", fixedVersion: "6.6.52-r0", packageManager: "apk", sizeBytes: 34200000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update && apk upgrade --no-cache linux-lts",
+      verification: "apk info -v linux-lts | grep 6.6.52-r0",
+      rollback: "apk add --no-cache 'linux-lts=6.6.48-r0'",
+      kineticDeploy: "kinetic upgrade --bundle ALPINE-KRN-2024-3204 --os alpine"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/linux-lts",
+    sourceFeed: {
+      sourceId: "feed-alpine-secfixes",
+      feedName: "Alpine Linux Security Database (secfixes)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://secdb.alpinelinux.org/"
+    }
+  },
+
+  // 47. Amazon Linux 2023 Kernel 6.1 ENA Nitro Driver Update (Disruptive)
+  {
+    id: "ARG-ALAS-2024-KRN-6198",
+    bundleId: "ALAS-2024-KRN-6198",
+    advisoryType: "ENHANCEMENT",
+    os: "amazon-linux",
+    osFamily: "linux-amazon",
+    osDisplayName: "Amazon Linux",
+    targetReleases: ["Amazon Linux 2023"],
+    title: "AL2023 Kernel 6.1.102 AWS Nitro ENA Queue Reset & EBS NVMe Update",
+    synopsis: "Amazon Linux 2023 kernel update enhancing AWS Nitro ENA network ring recovery; requires EC2 instance reboot during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.7,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T13:30:00Z",
+    updatedAt: "2024-06-29T13:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel", sourcePackage: "kernel", arch: "x86_64", currentVersion: "6.1.96-102.177.amzn2023", fixedVersion: "6.1.102-111.182.amzn2023", packageManager: "dnf", sizeBytes: 31500000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel",
+      verification: "rpm -q kernel | grep 6.1.102-111.182.amzn2023",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle ALAS-2024-KRN-6198 --os amazon-linux"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://alas.aws.amazon.com/AL2023/ALAS-2024-6198.html",
+    sourceFeed: {
+      sourceId: "feed-amazon-alas-sec",
+      feedName: "Amazon Linux Security Center (ALAS)",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://alas.aws.amazon.com/"
+    }
+  },
+
+  // 48. Arch Linux Core Kernel 6.10.10 Btrfs &amdgpu Update (Disruptive)
+  {
+    id: "ARG-ARCH-KRN-2024-6102",
+    bundleId: "ARCH-KRN-2024-6102",
+    advisoryType: "MAINTENANCE",
+    os: "arch",
+    osFamily: "linux-arch",
+    osDisplayName: "Arch Linux",
+    targetReleases: ["Arch Linux Rolling"],
+    title: "Arch Linux Kernel 6.10.10.arch1 Btrfs Tree-Log & Scheduler Update",
+    synopsis: "Arch Linux rolling kernel update requiring system reboot to activate updated vmlinuz-linux image and initramfs.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T13:45:00Z",
+    updatedAt: "2024-06-29T13:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.10.8.arch1-1", fixedVersion: "6.10.10.arch1-1", packageManager: "pacman", sizeBytes: 132000000 }
+    ],
+    commands: {
+      nativeUpgrade: "pacman -Syu --noconfirm linux",
+      verification: "pacman -Q linux | grep 6.10.10.arch1-1",
+      rollback: "pacman -U --noconfirm /var/cache/pacman/pkg/linux-6.10.8.arch1-1-x86_64.pkg.tar.zst",
+      kineticDeploy: "kinetic upgrade --bundle ARCH-KRN-2024-6102 --os arch"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://archlinux.org/packages/core/x86_64/linux/",
+    sourceFeed: {
+      sourceId: "feed-arch-security",
+      feedName: "Arch Linux Security Tracker (ASA)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://security.archlinux.org/"
+    }
+  },
+
+  // 49. Azure Linux 3.0 Cloud-Hypervisor Host Kernel Update (Disruptive)
+  {
+    id: "ARG-AZL-KRN-2024-3011",
+    bundleId: "AZL-KRN-2024-3011",
+    advisoryType: "BUGFIX",
+    os: "azure-linux",
+    osFamily: "linux-azure",
+    osDisplayName: "Azure Linux",
+    targetReleases: ["Azure Linux 3.0", "CBL-Mariner 2.0"],
+    title: "Azure Linux 3.0 Kernel 6.6 Hyper-V VMBus Channel Interrupt Rebalance",
+    synopsis: "Disruptive Azure Linux kernel update fixing VMBus channel interrupt pinning on AKS worker nodes; requires host reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.8,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T14:00:00Z",
+    updatedAt: "2024-06-29T14:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel", sourcePackage: "kernel", arch: "x86_64", currentVersion: "6.6.35.1-1.azl3", fixedVersion: "6.6.44.1-2.azl3", packageManager: "tdnf", sizeBytes: 41200000 }
+    ],
+    commands: {
+      nativeUpgrade: "tdnf upgrade -y kernel",
+      verification: "rpm -q kernel | grep 6.6.44.1-2.azl3",
+      rollback: "tdnf downgrade -y kernel-6.6.35.1-1.azl3",
+      kineticDeploy: "kinetic upgrade --bundle AZL-KRN-2024-3011 --os azure-linux"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://github.com/microsoft/azurelinux/releases",
+    sourceFeed: {
+      sourceId: "feed-azure-linux",
+      feedName: "Azure Linux / CBL-Mariner Host Updates & Hypervisor Drivers",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://github.com/microsoft/azurelinux"
+    }
+  },
+
+  // 50. CloudLinux OS LVE Kernel CageFS Quota Enforcement Update (Disruptive)
+  {
+    id: "ARG-CLBA-2024-0918",
+    bundleId: "CLBA-2024:0918",
+    advisoryType: "BUGFIX",
+    os: "cloudlinux",
+    osFamily: "linux-cloudlinux",
+    osDisplayName: "CloudLinux OS",
+    targetReleases: ["CloudLinux 9.4", "CloudLinux 8.10"],
+    title: "CloudLinux LVE Kernel 5.14 CageFS I/O Throttling & Inode Accounting Fix",
+    synopsis: "Disruptive CloudLinux LVE kernel update resolving per-tenant cgroup I/O bursts; requires off-peak reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.6,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T14:15:00Z",
+    updatedAt: "2024-06-29T14:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-lve", sourcePackage: "kernel-lve", arch: "x86_64", currentVersion: "5.14.0-427.18.1.lve.el9", fixedVersion: "5.14.0-427.28.1.lve.el9", packageManager: "dnf", sizeBytes: 44100000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel-lve",
+      verification: "rpm -q kernel-lve | grep 5.14.0-427.28.1.lve.el9",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle CLBA-2024:0918 --os cloudlinux"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://blog.cloudlinux.com/",
+    sourceFeed: {
+      sourceId: "feed-cloudlinux",
+      feedName: "CloudLinux OS LVE & CageFS Errata Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://repo.cloudlinux.com/"
+    }
+  },
+
+  // 51. Fedora 40 Kernel 6.10.9 Wayland DRM & Btrfs Update (Disruptive)
+  {
+    id: "ARG-FEDORA-2024-KRN-9412",
+    bundleId: "FEDORA-2024-KRN-9412",
+    advisoryType: "MAINTENANCE",
+    os: "fedora",
+    osFamily: "linux-fedora",
+    osDisplayName: "Fedora Linux",
+    targetReleases: ["Fedora 40", "Fedora 39"],
+    title: "Fedora 40 Kernel 6.10.9 DRM KMS Atomic Commit & SELinux Audit Fix",
+    synopsis: "Fedora stable kernel update fixing DRM KMS atomic pageflip timeouts; requires system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T14:30:00Z",
+    updatedAt: "2024-06-29T14:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-core", sourcePackage: "kernel", arch: "x86_64", currentVersion: "6.10.6-200.fc40", fixedVersion: "6.10.9-200.fc40", packageManager: "dnf", sizeBytes: 18900000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel-core",
+      verification: "rpm -q kernel-core | grep 6.10.9-200.fc40",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle FEDORA-2024-KRN-9412 --os fedora"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://bodhi.fedoraproject.org/updates/FEDORA-2024-KRN-9412",
+    sourceFeed: {
+      sourceId: "feed-fedora-bodhi",
+      feedName: "Fedora Bodhi Stable Updates Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://bodhi.fedoraproject.org/updates/"
+    }
+  },
+
+  // 52. Flatcar Container Linux systemd-sysext Containerd Live Extension Refresh (Non-Reboot)
+  {
+    id: "ARG-FLATCAR-SYSEXT-2024-3975",
+    bundleId: "FLATCAR-SYSEXT-2024-3975",
+    advisoryType: "ENHANCEMENT",
+    os: "flatcar",
+    osFamily: "linux-flatcar",
+    osDisplayName: "Flatcar Container Linux",
+    targetReleases: ["Flatcar Stable 3975.2.1"],
+    title: "Flatcar systemd-sysext Containerd & runc Live Overlay Refresh",
+    synopsis: "Zero-downtime Flatcar system extension refresh updating containerd shim binaries in /usr via systemd-sysext without host reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.8,
+    operationalDomain: "CONTAINER",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-29T14:45:00Z",
+    updatedAt: "2024-06-29T14:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "containerd-sysext", sourcePackage: "flatcar-sysext", arch: "x86_64", currentVersion: "1.7.18", fixedVersion: "1.7.21", packageManager: "update_engine", sizeBytes: 28400000 }
+    ],
+    commands: {
+      nativeUpgrade: "systemd-sysext refresh",
+      verification: "systemd-sysext status | grep containerd",
+      rollback: "systemd-sysext unmerge && systemd-sysext merge",
+      kineticDeploy: "kinetic upgrade --bundle FLATCAR-SYSEXT-2024-3975 --os flatcar"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["containerd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.flatcar.org/releases",
+    sourceFeed: {
+      sourceId: "feed-flatcar-releases",
+      feedName: "Flatcar Container Linux Release Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://www.flatcar.org/releases-json/releases.json"
+    }
+  },
+
+  // 53. Gentoo Linux Distribution Kernel 6.6.52 Portage Binary Update (Disruptive)
+  {
+    id: "ARG-GENTOO-KRN-2024-0815",
+    bundleId: "GENTOO-KRN-2024-0815",
+    advisoryType: "MAINTENANCE",
+    os: "gentoo",
+    osFamily: "linux-gentoo",
+    osDisplayName: "Gentoo Linux",
+    targetReleases: ["Gentoo Stable Profile 23.0"],
+    title: "Gentoo sys-kernel/gentoo-kernel-bin 6.6.52 ZFS & Virtio Compatibility Update",
+    synopsis: "Gentoo distribution kernel update delivering prebuilt 6.6.52 kernel image and initramfs; requires system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T15:00:00Z",
+    updatedAt: "2024-06-29T15:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "sys-kernel/gentoo-kernel-bin", sourcePackage: "gentoo-kernel-bin", arch: "x86_64", currentVersion: "6.6.47", fixedVersion: "6.6.52", packageManager: "emerge", sizeBytes: 76000000 }
+    ],
+    commands: {
+      nativeUpgrade: "emerge --update --oneshot sys-kernel/gentoo-kernel-bin",
+      verification: "qlist -Iv sys-kernel/gentoo-kernel-bin | grep 6.6.52",
+      rollback: "emerge --oneshot =sys-kernel/gentoo-kernel-bin-6.6.47",
+      kineticDeploy: "kinetic upgrade --bundle GENTOO-KRN-2024-0815 --os gentoo"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://packages.gentoo.org/packages/sys-kernel/gentoo-kernel-bin",
+    sourceFeed: {
+      sourceId: "feed-gentoo-glsa",
+      feedName: "Gentoo Linux Security Advisories (GLSA)",
+      feedType: "public-distro-feed",
+      format: "XML",
+      syncStatus: "live",
+      sourceUrl: "https://security.gentoo.org/"
+    }
+  },
+
+  // 54. Kali Linux Rolling Kernel 6.8.12 Wireless Injection & Netfilter Update (Disruptive)
+  {
+    id: "ARG-KALI-KRN-2024-2031",
+    bundleId: "KALI-KRN-2024-2031",
+    advisoryType: "ENHANCEMENT",
+    os: "kali",
+    osFamily: "linux-debian",
+    osDisplayName: "Kali Linux",
+    targetReleases: ["Kali Linux 2024.3 Rolling"],
+    title: "Kali Linux Kernel 6.8.12 mac80211 Radiotap & eBPFVerifier Update",
+    synopsis: "Kali rolling kernel update resolving mac80211 monitor mode radiotap header alignment; requires system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T15:15:00Z",
+    updatedAt: "2024-06-29T15:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-image-amd64", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.8.11-1kali2", fixedVersion: "6.8.12-1kali1", packageManager: "apt", sizeBytes: 71200000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-image-amd64",
+      verification: "dpkg -l linux-image-amd64 | grep 6.8.12-1kali1",
+      rollback: "apt-get install -y linux-image-amd64=6.8.11-1kali2",
+      kineticDeploy: "kinetic upgrade --bundle KALI-KRN-2024-2031 --os kali"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://pkg.kali.org/pkg/linux",
+    sourceFeed: {
+      sourceId: "feed-kali-rolling",
+      feedName: "Kali Linux Rolling Package Tracker",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://pkg.kali.org/"
+    }
+  },
+
+  // 55. Linux Mainline Kernel Live Kmod / eBPF Netfilter Conntrack Reload (Non-Reboot)
+  {
+    id: "ARG-KERNEL-KMOD-2024-6642",
+    bundleId: "KERNEL-KMOD-2024-6642",
+    advisoryType: "BUGFIX",
+    os: "kernel",
+    osFamily: "linux-kernel",
+    osDisplayName: "Linux Mainline Kernel",
+    targetReleases: ["Linux 6.10.x", "Linux 6.6.x LTS"],
+    title: "Linux Kernel nf_conntrack Hash Table Live Resize & Kmod Parameter Update",
+    synopsis: "Zero-downtime kernel module parameter and sysctl live reload expanding nf_conntrack buckets without rebooting.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.7,
+    operationalDomain: "KERNEL",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T15:30:00Z",
+    updatedAt: "2024-06-29T15:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kmod-nf-conntrack", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.6.48", fixedVersion: "6.6.52", packageManager: "kmod", sizeBytes: 1420000 }
+    ],
+    commands: {
+      nativeUpgrade: "kmod list >/dev/null && sysctl -w net.netfilter.nf_conntrack_max=262144 2>/dev/null || true",
+      verification: "kmod list | grep nf_conntrack",
+      rollback: "sysctl -w net.netfilter.nf_conntrack_max=65536 2>/dev/null || true",
+      kineticDeploy: "kinetic upgrade --bundle KERNEL-KMOD-2024-6642 --os kernel"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.kernel.org/",
+    sourceFeed: {
+      sourceId: "feed-kernel-org",
+      feedName: "Linux Kernel Archives (kernel.org Stable & LTS)",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://www.kernel.org/releases.json"
+    }
+  },
+
+  // 56. Linux Mint 22 Wilma Cinnamon Session & XApp Stability Update (Non-Reboot)
+  {
+    id: "ARG-MINT-UPD-2024-2201",
+    bundleId: "MINT-UPD-2024-2201",
+    advisoryType: "BUGFIX",
+    os: "linux-mint",
+    osFamily: "linux-debian",
+    osDisplayName: "Linux Mint",
+    targetReleases: ["Linux Mint 22 (Wilma)", "Linux Mint 21.3 (Virginia)"],
+    title: "Linux Mint Cinnamon D-Bus Session Bus & XApp Status Icon Leak Fix",
+    synopsis: "Non-disruptive Linux Mint update fixing XApp status applet file descriptor leaks across desktop sessions without reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.4,
+    operationalDomain: "STABILITY",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-29T15:45:00Z",
+    updatedAt: "2024-06-29T15:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "libxapp1", sourcePackage: "xapp", arch: "x86_64", currentVersion: "2.8.4+wilma", fixedVersion: "2.8.5+wilma", packageManager: "apt", sizeBytes: 980000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y libxapp1",
+      verification: "dpkg -l libxapp1 | grep 2.8.5+wilma",
+      rollback: "apt-get install -y libxapp1=2.8.4+wilma",
+      kineticDeploy: "kinetic upgrade --bundle MINT-UPD-2024-2201 --os linux-mint"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://linuxmint.com/rel_wilma.php",
+    sourceFeed: {
+      sourceId: "feed-linux-mint-relnotes",
+      feedName: "Linux Mint Release Notes & Package Errata",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://linuxmint.com/rel_notes.php"
+    }
+  },
+
+  // 57. Linux Mint 22 HWE Kernel 6.8 ACPI Suspend & NVMe Update (Disruptive)
+  {
+    id: "ARG-MINT-KRN-2024-2202",
+    bundleId: "MINT-KRN-2024-2202",
+    advisoryType: "MAINTENANCE",
+    os: "linux-mint",
+    osFamily: "linux-debian",
+    osDisplayName: "Linux Mint",
+    targetReleases: ["Linux Mint 22 (Wilma)"],
+    title: "Linux Mint 22 Kernel 6.8.0-45 ACPI S0ix Power Management & NVMe Fix",
+    synopsis: "Disruptive Linux Mint kernel update resolving NVMe APST latency spikes on resume; requires system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.6,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T16:00:00Z",
+    updatedAt: "2024-06-29T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-image-generic", sourcePackage: "linux", arch: "x86_64", currentVersion: "6.8.0-40.40", fixedVersion: "6.8.0-45.45", packageManager: "apt", sizeBytes: 64000000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update && apt-get install --only-upgrade -y linux-image-generic",
+      verification: "dpkg -l linux-image-generic | grep 6.8.0-45.45",
+      rollback: "apt-get install -y linux-image-generic=6.8.0-40.40",
+      kineticDeploy: "kinetic upgrade --bundle MINT-KRN-2024-2202 --os linux-mint"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://linuxmint.com/rel_wilma.php",
+    sourceFeed: {
+      sourceId: "feed-linux-mint-relnotes",
+      feedName: "Linux Mint Release Notes & Package Errata",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://linuxmint.com/rel_notes.php"
+    }
+  },
+
+  // 58. Apple macOS / Darwin Base XProtect & Security Certificate Bundle (Non-Reboot)
+  {
+    id: "ARG-MACOS-RSR-2024-1501",
+    bundleId: "MACOS-RSR-2024-1501",
+    advisoryType: "MAINTENANCE",
+    os: "macos",
+    osFamily: "bsd-darwin",
+    osDisplayName: "Apple macOS",
+    targetReleases: ["macOS Sequoia 15.1", "macOS Sonoma 14.7"],
+    title: "macOS Darwin Libsystem & Trust Store Background Configuration Update",
+    synopsis: "Non-disruptive macOS background security and certificate trust bundle update applied via pkg/softwareupdate without reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.8,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T16:15:00Z",
+    updatedAt: "2024-06-29T16:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "darwin-trust-cache", sourcePackage: "darwin-security", arch: "all", currentVersion: "15.0.1", fixedVersion: "15.1.0", packageManager: "pkg", sizeBytes: 8400000 }
+    ],
+    commands: {
+      nativeUpgrade: "pkg upgrade -y darwin-trust-cache",
+      verification: "pkg info darwin-trust-cache | grep 15.1.0",
+      rollback: "pkg install -y darwin-trust-cache-15.0.1",
+      kineticDeploy: "kinetic upgrade --bundle MACOS-RSR-2024-1501 --os macos"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://support.apple.com/en-us/HT201222",
+    sourceFeed: {
+      sourceId: "feed-apple-macos-security",
+      feedName: "Apple macOS & Darwin Base Security Updates",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://support.apple.com/en-us/HT201222"
+    }
+  },
+
+  // 59. Apple macOS Sequoia Darwin XNU Kernel 24.1.0 Point Release (Disruptive)
+  {
+    id: "ARG-MACOS-XNU-2024-1502",
+    bundleId: "MACOS-XNU-2024-1502",
+    advisoryType: "BUGFIX",
+    os: "macos",
+    osFamily: "bsd-darwin",
+    osDisplayName: "Apple macOS",
+    targetReleases: ["macOS Sequoia 15.1"],
+    title: "macOS Sequoia 15.1 Darwin XNU Kernel Virtual Memory & APFS Snapshot Update",
+    synopsis: "Disruptive macOS Darwin XNU kernel update resolving APFS snapshot mount contention; requires scheduled system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 8.1,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T16:30:00Z",
+    updatedAt: "2024-06-29T16:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "darwin-xnu-kernel", sourcePackage: "xnu", arch: "all", currentVersion: "24.0.0", fixedVersion: "24.1.0", packageManager: "pkg", sizeBytes: 95000000 }
+    ],
+    commands: {
+      nativeUpgrade: "pkg upgrade -y darwin-xnu-kernel",
+      verification: "pkg info darwin-xnu-kernel | grep 24.1.0",
+      rollback: "pkg install -y darwin-xnu-kernel-24.0.0",
+      kineticDeploy: "kinetic upgrade --bundle MACOS-XNU-2024-1502 --os macos"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://support.apple.com/en-us/HT201222",
+    sourceFeed: {
+      sourceId: "feed-apple-macos-security",
+      feedName: "Apple macOS & Darwin Base Security Updates",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://support.apple.com/en-us/HT201222"
+    }
+  },
+
+  // 60. NetBSD 10.0 pkgsrc OpenSSL & Mozilla Root Certificates Update (Non-Reboot)
+  {
+    id: "ARG-NETBSD-PKG-2024-1004",
+    bundleId: "NETBSD-PKG-2024-1004",
+    advisoryType: "MAINTENANCE",
+    os: "netbsd",
+    osFamily: "bsd-netbsd",
+    osDisplayName: "NetBSD",
+    targetReleases: ["NetBSD 10.0", "NetBSD 9.4"],
+    title: "NetBSD pkgsrc mozilla-rootcerts & OpenSSH Daemon Reload Update",
+    synopsis: "Non-disruptive NetBSD pkgin package update refreshing root CA bundle and OpenSSH configuration without system reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.5,
+    operationalDomain: "NETWORK",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T16:45:00Z",
+    updatedAt: "2024-06-29T16:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "mozilla-rootcerts", sourcePackage: "mozilla-rootcerts", arch: "x86_64", currentVersion: "1.0.20240311", fixedVersion: "1.0.20240815", packageManager: "pkgin", sizeBytes: 640000 }
+    ],
+    commands: {
+      nativeUpgrade: "pkgin -y update && pkgin -y install mozilla-rootcerts",
+      verification: "pkgin list | grep mozilla-rootcerts-1.0.20240815",
+      rollback: "pkgin -y install mozilla-rootcerts-1.0.20240311",
+      kineticDeploy: "kinetic upgrade --bundle NETBSD-PKG-2024-1004 --os netbsd"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.netbsd.org/support/security/",
+    sourceFeed: {
+      sourceId: "feed-netbsd-sa",
+      feedName: "NetBSD Security Advisories (NetBSD-SA)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://www.netbsd.org/support/security/"
+    }
+  },
+
+  // 61. OpenBSD 7.5 Userland OpenSMTPD & LibreSSL Binary Errata (Non-Reboot)
+  {
+    id: "ARG-OPENBSD-ERRATA-2024-008",
+    bundleId: "OPENBSD-ERRATA-2024-008",
+    advisoryType: "BUGFIX",
+    os: "openbsd",
+    osFamily: "bsd-openbsd",
+    osDisplayName: "OpenBSD",
+    targetReleases: ["OpenBSD 7.5"],
+    title: "OpenBSD 7.5 Errata 008: LibreSSL X.509 Policy Verification Userland Fix",
+    synopsis: "Non-disruptive OpenBSD syspatch userland binary update for libcrypto and smtpd; reloads services cleanly without kernel reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.3,
+    operationalDomain: "CORE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-29T17:00:00Z",
+    updatedAt: "2024-06-29T17:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "syspatch-008-libcrypto", sourcePackage: "libressl", arch: "x86_64", currentVersion: "7.5-base", fixedVersion: "7.5-p008", packageManager: "syspatch", sizeBytes: 1850000 }
+    ],
+    commands: {
+      nativeUpgrade: "syspatch",
+      verification: "syspatch -l | grep 008_libcrypto",
+      rollback: "syspatch -R",
+      kineticDeploy: "kinetic upgrade --bundle OPENBSD-ERRATA-2024-008 --os openbsd"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["smtpd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.openbsd.org/errata75.html",
+    sourceFeed: {
+      sourceId: "feed-openbsd-security-errata",
+      feedName: "OpenBSD Security & Reliability Errata",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://www.openbsd.org/errata.html"
+    }
+  },
+
+  // 62. openEuler 24.03 LTS Kernel 6.6 ARM64/x86_64 NUMA Scheduler Update (Disruptive)
+  {
+    id: "ARG-OPENEULER-KRN-2024-2403",
+    bundleId: "OPENEULER-KRN-2024-2403",
+    advisoryType: "ENHANCEMENT",
+    os: "openeuler",
+    osFamily: "linux-openeuler",
+    osDisplayName: "openEuler",
+    targetReleases: ["openEuler 24.03 LTS", "openEuler 22.03 LTS SP4"],
+    title: "openEuler 24.03 LTS Kernel 6.6 NUMA Balancer & Virtio-Net Update",
+    synopsis: "Disruptive openEuler kernel update improving multi-socket NUMA page migration throughput; requires scheduled reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T17:15:00Z",
+    updatedAt: "2024-06-29T17:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel", sourcePackage: "kernel", arch: "x86_64", currentVersion: "6.6.0-28.0.0.oe2403", fixedVersion: "6.6.0-34.0.0.oe2403", packageManager: "dnf", sizeBytes: 48200000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y kernel",
+      verification: "rpm -q kernel | grep 6.6.0-34.0.0.oe2403",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle OPENEULER-KRN-2024-2403 --os openeuler"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.openeuler.org/en/security/safety-bulletin/",
+    sourceFeed: {
+      sourceId: "feed-openeuler",
+      feedName: "openEuler Security & Bugfix Advisories (EulerSA)",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://repo.openeuler.org/"
+    }
+  },
+
+  // 63. OpenWrt 23.05 mac80211 Wireless Kernel Subsystems & Firmware Update (Disruptive)
+  {
+    id: "ARG-OPENWRT-KRN-2024-2305",
+    bundleId: "OPENWRT-KRN-2024-2305",
+    advisoryType: "BUGFIX",
+    os: "openwrt",
+    osFamily: "linux-openwrt",
+    osDisplayName: "OpenWrt",
+    targetReleases: ["OpenWrt 23.05.4"],
+    title: "OpenWrt 23.05.4 Kernel kmod-mac80211 &DSA Switch Hardware Offload Fix",
+    synopsis: "Disruptive OpenWrt kernel module and DSA switch fabric update requiring device reboot during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T17:30:00Z",
+    updatedAt: "2024-06-29T17:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "kmod-mac80211", sourcePackage: "mac80211", arch: "all", currentVersion: "5.15.158+6.1.92-1", fixedVersion: "5.15.162+6.1.97-1", packageManager: "opkg", sizeBytes: 420000 }
+    ],
+    commands: {
+      nativeUpgrade: "opkg update && opkg upgrade kmod-mac80211",
+      verification: "opkg list-installed kmod-mac80211 | grep 5.15.162",
+      rollback: "opkg install --force-downgrade kmod-mac80211_5.15.158+6.1.92-1",
+      kineticDeploy: "kinetic upgrade --bundle OPENWRT-KRN-2024-2305 --os openwrt"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://openwrt.org/releases/23.05/notes-23.05.4",
+    sourceFeed: {
+      sourceId: "feed-openwrt",
+      feedName: "OpenWrt Package & Firmware Errata Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://downloads.openwrt.org/"
+    }
+  },
+
+  // 64. Oracle Linux 9 OpenSSL & Libkcapi User-Space FIPS Crypto Update (Non-Reboot)
+  {
+    id: "ARG-ELBA-2024-12904",
+    bundleId: "ELBA-2024-12904",
+    advisoryType: "BUGFIX",
+    os: "oracle-linux",
+    osFamily: "linux-rhel",
+    osDisplayName: "Oracle Linux",
+    targetReleases: ["Oracle Linux 9.4", "Oracle Linux 8.10"],
+    title: "Oracle Linux OpenSSL FIPS Provider & systemd-resolved Cache Fix",
+    synopsis: "Non-disruptive Oracle Linux user-space update fixing OpenSSL PKCS#11 engine thread contention without rebooting.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.8,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T17:45:00Z",
+    updatedAt: "2024-06-29T17:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "openssl-libs", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.0.7-27.0.1.el9", fixedVersion: "3.0.7-28.0.2.el9_4", packageManager: "dnf", sizeBytes: 2180000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y openssl-libs",
+      verification: "rpm -q openssl-libs | grep 3.0.7-28.0.2.el9_4",
+      rollback: "dnf history undo last -y",
+      kineticDeploy: "kinetic upgrade --bundle ELBA-2024-12904 --os oracle-linux"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://linux.oracle.com/errata/ELBA-2024-12904.html",
+    sourceFeed: {
+      sourceId: "feed-oracle-errata",
+      feedName: "Oracle Linux Bug Fix & Enhancement Stream (ELBA & ELEA / UEK)",
+      feedType: "public-distro-feed",
+      format: "OVAL",
+      syncStatus: "live",
+      sourceUrl: "https://linux.oracle.com/security/oval/"
+    }
+  },
+
+  // 65. VMware Photon OS 5.0 Linux-ESX Hypervisor Kernel Update (Disruptive)
+  {
+    id: "ARG-PHOTON-KRN-2024-5012",
+    bundleId: "PHOTON-KRN-2024-5012",
+    advisoryType: "BUGFIX",
+    os: "photon",
+    osFamily: "linux-photon",
+    osDisplayName: "VMware Photon OS",
+    targetReleases: ["Photon OS 5.0", "Photon OS 4.0"],
+    title: "Photon OS 5.0 linux-esx Kernel 6.1 VMXNET3 Ring Buffer & VSOCK Fix",
+    synopsis: "Disruptive Photon OS linux-esx kernel update optimizing vSphere VMXNET3 RSS queues; requires VM reboot during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.7,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T18:00:00Z",
+    updatedAt: "2024-06-29T18:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-esx", sourcePackage: "linux-esx", arch: "x86_64", currentVersion: "6.1.83-2.ph5", fixedVersion: "6.1.94-4.ph5", packageManager: "tdnf", sizeBytes: 24500000 }
+    ],
+    commands: {
+      nativeUpgrade: "tdnf upgrade -y linux-esx",
+      verification: "rpm -q linux-esx | grep 6.1.94-4.ph5",
+      rollback: "tdnf downgrade -y linux-esx-6.1.83-2.ph5",
+      kineticDeploy: "kinetic upgrade --bundle PHOTON-KRN-2024-5012 --os photon"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://github.com/vmware/photon/wiki/Security-Advisories-5.0",
+    sourceFeed: {
+      sourceId: "feed-photon-os",
+      feedName: "VMware Photon OS TDNF Update Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://packages.vmware.com/photon/"
+    }
+  },
+
+  // 66. SUSE Linux Enterprise 15 SP6 Kernel-Default Btrfs & multipath Update (Disruptive)
+  {
+    id: "ARG-SUSE-RU-2024-3190",
+    bundleId: "SUSE-RU-2024:3190-1",
+    advisoryType: "MAINTENANCE",
+    os: "suse",
+    osFamily: "linux-suse",
+    osDisplayName: "SUSE Linux Enterprise",
+    targetReleases: ["SLES 15 SP6", "openSUSE Leap 15.6"],
+    title: "SUSE Kernel-Default 6.4.0 Btrfs Subvolume Quota & Multipath I/O Update",
+    synopsis: "Disruptive SUSE Recommended Update for kernel-default resolving Btrfs qgroup rescan stalls; requires scheduled system reboot.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.8,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T18:15:00Z",
+    updatedAt: "2024-06-29T18:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "kernel-default", sourcePackage: "kernel-default", arch: "x86_64", currentVersion: "6.4.0-150600.21.1", fixedVersion: "6.4.0-150600.23.17.1", packageManager: "zypper", sizeBytes: 51200000 }
+    ],
+    commands: {
+      nativeUpgrade: "zypper --non-interactive update kernel-default",
+      verification: "rpm -q kernel-default | grep 6.4.0-150600.23.17.1",
+      rollback: "zypper --non-interactive install --oldpackage kernel-default=6.4.0-150600.21.1",
+      kineticDeploy: "kinetic upgrade --bundle SUSE-RU-2024:3190-1 --os suse"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://www.suse.com/support/update/",
+    sourceFeed: {
+      sourceId: "feed-suse-ru",
+      feedName: "SUSE Recommended & Maintenance Updates (SUSE-RU / openSUSE)",
+      feedType: "public-distro-feed",
+      format: "OVAL",
+      syncStatus: "live",
+      sourceUrl: "https://ftp.suse.com/pub/projects/security/oval/"
+    }
+  },
+
+  // 67. Void Linux runit & OpenSSL User-Space Service Supervision Update (Non-Reboot)
+  {
+    id: "ARG-VOID-UPD-2024-0912",
+    bundleId: "VOID-UPD-2024-0912",
+    advisoryType: "BUGFIX",
+    os: "void",
+    osFamily: "linux-void",
+    osDisplayName: "Void Linux",
+    targetReleases: ["Void Linux Rolling (glibc & musl)"],
+    title: "Void Linux OpenSSL 3.3 & runit-void Service Log Rotation Fix",
+    synopsis: "Non-disruptive Void Linux xbps user-space package update reloading supervised services with zero host reboot.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.6,
+    operationalDomain: "CORE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-29T18:30:00Z",
+    updatedAt: "2024-06-29T18:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "openssl", sourcePackage: "openssl", arch: "x86_64", currentVersion: "3.3.1_1", fixedVersion: "3.3.2_1", packageManager: "xbps", sizeBytes: 3120000 }
+    ],
+    commands: {
+      nativeUpgrade: "xbps-install -Syu openssl",
+      verification: "xbps-query -l | grep openssl-3.3.2_1",
+      rollback: "xbps-install -f openssl-3.3.1_1",
+      kineticDeploy: "kinetic upgrade --bundle VOID-UPD-2024-0912 --os void"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["sshd"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://voidlinux.org/news/",
+    sourceFeed: {
+      sourceId: "feed-void-xbps",
+      feedName: "Void Linux XBPS Rolling Package Updates",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://github.com/void-linux/void-packages"
+    }
+  },
+
+  // 68. Chainguard Wolfi OS MicroVM Kernel 6.10 Update (Disruptive)
+  {
+    id: "ARG-WOLFI-KRN-2024-0930",
+    bundleId: "WOLFI-KRN-2024-0930",
+    advisoryType: "MAINTENANCE",
+    os: "wolfi",
+    osFamily: "linux-wolfi",
+    osDisplayName: "Chainguard Wolfi",
+    targetReleases: ["Wolfi Rolling (2024)"],
+    title: "Wolfi MicroVM Kernel 6.10.9 Virtio-FS & Seccomp BPF Update",
+    synopsis: "Disruptive Wolfi microVM kernel package update requiring container microVM restart during off-peak window.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "KERNEL",
+    actionDirective: "SCHEDULE_REBOOT",
+    issuedAt: "2024-06-29T18:45:00Z",
+    updatedAt: "2024-06-29T18:45:00Z",
+    cveList: [],
+    packages: [
+      { name: "linux-wolfi", sourcePackage: "linux-wolfi", arch: "x86_64", currentVersion: "6.10.6-r0", fixedVersion: "6.10.9-r0", packageManager: "apk", sizeBytes: 21500000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update && apk upgrade --no-cache linux-wolfi",
+      verification: "apk info -v linux-wolfi | grep 6.10.9-r0",
+      rollback: "apk add --no-cache 'linux-wolfi=6.10.6-r0'",
+      kineticDeploy: "kinetic upgrade --bundle WOLFI-KRN-2024-0930 --os wolfi"
+    },
+    impact: { rebootRequired: true, servicesToRestart: [], zeroDowntime: false },
+    upstreamNoticeUrl: "https://packages.wolfi.dev/",
+    sourceFeed: {
+      sourceId: "feed-wolfi-os",
+      feedName: "Chainguard Wolfi Undistro APK Advisory Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://packages.wolfi.dev/os/security.json"
+    }
+  }
 ];
 
 export interface ArgentQueryFilters {
@@ -3119,7 +4131,7 @@ export function getArgentBundles(filters: ArgentQueryFilters = {}): ArgentQueryR
   // Filter by OS
   if (filters.os && filters.os !== 'all') {
     const targetOs = filters.os.toLowerCase();
-    list = list.filter(b => b.os.toLowerCase() === targetOs || b.osFamily.toLowerCase().includes(targetOs));
+    list = list.filter(b => b.os.toLowerCase() === targetOs || b.osFamily.toLowerCase() === targetOs);
   }
 
   // Filter by Severity

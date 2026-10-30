@@ -537,8 +537,8 @@ echo ""
 echo "===================================================================="
 echo " [VALKYRIE] Verification complete."
 echo " Remediation Action: ${probe.remediationSummary}"
-echo " Instant Hotpatch:   https://exultia.ai/app/praxis?cve=\${CVE_REF}"
-echo " Chaos Reproduction: https://exultia.ai/app/eris?cve=\${CVE_REF}"
+echo " Instant Hotpatch:   https://exultia.tech/app/praxis?cve=\${CVE_REF}"
+echo " Chaos Reproduction: https://exultia.tech/app/eris?cve=\${CVE_REF}"
 echo "===================================================================="
 `;
 }
@@ -596,9 +596,9 @@ ${result.logs.map(l => `[${l.timestamp}] [${l.level.padEnd(4)}] ${l.message}`).j
 ## 4. Remediation & Action Plan
 
 - **Recommended Fix:** ${result.probe.remediationSummary}
-- **Praxis Virtual Hotpatch:** Apply instant eBPF rule at [Praxis Remediation Console](https://exultia.ai${result.praxisRemediationLink})
-- **Eris Chaos Lab Verification:** Reproduce in sandbox container at [Eris Proving Ground](https://exultia.ai${result.erisChaosLink})
-- **Vantage Intelligence Feed:** View full threat telemetry at [Vantage Feed](https://exultia.ai${result.vantageAdvisoryLink})
+- **Praxis Virtual Hotpatch:** Apply instant eBPF rule at [Praxis Remediation Console](https://exultia.tech${result.praxisRemediationLink})
+- **Eris Chaos Lab Verification:** Reproduce in sandbox container at [Eris Proving Ground](https://exultia.tech${result.erisChaosLink})
+- **Vantage Intelligence Feed:** View full threat telemetry at [Vantage Feed](https://exultia.tech${result.vantageAdvisoryLink})
 
 ---
 *Generated autonomously by Valkyrie Pentest Engine. Cryptographic attestation recorded in Exultia Audit Log.*

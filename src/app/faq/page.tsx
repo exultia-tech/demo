@@ -471,7 +471,7 @@ const FAQ_DATA: FaqItem[] = [
       "Yes! Exultia is engineered specifically for organizations running existing Linux server fleets across cloud, on-premises, and edge:",
       "• Portable Single-Binary Engine: Statically compiled native executable (`exultia`) with zero external runtime dependencies.",
       "• Native Service Integration: Ships with a production systemd service unit and watchdog timer for automatic supervisor management.",
-      "• One-Command Install: `curl -fsSL https://get.exultia.org | sudo sh` installs the binary, registers the systemd service, and starts the 60-second autonomous remediation loop.",
+      "• One-Command Install: `curl -fsSL https://exultia.tech/install.sh | sudo sh` installs the binary, registers the systemd service, and starts the 60-second autonomous remediation loop.",
       "• Air-Gapped Tarball: Download `exultia-linux-amd64.tar.gz` (58.4 MB), transfer it across your data diode, and unpack it to get the daemon and all 24,388 pre-baked UVI advisories immediately.",
       "• Zero Infrastructure Disruption: Performs threat detection, listening socket correlation, and automated in-memory/sysctl remediation on your existing Linux servers without reformatting or reinstalling."
     ]
