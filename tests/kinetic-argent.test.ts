@@ -237,6 +237,39 @@ describe('Exultia Kinetic & Argent General Patch Management Deployment Suite', (
       const xulCompileSummary = JSON.parse(xulCompileOut.slice(xulCompileOut.indexOf('{')));
       expect(xulCompileSummary.cve_id).toBe('CVE-2024-6387');
       expect(xulCompileSummary.posix_script).toContain('#!/bin/sh');
+
+      // 7. Secondary internal feed + CBOM structured activity log export (`xul --cbom`)
+      const internalFeedFile = path.join(testStateDir, 'internal_feed_test.json');
+      fs.writeFileSync(internalFeedFile, JSON.stringify({
+        patches: [
+          {
+            id: 'INT-CORP-PG-POOL-2026',
+            cveId: 'CORP-DB-2026-099',
+            operationalDomain: 'DATABASE',
+            title: 'Internal PgBouncer Connection Pooler Tuning Update',
+            os: 'ubuntu',
+            packageName: 'pgbouncer-corp',
+            versionBefore: '1.21.0',
+            versionTarget: '1.22.1-corp1',
+            upgradeCommand: 'apt-get install --only-upgrade -y pgbouncer-corp',
+            requiresReboot: false
+          }
+        ]
+      }, null, 2));
+
+      const secPatchCmd = `python kinetic-cli/xul.py --patch --os ubuntu --staging-dir "${testStagingDir}" --secondary-feed "${internalFeedFile}" --non-reboot --dry-run --json --state-dir "${testStateDir}"`;
+      const secPatchOut = execSync(secPatchCmd, { encoding: 'utf-8' });
+      const secPatchSummary = JSON.parse(secPatchOut.slice(secPatchOut.indexOf('{')));
+      expect(secPatchSummary.applied_non_reboot).toContain('ARG-INT-CORP-PG-POOL-2026');
+
+      const xulCbomCmd = `python kinetic-cli/xul.py --cbom --state-dir "${testStateDir}" --staging-dir "${testStagingDir}"`;
+      const xulCbomOut = execSync(xulCbomCmd, { encoding: 'utf-8' });
+      const cbomDoc = JSON.parse(xulCbomOut.slice(xulCbomOut.indexOf('{')));
+      expect(cbomDoc.bomFormat).toBe('CycloneDX');
+      expect(cbomDoc.specVersion).toBe('1.6');
+      expect(cbomDoc.profile).toBe('Exultia-Activity-CBOM');
+      expect(cbomDoc.summary.databaseComponentsCount).toBeGreaterThanOrEqual(3);
+      expect(cbomDoc.summary.totalActivities).toBeGreaterThan(0);
     }, 25000);
   });
 });

@@ -30,6 +30,7 @@ class KineticWebhookListener:
         os_filter: Optional[str] = None,
         feed_url: str = "https://exultia.tech/api/patches/feed",
         argent_feed_url: str = "https://exultia.tech/api/argent/feed?format=kinetic",
+        secondary_feed: Optional[Any] = None,
         dry_run: bool = False,
     ):
         self.engine = engine
@@ -39,6 +40,7 @@ class KineticWebhookListener:
         self.os_filter = os_filter
         self.feed_url = feed_url
         self.argent_feed_url = argent_feed_url
+        self.secondary_feed = secondary_feed
         self.dry_run = dry_run
         self._server: Optional[ThreadingHTTPServer] = None
         self._thread: Optional[threading.Thread] = None
@@ -76,6 +78,8 @@ class KineticWebhookListener:
         force_disruptive = bool(payload.get("force_disruptive_now", mode in ("disruptive", "all", "fullauto")))
         source_console = str(payload.get("source", "enterprise-webhook"))
         dry_run = bool(payload.get("dry_run", self.dry_run))
+        secondary_feed = payload.get("secondary_feed") or payload.get("secondary_feeds") or self.secondary_feed
+        kernel_livepatch = bool(payload.get("kernel_livepatch", payload.get("livepatch", False)))
 
         if mode == "fullauto":
             confirmed = bool(payload.get("confirm", False))
@@ -89,6 +93,7 @@ class KineticWebhookListener:
                 os_filter=target_os,
                 feed_url=self.feed_url,
                 argent_feed_url=self.argent_feed_url,
+                secondary_feed=secondary_feed,
                 pre_patch_hook=payload.get("pre_patch_hook"),
                 post_patch_hook=payload.get("post_patch_hook"),
                 simulated_metrics=payload.get("simulated_metrics"),
@@ -105,12 +110,14 @@ class KineticWebhookListener:
             res = self.engine.execute_staged_patch_policy(
                 os_filter=target_os,
                 feed_url=self.argent_feed_url,
+                secondary_feed=secondary_feed,
                 auto_patch_non_reboot=True,
                 disruptive_auto_reboot=(mode in ("disruptive", "all")) or force_disruptive,
                 off_peak_window=str(payload.get("off_peak_window", "02:00-05:00")),
                 deferred_windows=payload.get("deferred_windows"),
                 defer_disruptive_until=payload.get("defer_disruptive_until"),
                 vendor_native_updates=include_vendor,
+                kernel_livepatch=kernel_livepatch,
                 force_disruptive_now=force_disruptive,
                 dry_run=dry_run,
             )
@@ -185,6 +192,9 @@ class KineticWebhookListener:
                             "status": st,
                         },
                     )
+                elif parsed.path in ("/webhook/cbom", "/api/v1/cbom"):
+                    cbom = listener.engine.generate_activity_cbom()
+                    self._send_json(200, cbom)
                 else:
                     self._send_json(404, {"ok": False, "error": f"Unknown endpoint {parsed.path}"})
 

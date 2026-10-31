@@ -52,6 +52,8 @@ export default function ExultiaLinuxClientView() {
   const [webhookSecret, setWebhookSecret] = useState<string>("exultia_enterprise_webhook_hmac");
   const [fullautoEnabled, setFullautoEnabled] = useState<boolean>(false);
   const [fullautoConfirmed, setFullautoConfirmed] = useState<boolean>(false);
+  const [secondaryFeedUrl, setSecondaryFeedUrl] = useState<string>("/etc/exultia/internal-feed.json");
+  const [cbomOutPath, setCbomOutPath] = useState<string>("/var/log/exultia/activity_cbom.json");
 
   const offPeakWindow = `${offPeakStart}-${offPeakEnd}`;
 
@@ -67,6 +69,8 @@ export default function ExultiaLinuxClientView() {
     disruptiveAutoReboot && deferredWindows.trim() ? `--deferred-windows "${deferredWindows.trim()}"` : "",
     disruptiveAutoReboot && deferUntil.trim() ? `--defer-until "${deferUntil.trim()}"` : "",
     schedulerMode !== "none" ? `--scheduler ${schedulerMode} --cron "${scheduleCron}"` : "",
+    secondaryFeedUrl.trim() ? `--secondary-feed "${secondaryFeedUrl.trim()}"` : "",
+    cbomOutPath.trim() ? `--cbom-out "${cbomOutPath.trim()}"` : "",
     webhookListen ? `--webhook --webhook-port ${webhookPort || "8765"}${webhookSecret ? ` --webhook-secret "${webhookSecret}"` : ""}` : "",
     fullautoEnabled ? (fullautoConfirmed ? "--fullauto --confirm" : "# [WARNING: --fullauto requires --confirm to execute]") : "",
   ]
@@ -79,6 +83,7 @@ export default function ExultiaLinuxClientView() {
     autoPatchNonReboot ? "--non-reboot" : "",
     vendorNativeUpdates ? "--vendor" : "",
     kernelLivepatch ? "--livepatch" : "",
+    secondaryFeedUrl.trim() ? `--secondary-feed "${secondaryFeedUrl.trim()}"` : "",
     disruptiveAutoReboot ? `--disruptive --window "${offPeakWindow}"` : "",
     fullautoEnabled && fullautoConfirmed ? "--fullauto --confirm" : "",
   ]
@@ -100,6 +105,8 @@ scheduler_mode = "${schedulerMode}"
 cron_expression = "${scheduleCron}"
 webhook_enabled = ${webhookListen}
 webhook_port = ${webhookPort || "8765"}
+secondary_feeds = ["${secondaryFeedUrl}"]
+cbom_log_path = "${cbomOutPath}"
 fullauto_enabled = ${fullautoEnabled}
 fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
 
@@ -883,6 +890,50 @@ fullauto_confirmed = ${fullautoEnabled && fullautoConfirmed}`;
                   Pass Secondary Confirmation Argument (--confirm) to Authorize Dynamic HA Patching
                 </label>
               )}
+            </div>
+
+            {/* Toggle 7: Secondary Internal Patch Feed & CycloneDX CBOM Activity Log */}
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              border: "1px solid rgba(6, 182, 212, 0.35)",
+              borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+              <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                <FileText size={15} color="#22D3EE" /> Secondary Internal Feed &amp; CycloneDX 1.6 CBOM Activity Log
+              </div>
+              <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: 0, lineHeight: 1.4 }}>
+                Ingest custom internal patch feeds (<code style={{ color: "#22D3EE" }}>--secondary-feed</code>) alongside Exultia primary feeds, and persist every OS, database, and kernel livepatch event to a structured CycloneDX 1.6 Activity BOM (<code style={{ color: "#22D3EE" }}>exultia cbom</code> / <code style={{ color: "#22D3EE" }}>xul --cbom</code>).
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", paddingTop: "4px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#22D3EE", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                    Secondary Feed (--secondary-feed)
+                  </label>
+                  <input
+                    type="text"
+                    value={secondaryFeedUrl}
+                    onChange={(e) => setSecondaryFeedUrl(e.target.value)}
+                    placeholder="https://patches.corp.internal/feed.json"
+                    style={{ width: "100%", padding: "6px 10px", borderRadius: "6px", background: "#090D16", border: "1px solid rgba(6, 182, 212, 0.35)", color: "#A5F3FC", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#22D3EE", textTransform: "uppercase", marginBottom: "4px", fontFamily: "var(--font-mono, monospace)" }}>
+                    CBOM Activity Log (--cbom-out)
+                  </label>
+                  <input
+                    type="text"
+                    value={cbomOutPath}
+                    onChange={(e) => setCbomOutPath(e.target.value)}
+                    placeholder="/var/log/exultia/activity_cbom.json"
+                    style={{ width: "100%", padding: "6px 10px", borderRadius: "6px", background: "#090D16", border: "1px solid rgba(6, 182, 212, 0.35)", color: "#A5F3FC", fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)" }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

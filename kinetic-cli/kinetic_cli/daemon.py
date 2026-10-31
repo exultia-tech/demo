@@ -34,6 +34,7 @@ class KineticDaemon:
         engine: KineticEngine,
         feed_url: str = "https://exultia.tech/api/patches/feed",
         argent_feed_url: str = "https://exultia.tech/api/argent/feed?format=kinetic",
+        secondary_feed: Optional[Union[str, List[str]]] = None,
         token: Optional[str] = None,
         interval: int = 3600,
         ring: int = 0,
@@ -74,6 +75,7 @@ class KineticDaemon:
         self.engine = engine
         self.feed_url = feed_url
         self.argent_feed_url = argent_feed_url
+        self.secondary_feed = secondary_feed
         self.token = token
         self.interval = interval
         self.ring = ring
@@ -142,6 +144,7 @@ class KineticDaemon:
                 os_filter=self.os_distro,
                 feed_url=self.feed_url,
                 argent_feed_url=self.argent_feed_url,
+                secondary_feed=self.secondary_feed,
                 dry_run=self.dry_run,
             )
 
@@ -155,6 +158,7 @@ class KineticDaemon:
                 os_filter=self.os_distro,
                 feed_url=self.feed_url,
                 argent_feed_url=self.argent_feed_url,
+                secondary_feed=self.secondary_feed,
                 dry_run=self.dry_run,
             )
         return self.webhook_listener.start_background()
@@ -246,6 +250,7 @@ class KineticDaemon:
                 os_filter=self.os_distro,
                 feed_url=self.feed_url,
                 argent_feed_url=self.argent_feed_url,
+                secondary_feed=self.secondary_feed,
                 custom_staging_dir=self.staging_dir,
                 drain_grace_seconds=self.drain_grace_seconds,
                 pre_patch_hook=self.pre_patch_hook,
@@ -292,6 +297,7 @@ class KineticDaemon:
         summary = self.engine.execute_staged_patch_policy(
             os_filter=self.os_distro,
             feed_url=self.argent_feed_url,
+            secondary_feed=self.secondary_feed,
             custom_staging_dir=self.staging_dir,
             auto_patch_non_reboot=self.auto_patch_non_reboot,
             disruptive_auto_reboot=self.disruptive_auto_reboot,

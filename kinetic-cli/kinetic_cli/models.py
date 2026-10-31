@@ -52,44 +52,72 @@ class KineticPatch:
     provenance: Provenance
     package_upgrade: PackageUpgrade = field(default_factory=PackageUpgrade)
     bundle_id: str = ""
+    operational_domain: str = "PATCH"
+    feed_source: str = "primary"
     published_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "KineticPatch":
+    def from_dict(cls, data: Dict[str, Any], default_feed_source: str = "primary") -> "KineticPatch":
         rem = data.get("remediationTier", {}).get("tier1_hotMitigation", {})
         pkg_rem = data.get("remediationTier", {}).get("tier2_packageUpgrade", {})
         prov = data.get("provenance", {})
         meta = data.get("metadata", {})
 
+        # Support simplified internal/secondary feed object keys as well as canonical schema
+        raw_id = data.get("id") or data.get("bundleId") or f"PAT-{data.get('cveId', 'INTERNAL')}"
+        raw_cve = data.get("cveId") or data.get("bundleId") or raw_id
+        raw_bundle = meta.get("bundleId") or data.get("bundleId") or raw_id
+        raw_domain = (
+            data.get("operationalDomain")
+            or meta.get("operationalDomain")
+            or data.get("category")
+            or "PATCH"
+        )
+        raw_feed_source = data.get("feedSource") or meta.get("feedSource") or default_feed_source
+
+        # Support top-level shorthand fields for custom internal feeds
+        top_cmd = data.get("upgradeCommand") or data.get("upgrade_command") or data.get("command") or ""
+        top_cmds = data.get("commands") if isinstance(data.get("commands"), list) else ([top_cmd] if top_cmd else [])
+        top_verify = data.get("verificationCommand") or data.get("verification_command") or "echo verified"
+        top_rollback = data.get("rollbackCommand") or data.get("rollback_command") or "true"
+        top_pkg = data.get("packageName") or data.get("package_name") or data.get("package") or ""
+        top_reboot = bool(data.get("requiresReboot", data.get("requires_reboot", False)))
+        top_os = data.get("affectedDistros") or data.get("affected_distros") or (
+            [data["os"]] if isinstance(data.get("os"), str) else data.get("os", ["ubuntu", "debian", "rhel", "rocky"])
+        )
+        top_pkgs = data.get("affectedPackages") or data.get("affected_packages") or ([top_pkg] if top_pkg else ["system-core"])
+
         return cls(
-            id=data.get("id", f"PAT-{data.get('cveId', 'UNKNOWN')}"),
-            cve_id=data.get("cveId", "UNKNOWN"),
-            bundle_id=meta.get("bundleId", data.get("id", "")),
+            id=raw_id,
+            cve_id=raw_cve,
+            bundle_id=raw_bundle,
+            operational_domain=str(raw_domain).upper(),
+            feed_source=str(raw_feed_source),
             title=data.get("title", "Advisory Remediation"),
-            severity=data.get("severity", "HIGH"),
-            cvss=float(data.get("cvss", 7.5)),
+            severity=data.get("severity", data.get("vendorSeverity", "HIGH")),
+            cvss=float(data.get("cvss", data.get("severityScore", 7.5))),
             cisa_kev=bool(data.get("cisaKev", False)),
-            affected_packages=data.get("affectedPackages", ["system-core"]),
-            affected_distros=data.get("affectedDistros", ["ubuntu", "debian", "rhel", "rocky"]),
+            affected_packages=top_pkgs,
+            affected_distros=top_os,
             hot_mitigation=HotMitigation(
-                summary=rem.get("summary", "System security constraint dropin"),
-                downtime_required=rem.get("downtimeRequired", False),
-                commands=rem.get("commands", []),
-                verification_command=rem.get("verificationCommand", "echo verified"),
-                rollback_command=rem.get("rollbackCommand", "true")
+                summary=rem.get("summary", data.get("synopsis", "System security constraint dropin")),
+                downtime_required=rem.get("downtimeRequired", top_reboot),
+                commands=rem.get("commands", top_cmds),
+                verification_command=rem.get("verificationCommand", top_verify),
+                rollback_command=rem.get("rollbackCommand", top_rollback)
             ),
             package_upgrade=PackageUpgrade(
-                summary=pkg_rem.get("summary", "Standard OS Package Upgrade"),
+                summary=pkg_rem.get("summary", data.get("synopsis", "Standard OS Package Upgrade")),
                 distro_commands=pkg_rem.get("distroCommands", {}),
-                upgrade_command=pkg_rem.get("upgradeCommand", ""),
-                package_name=pkg_rem.get("packageName", ""),
-                version_before=pkg_rem.get("versionBefore", ""),
-                version_target=pkg_rem.get("versionTarget", pkg_rem.get("targetVersion", "")),
-                requires_reboot=bool(pkg_rem.get("requiresReboot", False)),
-                package_manager=pkg_rem.get("packageManager", "apt")
+                upgrade_command=pkg_rem.get("upgradeCommand", top_cmd),
+                package_name=pkg_rem.get("packageName", top_pkg),
+                version_before=pkg_rem.get("versionBefore", data.get("versionBefore", data.get("version_before", ""))),
+                version_target=pkg_rem.get("versionTarget", pkg_rem.get("targetVersion", data.get("versionTarget", data.get("version_target", "")))),
+                requires_reboot=bool(pkg_rem.get("requiresReboot", top_reboot)),
+                package_manager=pkg_rem.get("packageManager", data.get("packageManager", "apt"))
             ),
             provenance=Provenance(
-                signed_by=prov.get("signedBy", "security@exultia.tech (Cosign OIDC Keyless)"),
+                signed_by=prov.get("signedBy", data.get("signedBy", "security@exultia.tech (Cosign OIDC Keyless)")),
                 cosign_digest=prov.get("cosignDigest", "sha256:0000000000000000000000000000000000000000000000000000000000000000"),
                 slsa_level=int(prov.get("slsaLevel", 3)),
                 target_env=prov.get("testValidation", {}).get("targetEnv", "Linux Production")
@@ -122,6 +150,8 @@ class StagedPatchRecord:
     applied_at: Optional[str] = None
     reboot_triggered: bool = False
     deferred_until: Optional[str] = None
+    operational_domain: str = "PATCH"
+    feed_source: str = "primary"
 
     @property
     def local_bundle_path(self) -> str:
@@ -159,6 +189,8 @@ class PatchManagementPolicy:
     fullauto_confirmed: bool = False
     kernel_livepatch_enabled: bool = True
     kernel_livepatch_mode: str = "auto"  # "auto", "klp", "ebpf", "both", "disabled"
+    secondary_feeds: List[str] = field(default_factory=list)
+    cbom_log_path: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)

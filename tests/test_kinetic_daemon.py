@@ -594,6 +594,76 @@ class TestKineticRuntimeDaemon(unittest.TestCase):
         )
         self.assertGreaterEqual(feed_res["total_matches"], 1)
 
+    def test_17_database_patches_secondary_feed_and_cbom_activity_log(self):
+        """Verify database patches, secondary internal feed ingestion, and structured CycloneDX CBOM activity logs."""
+        internal_feed_path = Path(self.temp_dir) / "internal_corp_feed.json"
+        internal_feed_path.write_text(
+            json.dumps({
+                "patches": [
+                    {
+                        "id": "INT-CORP-PG-TIMESCALEDB-2026-01",
+                        "cveId": "CORP-DB-2026-001",
+                        "bundleId": "CORP-DB-2026-001",
+                        "operationalDomain": "DATABASE",
+                        "title": "[Internal Corp Feed] TimescaleDB 2.16.1 Hypertable Compression Patch",
+                        "severity": "IMPORTANT",
+                        "cvss": 7.6,
+                        "os": "ubuntu",
+                        "packageName": "timescaledb-2-postgresql-16",
+                        "versionBefore": "2.15.2",
+                        "versionTarget": "2.16.1",
+                        "upgradeCommand": "apt-get install --only-upgrade -y timescaledb-2-postgresql-16",
+                        "verificationCommand": "true",
+                        "rollbackCommand": "true",
+                        "requiresReboot": False,
+                        "packageManager": "apt"
+                    }
+                ]
+            }),
+            encoding="utf-8",
+        )
+
+        # 1. Query unified feed for DATABASE domain + secondary feed
+        db_feed = self.engine.query_unified_feed(
+            domain_filter="DATABASE",
+            os_filter="ubuntu",
+            feed_url="http://127.0.0.1:59999/offline",
+            argent_feed_url="http://127.0.0.1:59999/offline",
+            secondary_feed=str(internal_feed_path),
+        )
+        self.assertGreaterEqual(db_feed["total_matches"], 3)
+        ids = [i["id"] for i in db_feed["items"]]
+        self.assertIn("PGDG-2024:1604", ids)
+        self.assertIn("UBUNTU-MYSQL-2024-0839", ids)
+        self.assertIn("CORP-DB-2026-001", ids)
+
+        # 2. Execute staged patch policy with secondary feed and kernel livepatching
+        res = self.engine.execute_staged_patch_policy(
+            os_filter="ubuntu",
+            feed_url="http://127.0.0.1:59999/offline",
+            secondary_feed=str(internal_feed_path),
+            custom_staging_dir=str(self.staging_dir),
+            auto_patch_non_reboot=True,
+            vendor_native_updates=True,
+            kernel_livepatch=True,
+            dry_run=True,
+        )
+        self.assertIn("ARG-PGSQL-16-2024-1604", res["applied_non_reboot"])
+        self.assertIn("ARG-MYSQL-80-2024-0839", res["applied_non_reboot"])
+        self.assertIn("ARG-INT-CORP-PG-TIMESCALEDB-2026-01", res["applied_non_reboot"])
+
+        # 3. Verify structured CycloneDX 1.6 CBOM Activity Log (`activity_cbom.json`)
+        cbom_path = Path(res["cbom_log_path"])
+        self.assertTrue(cbom_path.exists())
+        cbom = json.loads(cbom_path.read_text(encoding="utf-8"))
+        self.assertEqual(cbom["bomFormat"], "CycloneDX")
+        self.assertEqual(cbom["specVersion"], "1.6")
+        self.assertEqual(cbom["profile"], "Exultia-Activity-CBOM")
+        self.assertGreaterEqual(cbom["summary"]["databaseComponentsCount"], 3)
+        self.assertGreaterEqual(cbom["summary"]["kernelLivepatchComponentsCount"], 4)
+        self.assertGreaterEqual(cbom["summary"]["totalActivities"], 5)
+        self.assertTrue(any(a["action"] == "SECONDARY_FEED_INGEST" for a in cbom["activities"]))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

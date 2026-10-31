@@ -110,6 +110,7 @@ export type ArgentOperationalDomain =
   | 'CONTAINER'
   | 'SYSTEMD'
   | 'STORAGE'
+  | 'DATABASE'
   | 'DRIVER'
   | 'STABILITY'
   | 'PERFORMANCE';
@@ -4509,6 +4510,405 @@ export const ARGENT_PATCH_BUNDLES: ArgentPatchBundle[] = [
       syncStatus: "live",
       sourceUrl: "https://update.sys.truenas.net/scale/"
     }
+  },
+
+  // 79. PostgreSQL 16.4 B-Tree WAL Replay & Connection Pooler Stability Update (Ubuntu)
+  {
+    id: "ARG-PGSQL-16-2024-1604",
+    bundleId: "PGDG-2024:1604",
+    advisoryType: "BUGFIX",
+    os: "ubuntu",
+    osFamily: "linux-debian",
+    osDisplayName: "Ubuntu Linux",
+    targetReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
+    title: "PostgreSQL 16.4 B-Tree Index WAL Replay, Parallel Vacuum & libpq5 Connection Pool Stability Update",
+    synopsis: "Official PostgreSQL Global Development Group (PGDG) & Canonical database update resolving concurrent B-tree page split WAL replay stalls and parallel vacuum deadlock under heavy OLTP write workloads.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.9,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T08:00:00Z",
+    updatedAt: "2024-06-30T08:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "postgresql-16", sourcePackage: "postgresql-16", arch: "x86_64", currentVersion: "16.3-1.pgdg24.04+1", fixedVersion: "16.4-1.pgdg24.04+1", packageManager: "apt", sizeBytes: 16840000 },
+      { name: "postgresql-client-16", sourcePackage: "postgresql-16", arch: "x86_64", currentVersion: "16.3-1.pgdg24.04+1", fixedVersion: "16.4-1.pgdg24.04+1", packageManager: "apt", sizeBytes: 1850000 },
+      { name: "libpq5", sourcePackage: "postgresql-16", arch: "x86_64", currentVersion: "16.3-1.pgdg24.04+1", fixedVersion: "16.4-1.pgdg24.04+1", packageManager: "apt", sizeBytes: 215000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y postgresql-16 postgresql-client-16 libpq5 && (systemctl reload postgresql 2>/dev/null || true)",
+      verification: "psql --version | grep 16.4 || dpkg -l postgresql-16 | grep 16.4",
+      rollback: "apt-get install -y --allow-downgrades postgresql-16=16.3-1.pgdg24.04+1 postgresql-client-16=16.3-1.pgdg24.04+1 libpq5=16.3-1.pgdg24.04+1",
+      kineticDeploy: "exultia patch --bundle PGDG-2024:1604 --os ubuntu"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["postgresql"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.postgresql.org/docs/release/16.4/",
+    sourceFeed: {
+      sourceId: "feed-ubuntu-updates",
+      feedName: "Canonical Ubuntu & PostgreSQL Apt Repository Stream (apt.postgresql.org)",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://apt.postgresql.org/pub/repos/apt/"
+    }
+  },
+
+  // 80. RHEL 9 / Rocky PostgreSQL 16 & PgBouncer Logical Replication Slot Failover Update
+  {
+    id: "ARG-RHEL-PGSQL-2024-4890",
+    bundleId: "RHBA-2024:4890",
+    advisoryType: "BUGFIX",
+    os: "rhel",
+    osFamily: "linux-rhel",
+    osDisplayName: "Red Hat Enterprise Linux",
+    targetReleases: ["RHEL 9.4", "RHEL 8.10"],
+    title: "PostgreSQL 16 & PgBouncer Logical Replication Slot Synchronization and SCRAM-SHA-256 Pooling Fix",
+    synopsis: "Red Hat AppStream database advisory resolving logical replication LSN drift across synchronous standby promotions and PgBouncer SCRAM-SHA-256 session pooling memory leak.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.7,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T09:15:00Z",
+    updatedAt: "2024-06-30T09:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "postgresql-server", sourcePackage: "postgresql", arch: "x86_64", currentVersion: "16.2-1.el9_4", fixedVersion: "16.4-1.el9_4", packageManager: "dnf", sizeBytes: 6420000 },
+      { name: "pgbouncer", sourcePackage: "pgbouncer", arch: "x86_64", currentVersion: "1.22.0-1.el9", fixedVersion: "1.22.1-2.el9_4", packageManager: "dnf", sizeBytes: 312000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y postgresql-server pgbouncer && (systemctl reload postgresql pgbouncer 2>/dev/null || true)",
+      verification: "rpm -q postgresql-server | grep 16.4-1.el9_4",
+      rollback: "dnf history undo last -y && (systemctl reload postgresql pgbouncer 2>/dev/null || true)",
+      kineticDeploy: "exultia patch --bundle RHBA-2024:4890 --os rhel"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["postgresql", "pgbouncer"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://access.redhat.com/errata/RHBA-2024:4890",
+    sourceFeed: {
+      sourceId: "feed-rhel-errata",
+      feedName: "Red Hat AppStream Database Errata Stream (RHBA)",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://access.redhat.com/errata/"
+    }
+  },
+
+  // 81. MySQL 8.0.39 InnoDB Buffer Pool Adaptive Hash Index & Group Replication Update (Ubuntu)
+  {
+    id: "ARG-MYSQL-80-2024-0839",
+    bundleId: "UBUNTU-MYSQL-2024-0839",
+    advisoryType: "BUGFIX",
+    os: "ubuntu",
+    osFamily: "linux-debian",
+    osDisplayName: "Ubuntu Linux",
+    targetReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
+    title: "MySQL Server 8.0.39 InnoDB Adaptive Hash Index Latch Contention & Group Replication Paxos Fix",
+    synopsis: "Ubuntu Server database update resolving InnoDB RW-latch contention during online buffer pool resizing and Group Replication XCom Paxos view-change stalls.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.8,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T10:00:00Z",
+    updatedAt: "2024-06-30T10:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "mysql-server-8.0", sourcePackage: "mysql-8.0", arch: "x86_64", currentVersion: "8.0.37-0ubuntu0.24.04.1", fixedVersion: "8.0.39-0ubuntu0.24.04.1", packageManager: "apt", sizeBytes: 24500000 },
+      { name: "mysql-client-8.0", sourcePackage: "mysql-8.0", arch: "x86_64", currentVersion: "8.0.37-0ubuntu0.24.04.1", fixedVersion: "8.0.39-0ubuntu0.24.04.1", packageManager: "apt", sizeBytes: 2100000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y mysql-server-8.0 mysql-client-8.0",
+      verification: "mysqld --version | grep 8.0.39 || dpkg -l mysql-server-8.0 | grep 8.0.39",
+      rollback: "apt-get install -y --allow-downgrades mysql-server-8.0=8.0.37-0ubuntu0.24.04.1 mysql-client-8.0=8.0.37-0ubuntu0.24.04.1",
+      kineticDeploy: "exultia patch --bundle UBUNTU-MYSQL-2024-0839 --os ubuntu"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["mysql"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-39.html",
+    sourceFeed: {
+      sourceId: "feed-ubuntu-updates",
+      feedName: "Canonical Ubuntu Main Database Updates Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://launchpad.net/ubuntu/+source/mysql-8.0"
+    }
+  },
+
+  // 82. Oracle Linux 9 MySQL 8.0 / Percona Server InnoDB Redo Log Flush & Thread Pool Update
+  {
+    id: "ARG-OL-PERCONA-2024-3120",
+    bundleId: "ELBA-2024-3120",
+    advisoryType: "ENHANCEMENT",
+    os: "oracle-linux",
+    osFamily: "linux-rhel",
+    osDisplayName: "Oracle Linux",
+    targetReleases: ["Oracle Linux 9.4", "Oracle Linux 8.10"],
+    title: "MySQL 8.0 Enterprise & Percona XtraDB Redo Log Direct I/O Flush and NUMA Thread Pool Update",
+    synopsis: "Oracle Linux ULN database advisory optimizing InnoDB redo log O_DIRECT write batching on NVMe namespaces and fixing NUMA thread pool affinity under 128+ vCPU sockets.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.9,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T11:20:00Z",
+    updatedAt: "2024-06-30T11:20:00Z",
+    cveList: [],
+    packages: [
+      { name: "mysql-server", sourcePackage: "mysql", arch: "x86_64", currentVersion: "8.0.36-1.el9_3", fixedVersion: "8.0.39-1.el9_4", packageManager: "dnf", sizeBytes: 28400000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y mysql-server && (systemctl restart mysqld 2>/dev/null || true)",
+      verification: "rpm -q mysql-server | grep 8.0.39-1.el9_4",
+      rollback: "dnf history undo last -y && (systemctl restart mysqld 2>/dev/null || true)",
+      kineticDeploy: "exultia patch --bundle ELBA-2024-3120 --os oracle-linux"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["mysqld"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://linux.oracle.com/errata/ELBA-2024-3120.html",
+    sourceFeed: {
+      sourceId: "feed-oracle-uln",
+      feedName: "Oracle Linux Unbreakable Linux Network (ULN) Database Stream",
+      feedType: "public-distro-feed",
+      format: "UPDATEINFO",
+      syncStatus: "live",
+      sourceUrl: "https://yum.oracle.com/repo/OracleLinux/OL9/appstream/x86_64/"
+    }
+  },
+
+  // 83. MariaDB 10.11.9 LTS Galera Cluster SST & Aria Engine Recovery Bugfix (Debian 12)
+  {
+    id: "ARG-MARIADB-1011-2024-1019",
+    bundleId: "DEBIAN-MDB-2024-1019",
+    advisoryType: "BUGFIX",
+    os: "debian",
+    osFamily: "linux-debian",
+    osDisplayName: "Debian GNU/Linux",
+    targetReleases: ["Debian 12 (Bookworm)"],
+    title: "MariaDB 10.11.9 LTS Galera 4 State Snapshot Transfer (SST) & InnoDB Undo Tablespace Truncation Fix",
+    synopsis: "Debian stable database update resolving Galera 4 mariabackup SST donor desynchronization and InnoDB undo tablespace truncation stall on busy multi-master clusters.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.6,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T12:10:00Z",
+    updatedAt: "2024-06-30T12:10:00Z",
+    cveList: [],
+    packages: [
+      { name: "mariadb-server", sourcePackage: "mariadb", arch: "x86_64", currentVersion: "1:10.11.6-0+deb12u1", fixedVersion: "1:10.11.9-0+deb12u1", packageManager: "apt", sizeBytes: 17900000 },
+      { name: "galera-4", sourcePackage: "galera-4", arch: "x86_64", currentVersion: "26.4.16-1", fixedVersion: "26.4.19-0+deb12u1", packageManager: "apt", sizeBytes: 980000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y mariadb-server galera-4",
+      verification: "dpkg -l mariadb-server | grep 10.11.9",
+      rollback: "apt-get install -y --allow-downgrades mariadb-server=1:10.11.6-0+deb12u1 galera-4=26.4.16-1",
+      kineticDeploy: "exultia patch --bundle DEBIAN-MDB-2024-1019 --os debian"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["mariadb"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://mariadb.com/kb/en/mariadb-10-11-9-release-notes/",
+    sourceFeed: {
+      sourceId: "feed-debian-updates",
+      feedName: "Debian Stable Updates & MariaDB Foundation Repository Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://deb.debian.org/debian/dists/bookworm-updates/"
+    }
+  },
+
+  // 84. Redis 7.2.5 / Valkey 7.2.6 Forkless RDB Background Save & AOF Compaction Update (Alpine)
+  {
+    id: "ARG-REDIS-VALKEY-2024-0725",
+    bundleId: "ALPINE-DB-2024-0725",
+    advisoryType: "BUGFIX",
+    os: "alpine",
+    osFamily: "linux-alpine",
+    osDisplayName: "Alpine Linux",
+    targetReleases: ["Alpine 3.20", "Alpine 3.19"],
+    title: "Redis 7.2.5 & Valkey 7.2.6 Copy-on-Write BGSAVE Memory Spike and AOF Rewrite Truncation Fix",
+    synopsis: "Alpine Linux main repository database update resolving musl malloc arena fragmentation during concurrent RDB BGSAVE and AOF rewrite compaction.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.4,
+    operationalDomain: "DATABASE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-30T13:00:00Z",
+    updatedAt: "2024-06-30T13:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "redis", sourcePackage: "redis", arch: "x86_64", currentVersion: "7.2.4-r0", fixedVersion: "7.2.5-r1", packageManager: "apk", sizeBytes: 1620000 },
+      { name: "valkey", sourcePackage: "valkey", arch: "x86_64", currentVersion: "7.2.5-r0", fixedVersion: "7.2.6-r0", packageManager: "apk", sizeBytes: 1640000 }
+    ],
+    commands: {
+      nativeUpgrade: "apk update -q && apk upgrade --no-cache redis valkey",
+      verification: "redis-server --version | grep 7.2.5 || valkey-server --version | grep 7.2.6",
+      rollback: "apk add --no-cache 'redis<7.2.5'",
+      kineticDeploy: "exultia patch --bundle ALPINE-DB-2024-0725 --os alpine"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["redis", "valkey"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://git.alpinelinux.org/aports/log/main/valkey",
+    sourceFeed: {
+      sourceId: "feed-alpine-aports",
+      feedName: "Alpine Linux Aports Main Database Package Stream",
+      feedType: "public-distro-feed",
+      format: "GIT_TREE",
+      syncStatus: "live",
+      sourceUrl: "https://dl-cdn.alpinelinux.org/alpine/v3.20/main/"
+    }
+  },
+
+  // 85. MongoDB 7.0.12 WiredTiger Cache Eviction & Replica Set Stepdown Election Fix (Rocky Linux)
+  {
+    id: "ARG-MONGODB-70-2024-0712",
+    bundleId: "RLBA-2024:7012",
+    advisoryType: "BUGFIX",
+    os: "rocky",
+    osFamily: "linux-rhel",
+    osDisplayName: "Rocky Linux",
+    targetReleases: ["Rocky Linux 9.4", "Rocky Linux 8.10"],
+    title: "MongoDB 7.0.12 WiredTiger Dirty Cache Eviction Stall & Oplog Visibility Timestamp Bugfix",
+    synopsis: "MongoDB 7.0 production release bundle resolving WiredTiger hazard pointer eviction stalls under high document update concurrency and replica set election stepdown freezes.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.8,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T14:30:00Z",
+    updatedAt: "2024-06-30T14:30:00Z",
+    cveList: [],
+    packages: [
+      { name: "mongodb-org-server", sourcePackage: "mongodb-org", arch: "x86_64", currentVersion: "7.0.9-1.el9", fixedVersion: "7.0.12-1.el9", packageManager: "dnf", sizeBytes: 34800000 },
+      { name: "mongodb-org-mongos", sourcePackage: "mongodb-org", arch: "x86_64", currentVersion: "7.0.9-1.el9", fixedVersion: "7.0.12-1.el9", packageManager: "dnf", sizeBytes: 22100000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y mongodb-org-server mongodb-org-mongos && (systemctl restart mongod 2>/dev/null || true)",
+      verification: "mongod --version | grep v7.0.12 || rpm -q mongodb-org-server | grep 7.0.12",
+      rollback: "dnf downgrade -y mongodb-org-server-7.0.9-1.el9 mongodb-org-mongos-7.0.9-1.el9",
+      kineticDeploy: "exultia patch --bundle RLBA-2024:7012 --os rocky"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["mongod"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.mongodb.com/docs/manual/release-notes/7.0/#7.0.12",
+    sourceFeed: {
+      sourceId: "feed-rocky-errata",
+      feedName: "Rocky Linux & MongoDB Enterprise Repository Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://repo.mongodb.org/yum/redhat/9/mongodb-org/7.0/x86_64/"
+    }
+  },
+
+  // 86. SQLite 3.45.3 WAL2 Concurrent Checkpointing & JSONB Query Planner Enhancement (SUSE / SLES)
+  {
+    id: "ARG-SQLITE-345-2024-3453",
+    bundleId: "SUSE-RU-2024:3453-1",
+    advisoryType: "ENHANCEMENT",
+    os: "suse",
+    osFamily: "linux-suse",
+    osDisplayName: "openSUSE & SLES",
+    targetReleases: ["SLES 15 SP6", "openSUSE Leap 15.6"],
+    title: "SQLite 3.45.3 WAL Checkpointing Starvation Fix and JSONB Binary Payload Query Planner Update",
+    synopsis: "SUSE Recommended Update upgrading libsqlite3-0 and sqlite3 CLI with binary JSONB index acceleration and prevention of WAL file growth starvation under continuous reader locks.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.5,
+    operationalDomain: "DATABASE",
+    actionDirective: "ZERO_DOWNTIME_HOTFIX",
+    issuedAt: "2024-06-30T15:15:00Z",
+    updatedAt: "2024-06-30T15:15:00Z",
+    cveList: [],
+    packages: [
+      { name: "libsqlite3-0", sourcePackage: "sqlite3", arch: "x86_64", currentVersion: "3.44.2-150600.1.1", fixedVersion: "3.45.3-150600.3.2.1", packageManager: "zypper", sizeBytes: 790000 },
+      { name: "sqlite3", sourcePackage: "sqlite3", arch: "x86_64", currentVersion: "3.44.2-150600.1.1", fixedVersion: "3.45.3-150600.3.2.1", packageManager: "zypper", sizeBytes: 940000 }
+    ],
+    commands: {
+      nativeUpgrade: "zypper --non-interactive update -y libsqlite3-0 sqlite3",
+      verification: "sqlite3 --version | grep 3.45.3",
+      rollback: "zypper --non-interactive install --oldpackage -y libsqlite3-0=3.44.2-150600.1.1 sqlite3=3.44.2-150600.1.1",
+      kineticDeploy: "exultia patch --bundle SUSE-RU-2024:3453-1 --os suse"
+    },
+    impact: { rebootRequired: false, servicesToRestart: [], zeroDowntime: true },
+    upstreamNoticeUrl: "https://www.sqlite.org/releaselog/3_45_3.html",
+    sourceFeed: {
+      sourceId: "feed-suse-ru",
+      feedName: "SUSE Recommended & Maintenance Updates (SUSE-RU / openSUSE)",
+      feedType: "public-distro-feed",
+      format: "OVAL",
+      syncStatus: "live",
+      sourceUrl: "https://ftp.suse.com/pub/projects/security/oval/"
+    }
+  },
+
+  // 87. ClickHouse 24.8 LTS MergeTree Async Insert Deduplication & Keeper Quorum Update (Ubuntu)
+  {
+    id: "ARG-CLICKHOUSE-24-2024-2408",
+    bundleId: "CH-UPD-2024-2408",
+    advisoryType: "ENHANCEMENT",
+    os: "ubuntu",
+    osFamily: "linux-debian",
+    osDisplayName: "Ubuntu Linux",
+    targetReleases: ["Ubuntu 24.04 LTS (Noble)", "Ubuntu 22.04 LTS (Jammy)"],
+    title: "ClickHouse 24.8 LTS ReplicatedMergeTree Async Insert Deduplication & ClickHouse Keeper Raft Fix",
+    synopsis: "ClickHouse LTS database update resolving duplicate block insertion edge cases during ReplicatedMergeTree asynchronous inserts and lowering ClickHouse Keeper snapshot serialization memory overhead.",
+    vendorSeverity: "IMPORTANT",
+    severityScore: 7.5,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T16:00:00Z",
+    updatedAt: "2024-06-30T16:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "clickhouse-server", sourcePackage: "clickhouse", arch: "x86_64", currentVersion: "24.3.4.147", fixedVersion: "24.8.2.3", packageManager: "apt", sizeBytes: 185000000 },
+      { name: "clickhouse-client", sourcePackage: "clickhouse", arch: "x86_64", currentVersion: "24.3.4.147", fixedVersion: "24.8.2.3", packageManager: "apt", sizeBytes: 1420000 }
+    ],
+    commands: {
+      nativeUpgrade: "apt-get update -qq && apt-get install --only-upgrade -y clickhouse-server clickhouse-client && (systemctl restart clickhouse-server 2>/dev/null || true)",
+      verification: "clickhouse-client --version | grep 24.8.2.3 || dpkg -l clickhouse-server | grep 24.8.2.3",
+      rollback: "apt-get install -y --allow-downgrades clickhouse-server=24.3.4.147 clickhouse-client=24.3.4.147",
+      kineticDeploy: "exultia patch --bundle CH-UPD-2024-2408 --os ubuntu"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["clickhouse-server"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://clickhouse.com/docs/en/whats-new/changelog",
+    sourceFeed: {
+      sourceId: "feed-ubuntu-updates",
+      feedName: "ClickHouse Stable LTS & Ubuntu Database Package Stream",
+      feedType: "public-distro-feed",
+      format: "JSON",
+      syncStatus: "live",
+      sourceUrl: "https://packages.clickhouse.com/deb/stable/"
+    }
+  },
+
+  // 88. ScyllaDB / Apache Cassandra SSTable Compaction & Seastar io_uring AIO Maintenance (AlmaLinux 9)
+  {
+    id: "ARG-SCYLLA-CASSANDRA-2024-0542",
+    bundleId: "ALBA-2024:5420",
+    advisoryType: "MAINTENANCE",
+    os: "almalinux",
+    osFamily: "linux-rhel",
+    osDisplayName: "AlmaLinux",
+    targetReleases: ["AlmaLinux 9.4 (Seafoam Ocelot)"],
+    title: "ScyllaDB 5.4 & Apache Cassandra 4.1 SSTable Incremental Compaction and Seastar io_uring Reactor Update",
+    synopsis: "AlmaLinux database infrastructure maintenance update fixing SSTable incremental compaction write amplification spikes and tuning Seastar io_uring submission queue polling.",
+    vendorSeverity: "MODERATE",
+    severityScore: 6.8,
+    operationalDomain: "DATABASE",
+    actionDirective: "RELOAD_SERVICE",
+    issuedAt: "2024-06-30T17:00:00Z",
+    updatedAt: "2024-06-30T17:00:00Z",
+    cveList: [],
+    packages: [
+      { name: "scylla-server", sourcePackage: "scylla", arch: "x86_64", currentVersion: "5.4.6-0.20240418.el9", fixedVersion: "5.4.9-0.20240625.el9", packageManager: "dnf", sizeBytes: 51200000 }
+    ],
+    commands: {
+      nativeUpgrade: "dnf upgrade -y scylla-server && (systemctl restart scylla-server 2>/dev/null || true)",
+      verification: "rpm -q scylla-server | grep 5.4.9",
+      rollback: "dnf downgrade -y scylla-server-5.4.6-0.20240418.el9",
+      kineticDeploy: "exultia patch --bundle ALBA-2024:5420 --os almalinux"
+    },
+    impact: { rebootRequired: false, servicesToRestart: ["scylla-server"], zeroDowntime: true },
+    upstreamNoticeUrl: "https://errata.almalinux.org/9/ALBA-2024-5420.html",
+    sourceFeed: {
+      sourceId: "feed-almalinux-errata",
+      feedName: "AlmaLinux & ScyllaDB Enterprise NoSQL Stream",
+      feedType: "public-distro-feed",
+      format: "CSAF",
+      syncStatus: "live",
+      sourceUrl: "https://errata.almalinux.org/api/v1/errata"
+    }
   }
 ];
 
@@ -4810,6 +5210,8 @@ export function getArgentOperationalDomainBadge(domain: ArgentOperationalDomain)
       return { label: "🔒 SYSTEMD / DAEMON", bg: "rgba(236, 72, 153, 0.15)", border: "rgba(236, 72, 153, 0.35)", text: "#F472B6" };
     case "STORAGE":
       return { label: "💾 STORAGE / NVME", bg: "rgba(20, 184, 166, 0.15)", border: "rgba(20, 184, 166, 0.35)", text: "#5EEAD4" };
+    case "DATABASE":
+      return { label: "🗄️ DATABASE / SQL & NOSQL", bg: "rgba(6, 182, 212, 0.16)", border: "rgba(6, 182, 212, 0.4)", text: "#67E8F9" };
     case "DRIVER":
       return { label: "🔌 DRIVER / HW", bg: "rgba(249, 115, 22, 0.15)", border: "rgba(249, 115, 22, 0.35)", text: "#FDBA74" };
     case "STABILITY":

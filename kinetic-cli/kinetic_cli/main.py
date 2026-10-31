@@ -49,6 +49,7 @@ KNOWN_SUBCOMMANDS = {
     "schedule",
     "webhook",
     "status",
+    "cbom",
     "verify",
     "test",
 }
@@ -76,6 +77,7 @@ TOP_LEVEL_MODE_FLAGS = {
     "--webhook": ["webhook"],
     "--status": ["status"],
     "-s": ["status"],
+    "--cbom": ["cbom"],
     "--verify": ["verify"],
     "--test": ["test"],
 }
@@ -95,10 +97,10 @@ def normalize_cli_argv(argv: List[str]) -> List[str]:
     idx = 0
     while idx < len(argv):
         tok = argv[idx]
-        if tok in ("--state-dir", "--staging-dir") and idx + 1 < len(argv):
+        if tok in ("--state-dir", "--staging-dir", "--cbom-out") and idx + 1 < len(argv):
             idx += 2
             continue
-        if tok.startswith("--state-dir=") or tok.startswith("--staging-dir=") or tok == "--json":
+        if tok.startswith("--state-dir=") or tok.startswith("--staging-dir=") or tok.startswith("--cbom-out=") or tok == "--json":
             idx += 1
             continue
         break
@@ -265,6 +267,12 @@ def _add_shared_patch_and_daemon_flags(p: argparse.ArgumentParser, is_daemon: bo
         help="Mandatory secondary confirmation argument required with --fullauto",
     )
     p.add_argument(
+        "--secondary-feed", "--internal-feed",
+        dest="secondary_feed",
+        default=None,
+        help="Secondary / internal patch feed URL or local JSON file path (comma-separated for multiple feeds)",
+    )
+    p.add_argument(
         "--dry-run",
         action="store_true",
         default=False,
@@ -276,6 +284,7 @@ def build_parser() -> argparse.ArgumentParser:
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--state-dir", help="Custom state and snapshot directory", default=None)
     common_parser.add_argument("--staging-dir", help="Custom local staging directory for OS patches", default=None)
+    common_parser.add_argument("--cbom-out", help="Custom file path to export structured CBOM activity log JSON", default=None)
     common_parser.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     invoked_as = Path(sys.argv[0]).stem.lower() if sys.argv else "exultia"
@@ -404,6 +413,8 @@ def build_parser() -> argparse.ArgumentParser:
     feed_parser.add_argument("--search", default=None, help="Keyword to search across CVEs, packages, and OS advisories")
     feed_parser.add_argument("--cve", default=None, help="Filter by specific CVE or advisory ID")
     feed_parser.add_argument("--os", default=None, help="Filter by OS distribution")
+    feed_parser.add_argument("--domain", default=None, help="Filter by operational domain (e.g. DATABASE, KERNEL, STORAGE, CORE, NETWORK)")
+    feed_parser.add_argument("--secondary-feed", "--internal-feed", dest="secondary_feed", default=None, help="Secondary / internal patch feed URL or local file path")
     feed_parser.add_argument("--status", action="store_true", default=False, help="Show upstream feed connectivity and sync status")
     feed_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Hotfix feed URL")
     feed_parser.add_argument("--argent-feed-url", default="https://exultia.tech/api/argent/feed?format=kinetic", help="Argent OS feed URL")
@@ -432,6 +443,7 @@ def build_parser() -> argparse.ArgumentParser:
     webhook_parser.add_argument("--port", type=int, default=8765, help="TCP port (default: 8765)")
     webhook_parser.add_argument("--secret", default=None, help="Shared Bearer/HMAC secret")
     webhook_parser.add_argument("--os", default=None, help="Target OS override")
+    webhook_parser.add_argument("--secondary-feed", "--internal-feed", dest="secondary_feed", default=None, help="Secondary / internal patch feed URL or file path")
     webhook_parser.add_argument("--dry-run", action="store_true", default=False, help="Simulate webhook-triggered actions")
 
     # 10. Command: status (`exultia status` / `xul --status`)
@@ -443,7 +455,15 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--cve", help="CVE ID to verify")
     verify_parser.add_argument("--feed-url", default="https://exultia.tech/api/patches/feed", help="Patch feed URL")
 
-    # 12. Command: test (`exultia test` / `xul --test`)
+    # 12. Command: cbom (`exultia cbom` / `xul --cbom`)
+    cbom_parser = subparsers.add_parser(
+        "cbom",
+        parents=[common_parser],
+        help="Generate and inspect the structured CycloneDX CBOM Activity & Patch Bill of Materials JSON log",
+    )
+    cbom_parser.add_argument("--out", "--output", dest="output_path", default=None, help="Write CBOM JSON to a specific file path")
+
+    # 13. Command: test (`exultia test` / `xul --test`)
     subparsers.add_parser("test", parents=[common_parser], help="Run self-contained end-to-end simulation and rollback verification")
 
     return parser
@@ -564,7 +584,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
         parser.print_help()
         sys.exit(0)
 
-    engine = KineticEngine(state_dir=args.state_dir, staging_dir=args.staging_dir)
+    engine = KineticEngine(state_dir=args.state_dir, staging_dir=args.staging_dir, cbom_path=getattr(args, "cbom_out", None))
 
     if args.command == "apply" or (args.command == "patch" and getattr(args, "cve", None) and not (
         args.auto_patch_non_reboot or args.vendor_native or args.kernel_livepatch or args.disruptive_auto_reboot or args.fullauto
@@ -572,7 +592,8 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
         patches = engine.fetch_feed(
             feed_url=args.feed_url,
             token=args.token,
-            os_distro=args.os
+            os_distro=args.os,
+            secondary_feed=getattr(args, "secondary_feed", None),
         )
 
         if args.cve:
@@ -601,6 +622,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
                 confirm=True,
                 os_filter=args.os,
                 argent_feed_url=args.feed_url,
+                secondary_feed=getattr(args, "secondary_feed", None),
                 dry_run=args.dry_run,
             )
             if args.json:
@@ -625,7 +647,8 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
         ):
             staged = engine.stage_os_patches(
                 os_filter=args.os,
-                feed_url=args.feed_url
+                feed_url=args.feed_url,
+                secondary_feed=getattr(args, "secondary_feed", None),
             )
             if (args.stage_only or args.auto_stage_patches) and not (
                 args.auto_patch_non_reboot
@@ -648,6 +671,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
                 kernel_livepatch=args.kernel_livepatch,
                 kernel_livepatch_mode=args.livepatch_mode,
                 feed_url=args.feed_url,
+                secondary_feed=getattr(args, "secondary_feed", None),
                 dry_run=args.dry_run
             )
             if args.json:
@@ -658,6 +682,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
             bundle_id=args.bundle,
             os_filter=args.os,
             feed_url=args.feed_url,
+            secondary_feed=getattr(args, "secondary_feed", None),
             dry_run=args.dry_run
         )
         sys.exit(0 if success else 1)
@@ -684,6 +709,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
             engine=engine,
             feed_url=args.feed_url,
             argent_feed_url=args.argent_feed_url,
+            secondary_feed=getattr(args, "secondary_feed", None),
             token=args.token,
             interval=args.interval,
             ring=args.ring,
@@ -750,6 +776,7 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
             port=args.port,
             secret=args.secret,
             os_filter=args.os,
+            secondary_feed=getattr(args, "secondary_feed", None),
             dry_run=args.dry_run,
         )
         listener.serve_forever()
@@ -828,8 +855,10 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
             search=args.search,
             cve_id=args.cve,
             os_filter=args.os,
+            domain_filter=getattr(args, "domain", None),
             feed_url=args.feed_url,
             argent_feed_url=args.argent_feed_url,
+            secondary_feed=getattr(args, "secondary_feed", None),
         )
         if args.json:
             print(json.dumps(res, indent=2))
@@ -903,6 +932,12 @@ def cli_entry(raw_argv: Optional[List[str]] = None):
                 all_ok = False
 
         sys.exit(0 if all_ok else 1)
+
+    elif args.command == "cbom":
+        out_path = getattr(args, "output_path", None) or getattr(args, "cbom_out", None)
+        cbom_doc = engine.generate_activity_cbom(output_path=out_path)
+        print(json.dumps(cbom_doc, indent=2))
+        sys.exit(0)
 
     elif args.command == "test":
         ok = run_self_test(engine)

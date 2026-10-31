@@ -73,6 +73,7 @@ export async function GET(request: Request) {
       cisaKev: false,
       affectedPackages: b.packages.map(p => p.name),
       affectedDistros: [b.os],
+      operationalDomain: b.operationalDomain,
       remediationTier: {
         tier1_hotMitigation: {
           summary: b.synopsis,

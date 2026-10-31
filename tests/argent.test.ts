@@ -192,4 +192,22 @@ describe('Argent Public OS Distribution Patch Feed Aggregator', () => {
     expect(body.totalSources).toBeGreaterThanOrEqual(25);
     expect(body.sources[0].officialFeedUrl).toBeDefined();
   });
+
+  it('includes database product patches across major SQL and NoSQL engines under operationalDomain DATABASE', async () => {
+    const dbBundles = getArgentBundles({ domain: 'DATABASE', limit: 50 });
+    expect(dbBundles.bundles.length).toBeGreaterThanOrEqual(10);
+    expect(dbBundles.bundles.every(b => b.operationalDomain === 'DATABASE')).toBe(true);
+
+    const pkgNames = dbBundles.bundles.flatMap(b => b.packages.map(p => p.name));
+    expect(pkgNames).toContain('postgresql-16');
+    expect(pkgNames).toContain('postgresql-server');
+    expect(pkgNames).toContain('mysql-server-8.0');
+    expect(pkgNames).toContain('mariadb-server');
+    expect(pkgNames).toContain('redis');
+    expect(pkgNames).toContain('valkey');
+    expect(pkgNames).toContain('mongodb-org-server');
+    expect(pkgNames).toContain('sqlite3');
+    expect(pkgNames).toContain('clickhouse-server');
+    expect(pkgNames).toContain('scylla-server');
+  });
 });
