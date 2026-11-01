@@ -10,12 +10,26 @@
 [![Deterministic Rollback](https://img.shields.io/badge/Atomic%20Rollback-%3C50ms%20Guaranteed-34D399?style=for-the-badge&logo=fastapi)](https://exultia.tech/app/patches)
 [![SLSA Level 3](https://img.shields.io/badge/SLSA-Level%203%20Signed-3B82F6?style=for-the-badge&logo=security)](https://slsa.dev)
 [![Multi-Node Fleet](https://img.shields.io/badge/Test%20Fleet-Ubuntu%2024%20%7C%20Rocky%209%20%7C%20Alpine-8B5CF6?style=for-the-badge)](https://exultia.tech)
+[![Beta Tester Checklist](https://img.shields.io/badge/Beta%20Tester-Step--By--Step%20Checklist-00E5FF?style=for-the-badge)](BETA_TESTER_CHECKLIST.md)
 
 </div>
 
 > **"Can I get a sales demo?"**
 > 
 > *"Sure. Find the most technical person you know, send them a link to this repo, and tell them to follow the instructions and report their results back to you."*
+
+---
+
+## 🧪 Private Beta Testers: Start Here
+
+If you are participating in the **Exultia Private Beta Program**, open the **[Step-by-Step Beta Tester Checklist (`BETA_TESTER_CHECKLIST.md`)](BETA_TESTER_CHECKLIST.md)** for a complete, checkable test suite covering:
+1. **Phase 1:** One-Line Installation, Binary Integrity & Sideloaded Config (`exultia.conf`)
+2. **Phase 2:** The 5-Gate "Bullshit Validator" Suite (`validate.py` & Aqua Trivy Audit)
+3. **Phase 3:** Peak-Hours Zero-Downtime Patching, Maintenance Window Deferral & `<50ms` Atomic Rollback
+4. **Phase 4:** Continuous SOX 404 & PCI-DSS v4.0 Drift Reconciliation (`xul --audit` / `xul --reconcile`)
+5. **Phase 5:** Enhanced Neural Self-Healing, `<PATH_1>` Privacy Redaction, Manual/Auto Governance & Corporate LLM Routing
+6. **Phase 6:** Windows Server (2019 / 2022 / 2025) Native WUA COM Triage & MSRC Virtual Patching (`exultia.exe`)
+7. **Phase 7:** Custom Company Patch Feeds (`--feed-url`) & CycloneDX 1.6 CBOM Export
 
 ---
 
