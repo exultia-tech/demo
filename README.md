@@ -321,9 +321,10 @@ Pre-compiled standalone binaries are provided in `bin/` with zero external runti
 
 ```
 bin/
-├── kinetic            # Linux x86_64 standalone executable / zipapp
-├── kinetic.exe        # Windows PE32+ standalone executable
-├── kinetic.pyz        # Universal cross-platform Python zipapp (Python 3.8+)
+├── exultia            # Linux x86_64 Cython-compiled stripped ELF executable
+├── exultia.exe        # Windows x86_64 Cython-compiled stripped PE32+ executable
+├── kinetic            # Linux x86_64 standalone ELF executable (CLI alias)
+├── kinetic.exe        # Windows PE32+ standalone executable (CLI alias)
 └── SHA256SUMS.txt     # SHA-256 cryptographic checksums for SLSA verification
 ```
 

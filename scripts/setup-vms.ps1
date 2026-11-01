@@ -69,18 +69,22 @@ foreach ($node in @("exultia-node-1", "exultia-node-2")) {
         echo 'hostname=$hostname' >> /etc/wsl.conf
     "
 
-    # Copy binary and scripts
-    Copy-Item (Join-Path $binDir "kinetic.pyz") "\\wsl.localhost\$node\usr\local\lib\kinetic.pyz" -Force 2>$null
-    Copy-Item (Join-Path $scriptDir "kinetic-wrapper.py") "\\wsl.localhost\$node\usr\local\bin\kinetic" -Force 2>$null
+    # Copy compiled standalone ELF binary and scripts (zero .pyz or Python source exposure)
+    Copy-Item (Join-Path $binDir "exultia") "\\wsl.localhost\$node\usr\local\bin\exultia" -Force 2>$null
     Copy-Item (Join-Path $scriptDir "demo-kinetic.sh") "\\wsl.localhost\$node\home\exultia\demo-kinetic.sh" -Force 2>$null
     Copy-Item (Join-Path $scriptDir "demo-praxis.sh") "\\wsl.localhost\$node\home\exultia\demo-praxis.sh" -Force 2>$null
     Copy-Item (Join-Path $scriptDir "demo-vantage-sync.sh") "\\wsl.localhost\$node\home\exultia\demo-vantage-sync.sh" -Force 2>$null
     Copy-Item (Join-Path $scriptDir "demo-fleet-canary.sh") "\\wsl.localhost\$node\home\exultia\demo-fleet-canary.sh" -Force 2>$null
 
     wsl.exe -d $node -u root sh -c "
-        mkdir -p /usr/local/lib/kinetic
-        mv /usr/local/lib/kinetic.pyz /usr/local/lib/kinetic/kinetic.pyz 2>/dev/null || true
-        chmod +x /usr/local/bin/kinetic
+        umask 077
+        rm -rf /usr/local/lib/kinetic /usr/local/bin/kinetic.pyz /opt/exultia-cli
+        mkdir -p /var/lib/exultia/.runtime /etc/exultia
+        chmod 700 /var/lib/exultia /var/lib/exultia/.runtime /etc/exultia
+        chown root:root /usr/local/bin/exultia
+        chmod 700 /usr/local/bin/exultia
+        ln -sf /usr/local/bin/exultia /usr/local/bin/xul
+        ln -sf /usr/local/bin/exultia /usr/local/bin/kinetic
         chmod +x /home/exultia/*.sh
         chown -R exultia:exultia /home/exultia
     "

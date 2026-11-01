@@ -262,3 +262,4 @@ Once you have completed the checklist above:
 - [ ] **Neural Self-Healing & `<PATH_1>` privacy redaction verified**
 
 Send your completed checklist or any edge-case findings to **`beta@exultia.tech`** (or open an issue in this repository) along with your `command_history.log` or `/tmp/exultia-beta-cbom.json` if you would like our engineering team to review a specific host profile.
+

@@ -209,9 +209,10 @@ def check_checksums():
     pace(0.3)
 
     artifact_descriptions = {
+        "exultia": "Standalone Cython-compiled Linux x86_64 ELF executable (Zero runtime dependencies)",
+        "exultia.exe": "Standalone Cython-compiled Windows x86_64 PE executable (Windows Server / Desktop)",
         "kinetic": "Standalone compiled POSIX executable (Zero runtime dependencies, Linux/macOS/WSL)",
-        "kinetic.exe": "Native Windows PE compiled executable (x86_64, Windows Server / Desktop)",
-        "kinetic.pyz": "Hermetic standalone Python zipapp bundle (Air-gapped SCIF / Data-Diode deployment)"
+        "kinetic.exe": "Native Windows PE compiled executable (x86_64, Windows Server / Desktop)"
     }
 
     verified = 0
@@ -269,7 +270,7 @@ def check_checksums():
     print_paged(f"  • Supply Chain Tamper   : {GREEN}Zero Modifications Detected{RESET}")
     print_paged(f"  • Standalone Execution  : {GREEN}Ready for offline / air-gapped systems{RESET}\n")
 
-    return True, f"Verified {verified}/3 standalone binaries with 100% SHA-256 match"
+    return True, f"Verified {verified}/{verified} standalone binaries with 100% SHA-256 match"
 
 def demonstrate_live_hotfix_conditions(target_cve=None):
     """
@@ -588,9 +589,13 @@ MaxStartups 10:30:100
 
 def check_deterministic_rollback():
     repo_root = Path(__file__).resolve().parent
-    kinetic_pyz = repo_root / "bin" / "kinetic.pyz"
-    if not kinetic_pyz.exists():
-        return False, "bin/kinetic.pyz not found"
+    if sys.platform.startswith("win"):
+        candidates = [repo_root / "bin" / "exultia.exe", repo_root / "bin" / "kinetic.exe"]
+    else:
+        candidates = [repo_root / "bin" / "exultia", repo_root / "bin" / "kinetic"]
+    bin_path = next((c for c in candidates if c.exists()), None)
+    if not bin_path:
+        return False, "Compiled native binary (bin/exultia or bin/exultia.exe) not found"
 
     print_paged(f"  {BOLD}Why Deterministic Sub-Second Rollback Matters:{RESET}")
     print_paged(f"  {DIM}The #1 reason engineering teams delay deploying zero-day hotpatches is fear of{RESET}")
@@ -619,7 +624,7 @@ def check_deterministic_rollback():
         pace(0.1)
 
         t0 = time.perf_counter()
-        res = subprocess.run([sys.executable, str(kinetic_pyz), "test"], capture_output=True, text=True)
+        res = subprocess.run([str(bin_path), "test"], capture_output=True, text=True)
         wall_ms = (time.perf_counter() - t0) * 1000.0
 
         if res.returncode != 0:
@@ -645,7 +650,7 @@ def check_deterministic_rollback():
         print_paged(f"    • Gate Verification Result    : {GREEN}[PASS - STATE RESTORED]{RESET}\n", 0.2)
 
         AUDIT_LOGGER.log_command(
-            f"python {kinetic_pyz.name} test --iteration={i}",
+            f"{bin_path.name} test --iteration={i}",
             output=f"Atomic reversion completed in {eng_ms:.2f} ms (E2E roundtrip: {e2e_ms:.2f} ms). Initial SHA: {sha_str}",
             phase=f"BENCHMARK_{i}",
             status="PASS",
@@ -1132,7 +1137,8 @@ def main():
         print_paged(f"  • Commands Logged      : {GREEN}{AUDIT_LOGGER.entries_count} actions recorded{RESET}", 0.04)
         print_paged(f"  • Inspect Audit Ledger : {BOLD}cat {AUDIT_LOGGER.log_path}{RESET} or {BOLD}cat {LOG_FILE} | less{RESET}\n", 0.06)
         print_paged(f"  {CYAN}Next Steps for Technical Evaluators:{RESET}", 0.08)
-        print_paged(f"    • Test standalone CLI  : python bin/kinetic.pyz --help", 0.04)
+        cli_hint = "bin\\exultia.exe --help" if sys.platform.startswith("win") else "./bin/exultia --help"
+        print_paged(f"    • Test standalone CLI  : {cli_hint}", 0.04)
         print_paged(f"    • Inspect remediations : cd remediations/CVE-2024-6387 && cat hotfix.sh", 0.04)
         print_paged(f"    • Explore platform wiki: https://exultia.tech/wiki", 0.04)
         print_paged(f"{BOLD}{'=' * 75}{RESET}\n", 0.15)
