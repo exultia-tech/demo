@@ -25,6 +25,9 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 
 ## Option A — Run Autonomously on Your Own GitHub Runner (Zero Vendor Access)
 
+- On `exultia-tech/demo`, this workflow runs on an isolated self-hosted Ubuntu 24.04 demo runner (`exultia-demo-runner`) and triggers only on `push`, `workflow_dispatch`, and weekly `schedule` (never `pull_request`).
+- When you **Fork** the repository into your own GitHub account, the workflow automatically selects GitHub's clean ephemeral `ubuntu-24.04` runner with zero runner setup required.
+
 1. Click **Fork** at the top right of [`exultia-tech/demo`](https://github.com/exultia-tech/demo) into your own GitHub account.
 2. Open your fork's **Actions** tab and enable workflows if prompted.
 3. Select **Independent Exultia Verification Suite** → **Run workflow**.

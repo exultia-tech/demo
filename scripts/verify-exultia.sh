@@ -101,6 +101,7 @@ gate_3() {
   sudo tee /etc/ssh/sshd_config >/dev/null <<'EOF'
 Include /etc/ssh/sshd_config.d/*.conf
 Port 22
+PubkeyAuthentication yes
 LoginGraceTime 120
 EOF
   sudo rm -f /etc/ssh/sshd_config.d/00-exultia-*.conf

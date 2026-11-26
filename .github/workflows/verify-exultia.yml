@@ -21,7 +21,7 @@ on:
 jobs:
   blackbox-verify:
     name: Independent 8-Gate Verification (Ubuntu 24.04)
-    runs-on: ubuntu-24.04
+    runs-on: ${{ fromJSON(github.repository == 'exultia-tech/demo' && '["self-hosted", "linux", "x64", "exultia-demo"]' || '"ubuntu-24.04"') }}
     timeout-minutes: 15
     env:
       VANTAGE_CVE: ${{ github.event.inputs.vantage_cve || 'CVE-2024-6387' }}
@@ -31,11 +31,11 @@ jobs:
 
     steps:
       - name: Checkout clean verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install independent OS audit tools (python3-cryptography, openssh-server, nftables, jq)
         run: |
-          mkdir -p "$EVIDENCE_DIR"
+          rm -rf "$EVIDENCE_DIR" && mkdir -p "$EVIDENCE_DIR"
           sudo apt-get update -qq
           sudo apt-get install -y -qq python3-cryptography openssh-server nftables jq
 
@@ -77,7 +77,7 @@ jobs:
           {
             echo "## Independent Exultia Verification Summary"
             echo ""
-            echo "- Runner: \`${{ runner.os }}\` (\`${{ runner.arch }}\`)"
+            echo "- Runner: \`${{ runner.name }}\` (\`${{ runner.os }}\` / \`${{ runner.arch }}\`)"
             echo "- Vantage Target: \`${{ env.VANTAGE_CVE }}\`, \`CVE-2026-98432\`, \`CVE-2026-136158\` (abstention trap)"
             echo "- Argent Bundle: \`${{ env.ARGENT_BUNDLE }}\`"
             echo ""
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload immutable verification evidence bundle
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: exultia-verification-evidence
           path: evidence/
