@@ -1,0 +1,102 @@
+name: Independent Exultia Verification Suite
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      vantage_cve:
+        description: "Vantage CVE to live-apply and roll back"
+        required: false
+        default: "CVE-2024-6387"
+      argent_bundle:
+        description: "Argent Ubuntu bundle ID to execute natively"
+        required: false
+        default: "USN-7088-1"
+  schedule:
+    # Weekly automated proof run every Monday at 06:00 UTC
+    - cron: "0 6 * * 1"
+
+jobs:
+  blackbox-verify:
+    name: Independent 8-Gate Verification (Ubuntu 24.04)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VANTAGE_CVE: ${{ github.event.inputs.vantage_cve || 'CVE-2024-6387' }}
+      ARGENT_BUNDLE: ${{ github.event.inputs.argent_bundle || 'USN-7088-1' }}
+      EXULTIA_OPERATOR_KEY: ${{ secrets.EXULTIA_OPERATOR_KEY }}
+      EVIDENCE_DIR: ${{ github.workspace }}/evidence
+
+    steps:
+      - name: Checkout clean verification harness
+        uses: actions/checkout@v4
+
+      - name: Install independent OS audit tools (python3-cryptography, openssh-server, nftables, jq)
+        run: |
+          mkdir -p "$EVIDENCE_DIR"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3-cryptography openssh-server nftables jq
+
+      - name: "Gate 1: Independent Ed25519 provenance, tamper test & abstention JSON"
+        id: gate1
+        run: bash scripts/verify-exultia.sh --gate 1
+
+      - name: "Gate 2: Fail-closed binary install (SHA-256 + SLSA L2 DSSE) & permissions"
+        id: gate2
+        run: bash scripts/verify-exultia.sh --gate 2
+
+      - name: "Gate 3: Live Vantage remediation & bitwise rollback (OpenSSH)"
+        id: gate3
+        run: bash scripts/verify-exultia.sh --gate 3
+
+      - name: "Gate 4: Live Vantage kernel netfilter guard & non-breakage (CVE-2026-98432)"
+        id: gate4
+        run: bash scripts/verify-exultia.sh --gate 4
+
+      - name: "Gate 5: Live Argent API + native apt package patching (USN-7088-1)"
+        id: gate5
+        run: bash scripts/verify-exultia.sh --gate 5
+
+      - name: "Gate 6: Negative fail-closed abstention check (CVE-2026-136158 Valkey JSON)"
+        id: gate6
+        run: bash scripts/verify-exultia.sh --gate 6
+
+      - name: "Gate 7: SOX/PCI configuration drift injection, detection & auto-repair"
+        id: gate7
+        run: bash scripts/verify-exultia.sh --gate 7
+
+      - name: "Gate 8: Daemon sync --dry-run, behavioral gates & signed attestation"
+        id: gate8
+        run: bash scripts/verify-exultia.sh --gate 8
+
+      - name: Write verification summary
+        if: always()
+        run: |
+          {
+            echo "## Independent Exultia Verification Summary"
+            echo ""
+            echo "- Runner: \`${{ runner.os }}\` (\`${{ runner.arch }}\`)"
+            echo "- Vantage Target: \`${{ env.VANTAGE_CVE }}\`, \`CVE-2026-98432\`, \`CVE-2026-136158\` (abstention trap)"
+            echo "- Argent Bundle: \`${{ env.ARGENT_BUNDLE }}\`"
+            echo ""
+            echo "| Gate | Verification Check | Outcome |"
+            echo "| :--- | :--- | :--- |"
+            echo "| 1 | Zero-Exultia Ed25519 provenance, 1-byte tamper rejection & Valkey abstention JSON | \`${{ steps.gate1.outcome }}\` |"
+            echo "| 2 | Fail-closed \`install.sh\` (SHA-256 + SLSA L2 DSSE) & \`0700 root:root\` binary | \`${{ steps.gate2.outcome }}\` |"
+            echo "| 3 | Live Vantage OpenSSH apply (\`120 -> 0\`) & bitwise rollback (\`0 -> 120\`) via \`sshd -T\` | \`${{ steps.gate3.outcome }}\` |"
+            echo "| 4 | Live Vantage \`CVE-2026-98432\` netfilter rule, loopback TCP test & rollback | \`${{ steps.gate4.outcome }}\` |"
+            echo "| 5 | Live Argent \`${{ env.ARGENT_BUNDLE }}\` native \`apt\` remediation verified via \`dpkg-query\` | \`${{ steps.gate5.outcome }}\` |"
+            echo "| 6 | Negative fail-closed CLI abstention (\`CVE-2026-136158\` must not install \`redis-server\`) | \`${{ steps.gate6.outcome }}\` |"
+            echo "| 7 | SOX/PCI drift injection, detection (\`drift audit\`) & repair via \`sshd -T\` / \`sysctl\` | \`${{ steps.gate7.outcome }}\` |"
+            echo "| 8 | \`exultia sync --dry-run\`, \`test --behavioral --json\` & \`attest --json\` | \`${{ steps.gate8.outcome }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable verification evidence bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exultia-verification-evidence
+          path: evidence/
+          retention-days: 30
