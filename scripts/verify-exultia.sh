@@ -29,6 +29,7 @@ EVIDENCE_DIR="${EVIDENCE_DIR:-$REPO_ROOT/evidence}"
 VANTAGE_CVE="${VANTAGE_CVE:-CVE-2024-6387}"
 ARGENT_BUNDLE="${ARGENT_BUNDLE:-USN-7088-1}"
 EVAL_CONF="/etc/exultia/eval.conf"
+SYNC_FEED_LIMIT="${SYNC_FEED_LIMIT:-250}"
 
 mkdir -p "$EVIDENCE_DIR"
 
@@ -95,16 +96,43 @@ CONF
   echo "[PASS] Gate 2 verified install provenance, binary SHA-256, 0700 ownership, and eval.conf"
 }
 
+_restore_gate3_sshd() {
+  local orig_sshd_cfg="/tmp/exultia-gate3-sshd_config.orig"
+  if sudo test -f "$orig_sshd_cfg"; then
+    sudo mv -f "$orig_sshd_cfg" /etc/ssh/sshd_config
+    sudo chown root:root /etc/ssh/sshd_config
+    sudo chmod 644 /etc/ssh/sshd_config
+  fi
+  if sudo sshd -t 2>/dev/null && command -v systemctl >/dev/null 2>&1; then
+    if systemctl is-active --quiet ssh; then
+      sudo systemctl reload ssh || true
+    elif systemctl is-active --quiet sshd; then
+      sudo systemctl reload sshd || true
+    fi
+  fi
+}
+
 gate_3() {
   log_gate "GATE 3: Live Vantage remediation & bitwise rollback ($VANTAGE_CVE)"
+  local orig_sshd_cfg="/tmp/exultia-gate3-sshd_config.orig"
+  sudo rm -f "$orig_sshd_cfg"
+  if sudo test -f /etc/ssh/sshd_config && sudo grep -qiE '^[[:space:]]*UsePAM[[:space:]]+yes\b' /etc/ssh/sshd_config; then
+    sudo cp -a /etc/ssh/sshd_config "$orig_sshd_cfg"
+  fi
+  trap '_restore_gate3_sshd' ERR
+
   sudo mkdir -p /run/sshd /etc/ssh/sshd_config.d
   sudo tee /etc/ssh/sshd_config >/dev/null <<'EOF'
 Include /etc/ssh/sshd_config.d/*.conf
 Port 22
+UsePAM yes
 PubkeyAuthentication yes
+KbdInteractiveAuthentication no
 LoginGraceTime 120
 EOF
   sudo rm -f /etc/ssh/sshd_config.d/00-exultia-*.conf
+  sudo sshd -t
+  sudo sshd -T | grep -qi '^usepam yes$'
 
   local before_val after_val restored_val
   before_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
@@ -124,6 +152,9 @@ EOF
   restored_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
   echo "Independent sshd -T LoginGraceTime RESTORED = $restored_val"
   test "$restored_val" = "120"
+
+  trap - ERR
+  _restore_gate3_sshd
   echo "[PASS] Gate 3 verified $VANTAGE_CVE live apply (120 -> 0) and rollback (0 -> 120)"
 }
 
@@ -219,6 +250,7 @@ EOF
 
   sudo sshd -t
   sudo sshd -T | grep -qi '^permitrootlogin no$'
+  sudo sshd -T | grep -qi '^usepam yes$'
   test "$(sysctl -n net.ipv4.tcp_syncookies)" = "1"
 
   sudo exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_after.json"
@@ -228,7 +260,10 @@ EOF
 
 gate_8() {
   log_gate "GATE 8: Daemon sync dry-run, behavioral gates, and signed Ed25519 attestation"
-  sudo exultia sync --dry-run | tee "$EVIDENCE_DIR/gate8_sync_dry_run.txt"
+  sudo exultia --config "$EVAL_CONF" sync \
+    --feed-url "https://exultia.tech/api/patches/feed?limit=${SYNC_FEED_LIMIT}" \
+    --dry-run | tee "$EVIDENCE_DIR/gate8_sync_dry_run.txt"
+  grep -q '\[Kinetic Daemon\] Cycle complete\.' "$EVIDENCE_DIR/gate8_sync_dry_run.txt"
 
   sudo exultia test --behavioral --json | tee "$EVIDENCE_DIR/gate8_behavioral_raw.txt"
   python3 - "$EVIDENCE_DIR/gate8_behavioral_raw.txt" "$EVIDENCE_DIR/gate8_behavioral.json" <<'PY'
