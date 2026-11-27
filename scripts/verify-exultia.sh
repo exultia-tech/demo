@@ -132,7 +132,9 @@ LoginGraceTime 120
 EOF
   sudo rm -f /etc/ssh/sshd_config.d/00-exultia-*.conf
   sudo sshd -t
-  sudo sshd -T | grep -qi '^usepam yes$'
+  local sshd_dump
+  sshd_dump="$(sudo sshd -T)"
+  grep -qi '^usepam yes$' <<< "$sshd_dump"
 
   local before_val after_val restored_val
   before_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
@@ -163,8 +165,11 @@ gate_4() {
   sudo exultia --config "$EVAL_CONF" patch --cve CVE-2026-98432 --force | tee "$EVIDENCE_DIR/gate4_apply.txt"
 
   sudo nft list ruleset | tee "$EVIDENCE_DIR/gate4_nft_after_apply.txt"
-  if ! sudo nft list table ip exultia_cve_2026_98432 2>/dev/null | grep -qE "hdrlength (>|gt|!=) 5"; then
-    if ! sudo iptables -t raw -S PREROUTING 2>/dev/null | grep -q "0>>24&0x0f!=5"; then
+  local nft_dump ipt_dump
+  nft_dump="$(sudo nft list table ip exultia_cve_2026_98432 2>/dev/null || true)"
+  ipt_dump="$(sudo iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  if ! grep -qE "hdrlength (>|gt|!=) 5" <<< "$nft_dump"; then
+    if ! grep -q "0>>24&0x0f!=5" <<< "$ipt_dump"; then
       echo "FAIL: Expected live nftables or iptables raw rule for CVE-2026-98432 not present" >&2
       exit 1
     fi
@@ -196,7 +201,9 @@ PY
     echo "FAIL: nft table exultia_cve_2026_98432 remained after rollback" >&2
     exit 1
   fi
-  if sudo iptables -t raw -S PREROUTING 2>/dev/null | grep -q "0>>24&0x0f!=5"; then
+  local ipt_after
+  ipt_after="$(sudo iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  if grep -q "0>>24&0x0f!=5" <<< "$ipt_after"; then
     echo "FAIL: iptables raw rule remained after rollback" >&2
     exit 1
   fi
@@ -208,7 +215,9 @@ gate_5() {
   dpkg-query -W -f='BEFORE: ${Package} ${Version} ${Status}\n' libbrotli1 | tee "$EVIDENCE_DIR/gate5_argent.txt"
   sudo exultia --config "$EVAL_CONF" patch --bundle "$ARGENT_BUNDLE" --os ubuntu | tee -a "$EVIDENCE_DIR/gate5_argent.txt"
   dpkg-query -W -f='AFTER:  ${Package} ${Version} ${Status}\n' libbrotli1 | tee -a "$EVIDENCE_DIR/gate5_argent.txt"
-  dpkg-query -W -f='${Status}\n' libbrotli1 | grep -q "install ok installed"
+  local brotli_status
+  brotli_status="$(dpkg-query -W -f='${Status}\n' libbrotli1)"
+  grep -q "install ok installed" <<< "$brotli_status"
   echo "[PASS] Gate 5 verified live Argent OS patch execution against Ubuntu apt"
 }
 
@@ -218,7 +227,9 @@ gate_6() {
     echo "FAIL: Abstained CVE-2026-136158 should fail closed rather than reporting applied" >&2
     exit 1
   fi
-  if dpkg-query -W -f='${Status}\n' redis-server 2>/dev/null | grep -q "install ok installed"; then
+  local redis_status
+  redis_status="$(dpkg-query -W -f='${Status}\n' redis-server 2>/dev/null || true)"
+  if grep -q "install ok installed" <<< "$redis_status"; then
     echo "FAIL: redis-server should NOT have been installed for Valkey CVE-2026-136158" >&2
     exit 1
   fi
@@ -249,8 +260,10 @@ EOF
   sudo exultia --config "$EVAL_CONF" drift fix | tee "$EVIDENCE_DIR/gate7_drift_fix.txt"
 
   sudo sshd -t
-  sudo sshd -T | grep -qi '^permitrootlogin no$'
-  sudo sshd -T | grep -qi '^usepam yes$'
+  local sshd_after_drift
+  sshd_after_drift="$(sudo sshd -T)"
+  grep -qi '^permitrootlogin no$' <<< "$sshd_after_drift"
+  grep -qi '^usepam yes$' <<< "$sshd_after_drift"
   test "$(sysctl -n net.ipv4.tcp_syncookies)" = "1"
 
   sudo exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_after.json"
