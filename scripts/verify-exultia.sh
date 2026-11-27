@@ -35,6 +35,17 @@ COMPROMISE_SEED="${COMPROMISE_SEED:-}"
 
 mkdir -p "$EVIDENCE_DIR"
 
+if [ -z "${EXULTIA_NO_LOCK:-}" ] && command -v flock >/dev/null 2>&1; then
+  LOCK_DIR="/tmp/exultia-verify.lock.d"
+  mkdir -p "$LOCK_DIR" 2>/dev/null || true
+  chmod 0755 "$LOCK_DIR" 2>/dev/null || true
+  exec 9< "$LOCK_DIR"
+  if ! flock -n 9; then
+    echo "[Lock] Waiting for another Exultia verification run on this host to finish..." >&2
+    flock -w 600 9
+  fi
+fi
+
 log_gate() {
   printf "\n==============================================================================\n"
   printf "  %s\n" "$1"

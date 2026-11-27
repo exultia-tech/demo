@@ -26,6 +26,10 @@ on:
     # Weekly automated proof run every Monday at 06:00 UTC
     - cron: "0 6 * * 1"
 
+concurrency:
+  group: exultia-demo-verify
+  cancel-in-progress: false
+
 jobs:
   blackbox-verify:
     name: Independent 9-Gate Verification (Ubuntu 24.04)
