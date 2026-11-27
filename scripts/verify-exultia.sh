@@ -26,8 +26,8 @@ done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 EVIDENCE_DIR="${EVIDENCE_DIR:-$REPO_ROOT/evidence}"
-VANTAGE_CVE="${VANTAGE_CVE:-CVE-2024-6387}"
-ARGENT_BUNDLE="${ARGENT_BUNDLE:-USN-7088-1}"
+VANTAGE_CVE="${VANTAGE_CVE:-}"
+ARGENT_BUNDLE="${ARGENT_BUNDLE:-}"
 EVAL_CONF="/etc/exultia/eval.conf"
 SYNC_FEED_LIMIT="${SYNC_FEED_LIMIT:-250}"
 COMPROMISE_SAMPLE_COUNT="${COMPROMISE_SAMPLE_COUNT:-250}"
@@ -109,68 +109,20 @@ CONF
   echo "[PASS] Gate 2 verified install provenance, binary SHA-256, 0700 ownership, and eval.conf"
 }
 
-_restore_gate3_sshd() {
-  local orig_sshd_cfg="/tmp/exultia-gate3-sshd_config.orig"
-  if sudo test -f "$orig_sshd_cfg"; then
-    sudo mv -f "$orig_sshd_cfg" /etc/ssh/sshd_config
-    sudo chown root:root /etc/ssh/sshd_config
-    sudo chmod 644 /etc/ssh/sshd_config
-  fi
-  if sudo sshd -t 2>/dev/null && command -v systemctl >/dev/null 2>&1; then
-    if systemctl is-active --quiet ssh; then
-      sudo systemctl reload ssh || true
-    elif systemctl is-active --quiet sshd; then
-      sudo systemctl reload sshd || true
-    fi
-  fi
-}
-
 gate_3() {
-  log_gate "GATE 3: Live Vantage remediation & bitwise rollback ($VANTAGE_CVE)"
-  local orig_sshd_cfg="/tmp/exultia-gate3-sshd_config.orig"
-  sudo rm -f "$orig_sshd_cfg"
-  if sudo test -f /etc/ssh/sshd_config && sudo grep -qiE '^[[:space:]]*UsePAM[[:space:]]+yes\b' /etc/ssh/sshd_config; then
-    sudo cp -a /etc/ssh/sshd_config "$orig_sshd_cfg"
+  log_gate "GATE 3: Live Vantage random advisory remediation & bitwise rollback (${VANTAGE_CVE:-random})"
+  local cve_args=()
+  if [ -n "$VANTAGE_CVE" ]; then
+    cve_args=(--cve "$VANTAGE_CVE")
   fi
-  trap '_restore_gate3_sshd' ERR
-
-  sudo mkdir -p /run/sshd /etc/ssh/sshd_config.d
-  sudo tee /etc/ssh/sshd_config >/dev/null <<'EOF'
-Include /etc/ssh/sshd_config.d/*.conf
-Port 22
-UsePAM yes
-PubkeyAuthentication yes
-KbdInteractiveAuthentication no
-LoginGraceTime 120
-EOF
-  sudo rm -f /etc/ssh/sshd_config.d/00-exultia-*.conf
-  sudo sshd -t
-  local sshd_dump
-  sshd_dump="$(sudo sshd -T)"
-  grep -qi '^usepam yes$' <<< "$sshd_dump"
-
-  local before_val after_val restored_val
-  before_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
-  echo "Independent sshd -T LoginGraceTime BEFORE   = $before_val"
-  test "$before_val" = "120"
-
-  sudo exultia --config "$EVAL_CONF" feed --verify --cve "$VANTAGE_CVE" | tee "$EVIDENCE_DIR/gate3_feed_verify.txt"
-  sudo exultia --config "$EVAL_CONF" patch --cve "$VANTAGE_CVE" --force | tee "$EVIDENCE_DIR/gate3_apply.txt"
-
-  sudo sshd -t
-  after_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
-  echo "Independent sshd -T LoginGraceTime AFTER    = $after_val"
-  test "$after_val" = "0"
-
-  sudo exultia --config "$EVAL_CONF" rollback --cve "$VANTAGE_CVE" | tee "$EVIDENCE_DIR/gate3_rollback.txt"
-  sudo sshd -t
-  restored_val="$(sudo sshd -T | awk '$1=="logingracetime"{print $2}')"
-  echo "Independent sshd -T LoginGraceTime RESTORED = $restored_val"
-  test "$restored_val" = "120"
-
-  trap - ERR
-  _restore_gate3_sshd
-  echo "[PASS] Gate 3 verified $VANTAGE_CVE live apply (120 -> 0) and rollback (0 -> 120)"
+  sudo python3 "$SCRIPT_DIR/verify-gate3-vantage.py" \
+    --config "$EVAL_CONF" \
+    --evidence-dir "$EVIDENCE_DIR" \
+    "${cve_args[@]}"
+  if [ -n "${GITHUB_ENV:-}" ] && [ -f "$EVIDENCE_DIR/gate3_selected.json" ]; then
+    jq -r '"SELECTED_VANTAGE_CVE=\(.selectedCve)\nSELECTED_VANTAGE_RULE=\(.expressionRuleId)"' \
+      "$EVIDENCE_DIR/gate3_selected.json" >> "$GITHUB_ENV"
+  fi
 }
 
 gate_4() {
@@ -224,14 +176,19 @@ PY
 }
 
 gate_5() {
-  log_gate "GATE 5: Live Argent API + native apt package patching ($ARGENT_BUNDLE)"
-  dpkg-query -W -f='BEFORE: ${Package} ${Version} ${Status}\n' libbrotli1 | tee "$EVIDENCE_DIR/gate5_argent.txt"
-  sudo exultia --config "$EVAL_CONF" patch --bundle "$ARGENT_BUNDLE" --os ubuntu | tee -a "$EVIDENCE_DIR/gate5_argent.txt"
-  dpkg-query -W -f='AFTER:  ${Package} ${Version} ${Status}\n' libbrotli1 | tee -a "$EVIDENCE_DIR/gate5_argent.txt"
-  local brotli_status
-  brotli_status="$(dpkg-query -W -f='${Status}\n' libbrotli1)"
-  grep -q "install ok installed" <<< "$brotli_status"
-  echo "[PASS] Gate 5 verified live Argent OS patch execution against Ubuntu apt"
+  log_gate "GATE 5: Live Argent API + native apt package patching (${ARGENT_BUNDLE:-random})"
+  local bundle_args=()
+  if [ -n "$ARGENT_BUNDLE" ]; then
+    bundle_args=(--bundle "$ARGENT_BUNDLE")
+  fi
+  sudo python3 "$SCRIPT_DIR/verify-gate5-argent.py" \
+    --config "$EVAL_CONF" \
+    --evidence-dir "$EVIDENCE_DIR" \
+    "${bundle_args[@]}"
+  if [ -n "${GITHUB_ENV:-}" ] && [ -f "$EVIDENCE_DIR/gate5_selected.json" ]; then
+    jq -r '"SELECTED_ARGENT_BUNDLE=\(.selectedBundle)\nSELECTED_ARGENT_PKG=\(.targetPackage)"' \
+      "$EVIDENCE_DIR/gate5_selected.json" >> "$GITHUB_ENV"
+  fi
 }
 
 gate_6() {
