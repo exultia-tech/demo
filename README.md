@@ -8,7 +8,7 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 
 ---
 
-## What It Independently Proves (8 Gates)
+## What It Independently Proves (9 Gates)
 
 | Gate | Claim Under Test | Exultia Action | Independent Proof (Non-Exultia Check) |
 | :--- | :--- | :--- | :--- |
@@ -20,6 +20,7 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 | **6** | Semantic gate fails closed instead of substituting wrong OS packages | `exultia patch --cve CVE-2026-136158` | Asserts non-zero exit code and confirms `redis-server` is **not** installed via `dpkg-query`. |
 | **7** | SOX/PCI drift detection & reconciliation | `exultia drift audit --json` & `drift fix` | Injects `PermitRootLogin yes` and `net.ipv4.tcp_syncookies = 0`; verifies independent enforcement via `sshd -T` and `sysctl -n`. |
 | **8** | Autonomous daemon dry-run, exploit/non-breakage gates & signed log | `exultia sync --dry-run`, `test --behavioral --json`, `attest --json` | Asserts all 5 behavioral gates pass, hash-chained `remediation_eventlog` is intact, and host attestation carries an Ed25519 signature. |
+| **9** | 250-item random live feed compromise, autonomous fix & clean restore | `exultia drift fix` & `patch --all --force` over 250 sampled items | Randomly samples 250 live Vantage/Argent items (verifying 250/250 Ed25519), deliberately misconfigures runtime SSH/sysctl/nftables/modprobe/blocklist/account controls, proves every check is `EXPOSED` before and `FIXED` after via independent OS probes, reconciles `audit.jsonl`, and restores baseline. |
 
 ---
 
@@ -31,7 +32,7 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 1. Click **Fork** at the top right of [`exultia-tech/demo`](https://github.com/exultia-tech/demo) into your own GitHub account.
 2. Open your fork's **Actions** tab and enable workflows if prompted.
 3. Select **Independent Exultia Verification Suite** → **Run workflow**.
-4. Inspect every step log and download the **`exultia-verification-evidence`** artifact containing raw JSON/CLI transcripts (`gate1_provenance.json`, `gate4_nft_after_apply.txt`, `gate7_drift_before.json`, `gate8_behavioral.json`, `gate8_attestation.json`).
+4. Inspect every step log and download the **`exultia-verification-evidence`** artifact containing raw JSON/CLI transcripts (`gate1_provenance.json`, `gate4_nft_after_apply.txt`, `gate7_drift_before.json`, `gate8_behavioral.json`, `gate8_attestation.json`, `gate9_compromise_250.json`).
 
 > *(Optional)* Leave `EXULTIA_OPERATOR_KEY` unset to verify public Vantage & Argent endpoints, or add a scoped Personal Access Token (`exultia_pat_...` from `https://exultia.tech/account?tab=tokens`) as an Actions repository secret named `EXULTIA_OPERATOR_KEY`.
 
@@ -39,7 +40,7 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 
 ## Option B — Run Locally Inside a Disposable Ubuntu 24.04 VM
 
-> **Why a VM instead of a standard container?** Gates 3, 4, and 7 mutate real `sshd`, kernel `nftables`, and `/proc/sys` `sysctl` state, which unprivileged or default containers block.
+> **Why a VM instead of a standard container?** Gates 3, 4, 7, and 9 mutate real `sshd`, kernel `nftables`, and `/proc/sys` `sysctl` state, which unprivileged or default containers block.
 
 ```bash
 git clone https://github.com/exultia-tech/demo.git exultia-verify
@@ -51,10 +52,15 @@ sudo apt-get install -y -qq python3-cryptography openssh-server nftables jq
 bash scripts/verify-exultia.sh
 ```
 
-Or run a single gate in isolation (after running Gate 1 and Gate 2 once to install the binary):
+### Run Only the 250-Item Compromise & Auto-Fix Stress Test (Gate 9)
+
+After installing the binary (`bash scripts/verify-exultia.sh --gate 2`), run Gate 9 standalone to watch Exultia randomly sample 250 live feed items, misconfigure real OS controls, verify `EXPOSED` before remediation, fix them automatically, verify `FIXED` afterward, and restore the VM:
 
 ```bash
-bash scripts/verify-exultia.sh --gate 3
+bash scripts/verify-exultia.sh --gate 9
+
+# Optional: leave the VM compromised to inspect and trigger Exultia manually:
+sudo python3 scripts/verify-compromise-250.py --confirm-test-host --keep-compromised
 ```
 
 ---
@@ -83,6 +89,7 @@ python3 validate.py --fast --samples=50
 ## Repository Contents
 
 - [`scripts/verify-provenance.py`](scripts/verify-provenance.py) — Standalone zero-Exultia-code Python 3 Ed25519 + canonical SHA-256 + tamper + abstention verifier
-- [`scripts/verify-exultia.sh`](scripts/verify-exultia.sh) — Auditable 8-gate Bash verification runner for Ubuntu 24.04
-- [`.github/workflows/verify-exultia.yml`](.github/workflows/verify-exultia.yml) — GitHub Actions workflow running Gates 1–8 and archiving immutable evidence artifacts
+- [`scripts/verify-compromise-250.py`](scripts/verify-compromise-250.py) — Standalone 250-item random live-feed compromise injector, Exultia auto-fix trigger & before/after OS verifier (Gate 9)
+- [`scripts/verify-exultia.sh`](scripts/verify-exultia.sh) — Auditable 9-gate Bash verification runner for Ubuntu 24.04
+- [`.github/workflows/verify-exultia.yml`](.github/workflows/verify-exultia.yml) — GitHub Actions workflow running Gates 1–9 and archiving immutable evidence artifacts
 - [`LICENSE`](LICENSE) — MIT License

@@ -14,18 +14,28 @@ on:
         description: "Argent Ubuntu bundle ID to execute natively"
         required: false
         default: "USN-7088-1"
+      compromise_count:
+        description: "Random live feed items to sample and test in Gate 9"
+        required: false
+        default: "250"
+      compromise_seed:
+        description: "Optional PRNG seed for reproducible Gate 9 sampling"
+        required: false
+        default: ""
   schedule:
     # Weekly automated proof run every Monday at 06:00 UTC
     - cron: "0 6 * * 1"
 
 jobs:
   blackbox-verify:
-    name: Independent 8-Gate Verification (Ubuntu 24.04)
+    name: Independent 9-Gate Verification (Ubuntu 24.04)
     runs-on: ${{ fromJSON(github.repository == 'exultia-tech/demo' && '["self-hosted", "linux", "x64", "exultia-demo"]' || '"ubuntu-24.04"') }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       VANTAGE_CVE: ${{ github.event.inputs.vantage_cve || 'CVE-2024-6387' }}
       ARGENT_BUNDLE: ${{ github.event.inputs.argent_bundle || 'USN-7088-1' }}
+      COMPROMISE_SAMPLE_COUNT: ${{ github.event.inputs.compromise_count || '250' }}
+      COMPROMISE_SEED: ${{ github.event.inputs.compromise_seed || '' }}
       EXULTIA_OPERATOR_KEY: ${{ secrets.EXULTIA_OPERATOR_KEY }}
       EVIDENCE_DIR: ${{ github.workspace }}/evidence
 
@@ -71,6 +81,10 @@ jobs:
         id: gate8
         run: bash scripts/verify-exultia.sh --gate 8
 
+      - name: "Gate 9: Live 250-item random feed compromise & autonomous auto-fix"
+        id: gate9
+        run: bash scripts/verify-exultia.sh --gate 9
+
       - name: Write verification summary
         if: always()
         run: |
@@ -78,7 +92,7 @@ jobs:
             echo "## Independent Exultia Verification Summary"
             echo ""
             echo "- Runner: \`${{ runner.name }}\` (\`${{ runner.os }}\` / \`${{ runner.arch }}\`)"
-            echo "- Vantage Target: \`${{ env.VANTAGE_CVE }}\`, \`CVE-2026-98432\`, \`CVE-2026-136158\` (abstention trap)"
+            echo "- Vantage Target: \`${{ env.VANTAGE_CVE }}\`, \`CVE-2026-98432\`, \`CVE-2026-136158\` (abstention trap), plus ${COMPROMISE_SAMPLE_COUNT} random sampled live feed items in Gate 9"
             echo "- Argent Bundle: \`${{ env.ARGENT_BUNDLE }}\`"
             echo ""
             echo "| Gate | Verification Check | Outcome |"
@@ -91,6 +105,7 @@ jobs:
             echo "| 6 | Negative fail-closed CLI abstention (\`CVE-2026-136158\` must not install \`redis-server\`) | \`${{ steps.gate6.outcome }}\` |"
             echo "| 7 | SOX/PCI drift injection, detection (\`drift audit\`) & repair via \`sshd -T\` / \`sysctl\` | \`${{ steps.gate7.outcome }}\` |"
             echo "| 8 | \`exultia sync --dry-run\`, \`test --behavioral --json\` & \`attest --json\` | \`${{ steps.gate8.outcome }}\` |"
+            echo "| 9 | Live ${COMPROMISE_SAMPLE_COUNT}-item random feed compromise -> Exultia auto-fix -> independent OS verification | \`${{ steps.gate9.outcome }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload immutable verification evidence bundle

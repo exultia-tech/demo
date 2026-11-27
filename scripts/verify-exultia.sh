@@ -17,7 +17,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     *)
       echo "Unknown argument: $1" >&2
-      echo "Usage: $0 [--gate <1|2|3|4|5|6|7|8|all>]" >&2
+      echo "Usage: $0 [--gate <1|2|3|4|5|6|7|8|9|all>]" >&2
       exit 2
       ;;
   esac
@@ -30,6 +30,8 @@ VANTAGE_CVE="${VANTAGE_CVE:-CVE-2024-6387}"
 ARGENT_BUNDLE="${ARGENT_BUNDLE:-USN-7088-1}"
 EVAL_CONF="/etc/exultia/eval.conf"
 SYNC_FEED_LIMIT="${SYNC_FEED_LIMIT:-250}"
+COMPROMISE_SAMPLE_COUNT="${COMPROMISE_SAMPLE_COUNT:-250}"
+COMPROMISE_SEED="${COMPROMISE_SEED:-}"
 
 mkdir -p "$EVIDENCE_DIR"
 
@@ -308,6 +310,19 @@ print("[PASS] Host attestation verified (hash chain intact, Ed25519 signed)")
 PY
 }
 
+gate_9() {
+  log_gate "GATE 9: Live ${COMPROMISE_SAMPLE_COUNT}-item random feed compromise & autonomous auto-fix"
+  local seed_args=()
+  if [ -n "$COMPROMISE_SEED" ]; then
+    seed_args=(--seed "$COMPROMISE_SEED")
+  fi
+  sudo python3 "$SCRIPT_DIR/verify-compromise-250.py" \
+    --count "$COMPROMISE_SAMPLE_COUNT" \
+    --confirm-test-host \
+    --out "$EVIDENCE_DIR/gate9_compromise_250.json" \
+    "${seed_args[@]}"
+}
+
 case "$GATE" in
   1) gate_1 ;;
   2) gate_2 ;;
@@ -317,6 +332,7 @@ case "$GATE" in
   6) gate_6 ;;
   7) gate_7 ;;
   8) gate_8 ;;
+  9) gate_9 ;;
   all)
     gate_1
     gate_2
@@ -326,8 +342,9 @@ case "$GATE" in
     gate_6
     gate_7
     gate_8
+    gate_9
     printf "\n==============================================================================\n"
-    printf "  ALL 8 INDEPENDENT EXULTIA VERIFICATION GATES PASSED\n"
+    printf "  ALL 9 INDEPENDENT EXULTIA VERIFICATION GATES PASSED\n"
     printf "==============================================================================\n"
     ;;
   *)
