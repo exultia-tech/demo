@@ -27,7 +27,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 EVIDENCE_DIR="${EVIDENCE_DIR:-$REPO_ROOT/evidence}"
 VANTAGE_CVE="${VANTAGE_CVE:-}"
-ARGENT_BUNDLE="${ARGENT_BUNDLE:-}"
 EVAL_CONF="/etc/exultia/eval.conf"
 SYNC_FEED_LIMIT="${SYNC_FEED_LIMIT:-250}"
 COMPROMISE_SAMPLE_COUNT="${COMPROMISE_SAMPLE_COUNT:-250}"
@@ -90,7 +89,6 @@ ${EXULTIA_OPERATOR_KEY:+operator_token = $EXULTIA_OPERATOR_KEY}
 
 [feeds]
 vantage_feed_url = https://exultia.tech/api/patches/feed
-argent_feed_url = https://exultia.tech/api/argent/feed?format=kinetic
 
 [patching]
 auto_stage_patches = false
@@ -176,19 +174,74 @@ PY
 }
 
 gate_5() {
-  log_gate "GATE 5: Live Argent API + native apt package patching (${ARGENT_BUNDLE:-random})"
-  local bundle_args=()
-  if [ -n "$ARGENT_BUNDLE" ]; then
-    bundle_args=(--bundle "$ARGENT_BUNDLE")
+  log_gate "GATE 5: Real native Ubuntu apt security upgrade via --vendor (BEFORE < AFTER)"
+  sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq
+
+  local target_pkg="" old_ver="" sec_ver="" cand=""
+  for cand in wget cpio curl libexpat1; do
+    local pkg_status madison sim_out
+    pkg_status="$(dpkg-query -W -f='${Status}\n' "$cand" 2>/dev/null || true)"
+    if ! grep -q "install ok installed" <<< "$pkg_status"; then
+      continue
+    fi
+    madison="$(apt-cache madison "$cand" 2>/dev/null || true)"
+    sec_ver="$(printf '%s\n' "$madison" | awk -F'|' '/noble-security/ {gsub(/ /, "", $2); print $2; exit}')"
+    old_ver="$(printf '%s\n' "$madison" | awk -F'|' '/noble\/main/ {gsub(/ /, "", $2); print $2; exit}')"
+    if [ -n "$sec_ver" ] && [ -n "$old_ver" ] && dpkg --compare-versions "$old_ver" lt "$sec_ver"; then
+      sim_out="$(sudo DEBIAN_FRONTEND=noninteractive apt-get install -s -y --allow-downgrades "${cand}=${old_ver}" 2>&1 || true)"
+      if ! grep -qE '^(Remv|E:)' <<< "$sim_out"; then
+        target_pkg="$cand"
+        break
+      fi
+    fi
+  done
+
+  if [ -z "$target_pkg" ]; then
+    echo "FAIL: Could not find an installed Ubuntu 24.04 package with safe noble/main downgrade and noble-security upgrade candidate" >&2
+    exit 1
   fi
-  sudo python3 "$SCRIPT_DIR/verify-gate5-argent.py" \
-    --config "$EVAL_CONF" \
-    --evidence-dir "$EVIDENCE_DIR" \
-    "${bundle_args[@]}"
-  if [ -n "${GITHUB_ENV:-}" ] && [ -f "$EVIDENCE_DIR/gate5_selected.json" ]; then
-    jq -r '"SELECTED_ARGENT_BUNDLE=\(.selectedBundle)\nSELECTED_ARGENT_PKG=\(.targetPackage)"' \
-      "$EVIDENCE_DIR/gate5_selected.json" >> "$GITHUB_ENV"
+
+  _restore_gate5_pkg() {
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --only-upgrade "$target_pkg" >/dev/null 2>&1 || true
+  }
+  trap _restore_gate5_pkg EXIT
+
+  echo "Selected Gate 5 candidate: $target_pkg ($old_ver -> $sec_ver)" | tee "$EVIDENCE_DIR/gate5_native_apt.txt"
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --allow-downgrades "${target_pkg}=${old_ver}" >/dev/null 2>&1
+  local before_ver after_ver
+  before_ver="$(dpkg-query -W -f='${Version}' "$target_pkg")"
+  echo "BEFORE: $target_pkg $before_ver" | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+  if [ "$before_ver" != "$old_ver" ]; then
+    echo "FAIL: Expected downgraded version $old_ver before Exultia run, got $before_ver" >&2
+    exit 1
   fi
+
+  sudo exultia --config "$EVAL_CONF" patch --vendor --os ubuntu 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+  after_ver="$(dpkg-query -W -f='${Version}' "$target_pkg")"
+  echo "AFTER:  $target_pkg $after_ver" | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+
+  if ! dpkg --compare-versions "$after_ver" gt "$before_ver"; then
+    echo "FAIL: Gate 5 package $target_pkg did not upgrade via --vendor ($before_ver -> $after_ver)" >&2
+    exit 1
+  fi
+  trap - EXIT
+
+  cat > "$EVIDENCE_DIR/gate5_selected.json" <<JSON
+{
+  "targetPackage": "$target_pkg",
+  "beforeVersion": "$before_ver",
+  "afterVersion": "$after_ver",
+  "securityCandidate": "$sec_ver"
+}
+JSON
+  if [ -n "${GITHUB_ENV:-}" ]; then
+    {
+      echo "SELECTED_GATE5_PKG=$target_pkg"
+      echo "SELECTED_GATE5_BEFORE=$before_ver"
+      echo "SELECTED_GATE5_AFTER=$after_ver"
+    } >> "$GITHUB_ENV"
+  fi
+  echo "[PASS] Gate 5 verified real native Ubuntu apt upgrade: $target_pkg $before_ver -> $after_ver"
 }
 
 gate_6() {

@@ -3,21 +3,21 @@
 Independent 250-item live-feed compromise & autonomous auto-fix verifier for Exultia.
 
 Workflow:
-  1. Fetches live Vantage and Argent Ubuntu feeds from https://exultia.tech and randomly
+  1. Fetches the live Vantage Ubuntu feed from https://exultia.tech and randomly
      samples 250 items across live rule strata using a reproducible PRNG seed.
-  2. Verifies Ed25519 signatures and canonical SHA-256 digests on 250/250 sampled items
+  2. Verifies Ed25519 signatures and canonical SHA-256 digests on every sampled item
      independently (pure Python + OS cryptography, zero Exultia code imported).
   3. Backs up target host files and live kernel sysctls, then deliberately injects real
      OS-level misconfigurations across runtime guards (sshd, nftables, sysctls, modprobe
      blacklists, perimeter blocklists/sinkholes) plus 10 safe SOX/PCI baseline controls,
      while strictly preserving SSH access and never weakening /etc/shadow permissions.
-  4. Runs independent OS probes (sshd -T, sysctl -n, nft, dpkg-query, file checks) to
+  4. Runs independent OS probes (sshd -T, sysctl -n, nft, ip route blackhole, file checks) to
      prove every injected control is genuinely EXPOSED before Exultia runs.
   5. Invokes the compiled /usr/local/bin/exultia daemon to auto-remediate configuration
-     drift and evaluate/fix all 250 feed items from the verified local feed snapshot.
+     drift and evaluate/fix all sampled feed items from the verified local feed snapshot.
   6. Re-runs independent OS probes to confirm 100% EXPOSED -> FIXED transition, reconciles
-     all 250 audit outcomes in /var/lib/exultia/audit.jsonl (including honest NOT_APPLICABLE
-     and fail-closed UNSUPPORTED/INSUFFICIENT_EVIDENCE abstentions, 0 unexpected failures),
+     all audit outcomes in /var/lib/exultia/audit.jsonl (including unpinnedFalseVerified == [],
+     honest NOT_APPLICABLE, and fail-closed UNSUPPORTED/INSUFFICIENT_EVIDENCE abstentions),
      writes JSON evidence to --out, and cleanly restores the original host baseline.
 """
 
@@ -704,14 +704,27 @@ def build_independent_checks(sampled: List[Dict[str, Any]]) -> Tuple[List[Indepe
             if m:
                 day = m.group(1)
                 lp = Path(f"/etc/exultia/blocklists/ipsum-{day}.list")
+                def _probe_ipblock(f: Path = lp, d: str = day) -> Tuple[bool, str]:
+                    file_ok = f.is_file() and f.stat().st_size > 0
+                    deny_ok = _file_contains(Path("/etc/hosts.deny"), f"BEGIN EXULTIA-IPBLOCK-{d}")[0]
+                    bh_ok = False
+                    if file_ok:
+                        first_ip = next(
+                            (ln.strip() for ln in f.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.strip()),
+                            "",
+                        )
+                        if first_ip:
+                            bh_res = run_cmd(["ip", "route", "show", f"{first_ip}/32", "type", "blackhole"], timeout=5)
+                            bh_ok = bh_res.returncode == 0 and bool(bh_res.stdout.strip())
+                    return (
+                        file_ok and deny_ok and bh_ok,
+                        f"list={'ok' if file_ok else 'missing'},hosts.deny={'ok' if deny_ok else 'missing'},blackhole={'ok' if bh_ok else 'missing'}",
+                    )
                 _add(IndependentCheck(
                     check_id=f"{cve} ({day})",
                     category="Vantage Perimeter IP Blocklist",
-                    description=f"ipsum-{day}.list + /etc/hosts.deny active",
-                    probe=lambda f=lp, d=day: (
-                        f.is_file() and f.stat().st_size > 0 and _file_contains(Path("/etc/hosts.deny"), f"BEGIN EXULTIA-IPBLOCK-{d}")[0],
-                        f"list={'ok' if f.is_file() else 'missing'},hosts.deny={'ok' if _file_contains(Path('/etc/hosts.deny'), f'BEGIN EXULTIA-IPBLOCK-{d}')[0] else 'missing'}",
-                    ),
+                    description=f"ipsum-{day}.list + /etc/hosts.deny + ip route blackhole active",
+                    probe=_probe_ipblock,
                 ))
         elif rule == "EXPR-PERIMETER-DNS-SINKHOLE":
             m = re.search(r"openphish-(\d{4}-\d{2}-\d{2})\.domains", ver_cmd)
@@ -799,6 +812,7 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
     breakdown: Dict[str, int] = {}
     unexpected_failures: List[Dict[str, Any]] = []
     abstain_violations: List[str] = []
+    unpinned_false_verified: List[Dict[str, Any]] = []
     unaccounted: List[str] = []
 
     for it in sampled:
@@ -818,12 +832,30 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
             if status in ("FAILED", "PROVENANCE_REJECTED", "SEMANTIC_REJECTED"):
                 unexpected_failures.append({"id": snap_key, "rule": rule, "status": status})
 
+        prims = (it.get("validatedFix") or {}).get("primitives") or it.get("primitives") or []
+        pkg_kern_prims = [
+            pr for pr in prims
+            if isinstance(pr, dict) and pr.get("type") in ("package.ensure_version", "kernel.verify_running_version")
+        ]
+        has_ubuntu_pin = any(
+            bool(str(
+                ((pr.get("params") or {}).get("min_versions") or {}).get("ubuntu")
+                or (pr.get("params") or {}).get("min_version")
+                or (pr.get("params") or {}).get("version")
+                or ""
+            ).strip())
+            for pr in pkg_kern_prims
+        )
+        if ((pkg_kern_prims and not has_ubuntu_pin) or (not prims and "PACKAGE-UPGRADE" in rule)) and status == "REMEDIATION_VERIFIED":
+            unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status})
+
     return {
         "evaluatedCount": len(sampled) - len(unaccounted),
         "unaccountedIds": unaccounted,
         "statusBreakdown": breakdown,
         "abstainViolations": abstain_violations,
         "unexpectedFailures": unexpected_failures,
+        "unpinnedFalseVerified": unpinned_false_verified,
     }
 
 
@@ -849,7 +881,7 @@ def main() -> int:
         return 2
 
     seed = int(args.seed) if args.seed is not None else int.from_bytes(os.urandom(4), "big")
-    print(f"[Gate 9] Fetching live Vantage & Argent Ubuntu feeds (seed={seed}, target_count={args.count})...")
+    print(f"[Gate 9] Fetching live Vantage Ubuntu feed (seed={seed}, target_count={args.count})...")
 
     key_doc = get_json(f"{BASE_URL}/api/provenance/key")
     pub_hex = str(key_doc.get("publicKeyHex") or "").strip().lower()
@@ -858,8 +890,7 @@ def main() -> int:
     pub = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
 
     vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=5000")
-    argent_doc = get_json(f"{BASE_URL}/api/argent/feed?format=kinetic&os=ubuntu&limit=200")
-    combined_pool = list(vantage_doc.get("patches") or []) + list(argent_doc.get("patches") or [])
+    combined_pool = list(vantage_doc.get("patches") or [])
     sampled, strata_counts = sample_feed_items(combined_pool, count=args.count, seed=seed)
 
     for p in sampled:
@@ -896,8 +927,7 @@ def main() -> int:
             "os_distro = ubuntu\n"
             "ring = 0\n\n"
             "[feeds]\n"
-            f"vantage_feed_url = file://{TEMP_FEED_PATH}\n"
-            f"argent_feed_url = file://{TEMP_FEED_PATH}\n\n"
+            f"vantage_feed_url = file://{TEMP_FEED_PATH}\n\n"
             "[patching]\n"
             "auto_stage_patches = false\n"
             "auto_patch_non_reboot = false\n"
@@ -951,7 +981,9 @@ def main() -> int:
         if reconciled["abstainViolations"]:
             raise AssertionError(f"Abstained items did not fail closed: {reconciled['abstainViolations'][:10]}")
         if reconciled["unexpectedFailures"]:
-            raise AssertionError(f"Unexpected failures during 250-item auto-fix: {reconciled['unexpectedFailures'][:10]}")
+            raise AssertionError(f"Unexpected failures during {len(sampled)}-item auto-fix: {reconciled['unexpectedFailures'][:10]}")
+        if reconciled["unpinnedFalseVerified"]:
+            raise AssertionError(f"Unpinned package/kernel items falsely stamped REMEDIATION_VERIFIED: {reconciled['unpinnedFalseVerified'][:10]}")
 
         report = {
             "status": "PASS",
@@ -964,6 +996,7 @@ def main() -> int:
             "independentExposedBefore": exposed_before,
             "independentFixedAfter": fixed_after,
             "fixElapsedSeconds": fix_elapsed,
+            "unpinnedFalseVerified": reconciled["unpinnedFalseVerified"],
             "beforeResults": before_results,
             "afterResults": after_results,
             "auditReconciliation": reconciled,
@@ -974,7 +1007,7 @@ def main() -> int:
             out_p.parent.mkdir(parents=True, exist_ok=True)
             out_p.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
-        print(f"\n[PASS] Gate 9 verified 250/250 Ed25519 signatures, {exposed_before}/{len(before_results)} injected compromises, {fixed_after}/{len(after_results)} independent fixes, and 0 unexpected failures.")
+        print(f"\n[PASS] Gate 9 verified {len(sampled)}/{len(sampled)} Ed25519 signatures, {exposed_before}/{len(before_results)} injected compromises, {fixed_after}/{len(after_results)} independent fixes, 0 unpinned false-verified claims, and 0 unexpected failures.")
         return 0
     finally:
         if should_restore:

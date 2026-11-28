@@ -4,8 +4,8 @@ Independent zero-trust provenance & abstention verifier for Exultia live feeds.
 
 Uses ONLY Python stdlib + OS-packaged `cryptography` (no Exultia code imported).
 Verifies:
-  1. Live Vantage feed (/api/patches/feed?cve=CVE-2024-6387) canonical SHA-256 + Ed25519 signatures.
-  2. Live Argent feed (/api/argent/feed?format=kinetic&os=ubuntu&limit=5) canonical SHA-256 + Ed25519 signatures.
+  1. Live Vantage feed (/api/patches/feed?cve=CVE-2024-6387 and ?os=ubuntu&limit=10) canonical SHA-256 + Ed25519 signatures.
+  2. Retired Argent endpoints (/api/argent/{feed,stats,sources}) return HTTP 410 Gone with code ARGENT_RETIRED.
   3. Negative tamper test (1-byte digest mutation MUST fail Ed25519 verification).
   4. Semantic abstention test (CVE-2026-136158 Valkey JSON MUST return ABSTAIN-* + operatorGuidance and never redis-server).
 """
@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, Tuple
@@ -75,11 +76,13 @@ def main() -> int:
         raise AssertionError(f"Invalid publicKeyHex from /api/provenance/key: {pub_hex!r}")
     pub = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
 
-    # 1. Vantage live feed Ed25519 check
+    # 1. Vantage live feed Ed25519 checks
     vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?cve=CVE-2024-6387")
-    vantage_patches = vantage_doc.get("patches") or []
+    vantage_patches = list(vantage_doc.get("patches") or [])
+    vantage_ubuntu_doc = get_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=10")
+    vantage_patches.extend(vantage_ubuntu_doc.get("patches") or [])
     if not vantage_patches:
-        raise AssertionError("Vantage feed returned 0 patches for CVE-2024-6387")
+        raise AssertionError("Vantage feed returned 0 patches")
 
     sample_digest = ""
     sample_sig = b""
@@ -87,15 +90,20 @@ def main() -> int:
         sample_digest, sample_sig = compute_and_verify_patch(pub, p)
     print(f"[PASS] Vantage independent Ed25519 verified: {len(vantage_patches)}/{len(vantage_patches)}")
 
-    # 2. Argent live feed Ed25519 check
-    argent_doc = get_json(f"{BASE_URL}/api/argent/feed?format=kinetic&os=ubuntu&limit=5")
-    argent_patches = argent_doc.get("patches") or []
-    if not argent_patches:
-        raise AssertionError("Argent feed returned 0 kinetic bundles for ubuntu")
-
-    for p in argent_patches:
-        compute_and_verify_patch(pub, p)
-    print(f"[PASS] Argent independent Ed25519 verified: {len(argent_patches)}/{len(argent_patches)}")
+    # 2. Retired Argent API tombstone checks (must return HTTP 410 Gone)
+    retired_paths = ("/api/argent/feed", "/api/argent/stats", "/api/argent/sources")
+    for rpath in retired_paths:
+        req = urllib.request.Request(f"{BASE_URL}{rpath}", headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                raise AssertionError(f"Expected HTTP 410 on retired {rpath}, got HTTP {resp.status}")
+        except urllib.error.HTTPError as he:
+            if he.code != 410:
+                raise AssertionError(f"Expected HTTP 410 on retired {rpath}, got HTTP {he.code}")
+            body = json.loads(he.read().decode("utf-8"))
+            if body.get("code") != "ARGENT_RETIRED" or body.get("retired") is not True or body.get("replacement") != "/api/patches/feed":
+                raise AssertionError(f"Unexpected 410 payload on {rpath}: {body!r}")
+    print(f"[PASS] Retired Argent endpoints verified HTTP 410 ARGENT_RETIRED: {len(retired_paths)}/{len(retired_paths)}")
 
     # 3. Negative tamper test (mutated digest MUST be rejected)
     tampered_digest = sample_digest[:-1] + ("0" if sample_digest[-1] != "0" else "1")
@@ -134,7 +142,7 @@ def main() -> int:
     report = {
         "public_key_hex": pub_hex,
         "vantage_verified": len(vantage_patches),
-        "argent_verified": len(argent_patches),
+        "argent_retired_410_verified": len(retired_paths),
         "tamper_rejected": tamper_rejected,
         "abstain_check": {
             "cve": "CVE-2026-136158",

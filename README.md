@@ -12,15 +12,15 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 
 | Gate | Claim Under Test | Exultia Action | Independent Proof (Non-Exultia Check) |
 | :--- | :--- | :--- | :--- |
-| **1** | Vantage & Argent feeds are Ed25519-signed and resist generic fallback | *(Pure zero-Exultia Python)* | Fetches `/api/provenance/key`, `/api/patches/feed`, and `/api/argent/feed`, recomputes canonical SHA-256 + Ed25519 via Ubuntu's `python3-cryptography`, rejects a 1-byte mutated digest, and verifies `CVE-2026-136158` (Valkey JSON) carries `ABSTAIN-*` + `operatorGuidance` without `redis-server`. |
+| **1** | Vantage feed is Ed25519-signed, resists fallback & retired `/api/argent/*` returns 410 | *(Pure zero-Exultia Python)* | Fetches `/api/provenance/key` & `/api/patches/feed`, recomputes canonical SHA-256 + Ed25519 via Ubuntu's `python3-cryptography`, rejects a 1-byte mutated digest, confirms retired `/api/argent/*` routes return HTTP 410 (`ARGENT_RETIRED`), and verifies `CVE-2026-136158` (Valkey JSON) carries `ABSTAIN-*` + `operatorGuidance` without `redis-server`. |
 | **2** | Binary delivery verifies SHA-256 + SLSA L2 DSSE provenance | `install.sh` (`EXULTIA_REQUIRE_CHECKSUM=1`, `EXULTIA_REQUIRE_PROVENANCE=1`) | Asserts `/usr/local/bin/exultia` is `700 root:root` and its `sha256sum` matches `https://exultia.tech/downloads/exultia/SHA256SUMS.txt`. |
 | **3** | Live Vantage hotfix remediation & deterministic rollback work across runtime guards | `exultia patch --cve <RANDOM_ID> --force` & `rollback` | Randomly samples a live reversible Vantage runtime-guard advisory across rule strata (`sshd`, kernel `sysctl`, `modprobe` blacklist, IP blocklist, DNS sinkhole) and verifies `EXPOSED -> FIXED -> RESTORED` via independent OS probes. |
 | **4** | Live Vantage kernel network guard mitigates safely without breaking traffic | `exultia patch --cve CVE-2026-98432` & `rollback` | Inspects live `nft list table ip exultia_cve_2026_98432`, verifies normal TCP loopback handshake passes, and confirms table removal after rollback. |
-| **5** | Live Argent feed executes real distro-native package updates | `exultia patch --bundle <RANDOM_BUNDLE> --os ubuntu` | Randomly selects an installed non-reboot Ubuntu Argent bundle from `/api/argent/feed` and verifies target package state before/after via `dpkg-query`. |
+| **5** | Daemon native OS vendor-update engine upgrades a real vulnerable Ubuntu package | `exultia patch --vendor --os ubuntu` | Downgrades an installed Ubuntu 24.04 package (`wget`/`cpio`/`curl`/`libexpat1`) to its older `noble/main` build, runs `--vendor`, and proves `AFTER > BEFORE` via `dpkg-query` + `dpkg --compare-versions`. |
 | **6** | Semantic gate fails closed instead of substituting wrong OS packages | `exultia patch --cve CVE-2026-136158` | Asserts non-zero exit code and confirms `redis-server` is **not** installed via `dpkg-query`. |
 | **7** | SOX/PCI drift detection & reconciliation | `exultia drift audit --json` & `drift fix` | Injects `PermitRootLogin yes` and `net.ipv4.tcp_syncookies = 0`; verifies independent enforcement via `sshd -T` and `sysctl -n`. |
 | **8** | Autonomous daemon dry-run, exploit/non-breakage gates & signed log | `exultia sync --dry-run`, `test --behavioral --json`, `attest --json` | Asserts all 5 behavioral gates pass, hash-chained `remediation_eventlog` is intact, and host attestation carries an Ed25519 signature. |
-| **9** | 250-item random live feed compromise, autonomous fix & clean restore | `exultia drift fix` & `patch --all --force` over 250 sampled items | Randomly samples 250 live Vantage/Argent items (verifying 250/250 Ed25519), deliberately misconfigures runtime SSH/sysctl/nftables/modprobe/blocklist/account controls, proves every check is `EXPOSED` before and `FIXED` after via independent OS probes, reconciles `audit.jsonl`, and restores baseline. |
+| **9** | 250-item random live Vantage feed compromise, autonomous fix & clean restore | `exultia drift fix` & `patch --all --force` over 250 sampled items | Randomly samples 250 live Vantage items (verifying Ed25519 on every item), deliberately misconfigures runtime SSH/sysctl/nftables/modprobe/blocklist/account controls, proves every check is `EXPOSED` before and `FIXED` (`ip route show type blackhole` included) after via independent OS probes, confirms `unpinnedFalseVerified == []`, reconciles `audit.jsonl`, and restores baseline. |
 
 ---
 
@@ -34,7 +34,7 @@ Rather than trusting a vendor dashboard or pre-canned mock output, this reposito
 3. Select **Independent Exultia Verification Suite** → **Run workflow**.
 4. Inspect every step log and download the **`exultia-verification-evidence`** artifact containing raw JSON/CLI transcripts (`gate1_provenance.json`, `gate3_selected.json`, `gate4_nft_after_apply.txt`, `gate5_selected.json`, `gate7_drift_before.json`, `gate8_behavioral.json`, `gate8_attestation.json`, `gate9_compromise_250.json`).
 
-> *(Optional)* Leave `EXULTIA_OPERATOR_KEY` unset to verify public Vantage & Argent endpoints, or add a scoped Personal Access Token (`exultia_pat_...` from `https://exultia.tech/account?tab=tokens`) as an Actions repository secret named `EXULTIA_OPERATOR_KEY`.
+> *(Optional)* Leave `EXULTIA_OPERATOR_KEY` unset to verify public Vantage endpoints, or add a scoped Personal Access Token (`exultia_pat_...` from `https://exultia.tech/account?tab=tokens`) as an Actions repository secret named `EXULTIA_OPERATOR_KEY`.
 
 ---
 
@@ -90,7 +90,6 @@ python3 validate.py --fast --samples=50
 
 - [`scripts/verify-provenance.py`](scripts/verify-provenance.py) — Standalone zero-Exultia-code Python 3 Ed25519 + canonical SHA-256 + tamper + abstention verifier
 - [`scripts/verify-gate3-vantage.py`](scripts/verify-gate3-vantage.py) — Random Vantage runtime-guard selector & `EXPOSED -> FIXED -> RESTORED` rollback verifier (Gate 3)
-- [`scripts/verify-gate5-argent.py`](scripts/verify-gate5-argent.py) — Random Argent Ubuntu bundle selector & `dpkg-query` native `apt` verifier (Gate 5)
 - [`scripts/verify-compromise-250.py`](scripts/verify-compromise-250.py) — Standalone 250-item random live-feed compromise injector, Exultia auto-fix trigger & before/after OS verifier (Gate 9)
 - [`scripts/verify-exultia.sh`](scripts/verify-exultia.sh) — Auditable 9-gate Bash verification runner for Ubuntu 24.04
 - [`.github/workflows/verify-exultia.yml`](.github/workflows/verify-exultia.yml) — GitHub Actions workflow running Gates 1–9 and archiving immutable evidence artifacts
