@@ -66,6 +66,14 @@ detect_host_distro() {
 
 detect_host_distro
 
+run_priv() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  else
+    sudo "$@"
+  fi
+}
+
 mkdir -p "$EVIDENCE_DIR"
 
 if [ -z "${EXULTIA_NO_LOCK:-}" ] && command -v flock >/dev/null 2>&1; then
@@ -93,33 +101,33 @@ gate_1() {
 gate_2() {
   log_gate "GATE 2: Fail-closed install (SHA-256 + SLSA L2 DSSE) & binary permissions"
   curl -fsSL https://exultia.tech/install.sh -o /tmp/exultia-install.sh
-  sudo env EXULTIA_REQUIRE_CHECKSUM=1 EXULTIA_REQUIRE_PROVENANCE=1 sh /tmp/exultia-install.sh | tee "$EVIDENCE_DIR/gate2_install.log"
+  run_priv env EXULTIA_REQUIRE_CHECKSUM=1 EXULTIA_REQUIRE_PROVENANCE=1 sh /tmp/exultia-install.sh | tee "$EVIDENCE_DIR/gate2_install.log"
   rm -f /tmp/exultia-install.sh
 
   # Stop autonomous background daemon (systemd or nohup container fallback) and clear any stale staged cache
   if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
-    sudo systemctl stop exultia.service || true
+    run_priv systemctl stop exultia.service || true
   fi
-  sudo pkill -f '/usr/local/bin/exultia daemon' 2>/dev/null || true
-  sudo rm -rf /var/lib/exultia/staging
+  run_priv pkill -f '/usr/local/bin/exultia daemon' 2>/dev/null || true
+  run_priv rm -rf /var/lib/exultia/staging
 
   local mode_owner
-  mode_owner="$(sudo stat -c '%a %U:%G' /usr/local/bin/exultia)"
+  mode_owner="$(run_priv stat -c '%a %U:%G' /usr/local/bin/exultia)"
   echo "Binary permissions: $mode_owner"
   test "$mode_owner" = "700 root:root"
 
   local actual_sha expected_sha
-  actual_sha="$(sudo sha256sum /usr/local/bin/exultia | awk '{print $1}')"
+  actual_sha="$(run_priv sha256sum /usr/local/bin/exultia | awk '{print $1}')"
   expected_sha="$(curl -fsSL https://exultia.tech/downloads/exultia/SHA256SUMS.txt | tr -d '\r' | awk '{f=$2; gsub(/^[*]/, "", f); if (f=="exultia") {print $1; exit}}')"
   echo "Actual SHA-256:   $actual_sha"
   echo "Expected SHA-256: $expected_sha"
   test -n "$expected_sha"
   test "$actual_sha" = "$expected_sha"
 
-  sudo exultia --version | tee "$EVIDENCE_DIR/gate2_version.txt"
+  run_priv exultia --version | tee "$EVIDENCE_DIR/gate2_version.txt"
 
-  sudo mkdir -p /etc/exultia
-  sudo tee "$EVAL_CONF" >/dev/null <<CONF
+  run_priv mkdir -p /etc/exultia
+  run_priv tee "$EVAL_CONF" >/dev/null <<CONF
 [daemon]
 os_distro = ${HOST_OS_FAMILY}
 ring = 0
@@ -140,8 +148,8 @@ kernel_livepatch_enabled = false
 [neural_self_heal]
 ai_self_heal_mode = off
 CONF
-  sudo chown root:root "$EVAL_CONF"
-  sudo chmod 600 "$EVAL_CONF"
+  run_priv chown root:root "$EVAL_CONF"
+  run_priv chmod 600 "$EVAL_CONF"
   echo "[PASS] Gate 2 verified install provenance, binary SHA-256, 0700 ownership, and eval.conf"
 }
 
@@ -151,7 +159,7 @@ gate_3() {
   if [ -n "$VANTAGE_CVE" ]; then
     cve_args=(--cve "$VANTAGE_CVE")
   fi
-  sudo python3 "$SCRIPT_DIR/verify-gate3-vantage.py" \
+  run_priv python3 "$SCRIPT_DIR/verify-gate3-vantage.py" \
     --config "$EVAL_CONF" \
     --evidence-dir "$EVIDENCE_DIR" \
     "${cve_args[@]}"
@@ -163,12 +171,14 @@ gate_3() {
 
 gate_4() {
   log_gate "GATE 4: Live Vantage kernel netfilter guard & non-breakage (CVE-2026-98432)"
-  sudo exultia --config "$EVAL_CONF" patch --cve CVE-2026-98432 --force | tee "$EVIDENCE_DIR/gate4_apply.txt"
+  run_priv exultia --config "$EVAL_CONF" patch --cve CVE-2026-98432 --force | tee "$EVIDENCE_DIR/gate4_apply.txt"
 
-  sudo nft list ruleset | tee "$EVIDENCE_DIR/gate4_nft_after_apply.txt"
-  local nft_dump ipt_dump
-  nft_dump="$(sudo nft list table ip exultia_cve_2026_98432 2>/dev/null || true)"
-  ipt_dump="$(sudo iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  run_priv nft list ruleset | tee "$EVIDENCE_DIR/gate4_nft_after_apply.txt"
+  local nft_dump ipt_dump=""
+  nft_dump="$(run_priv nft list table ip exultia_cve_2026_98432 2>/dev/null || true)"
+  if command -v iptables >/dev/null 2>&1; then
+    ipt_dump="$(run_priv iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  fi
   if ! grep -qE "hdrlength (>|gt|!=) 5" <<< "$nft_dump"; then
     if ! grep -q "0>>24&0x0f!=5" <<< "$ipt_dump"; then
       echo "FAIL: Expected live nftables or iptables raw rule for CVE-2026-98432 not present" >&2
@@ -195,15 +205,17 @@ srv.close()
 print("[PASS] Normal TCP loopback handshake unaffected by CVE-2026-98432 guard")
 PY
 
-  sudo exultia --config "$EVAL_CONF" rollback --cve CVE-2026-98432 | tee "$EVIDENCE_DIR/gate4_rollback.txt"
-  sudo nft list ruleset | tee "$EVIDENCE_DIR/gate4_nft_after_rollback.txt"
+  run_priv exultia --config "$EVAL_CONF" rollback --cve CVE-2026-98432 | tee "$EVIDENCE_DIR/gate4_rollback.txt"
+  run_priv nft list ruleset | tee "$EVIDENCE_DIR/gate4_nft_after_rollback.txt"
 
-  if sudo nft list table ip exultia_cve_2026_98432 >/dev/null 2>&1; then
+  if run_priv nft list table ip exultia_cve_2026_98432 >/dev/null 2>&1; then
     echo "FAIL: nft table exultia_cve_2026_98432 remained after rollback" >&2
     exit 1
   fi
-  local ipt_after
-  ipt_after="$(sudo iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  local ipt_after=""
+  if command -v iptables >/dev/null 2>&1; then
+    ipt_after="$(run_priv iptables -t raw -S PREROUTING 2>/dev/null || true)"
+  fi
   if grep -q "0>>24&0x0f!=5" <<< "$ipt_after"; then
     echo "FAIL: iptables raw rule remained after rollback" >&2
     exit 1
@@ -215,7 +227,7 @@ gate_5() {
   log_gate "GATE 5: Real native ${HOST_OS_PRETTY} security upgrade via --vendor (BEFORE < AFTER)"
 
   if [ "$HOST_OS_FAMILY" = "ubuntu" ] || [ "$HOST_OS_FAMILY" = "debian" ]; then
-    sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq
+    run_priv env DEBIAN_FRONTEND=noninteractive apt-get update -qq
 
     local target_pkg="" old_ver="" sec_ver="" cand="" need_downgrade=0
     if [ "$HOST_OS_FAMILY" = "ubuntu" ]; then
@@ -229,7 +241,7 @@ gate_5() {
         sec_ver="$(printf '%s\n' "$madison" | awk -F'|' '/noble-security/ {gsub(/ /, "", $2); print $2; exit}')"
         old_ver="$(printf '%s\n' "$madison" | awk -F'|' '/noble\/main/ {gsub(/ /, "", $2); print $2; exit}')"
         if [ -n "$sec_ver" ] && [ -n "$old_ver" ] && dpkg --compare-versions "$old_ver" lt "$sec_ver"; then
-          sim_out="$(sudo DEBIAN_FRONTEND=noninteractive apt-get install -s -y --allow-downgrades "${cand}=${old_ver}" 2>&1 || true)"
+          sim_out="$(run_priv env DEBIAN_FRONTEND=noninteractive apt-get install -s -y --allow-downgrades "${cand}=${old_ver}" 2>&1 || true)"
           if ! grep -qE '^(Remv|E:)' <<< "$sim_out"; then
             target_pkg="$cand"
             need_downgrade=1
@@ -261,7 +273,7 @@ gate_5() {
           sec_ver="$(printf '%s\n' "$madison" | awk -F'|' '/-security/ {gsub(/ /, "", $2); print $2; exit}')"
           old_ver="$(printf '%s\n' "$madison" | awk -F'|' '!/security/ && /\/main / {gsub(/ /, "", $2); ver=$2} END {print ver}')"
           if [ -n "$sec_ver" ] && [ -n "$old_ver" ] && dpkg --compare-versions "$old_ver" lt "$sec_ver"; then
-            sim_out="$(sudo DEBIAN_FRONTEND=noninteractive apt-get install -s -y --allow-downgrades "${cand}=${old_ver}" 2>&1 || true)"
+            sim_out="$(run_priv env DEBIAN_FRONTEND=noninteractive apt-get install -s -y --allow-downgrades "${cand}=${old_ver}" 2>&1 || true)"
             if ! grep -qE '^(Remv|E:)' <<< "$sim_out"; then
               target_pkg="$cand"
               need_downgrade=1
@@ -278,13 +290,13 @@ gate_5() {
     fi
 
     _restore_gate5_pkg() {
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --only-upgrade "$target_pkg" >/dev/null 2>&1 || true
+      run_priv env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --only-upgrade "$target_pkg" >/dev/null 2>&1 || true
     }
     trap _restore_gate5_pkg EXIT
 
     echo "Selected Gate 5 candidate: $target_pkg ($old_ver -> $sec_ver)" | tee "$EVIDENCE_DIR/gate5_native_apt.txt"
     if [ "$need_downgrade" -eq 1 ]; then
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --allow-downgrades "${target_pkg}=${old_ver}" >/dev/null 2>&1
+      run_priv env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --allow-downgrades "${target_pkg}=${old_ver}" >/dev/null 2>&1
     fi
     local before_ver after_ver
     before_ver="$(dpkg-query -W -f='${Version}' "$target_pkg")"
@@ -294,7 +306,7 @@ gate_5() {
       exit 1
     fi
 
-    sudo exultia --config "$EVAL_CONF" patch --vendor --os "$HOST_OS_FAMILY" 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+    run_priv exultia --config "$EVAL_CONF" patch --vendor --os "$HOST_OS_FAMILY" 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
     after_ver="$(dpkg-query -W -f='${Version}' "$target_pkg")"
     echo "AFTER:  $target_pkg $after_ver" | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
 
@@ -337,7 +349,7 @@ PY
       echo "BEFORE: $target_pkg $before_ver"
     } | tee "$EVIDENCE_DIR/gate5_native_apt.txt"
 
-    sudo exultia --config "$EVAL_CONF" patch --vendor --os rhel 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+    run_priv exultia --config "$EVAL_CONF" patch --vendor --os rhel 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
     after_ver="$(rpm -q --qf '%{EPOCH}:%{VERSION}-%{RELEASE}' "$target_pkg" | sed -E 's/^(\(none\)|0)://')"
     echo "AFTER:  $target_pkg $after_ver" | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
 
@@ -369,7 +381,7 @@ if not gt:
 PY
     sec_ver="$after_ver"
   elif [ "$HOST_OS_FAMILY" = "alpine" ]; then
-    sudo apk update -q
+    run_priv apk update -q
     local target_pkg="" sec_ver="" before_ver="" after_ver=""
     target_pkg="$(python3 - <<'PY'
 import re, subprocess
@@ -404,7 +416,7 @@ PY
       echo "BEFORE: $target_pkg $before_ver"
     } | tee "$EVIDENCE_DIR/gate5_native_apt.txt"
 
-    sudo exultia --config "$EVAL_CONF" patch --vendor --os alpine 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
+    run_priv exultia --config "$EVAL_CONF" patch --vendor --os alpine 2>&1 | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
     after_ver="$(apk info -e -v "$target_pkg" | sed "s/^${target_pkg}-//")"
     echo "AFTER:  $target_pkg $after_ver" | tee -a "$EVIDENCE_DIR/gate5_native_apt.txt"
     if [ "$(apk version -t "$after_ver" "$before_ver")" != ">" ]; then
@@ -438,7 +450,7 @@ JSON
 
 gate_6() {
   log_gate "GATE 6: Negative fail-closed abstention (CVE-2026-136158 Valkey JSON)"
-  if sudo exultia --config "$EVAL_CONF" patch --cve CVE-2026-136158 2>&1 | tee "$EVIDENCE_DIR/gate6_abstain_cli.txt"; then
+  if run_priv exultia --config "$EVAL_CONF" patch --cve CVE-2026-136158 2>&1 | tee "$EVIDENCE_DIR/gate6_abstain_cli.txt"; then
     echo "FAIL: Abstained CVE-2026-136158 should fail closed rather than reporting applied" >&2
     exit 1
   fi
@@ -466,51 +478,51 @@ gate_6() {
 gate_7() {
   log_gate "GATE 7: SOX/PCI configuration drift injection, detection, and auto-repair"
   # Ensure /etc/ssh/sshd_config starts clean with Include first and host keys exist
-  sudo mkdir -p /run/sshd /etc/ssh/sshd_config.d /etc/sysctl.d /etc/security
+  run_priv mkdir -p /run/sshd /etc/ssh/sshd_config.d /etc/sysctl.d /etc/security
   if ! ls /etc/ssh/ssh_host_*_key >/dev/null 2>&1 && command -v ssh-keygen >/dev/null 2>&1; then
-    sudo ssh-keygen -A >/dev/null 2>&1 || true
+    run_priv ssh-keygen -A >/dev/null 2>&1 || true
   fi
-  sudo rm -f /etc/ssh/sshd_config.d/00-exultia-drift.conf /etc/ssh/sshd_config.d/99-exultia-drift.conf
-  sudo exultia --config "$EVAL_CONF" drift fix >/dev/null
+  run_priv rm -f /etc/ssh/sshd_config.d/00-exultia-drift.conf /etc/ssh/sshd_config.d/99-exultia-drift.conf
+  run_priv exultia --config "$EVAL_CONF" drift fix >/dev/null
 
   # Remove enforced drop-in so injected drift simulates unmitigated insecure host state
-  sudo rm -f /etc/ssh/sshd_config.d/00-exultia-drift.conf
-  sudo tee /etc/ssh/sshd_config.d/99-exultia-drift.conf >/dev/null <<'EOF'
+  run_priv rm -f /etc/ssh/sshd_config.d/00-exultia-drift.conf
+  run_priv tee /etc/ssh/sshd_config.d/99-exultia-drift.conf >/dev/null <<'EOF'
 PermitRootLogin yes
 PermitEmptyPasswords yes
 EOF
-  sudo tee /etc/sysctl.d/99-exultia-drift.conf >/dev/null <<'EOF'
+  run_priv tee /etc/sysctl.d/99-exultia-drift.conf >/dev/null <<'EOF'
 net.ipv4.tcp_syncookies = 0
 EOF
-  sudo sysctl -w net.ipv4.tcp_syncookies=0 >/dev/null
+  run_priv sysctl -w net.ipv4.tcp_syncookies=0 >/dev/null
 
-  sudo exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_before.json"
+  run_priv exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_before.json"
   jq -e 'length > 0' "$EVIDENCE_DIR/gate7_drift_before.json" >/dev/null
 
-  sudo exultia --config "$EVAL_CONF" drift fix | tee "$EVIDENCE_DIR/gate7_drift_fix.txt"
+  run_priv exultia --config "$EVAL_CONF" drift fix | tee "$EVIDENCE_DIR/gate7_drift_fix.txt"
 
-  sudo sshd -t
+  run_priv sshd -t
   local sshd_after_drift
-  sshd_after_drift="$(sudo sshd -T)"
+  sshd_after_drift="$(run_priv sshd -T)"
   grep -qi '^permitrootlogin no$' <<< "$sshd_after_drift"
   if [ "$HOST_OS_FAMILY" != "alpine" ] && grep -qi '^usepam ' <<< "$sshd_after_drift"; then
     grep -qi '^usepam yes$' <<< "$sshd_after_drift"
   fi
   test "$(sysctl -n net.ipv4.tcp_syncookies)" = "1"
 
-  sudo exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_after.json"
+  run_priv exultia --config "$EVAL_CONF" drift audit --json | tee "$EVIDENCE_DIR/gate7_drift_after.json"
   jq -e 'length == 0' "$EVIDENCE_DIR/gate7_drift_after.json" >/dev/null
   echo "[PASS] Gate 7 verified SOX/PCI drift detection, auto-reconciliation, and OS-level enforcement"
 }
 
 gate_8() {
   log_gate "GATE 8: Daemon sync dry-run, behavioral gates, and signed Ed25519 attestation"
-  sudo exultia --config "$EVAL_CONF" sync \
+  run_priv exultia --config "$EVAL_CONF" sync \
     --feed-url "https://exultia.tech/api/patches/feed?os=${HOST_FEED_OS}&limit=${SYNC_FEED_LIMIT}" \
     --dry-run | tee "$EVIDENCE_DIR/gate8_sync_dry_run.txt"
   grep -q '\[Kinetic Daemon\] Cycle complete\.' "$EVIDENCE_DIR/gate8_sync_dry_run.txt"
 
-  sudo exultia test --behavioral --json | tee "$EVIDENCE_DIR/gate8_behavioral_raw.txt"
+  run_priv exultia test --behavioral --json | tee "$EVIDENCE_DIR/gate8_behavioral_raw.txt"
   python3 - "$EVIDENCE_DIR/gate8_behavioral_raw.txt" "$EVIDENCE_DIR/gate8_behavioral.json" <<'PY'
 import json, sys
 raw = open(sys.argv[1], encoding="utf-8").read()
@@ -524,7 +536,7 @@ assert doc.get("passed_gates") == doc.get("total_gates"), f"Not all behavioral g
 print(f"[PASS] Behavioral exploit gates passed: {doc['passed_gates']}/{doc['total_gates']}")
 PY
 
-  sudo exultia attest --json | tee "$EVIDENCE_DIR/gate8_attestation_raw.txt"
+  run_priv exultia attest --json | tee "$EVIDENCE_DIR/gate8_attestation_raw.txt"
   python3 - "$EVIDENCE_DIR/gate8_attestation_raw.txt" "$EVIDENCE_DIR/gate8_attestation.json" <<'PY'
 import json, sys
 raw = open(sys.argv[1], encoding="utf-8").read()
@@ -546,7 +558,7 @@ gate_9() {
   if [ -n "$COMPROMISE_SEED" ]; then
     seed_args=(--seed "$COMPROMISE_SEED")
   fi
-  sudo python3 "$SCRIPT_DIR/verify-compromise-250.py" \
+  run_priv python3 "$SCRIPT_DIR/verify-compromise-250.py" \
     --count "$COMPROMISE_SAMPLE_COUNT" \
     --confirm-test-host \
     --out "$EVIDENCE_DIR/gate9_compromise_250.json" \

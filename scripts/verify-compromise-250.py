@@ -593,14 +593,14 @@ def restore_baseline(meta: Dict[str, Any], family: str = "ubuntu") -> None:
         except OSError:
             pass
 
-    for family, table in [
+    for nft_fam, table in [
         ("ip", "exultia_cve_2026_98432"),
         ("inet", "exultia_cups"),
         ("ip", "exultia_cups"),
         ("inet", "exultia_vantage"),
     ]:
-        if f"table {family} {table}" not in (meta.get("nft_tables") or []):
-            run_cmd(["nft", "delete", "table", family, table], timeout=5)
+        if f"table {nft_fam} {table}" not in (meta.get("nft_tables") or []):
+            run_cmd(["nft", "delete", "table", nft_fam, table], timeout=5)
 
     # Remove only blackhole routes added during the test
     orig_bh = set(meta.get("blackholes") or [])
@@ -745,10 +745,11 @@ def inject_compromise_state(sampled: List[Dict[str, Any]], family: str = "ubuntu
         ("inet", "exultia_vantage"),
     ]:
         run_cmd(["nft", "delete", "table", fam, tbl], timeout=5)
-    run_cmd([
-        "iptables", "-t", "raw", "-D", "PREROUTING", "-p", "tcp",
-        "--tcp-flags", "SYN,ACK", "SYN", "-m", "u32", "--u32", "0>>24&0x0f=6:15", "-j", "DROP",
-    ], timeout=5)
+    if shutil.which("iptables"):
+        run_cmd([
+            "iptables", "-t", "raw", "-D", "PREROUTING", "-p", "tcp",
+            "--tcp-flags", "SYN,ACK", "SYN", "-m", "u32", "--u32", "0>>24&0x0f=6:15", "-j", "DROP",
+        ], timeout=5)
 
     # 4. Weaken kernel sysctls live + drift conf
     weak_sysctls = {
@@ -1343,7 +1344,7 @@ def main() -> int:
         return 0
     finally:
         if should_restore:
-            restore_baseline(baseline_meta)
+            restore_baseline(baseline_meta, family=family)
 
 
 if __name__ == "__main__":
