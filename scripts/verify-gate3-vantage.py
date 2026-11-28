@@ -53,7 +53,7 @@ def fetch_json(url: str) -> Dict[str, Any]:
             "Accept-Encoding": "gzip",
         },
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=120) as resp:
         raw = resp.read()
         enc = str(resp.headers.get("Content-Encoding") or "").lower()
         if "gzip" in enc or raw[:2] == b"\x1f\x8b":
@@ -70,6 +70,39 @@ def read_sysctl(key: str) -> Optional[str]:
         return None
     r = run_cmd(["sysctl", "-n", key], timeout=5)
     return r.stdout.strip() if r.returncode == 0 else None
+
+
+def detect_host_distro() -> Tuple[str, str, str]:
+    os_rel = Path("/etc/os-release")
+    raw_id = ""
+    if os_rel.is_file():
+        for ln in os_rel.read_text(encoding="utf-8", errors="ignore").lower().splitlines():
+            if ln.startswith("id="):
+                raw_id = ln.split("=", 1)[1].strip().strip('"').strip("'")
+                break
+    if raw_id == "ubuntu":
+        return "ubuntu", "ubuntu", "Ubuntu"
+    if raw_id in ("debian", "kali", "raspbian"):
+        return "debian", "debian", "Debian"
+    if raw_id in ("rocky", "rhel", "almalinux", "centos", "ol", "fedora", "amzn"):
+        return "rhel", "rocky", "Rocky Linux"
+    if raw_id == "alpine":
+        return "alpine", "alpine", "Alpine Linux"
+    return (raw_id or "ubuntu"), (raw_id or "ubuntu"), (raw_id or "Linux")
+
+
+def supports_usepam(family: str) -> bool:
+    if family == "alpine":
+        return False
+    r = run_cmd(["sshd", "-T"], timeout=10)
+    if r.returncode == 0:
+        return "usepam " in r.stdout.lower()
+    return True
+
+
+def ensure_ssh_host_keys() -> None:
+    if not list(Path("/etc/ssh").glob("ssh_host_*_key")) and shutil.which("ssh-keygen"):
+        run_cmd(["ssh-keygen", "-A"], timeout=15)
 
 
 def sshd_effective(param: str) -> str:
@@ -132,7 +165,11 @@ def select_vantage_target(patches: List[Dict[str, Any]], explicit_cve: str = "")
     return rng.choice(by_rule[chosen_rule])
 
 
-def build_harness_for_item(patch: Dict[str, Any]) -> Tuple[Callable[[], None], Callable[[], Tuple[bool, str]], Callable[[], None]]:
+def build_harness_for_item(
+    patch: Dict[str, Any],
+    *,
+    family: str = "ubuntu",
+) -> Tuple[Callable[[], None], Callable[[], Tuple[bool, str]], Callable[[], None]]:
     """
     Returns (prepare_exposed_state, probe_is_fixed, restore_host_baseline) for `patch`.
     """
@@ -182,26 +219,28 @@ def build_harness_for_item(patch: Dict[str, Any]) -> Tuple[Callable[[], None], C
         _save_file(sshd_cfg)
         _save_file(ssh_dropin)
         _save_file(regr_dropin)
+        pam_enabled = supports_usepam(family)
 
         def _prep() -> None:
             Path("/run/sshd").mkdir(parents=True, exist_ok=True)
             Path("/etc/ssh/sshd_config.d").mkdir(parents=True, exist_ok=True)
+            ensure_ssh_host_keys()
             for old in Path("/etc/ssh/sshd_config.d").glob("00-exultia-*.conf"):
                 _save_file(old)
                 old.unlink(missing_ok=True)
             sshd_cfg.write_text(
                 "Include /etc/ssh/sshd_config.d/*.conf\n"
                 "Port 22\n"
-                "UsePAM yes\n"
-                "PubkeyAuthentication yes\n"
-                "KbdInteractiveAuthentication no\n"
-                "LoginGraceTime 120\n",
+                + ("UsePAM yes\n" if pam_enabled else "")
+                + "PubkeyAuthentication yes\n"
+                + "KbdInteractiveAuthentication no\n"
+                + "LoginGraceTime 120\n",
                 encoding="utf-8",
             )
             os.chmod(sshd_cfg, 0o644)
             if run_cmd(["sshd", "-t"], timeout=10).returncode != 0:
                 raise RuntimeError("`sshd -t` failed while preparing Gate 3 SSH baseline")
-            if sshd_effective("usepam").lower() != "yes":
+            if pam_enabled and sshd_effective("usepam").lower() != "yes":
                 raise RuntimeError("Safety check failed: `sshd -T` did not preserve `usepam yes`")
 
         def _probe() -> Tuple[bool, str]:
@@ -211,10 +250,11 @@ def build_harness_for_item(patch: Dict[str, Any]) -> Tuple[Callable[[], None], C
         def _restore() -> None:
             _restore_common()
             if run_cmd(["sshd", "-t"], timeout=10).returncode == 0:
-                for svc in ("ssh", "sshd"):
-                    if run_cmd(["systemctl", "is-active", "--quiet", svc], timeout=5).returncode == 0:
-                        run_cmd(["systemctl", "reload", svc], timeout=10)
-                        break
+                if shutil.which("systemctl") and Path("/run/systemd/system").is_dir():
+                    for svc in ("ssh", "sshd"):
+                        if run_cmd(["systemctl", "is-active", "--quiet", svc], timeout=5).returncode == 0:
+                            run_cmd(["systemctl", "reload", svc], timeout=10)
+                            break
 
         return _prep, _probe, _restore
 
@@ -384,13 +424,14 @@ def main() -> int:
     ev_dir = Path(args.evidence_dir)
     ev_dir.mkdir(parents=True, exist_ok=True)
 
-    feed_doc = fetch_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=5000")
+    family, feed_os, distro_label = detect_host_distro()
+    feed_doc = fetch_json(f"{BASE_URL}/api/patches/feed?os={feed_os}&limit=5000")
     patches = list(feed_doc.get("patches") or [])
     chosen = select_vantage_target(patches, explicit_cve=args.cve)
     chosen_id = str(chosen.get("cveId") or chosen.get("id") or "").strip()
     chosen_rule = item_rule_id(chosen)
 
-    print(f"[Gate 3] Selected Vantage target: {chosen_id} (rule={chosen_rule}, mode={'explicit' if args.cve else 'random'})")
+    print(f"[Gate 3] Selected {distro_label} Vantage target: {chosen_id} (rule={chosen_rule}, mode={'explicit' if args.cve else 'random'})")
 
     gh_env = os.environ.get("GITHUB_ENV")
     if gh_env:
@@ -398,7 +439,7 @@ def main() -> int:
             fh.write(f"SELECTED_VANTAGE_CVE={chosen_id}\n")
             fh.write(f"SELECTED_VANTAGE_RULE={chosen_rule}\n")
 
-    prep_fn, probe_fn, restore_fn = build_harness_for_item(chosen)
+    prep_fn, probe_fn, restore_fn = build_harness_for_item(chosen, family=family)
     try:
         prep_fn()
         before_ok, before_detail = probe_fn()

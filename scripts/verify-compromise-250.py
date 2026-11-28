@@ -111,7 +111,7 @@ def get_json(url: str) -> Dict[str, Any]:
             "Accept-Encoding": "gzip",
         },
     )
-    with urllib.request.urlopen(req, timeout=45) as resp:
+    with urllib.request.urlopen(req, timeout=180) as resp:
         raw = resp.read()
         enc = str(resp.headers.get("Content-Encoding") or "").lower()
         if "gzip" in enc or raw[:2] == b"\x1f\x8b":
@@ -123,7 +123,7 @@ def verify_patch_ed25519(pub: Ed25519PublicKey, patch: Dict[str, Any]) -> str:
     t1 = (patch.get("remediationTier") or {}).get("tier1_hotMitigation") or {}
     t2 = (patch.get("remediationTier") or {}).get("tier2_packageUpgrade") or {}
     distro_cmds = t2.get("distroCommands") or {}
-    upg_cmd = t2.get("upgradeCommand") or distro_cmds.get("ubuntu") or next(iter(distro_cmds.values()), "")
+    upg_cmd = t2.get("upgradeCommand") or distro_cmds.get("ubuntu") or distro_cmds.get("debian") or next(iter(distro_cmds.values()), "")
     primitives = patch.get("primitives") or (patch.get("validatedFix") or {}).get("primitives") or []
 
     canonical_obj = {
@@ -161,12 +161,13 @@ def item_keys(patch: Dict[str, Any]) -> Tuple[str, str]:
     return (str(patch.get("id") or "").strip(), str(patch.get("cveId") or "").strip())
 
 
-def _detect_ubuntu_codename() -> str:
+def _detect_host_distro() -> Tuple[str, str, str]:
     os_release = Path("/etc/os-release")
     if not os_release.is_file():
-        return ""
+        return ("ubuntu", "", "ubuntu")
     codename = ""
     version_id = ""
+    distro_id = ""
     try:
         for line in os_release.read_text(encoding="utf-8", errors="ignore").lower().splitlines():
             if line.startswith("version_codename="):
@@ -175,11 +176,43 @@ def _detect_ubuntu_codename() -> str:
                 codename = line.split("=", 1)[1].strip().strip('"').strip("'")
             elif line.startswith("version_id="):
                 version_id = line.split("=", 1)[1].strip().strip('"').strip("'")
+            elif line.startswith("id="):
+                distro_id = line.split("=", 1)[1].strip().strip('"').strip("'")
     except Exception:
-        return ""
-    if codename:
-        return codename
-    return {"20.04": "focal", "22.04": "jammy", "24.04": "noble", "24.10": "oracular", "25.04": "plucky", "26.04": "resolute"}.get(version_id, "")
+        return ("ubuntu", "", "ubuntu")
+
+    if distro_id == "ubuntu":
+        eff = codename or {"20.04": "focal", "22.04": "jammy", "24.04": "noble", "24.10": "oracular", "25.04": "plucky", "26.04": "resolute"}.get(version_id, "")
+        return ("ubuntu", eff, "ubuntu")
+    if distro_id in ("debian", "kali", "raspbian"):
+        eff = codename or {"11": "bullseye", "12": "bookworm", "13": "trixie"}.get(version_id.split(".", 1)[0], "")
+        return ("debian", eff, "debian")
+    if distro_id in ("rocky", "rhel", "almalinux", "centos", "ol", "fedora", "amzn"):
+        eff = version_id.split(".", 1)[0] if version_id else ""
+        return ("rhel", eff, "rocky")
+    if distro_id == "alpine":
+        parts = version_id.split(".")
+        eff = f"{parts[0]}.{parts[1]}" if len(parts) >= 2 else version_id
+        return ("alpine", eff, "alpine")
+    return (distro_id or "ubuntu", codename or version_id, distro_id or "ubuntu")
+
+
+def _has_systemd() -> bool:
+    return shutil.which("systemctl") is not None and Path("/run/systemd/system").is_dir()
+
+
+def _supports_usepam(family: str) -> bool:
+    if family == "alpine":
+        return False
+    r = run_cmd(["sshd", "-T"], timeout=10)
+    if r.returncode == 0:
+        return "usepam " in r.stdout.lower()
+    return True
+
+
+def _ensure_ssh_host_keys() -> None:
+    if not list(Path("/etc/ssh").glob("ssh_host_*_key")) and shutil.which("ssh-keygen"):
+        run_cmd(["ssh-keygen", "-A"], timeout=15)
 
 
 def _verify_cve_in_host_changelog(pkg: str, cve_id: str) -> bool:
@@ -203,16 +236,29 @@ def _verify_cve_in_host_changelog(pkg: str, cve_id: str) -> bool:
     return False
 
 
-def get_installed_deb_packages() -> Set[str]:
-    r = run_cmd(["dpkg-query", "-W", "-f=${Status}\t${Package}\n"], timeout=20)
+def get_installed_os_packages(family: str) -> Set[str]:
     installed: Set[str] = set()
-    if r.returncode == 0:
-        for ln in r.stdout.splitlines():
-            if "\t" not in ln:
-                continue
-            status, pkg = ln.split("\t", 1)
-            if "install ok installed" in status and pkg.strip():
-                installed.add(pkg.strip())
+    if family in ("ubuntu", "debian"):
+        r = run_cmd(["dpkg-query", "-W", "-f=${Status}\t${Package}\n"], timeout=20)
+        if r.returncode == 0:
+            for ln in r.stdout.splitlines():
+                if "\t" not in ln:
+                    continue
+                status, pkg = ln.split("\t", 1)
+                if "install ok installed" in status and pkg.strip():
+                    installed.add(pkg.strip())
+    elif family in ("rhel", "suse"):
+        r = run_cmd(["rpm", "-qa", "--qf", "%{NAME}\n"], timeout=20)
+        if r.returncode == 0:
+            for ln in r.stdout.splitlines():
+                if ln.strip():
+                    installed.add(ln.strip())
+    elif family == "alpine":
+        r = run_cmd(["apk", "info"], timeout=20)
+        if r.returncode == 0:
+            for ln in r.stdout.splitlines():
+                if ln.strip():
+                    installed.add(ln.strip())
     return installed
 
 
@@ -228,12 +274,12 @@ def get_installed_pypi_packages() -> Set[str]:
     return installed
 
 
-def _is_runtime_guard_applicable(item: Dict[str, Any], installed_debs: Set[str]) -> bool:
+def _is_runtime_guard_applicable(item: Dict[str, Any], installed_os_pkgs: Set[str]) -> bool:
     rule = item_rule_id(item)
     if rule == "EXPR-CUPS-DAEMON-ISOLATION":
-        return "cups-browsed" in installed_debs or "cups" in installed_debs
+        return "cups-browsed" in installed_os_pkgs or "cups" in installed_os_pkgs
     if rule == "EXPR-OPENSSH-SSHD-DROPIN":
-        return "openssh-server" in installed_debs or shutil.which("sshd") is not None
+        return "openssh-server" in installed_os_pkgs or "openssh" in installed_os_pkgs or shutil.which("sshd") is not None
     if rule == "EXPR-KERNEL-IO-URING-DISABLE":
         return (Path("/proc/sys/kernel/io_uring_disabled")).exists()
     if rule == "EXPR-KERNEL-NETFILTER-USERNS":
@@ -245,6 +291,9 @@ def sample_feed_items(
     all_items: List[Dict[str, Any]],
     count: int,
     seed: int,
+    *,
+    family: str = "ubuntu",
+    codename: str = "",
 ) -> Tuple[List[Dict[str, Any]], Dict[str, int], Dict[str, int]]:
     """Select ONLY host-relevant items expected to yield real confirmed fixes (no N/A, no ABSTAIN, no PENDING_REBOOT)."""
     rng = random.Random(seed)
@@ -257,8 +306,7 @@ def sample_feed_items(
         seen_keys.add(k)
         deduped.append(item)
 
-    codename = _detect_ubuntu_codename()
-    installed_debs = get_installed_deb_packages()
+    installed_pkgs = get_installed_os_packages(family)
     installed_pypi = get_installed_pypi_packages()
 
     tier_runtime: List[Dict[str, Any]] = []
@@ -299,7 +347,7 @@ def sample_feed_items(
             continue
 
         if rule in RUNTIME_GUARD_RULES:
-            if not _is_runtime_guard_applicable(item, installed_debs):
+            if not _is_runtime_guard_applicable(item, installed_pkgs):
                 filter_stats["excludedNotApplicableCount"] += 1
                 continue
             ver_cmd = str(((item.get("remediationTier") or {}).get("tier1_hotMitigation") or {}).get("verificationCommand") or "")
@@ -348,32 +396,37 @@ def sample_feed_items(
 
         for pr in pkg_prims:
             par = pr.get("params") or {}
-            ub_pkgs = [str(x).strip() for x in ((par.get("packages") or {}).get("ubuntu") or []) if str(x).strip()]
-            installed_targets = [p for p in ub_pkgs if p in installed_debs]
+            raw_pkgs_map = par.get("packages") or {}
+            if family in raw_pkgs_map:
+                fam_pkgs = [str(x).strip() for x in (raw_pkgs_map.get(family) or []) if str(x).strip()]
+            else:
+                fam_pkgs = [str(x).strip() for x in (raw_pkgs_map.get("ubuntu") or raw_pkgs_map.get("debian") or []) if str(x).strip()]
+            installed_targets = [p for p in fam_pkgs if p in installed_pkgs]
             if not installed_targets:
                 continue
             has_any_installed_target = True
             mv = par.get("min_versions") or {}
             mvp = par.get("min_version_packages") or {}
             pin_ver = ""
-            pin_pkgs = list(ub_pkgs)
-            if codename and mv.get(f"ubuntu:{codename}"):
-                pin_ver = str(mv[f"ubuntu:{codename}"]).strip()
-                pin_pkgs = list(mvp.get(f"ubuntu:{codename}") or ub_pkgs)
-            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()) and mv.get("ubuntu"):
-                pin_ver = str(mv["ubuntu"]).strip()
-                pin_pkgs = list(mvp.get("ubuntu") or ub_pkgs)
-            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()) and (par.get("min_version") or par.get("version")):
+            pin_pkgs = list(fam_pkgs)
+            scoped_key = f"{family}:{codename}" if codename else ""
+            if scoped_key and mv.get(scoped_key):
+                pin_ver = str(mv[scoped_key]).strip()
+                pin_pkgs = list(mvp.get(scoped_key) or fam_pkgs)
+            elif not any(str(k).startswith(f"{family}:") for k in mv.keys()) and mv.get(family):
+                pin_ver = str(mv[family]).strip()
+                pin_pkgs = list(mvp.get(family) or fam_pkgs)
+            elif not any(str(k).startswith(f"{family}:") for k in mv.keys()) and (par.get("min_version") or par.get("version")):
                 pin_ver = str(par.get("min_version") or par.get("version") or "").strip()
-                pin_pkgs = list(ub_pkgs)
+                pin_pkgs = list(fam_pkgs)
             if pin_ver:
-                if "esm" in str(pin_ver).lower():
+                if family == "ubuntu" and "esm" in str(pin_ver).lower():
                     has_esm_only = True
                     continue
                 if any(p in installed_targets for p in pin_pkgs):
                     is_pinned_installed = True
                     break
-            else:
+            elif family in ("ubuntu", "debian"):
                 raw_cves: List[str] = []
                 if isinstance(par.get("cve_ids"), list):
                     raw_cves.extend(str(c).strip().upper() for c in par["cve_ids"] if str(c).strip())
@@ -390,7 +443,7 @@ def sample_feed_items(
             tier_os_pinned.append(item)
         elif has_esm_only:
             filter_stats["excludedEsmOnlyCount"] += 1
-        elif any(_verify_cve_in_host_changelog(pk, rc) for pk, rc in changelog_candidates):
+        elif family in ("ubuntu", "debian") and any(_verify_cve_in_host_changelog(pk, rc) for pk, rc in changelog_candidates):
             tier_os_changelog.append(item)
         else:
             filter_stats["excludedUnpinnedNoChangelogCount"] += 1
@@ -438,23 +491,32 @@ def sample_feed_items(
     return selected, counts, filter_stats
 
 
-def is_pkg_installed(pkg: str) -> bool:
-    r = run_cmd(["dpkg-query", "-W", "-f=${Status}", pkg], timeout=10)
-    return r.returncode == 0 and "install ok installed" in r.stdout
+def is_pkg_installed(pkg: str, family: str = "ubuntu") -> bool:
+    if family in ("ubuntu", "debian"):
+        r = run_cmd(["dpkg-query", "-W", "-f=${Status}", pkg], timeout=10)
+        return r.returncode == 0 and "install ok installed" in r.stdout
+    if family in ("rhel", "suse"):
+        return run_cmd(["rpm", "-q", pkg], timeout=10).returncode == 0
+    if family == "alpine":
+        return run_cmd(["apk", "info", "-e", pkg], timeout=10).returncode == 0
+    return False
 
 
-def reload_sshd_safe() -> None:
+def reload_sshd_safe(family: str = "ubuntu") -> None:
+    _ensure_ssh_host_keys()
     chk = run_cmd(["sshd", "-t"], timeout=10)
     if chk.returncode != 0:
         raise RuntimeError(f"Refusing sshd reload because `sshd -t` failed: {(chk.stderr or chk.stdout).strip()}")
-    dump = run_cmd(["sshd", "-T"], timeout=10)
-    if dump.returncode != 0 or not re.search(r"(?im)^usepam yes$", dump.stdout):
-        raise RuntimeError("Safety abort: `sshd -T` did not report `usepam yes`")
-    for unit in ("ssh", "sshd"):
-        act = run_cmd(["systemctl", "is-active", "--quiet", unit], timeout=5)
-        if act.returncode == 0:
-            run_cmd(["systemctl", "reload", unit], timeout=10)
-            return
+    if _supports_usepam(family):
+        dump = run_cmd(["sshd", "-T"], timeout=10)
+        if dump.returncode != 0 or not re.search(r"(?im)^usepam yes$", dump.stdout):
+            raise RuntimeError("Safety abort: `sshd -T` did not report `usepam yes`")
+    if _has_systemd():
+        for unit in ("ssh", "sshd"):
+            act = run_cmd(["systemctl", "is-active", "--quiet", unit], timeout=5)
+            if act.returncode == 0:
+                run_cmd(["systemctl", "reload", unit], timeout=10)
+                return
 
 
 def sysctl_exists(key: str) -> bool:
@@ -495,7 +557,7 @@ def capture_baseline() -> Dict[str, Any]:
     nft_res = run_cmd(["nft", "list", "tables"], timeout=5)
     nft_tables = [ln.strip() for ln in nft_res.stdout.splitlines() if ln.strip()] if nft_res.returncode == 0 else []
 
-    svc_active = run_cmd(["systemctl", "is-active", "--quiet", "exultia.service"], timeout=5).returncode == 0
+    svc_active = _has_systemd() and run_cmd(["systemctl", "is-active", "--quiet", "exultia.service"], timeout=5).returncode == 0
 
     meta = {
         "files": files_meta,
@@ -508,7 +570,7 @@ def capture_baseline() -> Dict[str, Any]:
     return meta
 
 
-def restore_baseline(meta: Dict[str, Any]) -> None:
+def restore_baseline(meta: Dict[str, Any], family: str = "ubuntu") -> None:
     print("\n[Gate 9 Cleanup] Restoring pre-test host configuration...")
     for pattern_dir, glob_pat in [
         (Path("/etc/ssh/sshd_config.d"), "00-exultia-*.conf"),
@@ -569,9 +631,9 @@ def restore_baseline(meta: Dict[str, Any]) -> None:
         if sysctl_exists(key):
             run_cmd(["sysctl", "-w", f"{key}={val}"], timeout=5)
 
-    reload_sshd_safe()
+    reload_sshd_safe(family)
     shutil.rmtree(BACKUP_DIR, ignore_errors=True)
-    if meta.get("exultia_service_was_active"):
+    if meta.get("exultia_service_was_active") and _has_systemd():
         run_cmd(["systemctl", "start", "exultia.service"], timeout=10)
     print("[Gate 9 Cleanup] Original host state restored cleanly.")
 
@@ -623,9 +685,11 @@ def _strip_marker_blocks(text: str, prefix: str) -> str:
     )
 
 
-def inject_compromise_state(sampled: List[Dict[str, Any]]) -> None:
+def inject_compromise_state(sampled: List[Dict[str, Any]], family: str = "ubuntu") -> None:
     print("\n[Gate 9 Inject] Deliberately misconfiguring sampled controls & SOX/PCI baselines...")
-    run_cmd(["systemctl", "stop", "exultia.service"], timeout=10)
+    if _has_systemd():
+        run_cmd(["systemctl", "stop", "exultia.service"], timeout=10)
+    run_cmd(["pkill", "-f", "/usr/local/bin/exultia daemon"], timeout=5)
     clear_sampled_exultia_cache(sampled)
 
     Path("/run/sshd").mkdir(parents=True, exist_ok=True)
@@ -633,6 +697,7 @@ def inject_compromise_state(sampled: List[Dict[str, Any]]) -> None:
     Path("/etc/sysctl.d").mkdir(parents=True, exist_ok=True)
     Path("/etc/modprobe.d").mkdir(parents=True, exist_ok=True)
     Path("/etc/exultia/blocklists").mkdir(parents=True, exist_ok=True)
+    Path("/etc/security").mkdir(parents=True, exist_ok=True)
 
     # 1. Remove all Exultia runtime drop-ins & modprobe blacklists & blocklists
     for d, pat in [
@@ -646,11 +711,13 @@ def inject_compromise_state(sampled: List[Dict[str, Any]]) -> None:
         for fp in d.glob(pat):
             fp.unlink(missing_ok=True)
 
-    # 2. Weaken SSH config safely (keep Include + UsePAM yes + PubkeyAuthentication yes)
+    # 2. Weaken SSH config safely (keep Include + PubkeyAuthentication yes, and UsePAM where supported)
+    _ensure_ssh_host_keys()
+    pam_line = "UsePAM yes\n" if _supports_usepam(family) else ""
     sshd_base = (
         "Include /etc/ssh/sshd_config.d/*.conf\n"
         "Port 22\n"
-        "UsePAM yes\n"
+        f"{pam_line}"
         "PubkeyAuthentication yes\n"
         "KbdInteractiveAuthentication no\n"
         "LoginGraceTime 120\n"
@@ -668,7 +735,7 @@ def inject_compromise_state(sampled: List[Dict[str, Any]]) -> None:
     )
     Path("/etc/ssh/sshd_config.d/99-exultia-drift.conf").write_text(drift_sshd, encoding="utf-8")
     os.chmod("/etc/ssh/sshd_config.d/99-exultia-drift.conf", 0o644)
-    reload_sshd_safe()
+    reload_sshd_safe(family)
 
     # 3. Remove nftables runtime guards
     for fam, tbl in [
@@ -785,7 +852,7 @@ def _check_account_val(path: Path, key: str, expected: str, sep: str) -> Tuple[b
     return False, "unset"
 
 
-def build_independent_checks(sampled: List[Dict[str, Any]]) -> Tuple[List[IndependentCheck], List[str]]:
+def build_independent_checks(sampled: List[Dict[str, Any]], family: str = "ubuntu") -> Tuple[List[IndependentCheck], List[str]]:
     checks: List[IndependentCheck] = []
     skipped_notes: List[str] = []
     added_ids = set()
@@ -819,7 +886,7 @@ def build_independent_checks(sampled: List[Dict[str, Any]]) -> Tuple[List[Indepe
                 ),
             ))
         elif rule == "EXPR-CUPS-DAEMON-ISOLATION":
-            if is_pkg_installed("cups-browsed") or is_pkg_installed("cups"):
+            if is_pkg_installed("cups-browsed", family) or is_pkg_installed("cups", family):
                 _add(IndependentCheck(
                     check_id=cve,
                     category="Vantage Runtime Guard (CUPS)",
@@ -980,7 +1047,13 @@ def parse_new_audit_entries(start_offset: int) -> List[Dict[str, Any]]:
     return entries
 
 
-def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, Any]]) -> Dict[str, Any]:
+def reconcile_250_audit(
+    sampled: List[Dict[str, Any]],
+    entries: List[Dict[str, Any]],
+    *,
+    family: str = "ubuntu",
+    codename: str = "",
+) -> Dict[str, Any]:
     outcomes_by_target: Dict[str, str] = {}
     details_by_target: Dict[str, str] = {}
     for e in entries:
@@ -992,7 +1065,6 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
                 outcomes_by_target[tid] = st
                 details_by_target[tid] = str(e.get("details") or "")
 
-    codename = _detect_ubuntu_codename()
     breakdown: Dict[str, int] = {}
     unexpected_failures: List[Dict[str, Any]] = []
     abstain_violations: List[str] = []
@@ -1032,25 +1104,30 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
             if isinstance(pr, dict) and pr.get("type") == "app_package.ensure_version"
         ]
 
-        has_ubuntu_pin = False
+        has_host_pin = False
         for pr in pkg_kern_prims:
             par = pr.get("params") or {}
             mv = par.get("min_versions") or {}
             mvp = par.get("min_version_packages") or {}
-            ub_pkgs = set((par.get("packages") or {}).get("ubuntu") or [])
-            if codename and mv.get(f"ubuntu:{codename}"):
-                pin_pkgs = set(mvp.get(f"ubuntu:{codename}") or [])
-                if not pin_pkgs or not ub_pkgs or (pin_pkgs & ub_pkgs):
-                    has_ubuntu_pin = True
+            raw_pkgs_map = par.get("packages") or {}
+            if family in raw_pkgs_map:
+                fam_pkgs = set(raw_pkgs_map.get(family) or [])
+            else:
+                fam_pkgs = set(raw_pkgs_map.get("ubuntu") or raw_pkgs_map.get("debian") or [])
+            scoped_key = f"{family}:{codename}" if codename else ""
+            if scoped_key and mv.get(scoped_key):
+                pin_pkgs = set(mvp.get(scoped_key) or [])
+                if not pin_pkgs or not fam_pkgs or (pin_pkgs & fam_pkgs):
+                    has_host_pin = True
                     break
-            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()):
-                if mv.get("ubuntu"):
-                    pin_pkgs = set(mvp.get("ubuntu") or [])
-                    if not pin_pkgs or not ub_pkgs or (pin_pkgs & ub_pkgs):
-                        has_ubuntu_pin = True
+            elif not any(str(k).startswith(f"{family}:") for k in mv.keys()):
+                if mv.get(family):
+                    pin_pkgs = set(mvp.get(family) or [])
+                    if not pin_pkgs or not fam_pkgs or (pin_pkgs & fam_pkgs):
+                        has_host_pin = True
                         break
                 elif par.get("min_version") or par.get("version"):
-                    has_ubuntu_pin = True
+                    has_host_pin = True
                     break
 
         has_app_pin = any(
@@ -1060,9 +1137,9 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
 
         if status == "REMEDIATION_VERIFIED":
             if pkg_kern_prims:
-                if has_ubuntu_pin:
+                if has_host_pin:
                     verified_via_pinned += 1
-                else:
+                elif family in ("ubuntu", "debian"):
                     chg_m = re.search(
                         r"Verified\s+([a-zA-Z0-9.+_-]+)=[^\s]+\s+via distro security changelog\s+\((CVE-\d{4}-\d{4,})\)",
                         detail_txt,
@@ -1071,6 +1148,8 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
                         verified_via_changelog += 1
                     else:
                         unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status, "reason": "unpinned_or_missing_changelog"})
+                else:
+                    unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status, "reason": "unpinned_or_missing_changelog"})
             elif app_prims:
                 if has_app_pin:
                     verified_via_pinned += 1
@@ -1113,8 +1192,9 @@ def main() -> int:
         sys.stderr.write(f"[ERROR] Exultia binary not found at {args.exultia_bin}. Run Gate 2 first.\n")
         return 2
 
+    family, codename, feed_os = _detect_host_distro()
     seed = int(args.seed) if args.seed is not None else int.from_bytes(os.urandom(4), "big")
-    print(f"[Gate 9] Fetching live Vantage Ubuntu feed (seed={seed}, target_count={args.count})...")
+    print(f"[Gate 9] Fetching live Vantage {feed_os} feed for {family}:{codename or 'default'} (seed={seed}, target_count={args.count})...")
 
     key_doc = get_json(f"{BASE_URL}/api/provenance/key")
     pub_hex = str(key_doc.get("publicKeyHex") or "").strip().lower()
@@ -1122,9 +1202,9 @@ def main() -> int:
         raise AssertionError(f"Invalid publicKeyHex from /api/provenance/key: {pub_hex!r}")
     pub = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
 
-    vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=all")
+    vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?os={feed_os}&limit=all")
     combined_pool = list(vantage_doc.get("patches") or [])
-    sampled, strata_counts, host_filter_stats = sample_feed_items(combined_pool, count=args.count, seed=seed)
+    sampled, strata_counts, host_filter_stats = sample_feed_items(combined_pool, count=args.count, seed=seed, family=family, codename=codename)
 
     for p in sampled:
         verify_patch_ed25519(pub, p)
@@ -1135,8 +1215,8 @@ def main() -> int:
     baseline_meta = capture_baseline()
     should_restore = not args.keep_compromised and not args.no_restore
     try:
-        inject_compromise_state(sampled)
-        checks, skipped_notes = build_independent_checks(sampled)
+        inject_compromise_state(sampled, family=family)
+        checks, skipped_notes = build_independent_checks(sampled, family=family)
         for note in skipped_notes:
             print(f"  [Note] {note}")
 
@@ -1157,7 +1237,7 @@ def main() -> int:
         TEMP_EVAL_CONF.parent.mkdir(parents=True, exist_ok=True)
         TEMP_EVAL_CONF.write_text(
             "[daemon]\n"
-            "os_distro = ubuntu\n"
+            f"os_distro = {family}\n"
             "ring = 0\n\n"
             "[feeds]\n"
             f"vantage_feed_url = file://{TEMP_FEED_PATH}\n\n"
@@ -1204,7 +1284,7 @@ def main() -> int:
         print(f"[PASS] Verified {fixed_after}/{len(after_results)} runtime controls + SOX/PCI baselines flipped EXPOSED -> FIXED in {fix_elapsed}s")
 
         audit_entries = parse_new_audit_entries(audit_start_offset)
-        reconciled = reconcile_250_audit(sampled, audit_entries)
+        reconciled = reconcile_250_audit(sampled, audit_entries, family=family, codename=codename)
         sb = reconciled["statusBreakdown"]
         confirmed_fixes = int(sb.get("MITIGATED", 0) or 0) + int(sb.get("REMEDIATION_VERIFIED", 0) or 0)
         reconciled["confirmedFixesCount"] = confirmed_fixes
@@ -1230,6 +1310,7 @@ def main() -> int:
 
         report: Dict[str, Any] = {
             "status": "FAIL" if failure_reasons else "PASS",
+            "hostDistro": f"{family}:{codename}" if codename else family,
             "seed": seed,
             "requestedCount": args.count,
             "sampledCount": len(sampled),

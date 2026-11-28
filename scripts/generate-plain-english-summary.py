@@ -139,6 +139,15 @@ def _outcome_badge(outcome: str) -> str:
     return f"FAIL ({low})"
 
 
+def _detect_distro_label() -> str:
+    os_rel = Path("/etc/os-release")
+    if os_rel.is_file():
+        for ln in os_rel.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if ln.startswith("PRETTY_NAME="):
+                return ln.split("=", 1)[1].strip().strip('"').strip("'")
+    return platform.system()
+
+
 def build_summary(
     evidence_dir: Path,
     *,
@@ -146,6 +155,7 @@ def build_summary(
     runner_os: str = "",
     runner_arch: str = "",
     run_id: str = "",
+    distro_label: str = "",
     gate_outcomes: Optional[Dict[str, str]] = None,
 ) -> str:
     outcomes_in = dict(gate_outcomes or {})
@@ -181,11 +191,13 @@ def build_summary(
     eff_runner = runner_name or host_name
     eff_os = runner_os or platform.system()
     eff_arch = runner_arch or platform.machine()
-    is_ephemeral = "github actions" in eff_runner.lower() or "runnervm" in host_name.lower()
+    eff_distro = distro_label or (str(g9.get("hostDistro") or "").strip()) or _detect_distro_label()
+    is_ephemeral = "github actions" in eff_runner.lower() or "runnervm" in host_name.lower() or Path("/.dockerenv").exists()
+    env_kind = "privileged Docker container on GitHub Actions" if Path("/.dockerenv").exists() else f"clean, ephemeral GitHub-hosted {eff_distro} VM"
     runner_desc = (
-        f"clean, ephemeral GitHub-hosted Ubuntu VM (`{eff_runner}`, host `{host_name}`, kernel `{kernel_rel}`)"
+        f"{env_kind} (`{eff_distro}`, runner `{eff_runner}`, host `{host_name}`, kernel `{kernel_rel}`)"
         if is_ephemeral
-        else f"persistent verification host (`{eff_runner}`, host `{host_name}`, `{eff_os}` / `{eff_arch}`, kernel `{kernel_rel}`)"
+        else f"persistent {eff_distro} verification host (`{eff_runner}`, host `{host_name}`, `{eff_os}` / `{eff_arch}`, kernel `{kernel_rel}`)"
     )
 
     reconciled = g9.get("auditReconciliation") or {}
@@ -286,9 +298,10 @@ def build_summary(
 
     # Gate 5
     if g5:
+        pkg_mgr_note = g5.get("distroFamily") or eff_distro
         g5_desc = (
-            f"Package `{g5.get('targetPackage', 'unknown')}` upgraded natively via Ubuntu security `apt`: "
-            f"`{g5.get('beforeVersion')}` -> `{g5.get('afterVersion')}` (`BEFORE < AFTER` confirmed via `dpkg-query`)"
+            f"Package `{g5.get('targetPackage', 'unknown')}` upgraded natively on `{pkg_mgr_note}`: "
+            f"`{g5.get('beforeVersion')}` -> `{g5.get('afterVersion')}` (`BEFORE < AFTER` confirmed)"
         )
     elif g5_txt:
         g5_desc = g5_txt.splitlines()[0].strip()
@@ -296,7 +309,7 @@ def build_summary(
         g5_desc = "Not executed or evidence missing."
     lines.append(
         f"| **5. Real Native Package Upgrade** | **{_outcome_badge(resolved_outcomes['5'])}** | "
-        f"Downgraded an Ubuntu package, ran `exultia patch --vendor`, verified newer version installed | {g5_desc} |"
+        f"Selected an outdated {eff_distro} package, ran `exultia patch --vendor`, verified newer version installed | {g5_desc} |"
     )
 
     # Gate 6
@@ -354,7 +367,7 @@ def build_summary(
             sb_tmp = (reconciled.get("statusBreakdown") or {}) if isinstance(reconciled, dict) else {}
             confirmed_cnt = int(sb_tmp.get("MITIGATED", 0) or 0) + int(sb_tmp.get("REMEDIATION_VERIFIED", 0) or 0)
         g9_desc = (
-            f"Filtered live Ubuntu feed to host-relevant items and executed `{g9.get('sampledCount', 0)}` fixes (`seed={g9.get('seed')}`): "
+            f"Filtered live {eff_distro} feed to host-relevant items and executed `{g9.get('sampledCount', 0)}` fixes (`seed={g9.get('seed')}`): "
             f"`{confirmed_cnt}/{g9.get('sampledCount', 0)}` confirmed fixed (`MITIGATED` + `REMEDIATION_VERIFIED`), "
             f"flipped `{g9.get('independentFixedAfter', 0)}/{g9.get('independentExposedBefore', 0)}` injected host/compliance controls EXPOSED -> FIXED in `{g9.get('fixElapsedSeconds', '?')}s`, "
             f"verified `{g9.get('ed25519VerifiedCount', 0)}/{g9.get('sampledCount', 0)}` Ed25519 signatures; "
@@ -365,7 +378,7 @@ def build_summary(
     g9_target_cnt = g9.get("sampledCount", 250) if isinstance(g9, dict) else 250
     lines.append(
         f"| **9. {g9_target_cnt} Host-Relevant Confirmed Fixes** | **{_outcome_badge(resolved_outcomes['9'])}** | "
-        f"Filtered live Vantage Ubuntu feed to host-applicable items, compromised controls, ran auto-fix, re-probed | {g9_desc} |"
+        f"Filtered live Vantage {eff_distro} feed to host-applicable items, compromised controls, ran auto-fix, re-probed | {g9_desc} |"
     )
 
     # Section 3: Gate 9 Breakdown
@@ -379,7 +392,7 @@ def build_summary(
         hfs = g9.get("hostFilterStats") or {}
         if hfs:
             lines.append(
-                f"Gate 9 scanned **{hfs.get('feedPoolSize', '?')}** live Ubuntu Vantage advisories and filtered out irrelevant entries before sampling "
+                f"Gate 9 scanned **{hfs.get('feedPoolSize', '?')}** live {eff_distro} Vantage advisories and filtered out irrelevant entries before sampling "
                 f"(excluded `{hfs.get('excludedNotApplicableCount', 0)}` `NOT_APPLICABLE`, "
                 f"`{hfs.get('excludedUnsupportedCount', 0)}` `UNSUPPORTED` abstentions, "
                 f"`{hfs.get('excludedPendingRebootCount', 0)}` `PENDING_REBOOT` kernel items, "
@@ -492,6 +505,7 @@ def main() -> int:
     parser.add_argument("--runner-os", default=os.environ.get("RUNNER_OS", ""), help="Runner OS.")
     parser.add_argument("--runner-arch", default=os.environ.get("RUNNER_ARCH", ""), help="Runner architecture.")
     parser.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", ""), help="GitHub Actions run ID.")
+    parser.add_argument("--distro-label", default=os.environ.get("DISTRO_LABEL", ""), help="Human-readable target distro label.")
     parser.add_argument("--gate-outcomes", default="", help="Comma-separated '1=success,2=success,...' or JSON dict.")
     args = parser.parse_args()
 
@@ -505,6 +519,7 @@ def main() -> int:
         runner_os=args.runner_os,
         runner_arch=args.runner_arch,
         run_id=args.run_id,
+        distro_label=args.distro_label,
         gate_outcomes=_parse_gate_outcomes(args.gate_outcomes),
     )
 
