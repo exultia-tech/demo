@@ -1155,7 +1155,7 @@ def main() -> int:
         if drift_proc.returncode != 0:
             raise AssertionError(f"`exultia drift fix` exited with code {drift_proc.returncode}")
 
-        print(f"\n[Gate 9 Fix] Step 2/2: Running Exultia batch remediation across {len(sampled)} random feed items...")
+        print(f"\n[Gate 9 Fix] Step 2/2: Running Exultia batch remediation across {len(sampled)} host-relevant feed items...")
         patch_env = dict(os.environ)
         patch_env["EXULTIA_BATCH_CMD_TIMEOUT"] = "300"
         subprocess.run(
@@ -1186,22 +1186,23 @@ def main() -> int:
         print(f"  Evaluated: {reconciled['evaluatedCount']}/{len(sampled)} | Confirmed Fixes (MITIGATED + REMEDIATION_VERIFIED): {confirmed_fixes}/{len(sampled)} | Unaccounted: {len(reconciled['unaccountedIds'])}")
         print(f"  Status Breakdown: {sb}")
 
+        failure_reasons: List[str] = []
         if reconciled["unaccountedIds"]:
-            raise AssertionError(f"Unaccounted sampled items missing from audit.jsonl: {reconciled['unaccountedIds'][:10]}")
+            failure_reasons.append(f"Unaccounted sampled items missing from audit.jsonl: {reconciled['unaccountedIds'][:10]}")
         if reconciled["abstainViolations"]:
-            raise AssertionError(f"Abstained items did not fail closed: {reconciled['abstainViolations'][:10]}")
+            failure_reasons.append(f"Abstained items did not fail closed: {reconciled['abstainViolations'][:10]}")
         if reconciled["unexpectedFailures"]:
-            raise AssertionError(f"Unexpected failures during {len(sampled)}-item auto-fix: {reconciled['unexpectedFailures'][:10]}")
+            failure_reasons.append(f"Unexpected failures during {len(sampled)}-item auto-fix: {reconciled['unexpectedFailures'][:10]}")
         if reconciled["unpinnedFalseVerified"]:
-            raise AssertionError(f"Unpinned package/kernel items falsely stamped REMEDIATION_VERIFIED: {reconciled['unpinnedFalseVerified'][:10]}")
+            failure_reasons.append(f"Unpinned package/kernel items falsely stamped REMEDIATION_VERIFIED: {reconciled['unpinnedFalseVerified'][:10]}")
         for disallowed_state in ("NOT_APPLICABLE", "UNSUPPORTED", "INSUFFICIENT_EVIDENCE", "PENDING_REBOOT", "REMEDIATION_ATTEMPTED"):
             if sb.get(disallowed_state, 0) != 0:
-                raise AssertionError(f"Disallowed non-fix status {disallowed_state}={sb.get(disallowed_state)} in host-relevant Gate 9 run: {sb}")
+                failure_reasons.append(f"Disallowed non-fix status {disallowed_state}={sb.get(disallowed_state)} in host-relevant Gate 9 run: {sb}")
         if confirmed_fixes != len(sampled):
-            raise AssertionError(f"Expected 100% confirmed fixes ({len(sampled)}/{len(sampled)}), got {confirmed_fixes}: {sb}")
+            failure_reasons.append(f"Expected 100% confirmed fixes ({len(sampled)}/{len(sampled)}), got {confirmed_fixes}: {sb}")
 
-        report = {
-            "status": "PASS",
+        report: Dict[str, Any] = {
+            "status": "FAIL" if failure_reasons else "PASS",
             "seed": seed,
             "requestedCount": args.count,
             "sampledCount": len(sampled),
@@ -1220,10 +1221,15 @@ def main() -> int:
             "auditReconciliation": reconciled,
             "sampledIds": [item_keys(x)[0] or item_keys(x)[1] for x in sampled],
         }
+        if failure_reasons:
+            report["failureReasons"] = failure_reasons
         if args.out:
             out_p = Path(args.out)
             out_p.parent.mkdir(parents=True, exist_ok=True)
             out_p.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+
+        if failure_reasons:
+            raise AssertionError("; ".join(failure_reasons))
 
         print(f"\n[PASS] Gate 9 verified {len(sampled)}/{len(sampled)} Ed25519 signatures, {exposed_before}/{len(before_results)} injected compromises, {fixed_after}/{len(after_results)} independent fixes, {confirmed_fixes}/{len(sampled)} confirmed host-relevant fixes (NOT_APPLICABLE=0, UNSUPPORTED=0), and 0 unpinned false-verified claims.")
         return 0
