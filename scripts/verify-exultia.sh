@@ -17,7 +17,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     *)
       echo "Unknown argument: $1" >&2
-      echo "Usage: $0 [--gate <1|2|3|4|5|6|7|8|9|all>]" >&2
+      echo "Usage: $0 [--gate <1|2|3|4|5|6|7|8|9|summary|all>]" >&2
       exit 2
       ;;
   esac
@@ -345,6 +345,15 @@ gate_9() {
     "${seed_args[@]}"
 }
 
+gate_summary() {
+  log_gate "PLAIN-ENGLISH VERIFICATION REPORT"
+  python3 "$SCRIPT_DIR/generate-plain-english-summary.py" \
+    --evidence-dir "$EVIDENCE_DIR" \
+    --out "$EVIDENCE_DIR/VERIFICATION_SUMMARY.md" \
+    --print
+  echo "[PASS] Plain-English verification summary written to $EVIDENCE_DIR/VERIFICATION_SUMMARY.md"
+}
+
 case "$GATE" in
   1) gate_1 ;;
   2) gate_2 ;;
@@ -355,6 +364,7 @@ case "$GATE" in
   7) gate_7 ;;
   8) gate_8 ;;
   9) gate_9 ;;
+  summary) gate_summary ;;
   all)
     gate_1
     gate_2
@@ -365,6 +375,7 @@ case "$GATE" in
     gate_7
     gate_8
     gate_9
+    gate_summary
     printf "\n==============================================================================\n"
     printf "  ALL 9 INDEPENDENT EXULTIA VERIFICATION GATES PASSED\n"
     printf "==============================================================================\n"

@@ -799,8 +799,51 @@ def parse_new_audit_entries(start_offset: int) -> List[Dict[str, Any]]:
     return entries
 
 
+def _detect_ubuntu_codename() -> str:
+    os_release = Path("/etc/os-release")
+    if not os_release.is_file():
+        return ""
+    codename = ""
+    version_id = ""
+    try:
+        for line in os_release.read_text(encoding="utf-8", errors="ignore").lower().splitlines():
+            if line.startswith("version_codename="):
+                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
+            elif line.startswith("ubuntu_codename=") and not codename:
+                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
+            elif line.startswith("version_id="):
+                version_id = line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:
+        return ""
+    if codename:
+        return codename
+    return {"20.04": "focal", "22.04": "jammy", "24.04": "noble", "24.10": "oracular", "25.04": "plucky", "26.04": "resolute"}.get(version_id, "")
+
+
+def _verify_cve_in_host_changelog(pkg: str, cve_id: str) -> bool:
+    if not pkg or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9.+_-]{0,96}", pkg):
+        return False
+    if not cve_id or not re.fullmatch(r"CVE-\d{4}-\d{4,}", cve_id, re.I):
+        return False
+    chg_path = Path(f"/usr/share/doc/{pkg}/changelog.Debian.gz")
+    if not chg_path.is_file() or chg_path.is_symlink():
+        return False
+    cve_re = re.compile(rf"\b{re.escape(cve_id)}\b", re.I)
+    not_aff_re = re.compile(r"\b(?:not[- ]affected|does\s+not\s+affect|reverted|ignored|postponed|end[- ]of[- ]life)\b", re.I)
+    try:
+        with gzip.open(chg_path, "rt", encoding="utf-8", errors="ignore") as fh:
+            text = fh.read(2 * 1024 * 1024)
+        for ln in text.splitlines():
+            if cve_re.search(ln) and not not_aff_re.search(ln):
+                return True
+    except Exception:
+        return False
+    return False
+
+
 def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, Any]]) -> Dict[str, Any]:
     outcomes_by_target: Dict[str, str] = {}
+    details_by_target: Dict[str, str] = {}
     for e in entries:
         act = str(e.get("action") or "").upper()
         if act in ("APPLY", "SEMANTIC_GATE", "SEMANTIC_REJECTED", "PROVENANCE_REJECTED", "SYNTHETIC_REJECTED"):
@@ -808,12 +851,16 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
             st = str(e.get("status") or "").strip().upper()
             if tid:
                 outcomes_by_target[tid] = st
+                details_by_target[tid] = str(e.get("details") or "")
 
+    codename = _detect_ubuntu_codename()
     breakdown: Dict[str, int] = {}
     unexpected_failures: List[Dict[str, Any]] = []
     abstain_violations: List[str] = []
     unpinned_false_verified: List[Dict[str, Any]] = []
     unaccounted: List[str] = []
+    verified_via_pinned = 0
+    verified_via_changelog = 0
 
     for it in sampled:
         rule = item_rule_id(it)
@@ -821,6 +868,7 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
         cve = str(it.get("cveId") or "").strip().upper()
         snap_key = pid if pid.startswith("ARG-") else cve
         status = outcomes_by_target.get(snap_key) or outcomes_by_target.get(cve) or outcomes_by_target.get(pid)
+        detail_txt = details_by_target.get(snap_key) or details_by_target.get(cve) or details_by_target.get(pid) or ""
         if not status:
             unaccounted.append(snap_key or pid or cve)
             continue
@@ -837,22 +885,55 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
             pr for pr in prims
             if isinstance(pr, dict) and pr.get("type") in ("package.ensure_version", "kernel.verify_running_version")
         ]
-        has_ubuntu_pin = any(
-            bool(str(
-                ((pr.get("params") or {}).get("min_versions") or {}).get("ubuntu")
-                or (pr.get("params") or {}).get("min_version")
-                or (pr.get("params") or {}).get("version")
-                or ""
-            ).strip())
-            for pr in pkg_kern_prims
+        app_prims = [
+            pr for pr in prims
+            if isinstance(pr, dict) and pr.get("type") == "app_package.ensure_version"
+        ]
+
+        has_ubuntu_pin = False
+        for pr in pkg_kern_prims:
+            mv = (pr.get("params") or {}).get("min_versions") or {}
+            if codename and mv.get(f"ubuntu:{codename}"):
+                has_ubuntu_pin = True
+                break
+            if not any(str(k).startswith("ubuntu:") for k in mv.keys()) and (
+                mv.get("ubuntu") or (pr.get("params") or {}).get("min_version") or (pr.get("params") or {}).get("version")
+            ):
+                has_ubuntu_pin = True
+                break
+
+        has_app_pin = any(
+            bool(str((pr.get("params") or {}).get("min_version") or "").strip())
+            for pr in app_prims
         )
-        if ((pkg_kern_prims and not has_ubuntu_pin) or (not prims and "PACKAGE-UPGRADE" in rule)) and status == "REMEDIATION_VERIFIED":
-            unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status})
+
+        if status == "REMEDIATION_VERIFIED":
+            if pkg_kern_prims:
+                if has_ubuntu_pin:
+                    verified_via_pinned += 1
+                else:
+                    chg_m = re.search(
+                        r"Verified\s+([a-zA-Z0-9.+_-]+)=[^\s]+\s+via distro security changelog\s+\((CVE-\d{4}-\d{4,})\)",
+                        detail_txt,
+                    )
+                    if chg_m and _verify_cve_in_host_changelog(chg_m.group(1), chg_m.group(2)):
+                        verified_via_changelog += 1
+                    else:
+                        unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status, "reason": "unpinned_or_missing_changelog"})
+            elif app_prims:
+                if has_app_pin:
+                    verified_via_pinned += 1
+                else:
+                    unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status, "reason": "unpinned_app"})
+            elif not prims and "PACKAGE-UPGRADE" in rule:
+                unpinned_false_verified.append({"id": snap_key or cve or pid, "rule": rule, "status": status})
 
     return {
         "evaluatedCount": len(sampled) - len(unaccounted),
         "unaccountedIds": unaccounted,
         "statusBreakdown": breakdown,
+        "verifiedViaPinnedVersionCount": verified_via_pinned,
+        "verifiedViaDistroChangelogCount": verified_via_changelog,
         "abstainViolations": abstain_violations,
         "unexpectedFailures": unexpected_failures,
         "unpinnedFalseVerified": unpinned_false_verified,

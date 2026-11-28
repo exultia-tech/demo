@@ -82,25 +82,16 @@ jobs:
       - name: Write verification summary
         if: always()
         run: |
-          {
-            echo "## Independent Exultia Verification Summary"
-            echo ""
-            echo "- Runner: \`${{ runner.name }}\` (\`${{ runner.os }}\` / \`${{ runner.arch }}\`)"
-            echo "- Vantage Targets: \`${SELECTED_VANTAGE_CVE:-random}\` (\`${SELECTED_VANTAGE_RULE:-runtime-guard}\`, randomly selected in Gate 3), \`CVE-2026-98432\`, \`CVE-2026-136158\` (abstention trap), plus ${COMPROMISE_SAMPLE_COUNT} random sampled live Vantage items in Gate 9"
-            echo "- Gate 5 Native APT Upgrade: \`${SELECTED_GATE5_PKG:-wget}\` (\`${SELECTED_GATE5_BEFORE:-old}\` -> \`${SELECTED_GATE5_AFTER:-patched}\`)"
-            echo ""
-            echo "| Gate | Verification Check | Outcome |"
-            echo "| :--- | :--- | :--- |"
-            echo "| 1 | Zero-Exultia Ed25519 provenance, 1-byte tamper rejection, retired \`/api/argent/*\` 410s & Valkey abstention JSON | \`${{ steps.gate1.outcome }}\` |"
-            echo "| 2 | Fail-closed \`install.sh\` (SHA-256 + SLSA L2 DSSE) & \`0700 root:root\` binary | \`${{ steps.gate2.outcome }}\` |"
-            echo "| 3 | Live Vantage random target \`${SELECTED_VANTAGE_CVE:-random}\` apply & deterministic rollback (\`EXPOSED -> FIXED -> RESTORED\`) | \`${{ steps.gate3.outcome }}\` |"
-            echo "| 4 | Live Vantage \`CVE-2026-98432\` netfilter rule, loopback TCP test & rollback | \`${{ steps.gate4.outcome }}\` |"
-            echo "| 5 | Real native Ubuntu \`apt\` downgrade -> \`exultia patch --vendor\` upgrade (\`BEFORE < AFTER\`) via \`dpkg-query\` | \`${{ steps.gate5.outcome }}\` |"
-            echo "| 6 | Negative fail-closed CLI abstention (\`CVE-2026-136158\` must not install \`redis-server\`) | \`${{ steps.gate6.outcome }}\` |"
-            echo "| 7 | SOX/PCI drift injection, detection (\`drift audit\`) & repair via \`sshd -T\` / \`sysctl\` | \`${{ steps.gate7.outcome }}\` |"
-            echo "| 8 | \`exultia sync --dry-run\`, \`test --behavioral --json\` & \`attest --json\` | \`${{ steps.gate8.outcome }}\` |"
-            echo "| 9 | Live ${COMPROMISE_SAMPLE_COUNT}-item random Vantage feed compromise -> Exultia auto-fix -> OS + \`unpinnedFalseVerified\` verification | \`${{ steps.gate9.outcome }}\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/generate-plain-english-summary.py \
+            --evidence-dir "$EVIDENCE_DIR" \
+            --out "$EVIDENCE_DIR/VERIFICATION_SUMMARY.md" \
+            --github-summary "$GITHUB_STEP_SUMMARY" \
+            --runner-name "${{ runner.name }}" \
+            --runner-os "${{ runner.os }}" \
+            --runner-arch "${{ runner.arch }}" \
+            --run-id "${{ github.run_id }}" \
+            --gate-outcomes "1=${{ steps.gate1.outcome }},2=${{ steps.gate2.outcome }},3=${{ steps.gate3.outcome }},4=${{ steps.gate4.outcome }},5=${{ steps.gate5.outcome }},6=${{ steps.gate6.outcome }},7=${{ steps.gate7.outcome }},8=${{ steps.gate8.outcome }},9=${{ steps.gate9.outcome }}" \
+            --print
 
       - name: Upload immutable verification evidence bundle
         if: always()
