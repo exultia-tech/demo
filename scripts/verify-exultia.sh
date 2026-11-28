@@ -62,8 +62,9 @@ gate_2() {
   sudo env EXULTIA_REQUIRE_CHECKSUM=1 EXULTIA_REQUIRE_PROVENANCE=1 sh /tmp/exultia-install.sh | tee "$EVIDENCE_DIR/gate2_install.log"
   rm -f /tmp/exultia-install.sh
 
-  # Stop autonomous background daemon during controlled gate assertions to prevent race conditions
+  # Stop autonomous background daemon and clear any stale staged cache from prior runs
   sudo systemctl stop exultia.service || true
+  sudo rm -rf /var/lib/exultia/staging
 
   local mode_owner
   mode_owner="$(sudo stat -c '%a %U:%G' /usr/local/bin/exultia)"
