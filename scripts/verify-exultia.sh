@@ -333,7 +333,7 @@ PY
 }
 
 gate_9() {
-  log_gate "GATE 9: Live ${COMPROMISE_SAMPLE_COUNT}-item random feed compromise & autonomous auto-fix"
+  log_gate "GATE 9: ${COMPROMISE_SAMPLE_COUNT} host-relevant confirmed fixes (zero N/A padding)"
   local seed_args=()
   if [ -n "$COMPROMISE_SEED" ]; then
     seed_args=(--seed "$COMPROMISE_SEED")

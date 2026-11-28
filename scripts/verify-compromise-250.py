@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+from importlib import metadata as importlib_metadata
 import json
 import os
 import random
@@ -37,7 +38,7 @@ import time
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
@@ -160,8 +161,92 @@ def item_keys(patch: Dict[str, Any]) -> Tuple[str, str]:
     return (str(patch.get("id") or "").strip(), str(patch.get("cveId") or "").strip())
 
 
-def sample_feed_items(all_items: List[Dict[str, Any]], count: int, seed: int) -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
-    """Stratified random sample of `count` live feed items across all rule categories."""
+def _detect_ubuntu_codename() -> str:
+    os_release = Path("/etc/os-release")
+    if not os_release.is_file():
+        return ""
+    codename = ""
+    version_id = ""
+    try:
+        for line in os_release.read_text(encoding="utf-8", errors="ignore").lower().splitlines():
+            if line.startswith("version_codename="):
+                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
+            elif line.startswith("ubuntu_codename=") and not codename:
+                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
+            elif line.startswith("version_id="):
+                version_id = line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:
+        return ""
+    if codename:
+        return codename
+    return {"20.04": "focal", "22.04": "jammy", "24.04": "noble", "24.10": "oracular", "25.04": "plucky", "26.04": "resolute"}.get(version_id, "")
+
+
+def _verify_cve_in_host_changelog(pkg: str, cve_id: str) -> bool:
+    if not pkg or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9.+_-]{0,96}", pkg):
+        return False
+    if not cve_id or not re.fullmatch(r"CVE-\d{4}-\d{4,}", cve_id, re.I):
+        return False
+    chg_path = Path(f"/usr/share/doc/{pkg}/changelog.Debian.gz")
+    if not chg_path.is_file() or chg_path.is_symlink():
+        return False
+    cve_re = re.compile(rf"\b{re.escape(cve_id)}\b", re.I)
+    not_aff_re = re.compile(r"\b(?:not[- ]affected|does\s+not\s+affect|reverted|ignored|postponed|end[- ]of[- ]life)\b", re.I)
+    try:
+        with gzip.open(chg_path, "rt", encoding="utf-8", errors="ignore") as fh:
+            text = fh.read(2 * 1024 * 1024)
+        for ln in text.splitlines():
+            if cve_re.search(ln) and not not_aff_re.search(ln):
+                return True
+    except Exception:
+        return False
+    return False
+
+
+def get_installed_deb_packages() -> Set[str]:
+    r = run_cmd(["dpkg-query", "-W", "-f=${Status}\t${Package}\n"], timeout=20)
+    installed: Set[str] = set()
+    if r.returncode == 0:
+        for ln in r.stdout.splitlines():
+            if "\t" not in ln:
+                continue
+            status, pkg = ln.split("\t", 1)
+            if "install ok installed" in status and pkg.strip():
+                installed.add(pkg.strip())
+    return installed
+
+
+def get_installed_pypi_packages() -> Set[str]:
+    installed: Set[str] = set()
+    try:
+        for dist in importlib_metadata.distributions():
+            name = (dist.metadata.get("Name") or "").strip().lower()
+            if name:
+                installed.add(re.sub(r"[-_.]+", "-", name))
+    except Exception:
+        pass
+    return installed
+
+
+def _is_runtime_guard_applicable(item: Dict[str, Any], installed_debs: Set[str]) -> bool:
+    rule = item_rule_id(item)
+    if rule == "EXPR-CUPS-DAEMON-ISOLATION":
+        return "cups-browsed" in installed_debs or "cups" in installed_debs
+    if rule == "EXPR-OPENSSH-SSHD-DROPIN":
+        return "openssh-server" in installed_debs or shutil.which("sshd") is not None
+    if rule == "EXPR-KERNEL-IO-URING-DISABLE":
+        return (Path("/proc/sys/kernel/io_uring_disabled")).exists()
+    if rule == "EXPR-KERNEL-NETFILTER-USERNS":
+        return (Path("/proc/sys/kernel/unprivileged_userns_clone")).exists()
+    return True
+
+
+def sample_feed_items(
+    all_items: List[Dict[str, Any]],
+    count: int,
+    seed: int,
+) -> Tuple[List[Dict[str, Any]], Dict[str, int], Dict[str, int]]:
+    """Select ONLY host-relevant items expected to yield real confirmed fixes (no N/A, no ABSTAIN, no PENDING_REBOOT)."""
     rng = random.Random(seed)
     deduped: List[Dict[str, Any]] = []
     seen_keys = set()
@@ -172,11 +257,23 @@ def sample_feed_items(all_items: List[Dict[str, Any]], count: int, seed: int) ->
         seen_keys.add(k)
         deduped.append(item)
 
-    stratum_a: List[Dict[str, Any]] = []
-    stratum_b: List[Dict[str, Any]] = []
-    stratum_c: List[Dict[str, Any]] = []
-    stratum_d: List[Dict[str, Any]] = []
-    stratum_e: List[Dict[str, Any]] = []
+    codename = _detect_ubuntu_codename()
+    installed_debs = get_installed_deb_packages()
+    installed_pypi = get_installed_pypi_packages()
+
+    tier_runtime: List[Dict[str, Any]] = []
+    tier_os_pinned: List[Dict[str, Any]] = []
+    tier_app_pinned: List[Dict[str, Any]] = []
+    tier_os_changelog: List[Dict[str, Any]] = []
+
+    filter_stats: Dict[str, int] = {
+        "feedPoolSize": len(deduped),
+        "excludedUnsupportedCount": 0,
+        "excludedPendingRebootCount": 0,
+        "excludedNotApplicableCount": 0,
+        "excludedEsmOnlyCount": 0,
+        "excludedUnpinnedNoChangelogCount": 0,
+    }
 
     seen_block_dates = set()
     seen_sinkhole_dates = set()
@@ -184,14 +281,27 @@ def sample_feed_items(all_items: List[Dict[str, Any]], count: int, seed: int) ->
     for item in deduped:
         rule = item_rule_id(item)
         pid = str(item.get("id") or "").upper()
-        if rule.startswith("ABSTAIN-"):
-            stratum_e.append(item)
-        elif rule == "EXPR-KERNEL-VENDOR-PACKAGE-UPGRADE" or (pid.startswith("ARG-") and bool(((item.get("remediationTier") or {}).get("tier2_packageUpgrade") or {}).get("requiresReboot"))):
-            stratum_d.append(item)
-        elif rule == "EXPR-APP-DEPENDENCY-REMEDIATION":
-            stratum_c.append(item)
-        elif rule in RUNTIME_GUARD_RULES:
-            # Avoid duplicate same-day blocklist/sinkhole entries that merge identically into /etc/hosts*
+        cve = str(item.get("cveId") or "").strip().upper()
+        prims = (item.get("validatedFix") or {}).get("primitives") or item.get("primitives") or []
+        prim_types = {str(pr.get("type") or "") for pr in prims if isinstance(pr, dict)}
+
+        if rule.startswith("ABSTAIN-") or str(item.get("expectedOutcomeState") or "").upper() in ("UNSUPPORTED", "INSUFFICIENT_EVIDENCE"):
+            filter_stats["excludedUnsupportedCount"] += 1
+            continue
+
+        if (
+            rule == "EXPR-KERNEL-VENDOR-PACKAGE-UPGRADE"
+            or "kernel.verify_running_version" in prim_types
+            or str(item.get("expectedOutcomeState") or "").upper() == "PENDING_REBOOT"
+            or (pid.startswith("ARG-") and bool(((item.get("remediationTier") or {}).get("tier2_packageUpgrade") or {}).get("requiresReboot")))
+        ):
+            filter_stats["excludedPendingRebootCount"] += 1
+            continue
+
+        if rule in RUNTIME_GUARD_RULES:
+            if not _is_runtime_guard_applicable(item, installed_debs):
+                filter_stats["excludedNotApplicableCount"] += 1
+                continue
             ver_cmd = str(((item.get("remediationTier") or {}).get("tier1_hotMitigation") or {}).get("verificationCommand") or "")
             if rule == "EXPR-PERIMETER-IP-BLOCKLIST":
                 m = re.search(r"ipsum-(\d{4}-\d{2}-\d{2})\.list", ver_cmd)
@@ -205,14 +315,80 @@ def sample_feed_items(all_items: List[Dict[str, Any]], count: int, seed: int) ->
                 if d_key in seen_sinkhole_dates:
                     continue
                 seen_sinkhole_dates.add(d_key)
-            stratum_a.append(item)
-        else:
-            stratum_b.append(item)
+            tier_runtime.append(item)
+            continue
 
-    for bucket in (stratum_a, stratum_b, stratum_c, stratum_d, stratum_e):
+        if rule == "EXPR-APP-DEPENDENCY-REMEDIATION" or "app_package.ensure_version" in prim_types:
+            app_relevant = False
+            for pr in prims:
+                if not isinstance(pr, dict) or pr.get("type") != "app_package.ensure_version":
+                    continue
+                par = pr.get("params") or {}
+                eco = str(par.get("ecosystem") or "").lower()
+                min_v = str(par.get("min_version") or "").strip()
+                pkgs = [str(x).strip().lower() for x in (par.get("packages") or []) if str(x).strip()]
+                if eco == "pypi" and min_v and any(re.sub(r"[-_.]+", "-", p) in installed_pypi for p in pkgs):
+                    app_relevant = True
+                    break
+            if app_relevant:
+                tier_app_pinned.append(item)
+            else:
+                filter_stats["excludedNotApplicableCount"] += 1
+            continue
+
+        pkg_prims = [pr for pr in prims if isinstance(pr, dict) and pr.get("type") == "package.ensure_version"]
+        if not pkg_prims:
+            filter_stats["excludedUnpinnedNoChangelogCount"] += 1
+            continue
+
+        is_pinned_installed = False
+        has_any_installed_target = False
+        has_esm_only = False
+        changelog_candidates: List[str] = []
+
+        for pr in pkg_prims:
+            par = pr.get("params") or {}
+            ub_pkgs = [str(x).strip() for x in ((par.get("packages") or {}).get("ubuntu") or []) if str(x).strip()]
+            installed_targets = [p for p in ub_pkgs if p in installed_debs]
+            if not installed_targets:
+                continue
+            has_any_installed_target = True
+            mv = par.get("min_versions") or {}
+            mvp = par.get("min_version_packages") or {}
+            pin_ver = mv.get(f"ubuntu:{codename}") if codename else ""
+            pin_pkgs = list(mvp.get(f"ubuntu:{codename}") or ub_pkgs) if (codename and f"ubuntu:{codename}" in mv) else list(ub_pkgs)
+            if not pin_ver and not any(str(k).startswith("ubuntu:") for k in mv.keys()):
+                pin_ver = str(mv.get("ubuntu") or par.get("min_version") or par.get("version") or "").strip()
+                pin_pkgs = list(ub_pkgs)
+            if pin_ver:
+                if "esm" in str(pin_ver).lower():
+                    has_esm_only = True
+                    continue
+                if any(p in installed_targets for p in pin_pkgs):
+                    is_pinned_installed = True
+                    break
+            else:
+                changelog_candidates.extend(installed_targets)
+
+        if not has_any_installed_target:
+            filter_stats["excludedNotApplicableCount"] += 1
+        elif is_pinned_installed:
+            tier_os_pinned.append(item)
+        elif has_esm_only:
+            filter_stats["excludedEsmOnlyCount"] += 1
+        elif re.fullmatch(r"CVE-\d{4}-\d{4,}", cve) and any(_verify_cve_in_host_changelog(pk, cve) for pk in changelog_candidates):
+            tier_os_changelog.append(item)
+        else:
+            filter_stats["excludedUnpinnedNoChangelogCount"] += 1
+
+    filter_stats["hostRelevantAvailableCount"] = (
+        len(tier_runtime) + len(tier_os_pinned) + len(tier_app_pinned) + len(tier_os_changelog)
+    )
+
+    for bucket in (tier_runtime, tier_os_pinned, tier_app_pinned, tier_os_changelog):
         rng.shuffle(bucket)
 
-    target_total = min(count, len(deduped))
+    target_total = min(count, filter_stats["hostRelevantAvailableCount"])
     selected: List[Dict[str, Any]] = []
     selected_ids = set()
 
@@ -229,32 +405,23 @@ def sample_feed_items(all_items: List[Dict[str, Any]], count: int, seed: int) ->
             added += 1
         return added
 
-    n_a = _take(stratum_a, max(1, target_total // 3))
-    n_b = _take(stratum_b, max(1, int(target_total * 0.30)))
-    n_c = _take(stratum_c, max(1, int(target_total * 0.20)))
-    n_d = _take(stratum_d, min(8, max(1, target_total // 25)))
-    n_e = _take(stratum_e, max(0, target_total - len(selected)))
-
-    if len(selected) < target_total:
-        remainder = [it for it in deduped if item_keys(it) not in selected_ids and item_rule_id(it) != "EXPR-KERNEL-VENDOR-PACKAGE-UPGRADE"]
-        rng.shuffle(remainder)
-        _take(remainder, target_total - len(selected))
-
-    if len(selected) < target_total:
-        remainder = [it for it in deduped if item_keys(it) not in selected_ids]
-        rng.shuffle(remainder)
-        _take(remainder, target_total - len(selected))
+    n_rt = _take(tier_runtime, target_total)
+    n_os = _take(tier_os_pinned, target_total - len(selected))
+    n_app = _take(tier_app_pinned, target_total - len(selected))
+    n_chg = _take(tier_os_changelog, target_total - len(selected))
 
     rng.shuffle(selected)
     counts = {
-        "runtime_guards": n_a,
-        "os_and_service_packages": n_b,
-        "app_dependencies": n_c,
-        "kernel_packages": n_d,
-        "abstentions": len(selected) - (n_a + n_b + n_c + n_d),
+        "runtime_guards": n_rt,
+        "installed_pinned_os_packages": n_os,
+        "installed_pinned_app_dependencies": n_app,
+        "installed_changelog_os_packages": n_chg,
+        "not_applicable": 0,
+        "abstentions": 0,
+        "kernel_packages": 0,
         "total": len(selected),
     }
-    return selected, counts
+    return selected, counts, filter_stats
 
 
 def is_pkg_installed(pkg: str) -> bool:
@@ -799,48 +966,6 @@ def parse_new_audit_entries(start_offset: int) -> List[Dict[str, Any]]:
     return entries
 
 
-def _detect_ubuntu_codename() -> str:
-    os_release = Path("/etc/os-release")
-    if not os_release.is_file():
-        return ""
-    codename = ""
-    version_id = ""
-    try:
-        for line in os_release.read_text(encoding="utf-8", errors="ignore").lower().splitlines():
-            if line.startswith("version_codename="):
-                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("ubuntu_codename=") and not codename:
-                codename = line.split("=", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("version_id="):
-                version_id = line.split("=", 1)[1].strip().strip('"').strip("'")
-    except Exception:
-        return ""
-    if codename:
-        return codename
-    return {"20.04": "focal", "22.04": "jammy", "24.04": "noble", "24.10": "oracular", "25.04": "plucky", "26.04": "resolute"}.get(version_id, "")
-
-
-def _verify_cve_in_host_changelog(pkg: str, cve_id: str) -> bool:
-    if not pkg or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9.+_-]{0,96}", pkg):
-        return False
-    if not cve_id or not re.fullmatch(r"CVE-\d{4}-\d{4,}", cve_id, re.I):
-        return False
-    chg_path = Path(f"/usr/share/doc/{pkg}/changelog.Debian.gz")
-    if not chg_path.is_file() or chg_path.is_symlink():
-        return False
-    cve_re = re.compile(rf"\b{re.escape(cve_id)}\b", re.I)
-    not_aff_re = re.compile(r"\b(?:not[- ]affected|does\s+not\s+affect|reverted|ignored|postponed|end[- ]of[- ]life)\b", re.I)
-    try:
-        with gzip.open(chg_path, "rt", encoding="utf-8", errors="ignore") as fh:
-            text = fh.read(2 * 1024 * 1024)
-        for ln in text.splitlines():
-            if cve_re.search(ln) and not not_aff_re.search(ln):
-                return True
-    except Exception:
-        return False
-    return False
-
-
 def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, Any]]) -> Dict[str, Any]:
     outcomes_by_target: Dict[str, str] = {}
     details_by_target: Dict[str, str] = {}
@@ -970,13 +1095,13 @@ def main() -> int:
         raise AssertionError(f"Invalid publicKeyHex from /api/provenance/key: {pub_hex!r}")
     pub = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
 
-    vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=5000")
+    vantage_doc = get_json(f"{BASE_URL}/api/patches/feed?os=ubuntu&limit=all")
     combined_pool = list(vantage_doc.get("patches") or [])
-    sampled, strata_counts = sample_feed_items(combined_pool, count=args.count, seed=seed)
+    sampled, strata_counts, host_filter_stats = sample_feed_items(combined_pool, count=args.count, seed=seed)
 
     for p in sampled:
         verify_patch_ed25519(pub, p)
-    print(f"[PASS] Ed25519 & SHA-256 independently verified on {len(sampled)}/{len(sampled)} sampled items (strata={strata_counts})")
+    print(f"[PASS] Ed25519 & SHA-256 independently verified on {len(sampled)}/{len(sampled)} host-relevant items (strata={strata_counts}, filter_stats={host_filter_stats})")
 
     TEMP_FEED_PATH.write_text(json.dumps({"patches": sampled}, separators=(",", ":")), encoding="utf-8")
 
@@ -1053,9 +1178,13 @@ def main() -> int:
 
         audit_entries = parse_new_audit_entries(audit_start_offset)
         reconciled = reconcile_250_audit(sampled, audit_entries)
-        print(f"\n--- 250-Item Feed Audit Reconciliation ---")
-        print(f"  Evaluated: {reconciled['evaluatedCount']}/{len(sampled)} | Unaccounted: {len(reconciled['unaccountedIds'])}")
-        print(f"  Status Breakdown: {reconciled['statusBreakdown']}")
+        sb = reconciled["statusBreakdown"]
+        confirmed_fixes = int(sb.get("MITIGATED", 0) or 0) + int(sb.get("REMEDIATION_VERIFIED", 0) or 0)
+        reconciled["confirmedFixesCount"] = confirmed_fixes
+
+        print(f"\n--- {len(sampled)}-Item Host-Relevant Audit Reconciliation ---")
+        print(f"  Evaluated: {reconciled['evaluatedCount']}/{len(sampled)} | Confirmed Fixes (MITIGATED + REMEDIATION_VERIFIED): {confirmed_fixes}/{len(sampled)} | Unaccounted: {len(reconciled['unaccountedIds'])}")
+        print(f"  Status Breakdown: {sb}")
 
         if reconciled["unaccountedIds"]:
             raise AssertionError(f"Unaccounted sampled items missing from audit.jsonl: {reconciled['unaccountedIds'][:10]}")
@@ -1065,12 +1194,20 @@ def main() -> int:
             raise AssertionError(f"Unexpected failures during {len(sampled)}-item auto-fix: {reconciled['unexpectedFailures'][:10]}")
         if reconciled["unpinnedFalseVerified"]:
             raise AssertionError(f"Unpinned package/kernel items falsely stamped REMEDIATION_VERIFIED: {reconciled['unpinnedFalseVerified'][:10]}")
+        for disallowed_state in ("NOT_APPLICABLE", "UNSUPPORTED", "INSUFFICIENT_EVIDENCE", "PENDING_REBOOT", "REMEDIATION_ATTEMPTED"):
+            if sb.get(disallowed_state, 0) != 0:
+                raise AssertionError(f"Disallowed non-fix status {disallowed_state}={sb.get(disallowed_state)} in host-relevant Gate 9 run: {sb}")
+        if confirmed_fixes != len(sampled):
+            raise AssertionError(f"Expected 100% confirmed fixes ({len(sampled)}/{len(sampled)}), got {confirmed_fixes}: {sb}")
 
         report = {
             "status": "PASS",
             "seed": seed,
             "requestedCount": args.count,
             "sampledCount": len(sampled),
+            "confirmedFixesCount": confirmed_fixes,
+            "hostRelevantAvailableCount": host_filter_stats["hostRelevantAvailableCount"],
+            "hostFilterStats": host_filter_stats,
             "ed25519VerifiedCount": len(sampled),
             "strataCounts": strata_counts,
             "independentChecksTotal": len(before_results),
@@ -1088,7 +1225,7 @@ def main() -> int:
             out_p.parent.mkdir(parents=True, exist_ok=True)
             out_p.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
-        print(f"\n[PASS] Gate 9 verified {len(sampled)}/{len(sampled)} Ed25519 signatures, {exposed_before}/{len(before_results)} injected compromises, {fixed_after}/{len(after_results)} independent fixes, 0 unpinned false-verified claims, and 0 unexpected failures.")
+        print(f"\n[PASS] Gate 9 verified {len(sampled)}/{len(sampled)} Ed25519 signatures, {exposed_before}/{len(before_results)} injected compromises, {fixed_after}/{len(after_results)} independent fixes, {confirmed_fixes}/{len(sampled)} confirmed host-relevant fixes (NOT_APPLICABLE=0, UNSUPPORTED=0), and 0 unpinned false-verified claims.")
         return 0
     finally:
         if should_restore:

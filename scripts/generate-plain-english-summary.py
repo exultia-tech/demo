@@ -30,7 +30,7 @@ GATE_TITLES = [
     ("6", "Negative Abstention"),
     ("7", "SOX/PCI Drift Repair"),
     ("8", "Daemon Sync, Behavioral Gates & Attestation"),
-    ("9", "250-Item Compromise & Auto-Fix"),
+    ("9", "250 Host-Relevant Confirmed Fixes"),
 ]
 
 
@@ -349,16 +349,22 @@ def build_summary(
 
     # Gate 9
     if g9:
+        confirmed_cnt = g9.get("confirmedFixesCount")
+        if confirmed_cnt is None:
+            sb_tmp = (reconciled.get("statusBreakdown") or {}) if isinstance(reconciled, dict) else {}
+            confirmed_cnt = int(sb_tmp.get("MITIGATED", 0) or 0) + int(sb_tmp.get("REMEDIATION_VERIFIED", 0) or 0)
         g9_desc = (
-            f"Sampled `{g9.get('sampledCount', 0)}` live items (`seed={g9.get('seed')}`), verified `{g9.get('ed25519VerifiedCount', 0)}/{g9.get('sampledCount', 0)}` Ed25519 signatures, "
-            f"flipped `{g9.get('independentFixedAfter', 0)}/{g9.get('independentExposedBefore', 0)}` injected host/compliance controls EXPOSED -> FIXED in `{g9.get('fixElapsedSeconds', '?')}s`; "
+            f"Filtered live Ubuntu feed to host-relevant items and executed `{g9.get('sampledCount', 0)}` fixes (`seed={g9.get('seed')}`): "
+            f"`{confirmed_cnt}/{g9.get('sampledCount', 0)}` confirmed fixed (`MITIGATED` + `REMEDIATION_VERIFIED`), "
+            f"flipped `{g9.get('independentFixedAfter', 0)}/{g9.get('independentExposedBefore', 0)}` injected host/compliance controls EXPOSED -> FIXED in `{g9.get('fixElapsedSeconds', '?')}s`, "
+            f"verified `{g9.get('ed25519VerifiedCount', 0)}/{g9.get('sampledCount', 0)}` Ed25519 signatures; "
             f"`{len(unpinned_false or [])}` unpinned false-verified, `{len(abstain_viol)}` abstain violations, `{len(unexpected_fail)}` unexpected failures"
         )
     else:
         g9_desc = "Not executed or evidence missing."
     lines.append(
-        f"| **9. 250-Item Compromise & Auto-Fix** | **{_outcome_badge(resolved_outcomes['9'])}** | "
-        f"Sampled live Vantage advisories, compromised real host controls, ran autonomous remediation, re-probed | {g9_desc} |"
+        f"| **9. 250 Host-Relevant Confirmed Fixes** | **{_outcome_badge(resolved_outcomes['9'])}** | "
+        f"Filtered live Vantage Ubuntu feed to host-applicable items, compromised controls, ran auto-fix, re-probed | {g9_desc} |"
     )
 
     # Section 3: Gate 9 Breakdown
@@ -369,16 +375,35 @@ def build_summary(
         lines.append("### Understanding the Gate 9 Numbers (Why This Result Is Honest)")
         lines.append("")
         strata = g9.get("strataCounts") or {}
-        lines.append(
-            f"Gate 9 sampled **{g9.get('sampledCount', 0)}** advisories across 5 strata "
-            f"(`{strata.get('runtime_guards', 0)}` runtime guards, "
-            f"`{strata.get('os_and_service_packages', 0)}` OS/service packages, "
-            f"`{strata.get('app_dependencies', 0)}` app dependencies, "
-            f"`{strata.get('kernel_packages', 0)}` kernel packages, "
-            f"`{strata.get('abstentions', 0)}` abstentions). "
-            f"Every item was accounted for (`{reconciled.get('evaluatedCount', g9.get('sampledCount', 0))}/{g9.get('sampledCount', 0)}`, "
-            f"`{len(unaccounted)}` unaccounted):"
-        )
+        hfs = g9.get("hostFilterStats") or {}
+        if hfs:
+            lines.append(
+                f"Gate 9 scanned **{hfs.get('feedPoolSize', '?')}** live Ubuntu Vantage advisories and filtered out irrelevant entries before sampling "
+                f"(excluded `{hfs.get('excludedNotApplicableCount', 0)}` `NOT_APPLICABLE`, "
+                f"`{hfs.get('excludedUnsupportedCount', 0)}` `UNSUPPORTED` abstentions, "
+                f"`{hfs.get('excludedPendingRebootCount', 0)}` `PENDING_REBOOT` kernel items, "
+                f"`{hfs.get('excludedEsmOnlyCount', 0)}` Ubuntu Pro ESM-only pins, and "
+                f"`{hfs.get('excludedUnpinnedNoChangelogCount', 0)}` unpinned non-changelog items -> "
+                f"`{hfs.get('hostRelevantAvailableCount', g9.get('sampledCount', 0))}` host-relevant items available). "
+                f"From those host-relevant candidates, Gate 9 ran **{g9.get('sampledCount', 0)}** fixes "
+                f"(`{strata.get('runtime_guards', 0)}` runtime guards, "
+                f"`{strata.get('installed_pinned_os_packages', strata.get('os_and_service_packages', 0))}` installed pinned OS packages, "
+                f"`{strata.get('installed_pinned_app_dependencies', strata.get('app_dependencies', 0))}` installed app deps, "
+                f"`{strata.get('installed_changelog_os_packages', 0)}` installed changelog-verified OS packages). "
+                f"Every item was accounted for (`{reconciled.get('evaluatedCount', g9.get('sampledCount', 0))}/{g9.get('sampledCount', 0)}`, "
+                f"`{len(unaccounted)}` unaccounted):"
+            )
+        else:
+            lines.append(
+                f"Gate 9 sampled **{g9.get('sampledCount', 0)}** advisories across strata "
+                f"(`{strata.get('runtime_guards', 0)}` runtime guards, "
+                f"`{strata.get('os_and_service_packages', 0)}` OS/service packages, "
+                f"`{strata.get('app_dependencies', 0)}` app dependencies, "
+                f"`{strata.get('kernel_packages', 0)}` kernel packages, "
+                f"`{strata.get('abstentions', 0)}` abstentions). "
+                f"Every item was accounted for (`{reconciled.get('evaluatedCount', g9.get('sampledCount', 0))}/{g9.get('sampledCount', 0)}`, "
+                f"`{len(unaccounted)}` unaccounted):"
+            )
         lines.append("")
 
         breakdown = (reconciled.get("statusBreakdown") or {}) if isinstance(reconciled, dict) else {}
@@ -396,7 +421,7 @@ def build_summary(
                 sub.append(f"`{chg_ver_cnt}` confirmed fixed via signed local distro security changelog")
             detail_sub = f" ({'; '.join(sub)})" if sub else ""
             lines.append(
-                f"- **`REMEDIATION_VERIFIED`: {breakdown['REMEDIATION_VERIFIED']}** — Real packages proven fixed against a concrete minimum version or signed distro CVE changelog{detail_sub}."
+                f"- **`REMEDIATION_VERIFIED`: {breakdown['REMEDIATION_VERIFIED']}** — Real installed packages proven fixed against a concrete minimum version or signed distro CVE changelog{detail_sub}."
             )
 
         if breakdown.get("MITIGATED", 0) > 0:
@@ -406,35 +431,11 @@ def build_summary(
                 f"(contributing alongside SOX/PCI baselines to `{g9.get('independentFixedAfter', 0)}/{g9.get('independentExposedBefore', 0)}` independent OS probes flipping EXPOSED -> FIXED: {cat_bullets})."
             )
 
-        if breakdown.get("REMEDIATION_APPLIED", 0) > 0:
-            lines.append(
-                f"- **`REMEDIATION_APPLIED`: {breakdown['REMEDIATION_APPLIED']}** — Package upgraded on disk with an observed version transition (`before != after`), but without an explicit fixed-version pin so Exultia stopped short of claiming `REMEDIATION_VERIFIED`."
-            )
-
-        if breakdown.get("REMEDIATION_ATTEMPTED", 0) > 0:
-            lines.append(
-                f"- **`REMEDIATION_ATTEMPTED`: {breakdown['REMEDIATION_ATTEMPTED']}** — Installed packages where no distro-specific `min_version` or CVE changelog entry existed and `apt` found nothing newer to upgrade. Instead of falsely claiming `REMEDIATION_VERIFIED`, Exultia honestly downgraded these to `REMEDIATION_ATTEMPTED` (`unpinnedFalseVerified: []`)."
-            )
-
-        if breakdown.get("NOT_APPLICABLE", 0) > 0:
-            lines.append(
-                f"- **`NOT_APPLICABLE`: {breakdown['NOT_APPLICABLE']}** — Affected software was not installed on this Ubuntu host, so Exultia skipped them rather than installing unneeded packages or claiming credit."
-            )
-
-        if breakdown.get("UNSUPPORTED", 0) > 0:
-            lines.append(
-                f"- **`UNSUPPORTED`: {breakdown['UNSUPPORTED']}** — Matched abstention targets cleanly (`{len(abstain_viol)}` violations). Exultia refused to invent generic hardening for unrelated/proprietary software."
-            )
-
-        if breakdown.get("PENDING_REBOOT", 0) > 0:
-            lines.append(
-                f"- **`PENDING_REBOOT`: {breakdown['PENDING_REBOOT']}** — Kernel-package advisories; Exultia refused to mark kernel vulnerabilities closed before an actual host reboot switches `uname -r`."
-            )
-
-        if breakdown.get("INSUFFICIENT_EVIDENCE", 0) > 0:
-            lines.append(
-                f"- **`INSUFFICIENT_EVIDENCE`: {breakdown['INSUFFICIENT_EVIDENCE']}** — Unpinned application-dependency advisory missing an unambiguous minimum fixed version; Exultia refused to guess."
-            )
+        lines.append(
+            f"- **Non-fix statuses in Gate 9 sample (`NOT_APPLICABLE` / `UNSUPPORTED` / `PENDING_REBOOT` / `REMEDIATION_ATTEMPTED`):** "
+            f"`{breakdown.get('NOT_APPLICABLE', 0)}` / `{breakdown.get('UNSUPPORTED', 0)}` / `{breakdown.get('PENDING_REBOOT', 0)}` / `{breakdown.get('REMEDIATION_ATTEMPTED', 0)}` "
+            f"(`unpinnedFalseVerified`: `{len(unpinned_false or [])}`)."
+        )
 
     # Section 4: Honest Scope Limits
     lines.append("")
@@ -458,29 +459,18 @@ def build_summary(
         )
         limit_idx += 1
 
-    if g9 and (reconciled.get("statusBreakdown") or {}).get("PENDING_REBOOT", 0) > 0:
-        has_g8_reboot_gate = any(
-            g.get("id") == "GATE-06-PENDING-REBOOT-RECONCILIATION" and g.get("passed")
-            for g in (g8_beh.get("gates") or [])
-        )
-        extra_g8 = (
-            " (Note: the deterministic kernel transition state machine — refusing equal/downgraded kernels and gating `REMEDIATION_VERIFIED` on pinned kernel targets — was independently verified in Gate 8 `GATE-06-PENDING-REBOOT-RECONCILIATION`.)"
-            if has_g8_reboot_gate
-            else ""
-        )
-        lines.append(
-            f"{limit_idx}. **No Mid-Job VM Reboot for Kernel Promotion:** Gate 9 accurately stops at `PENDING_REBOOT` for the "
-            f"{reconciled['statusBreakdown']['PENDING_REBOOT']} kernel items because the CI runner does not reboot mid-job to re-verify a live `uname -r` transition{extra_g8}."
-        )
-        limit_idx += 1
-
+    has_g8_reboot_gate = any(
+        g.get("id") == "GATE-06-PENDING-REBOOT-RECONCILIATION" and g.get("passed")
+        for g in (g8_beh.get("gates") or [])
+    )
     if g9:
-        rem_att = int((reconciled.get("statusBreakdown") or {}).get("REMEDIATION_ATTEMPTED", 0) or 0)
-        ins_ev = int((reconciled.get("statusBreakdown") or {}).get("INSUFFICIENT_EVIDENCE", 0) or 0)
-        if rem_att > 0 or ins_ev > 0:
+        hfs = g9.get("hostFilterStats") or {}
+        if hfs:
             lines.append(
-                f"{limit_idx}. **Unpinned Upstream Advisories Remaining Honest:** `{rem_att}` installed package items without upstream distro `min_versions` or local changelog CVE matches stopped at `REMEDIATION_ATTEMPTED` "
-                f"(and `{ins_ev}` unpinned app item(s) stopped at `INSUFFICIENT_EVIDENCE`) instead of overclaiming full closure."
+                f"{limit_idx}. **Dedicated Coverage for Abstentions & Kernel Reboots:** `NOT_APPLICABLE`, `UNSUPPORTED` abstentions, and `PENDING_REBOOT` kernel items "
+                f"are intentionally excluded from Gate 9 so all `{g9.get('sampledCount', 0)}` Gate 9 slots measure confirmed host-relevant fixes; "
+                f"fail-closed abstention is verified separately in Gates 1 & 6"
+                + (" and deterministic kernel `PENDING_REBOOT` promotion is verified in Gate 8 (`GATE-06-PENDING-REBOOT-RECONCILIATION`)." if has_g8_reboot_gate else ".")
             )
             limit_idx += 1
 

@@ -75,7 +75,7 @@ jobs:
         id: gate8
         run: bash scripts/verify-exultia.sh --gate 8
 
-      - name: "Gate 9: Live 250-item random feed compromise & autonomous auto-fix"
+      - name: "Gate 9: 250 host-relevant confirmed fixes (zero N/A padding)"
         id: gate9
         run: bash scripts/verify-exultia.sh --gate 9
 
