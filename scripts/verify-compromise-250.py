@@ -282,7 +282,7 @@ def sample_feed_items(
         rule = item_rule_id(item)
         pid = str(item.get("id") or "").upper()
         cve = str(item.get("cveId") or "").strip().upper()
-        prims = (item.get("validatedFix") or {}).get("primitives") or item.get("primitives") or []
+        prims = item.get("primitives") or (item.get("validatedFix") or {}).get("primitives") or []
         prim_types = {str(pr.get("type") or "") for pr in prims if isinstance(pr, dict)}
 
         if rule.startswith("ABSTAIN-") or str(item.get("expectedOutcomeState") or "").upper() in ("UNSUPPORTED", "INSUFFICIENT_EVIDENCE"):
@@ -344,7 +344,7 @@ def sample_feed_items(
         is_pinned_installed = False
         has_any_installed_target = False
         has_esm_only = False
-        changelog_candidates: List[str] = []
+        changelog_candidates: List[Tuple[str, str]] = []
 
         for pr in pkg_prims:
             par = pr.get("params") or {}
@@ -355,10 +355,16 @@ def sample_feed_items(
             has_any_installed_target = True
             mv = par.get("min_versions") or {}
             mvp = par.get("min_version_packages") or {}
-            pin_ver = mv.get(f"ubuntu:{codename}") if codename else ""
-            pin_pkgs = list(mvp.get(f"ubuntu:{codename}") or ub_pkgs) if (codename and f"ubuntu:{codename}" in mv) else list(ub_pkgs)
-            if not pin_ver and not any(str(k).startswith("ubuntu:") for k in mv.keys()):
-                pin_ver = str(mv.get("ubuntu") or par.get("min_version") or par.get("version") or "").strip()
+            pin_ver = ""
+            pin_pkgs = list(ub_pkgs)
+            if codename and mv.get(f"ubuntu:{codename}"):
+                pin_ver = str(mv[f"ubuntu:{codename}"]).strip()
+                pin_pkgs = list(mvp.get(f"ubuntu:{codename}") or ub_pkgs)
+            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()) and mv.get("ubuntu"):
+                pin_ver = str(mv["ubuntu"]).strip()
+                pin_pkgs = list(mvp.get("ubuntu") or ub_pkgs)
+            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()) and (par.get("min_version") or par.get("version")):
+                pin_ver = str(par.get("min_version") or par.get("version") or "").strip()
                 pin_pkgs = list(ub_pkgs)
             if pin_ver:
                 if "esm" in str(pin_ver).lower():
@@ -368,7 +374,15 @@ def sample_feed_items(
                     is_pinned_installed = True
                     break
             else:
-                changelog_candidates.extend(installed_targets)
+                raw_cves: List[str] = []
+                if isinstance(par.get("cve_ids"), list):
+                    raw_cves.extend(str(c).strip().upper() for c in par["cve_ids"] if str(c).strip())
+                if isinstance(par.get("cve_id"), str) and par["cve_id"].strip():
+                    raw_cves.append(par["cve_id"].strip().upper())
+                for pk in installed_targets:
+                    for rc in raw_cves:
+                        if re.fullmatch(r"CVE-\d{4}-\d{4,}", rc):
+                            changelog_candidates.append((pk, rc))
 
         if not has_any_installed_target:
             filter_stats["excludedNotApplicableCount"] += 1
@@ -376,7 +390,7 @@ def sample_feed_items(
             tier_os_pinned.append(item)
         elif has_esm_only:
             filter_stats["excludedEsmOnlyCount"] += 1
-        elif re.fullmatch(r"CVE-\d{4}-\d{4,}", cve) and any(_verify_cve_in_host_changelog(pk, cve) for pk in changelog_candidates):
+        elif any(_verify_cve_in_host_changelog(pk, rc) for pk, rc in changelog_candidates):
             tier_os_changelog.append(item)
         else:
             filter_stats["excludedUnpinnedNoChangelogCount"] += 1
@@ -983,6 +997,7 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
     unexpected_failures: List[Dict[str, Any]] = []
     abstain_violations: List[str] = []
     unpinned_false_verified: List[Dict[str, Any]] = []
+    non_fix_items: List[Dict[str, Any]] = []
     unaccounted: List[str] = []
     verified_via_pinned = 0
     verified_via_changelog = 0
@@ -1004,8 +1019,10 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
         else:
             if status in ("FAILED", "PROVENANCE_REJECTED", "SEMANTIC_REJECTED"):
                 unexpected_failures.append({"id": snap_key, "rule": rule, "status": status})
+            elif status in ("NOT_APPLICABLE", "UNSUPPORTED", "INSUFFICIENT_EVIDENCE", "PENDING_REBOOT", "REMEDIATION_ATTEMPTED"):
+                non_fix_items.append({"id": snap_key, "rule": rule, "status": status, "details": detail_txt[:200]})
 
-        prims = (it.get("validatedFix") or {}).get("primitives") or it.get("primitives") or []
+        prims = it.get("primitives") or (it.get("validatedFix") or {}).get("primitives") or []
         pkg_kern_prims = [
             pr for pr in prims
             if isinstance(pr, dict) and pr.get("type") in ("package.ensure_version", "kernel.verify_running_version")
@@ -1017,15 +1034,24 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
 
         has_ubuntu_pin = False
         for pr in pkg_kern_prims:
-            mv = (pr.get("params") or {}).get("min_versions") or {}
+            par = pr.get("params") or {}
+            mv = par.get("min_versions") or {}
+            mvp = par.get("min_version_packages") or {}
+            ub_pkgs = set((par.get("packages") or {}).get("ubuntu") or [])
             if codename and mv.get(f"ubuntu:{codename}"):
-                has_ubuntu_pin = True
-                break
-            if not any(str(k).startswith("ubuntu:") for k in mv.keys()) and (
-                mv.get("ubuntu") or (pr.get("params") or {}).get("min_version") or (pr.get("params") or {}).get("version")
-            ):
-                has_ubuntu_pin = True
-                break
+                pin_pkgs = set(mvp.get(f"ubuntu:{codename}") or [])
+                if not pin_pkgs or not ub_pkgs or (pin_pkgs & ub_pkgs):
+                    has_ubuntu_pin = True
+                    break
+            elif not any(str(k).startswith("ubuntu:") for k in mv.keys()):
+                if mv.get("ubuntu"):
+                    pin_pkgs = set(mvp.get("ubuntu") or [])
+                    if not pin_pkgs or not ub_pkgs or (pin_pkgs & ub_pkgs):
+                        has_ubuntu_pin = True
+                        break
+                elif par.get("min_version") or par.get("version"):
+                    has_ubuntu_pin = True
+                    break
 
         has_app_pin = any(
             bool(str((pr.get("params") or {}).get("min_version") or "").strip())
@@ -1062,6 +1088,7 @@ def reconcile_250_audit(sampled: List[Dict[str, Any]], entries: List[Dict[str, A
         "abstainViolations": abstain_violations,
         "unexpectedFailures": unexpected_failures,
         "unpinnedFalseVerified": unpinned_false_verified,
+        "nonFixItems": non_fix_items,
     }
 
 

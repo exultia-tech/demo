@@ -362,8 +362,9 @@ def build_summary(
         )
     else:
         g9_desc = "Not executed or evidence missing."
+    g9_target_cnt = g9.get("sampledCount", 250) if isinstance(g9, dict) else 250
     lines.append(
-        f"| **9. 250 Host-Relevant Confirmed Fixes** | **{_outcome_badge(resolved_outcomes['9'])}** | "
+        f"| **9. {g9_target_cnt} Host-Relevant Confirmed Fixes** | **{_outcome_badge(resolved_outcomes['9'])}** | "
         f"Filtered live Vantage Ubuntu feed to host-applicable items, compromised controls, ran auto-fix, re-probed | {g9_desc} |"
     )
 
